@@ -1,0 +1,475 @@
+SimpleXMLElement Object
+(
+    [OrderID] => 227311893018
+    [OrderStatus] => Completed
+    [AdjustmentAmount] => 0.0
+    [AmountPaid] => 54.39
+    [AmountSaved] => 20.96
+    [CheckoutStatus] => SimpleXMLElement Object
+        (
+            [eBayPaymentStatus] => NoPaymentFailure
+            [LastModifiedTime] => 2017-03-29T21:38:52.000Z
+            [PaymentMethod] => PayPal
+            [Status] => Complete
+            [IntegratedMerchantCreditCardEnabled] => false
+            [PaymentInstrument] => PayPal
+        )
+
+    [ShippingDetails] => SimpleXMLElement Object
+        (
+            [SalesTax] => SimpleXMLElement Object
+                (
+                    [SalesTaxPercent] => 0.0
+                    [SalesTaxState] => SimpleXMLElement Object
+                        (
+                        )
+
+                    [ShippingIncludedInTax] => false
+                    [SalesTaxAmount] => 0.0
+                )
+
+            [ShippingServiceOptions] => SimpleXMLElement Object
+                (
+                    [ShippingService] => PromotionalStandardShipping
+                    [ShippingServiceCost] => 0.0
+                    [ShippingServicePriority] => 1
+                    [ExpeditedService] => false
+                    [ShippingTimeMin] => 3
+                    [ShippingTimeMax] => 7
+                )
+
+            [SellingManagerSalesRecordNumber] => 26816
+            [GetItFast] => false
+        )
+
+    [CreatingUserRole] => Buyer
+    [CreatedTime] => 2017-03-26T20:03:24.000Z
+    [PaymentMethods] => PayPal
+    [SellerEmail] => mymusiclifecs@gmail.com
+    [ShippingAddress] => SimpleXMLElement Object
+        (
+            [Name] => Danon Diggs-Ream
+            [Street1] => 4000 E Phillips Ave
+            [Street2] => SimpleXMLElement Object
+                (
+                )
+
+            [CityName] => Terre Haute
+            [StateOrProvince] => IN
+            [Country] => US
+            [CountryName] => United States
+            [Phone] => 812 460 4864
+            [PostalCode] => 47805-2025
+            [AddressID] => 1040051854026
+            [AddressOwner] => eBay
+            [ExternalAddressID] => SimpleXMLElement Object
+                (
+                )
+
+        )
+
+    [ShippingServiceSelected] => SimpleXMLElement Object
+        (
+            [ShippingService] => PromotionalStandardShipping
+            [ShippingServiceCost] => 0.0
+        )
+
+    [Subtotal] => 54.39
+    [Total] => 54.39
+    [ExternalTransaction] => SimpleXMLElement Object
+        (
+            [ExternalTransactionID] => 3VF1743346372645U
+            [ExternalTransactionTime] => 2017-03-26T20:03:24.000Z
+            [FeeOrCreditAmount] => 1.88
+            [PaymentOrRefundAmount] => 54.39
+            [ExternalTransactionStatus] => Succeeded
+        )
+
+    [TransactionArray] => SimpleXMLElement Object
+        (
+            [Transaction] => Array
+                (
+                    [0] => SimpleXMLElement Object
+                        (
+                            [Buyer] => SimpleXMLElement Object
+                                (
+                                    [Email] => covenlaird1@yahoo.com
+                                    [StaticAlias] => diggsr_eqd6159nbf@members.ebay.com
+                                    [UserFirstName] => Danon
+                                    [UserLastName] => Diggs-Ream
+                                )
+
+                            [ShippingDetails] => SimpleXMLElement Object
+                                (
+                                    [SellingManagerSalesRecordNumber] => 26813
+                                    [ShipmentTrackingDetails] => SimpleXMLElement Object
+                                        (
+                                            [ShippingCarrierUsed] => USPS
+                                            [ShipmentTrackingNumber] => 9405510200829349772593
+                                        )
+
+                                )
+
+                            [CreatedDate] => 2017-03-26T20:03:24.000Z
+                            [Item] => SimpleXMLElement Object
+                                (
+                                    [ItemID] => 221398165555
+                                    [Site] => US
+                                    [Title] => Disney Tunes, Five-Finger Piano
+                                    [SKU] => 216499
+                                    [ConditionID] => 1000
+                                    [ConditionDisplayName] => Brand New
+                                )
+
+                            [QuantityPurchased] => 1
+                            [Status] => SimpleXMLElement Object
+                                (
+                                    [PaymentHoldStatus] => None
+                                    [InquiryStatus] => NotApplicable
+                                    [ReturnStatus] => NotApplicable
+                                )
+
+                            [TransactionID] => 1884753451012
+                            [TransactionPrice] => 7.16
+                            [ShippingServiceSelected] => SimpleXMLElement Object
+                                (
+                                    [ShippingPackageInfo] => SimpleXMLElement Object
+                                        (
+                                            [EstimatedDeliveryTimeMin] => 2017-04-05T07:00:00.000Z
+                                            [EstimatedDeliveryTimeMax] => 2017-04-05T07:00:00.000Z
+                                        )
+
+                                )
+
+                            [TransactionSiteID] => US
+                            [Platform] => eBay
+                            [Taxes] => SimpleXMLElement Object
+                                (
+                                    [TotalTaxAmount] => 0.0
+                                    [TaxDetails] => Array
+                                        (
+                                            [0] => SimpleXMLElement Object
+                                                (
+                                                    [Imposition] => SalesTax
+                                                    [TaxDescription] => SalesTax
+                                                    [TaxAmount] => 0.0
+                                                    [TaxOnSubtotalAmount] => 0.0
+                                                    [TaxOnShippingAmount] => 0.0
+                                                    [TaxOnHandlingAmount] => 0.0
+                                                )
+
+                                            [1] => SimpleXMLElement Object
+                                                (
+                                                    [Imposition] => WasteRecyclingFee
+                                                    [TaxDescription] => ElectronicWasteRecyclingFee
+                                                    [TaxAmount] => 0.0
+                                                )
+
+                                        )
+
+                                )
+
+                            [ActualShippingCost] => 0.0
+                            [ActualHandlingCost] => 0.0
+                            [OrderLineItemID] => 221398165555-1884753451012
+                            [ExtendedOrderID] => 227311893018!821981965016
+                            [eBayPlusTransaction] => false
+                        )
+
+                    [1] => SimpleXMLElement Object
+                        (
+                            [Buyer] => SimpleXMLElement Object
+                                (
+                                    [Email] => covenlaird1@yahoo.com
+                                    [StaticAlias] => diggsr_eqd6159nbf@members.ebay.com
+                                    [UserFirstName] => Danon
+                                    [UserLastName] => Diggs-Ream
+                                )
+
+                            [ShippingDetails] => SimpleXMLElement Object
+                                (
+                                    [SellingManagerSalesRecordNumber] => 26812
+                                    [ShipmentTrackingDetails] => SimpleXMLElement Object
+                                        (
+                                            [ShippingCarrierUsed] => USPS
+                                            [ShipmentTrackingNumber] => 9405510200829349772593
+                                        )
+
+                                )
+
+                            [CreatedDate] => 2017-03-26T20:03:24.000Z
+                            [Item] => SimpleXMLElement Object
+                                (
+                                    [ItemID] => 221545188400
+                                    [Site] => US
+                                    [Title] => Basic Fiddlers Philharmonic Celtic Fiddle Tunes: Violin (Book & CD)
+                                    [SKU] => 1075567
+                                    [ConditionID] => 1000
+                                    [ConditionDisplayName] => Brand New
+                                )
+
+                            [QuantityPurchased] => 1
+                            [Status] => SimpleXMLElement Object
+                                (
+                                    [PaymentHoldStatus] => None
+                                    [InquiryStatus] => NotApplicable
+                                    [ReturnStatus] => NotApplicable
+                                )
+
+                            [TransactionID] => 1884753450012
+                            [TransactionPrice] => 11.66
+                            [ShippingServiceSelected] => SimpleXMLElement Object
+                                (
+                                    [ShippingPackageInfo] => SimpleXMLElement Object
+                                        (
+                                            [EstimatedDeliveryTimeMin] => 2017-04-05T07:00:00.000Z
+                                            [EstimatedDeliveryTimeMax] => 2017-04-05T07:00:00.000Z
+                                        )
+
+                                )
+
+                            [TransactionSiteID] => US
+                            [Platform] => eBay
+                            [Taxes] => SimpleXMLElement Object
+                                (
+                                    [TotalTaxAmount] => 0.0
+                                    [TaxDetails] => Array
+                                        (
+                                            [0] => SimpleXMLElement Object
+                                                (
+                                                    [Imposition] => SalesTax
+                                                    [TaxDescription] => SalesTax
+                                                    [TaxAmount] => 0.0
+                                                    [TaxOnSubtotalAmount] => 0.0
+                                                    [TaxOnShippingAmount] => 0.0
+                                                    [TaxOnHandlingAmount] => 0.0
+                                                )
+
+                                            [1] => SimpleXMLElement Object
+                                                (
+                                                    [Imposition] => WasteRecyclingFee
+                                                    [TaxDescription] => ElectronicWasteRecyclingFee
+                                                    [TaxAmount] => 0.0
+                                                )
+
+                                        )
+
+                                )
+
+                            [ActualShippingCost] => 0.0
+                            [ActualHandlingCost] => 0.0
+                            [OrderLineItemID] => 221545188400-1884753450012
+                            [ExtendedOrderID] => 227311893018!821981965016
+                            [eBayPlusTransaction] => false
+                        )
+
+                    [2] => SimpleXMLElement Object
+                        (
+                            [Buyer] => SimpleXMLElement Object
+                                (
+                                    [Email] => covenlaird1@yahoo.com
+                                    [StaticAlias] => diggsr_eqd6159nbf@members.ebay.com
+                                    [UserFirstName] => Danon
+                                    [UserLastName] => Diggs-Ream
+                                )
+
+                            [ShippingDetails] => SimpleXMLElement Object
+                                (
+                                    [SellingManagerSalesRecordNumber] => 26814
+                                    [ShipmentTrackingDetails] => SimpleXMLElement Object
+                                        (
+                                            [ShippingCarrierUsed] => USPS
+                                            [ShipmentTrackingNumber] => 9405510200829349772593
+                                        )
+
+                                )
+
+                            [CreatedDate] => 2017-03-26T20:03:24.000Z
+                            [Item] => SimpleXMLElement Object
+                                (
+                                    [ItemID] => 221673641436
+                                    [Site] => US
+                                    [Title] => Herco Guitar Humidifier
+                                    [SKU] => HE360
+                                    [ConditionID] => 1000
+                                    [ConditionDisplayName] => New
+                                )
+
+                            [QuantityPurchased] => 5
+                            [Status] => SimpleXMLElement Object
+                                (
+                                    [PaymentHoldStatus] => None
+                                    [InquiryStatus] => NotApplicable
+                                    [ReturnStatus] => NotApplicable
+                                )
+
+                            [TransactionID] => 1884753453012
+                            [TransactionPrice] => 3.83
+                            [ShippingServiceSelected] => SimpleXMLElement Object
+                                (
+                                    [ShippingPackageInfo] => SimpleXMLElement Object
+                                        (
+                                            [EstimatedDeliveryTimeMin] => 2017-04-05T07:00:00.000Z
+                                            [EstimatedDeliveryTimeMax] => 2017-04-05T07:00:00.000Z
+                                        )
+
+                                )
+
+                            [TransactionSiteID] => US
+                            [Platform] => eBay
+                            [Taxes] => SimpleXMLElement Object
+                                (
+                                    [TotalTaxAmount] => 0.0
+                                    [TaxDetails] => Array
+                                        (
+                                            [0] => SimpleXMLElement Object
+                                                (
+                                                    [Imposition] => SalesTax
+                                                    [TaxDescription] => SalesTax
+                                                    [TaxAmount] => 0.0
+                                                    [TaxOnSubtotalAmount] => 0.0
+                                                    [TaxOnShippingAmount] => 0.0
+                                                    [TaxOnHandlingAmount] => 0.0
+                                                )
+
+                                            [1] => SimpleXMLElement Object
+                                                (
+                                                    [Imposition] => WasteRecyclingFee
+                                                    [TaxDescription] => ElectronicWasteRecyclingFee
+                                                    [TaxAmount] => 0.0
+                                                )
+
+                                        )
+
+                                )
+
+                            [ActualShippingCost] => 0.0
+                            [ActualHandlingCost] => 0.0
+                            [OrderLineItemID] => 221673641436-1884753453012
+                            [ExtendedOrderID] => 227311893018!821981965016
+                            [eBayPlusTransaction] => false
+                        )
+
+                    [3] => SimpleXMLElement Object
+                        (
+                            [Buyer] => SimpleXMLElement Object
+                                (
+                                    [Email] => covenlaird1@yahoo.com
+                                    [StaticAlias] => diggsr_eqd6159nbf@members.ebay.com
+                                    [UserFirstName] => Danon
+                                    [UserLastName] => Diggs-Ream
+                                )
+
+                            [ShippingDetails] => SimpleXMLElement Object
+                                (
+                                    [SellingManagerSalesRecordNumber] => 26815
+                                    [ShipmentTrackingDetails] => SimpleXMLElement Object
+                                        (
+                                            [ShippingCarrierUsed] => USPS
+                                            [ShipmentTrackingNumber] => 9405510200829349772593
+                                        )
+
+                                )
+
+                            [CreatedDate] => 2017-03-26T20:03:24.000Z
+                            [Item] => SimpleXMLElement Object
+                                (
+                                    [ItemID] => 221838099902
+                                    [Site] => US
+                                    [Title] => Aubert 9142-44 Teller Germany V Insert Semi Fitted Violin Bridge
+                                    [SKU] => 5465
+                                    [ConditionID] => 1000
+                                    [ConditionDisplayName] => New
+                                )
+
+                            [QuantityPurchased] => 2
+                            [Status] => SimpleXMLElement Object
+                                (
+                                    [PaymentHoldStatus] => None
+                                    [InquiryStatus] => NotApplicable
+                                    [ReturnStatus] => NotApplicable
+                                )
+
+                            [TransactionID] => 1884753455012
+                            [TransactionPrice] => 8.21
+                            [ShippingServiceSelected] => SimpleXMLElement Object
+                                (
+                                    [ShippingPackageInfo] => SimpleXMLElement Object
+                                        (
+                                            [EstimatedDeliveryTimeMin] => 2017-04-05T07:00:00.000Z
+                                            [EstimatedDeliveryTimeMax] => 2017-04-05T07:00:00.000Z
+                                        )
+
+                                )
+
+                            [TransactionSiteID] => US
+                            [Platform] => eBay
+                            [Taxes] => SimpleXMLElement Object
+                                (
+                                    [TotalTaxAmount] => 0.0
+                                    [TaxDetails] => Array
+                                        (
+                                            [0] => SimpleXMLElement Object
+                                                (
+                                                    [Imposition] => SalesTax
+                                                    [TaxDescription] => SalesTax
+                                                    [TaxAmount] => 0.0
+                                                    [TaxOnSubtotalAmount] => 0.0
+                                                    [TaxOnShippingAmount] => 0.0
+                                                    [TaxOnHandlingAmount] => 0.0
+                                                )
+
+                                            [1] => SimpleXMLElement Object
+                                                (
+                                                    [Imposition] => WasteRecyclingFee
+                                                    [TaxDescription] => ElectronicWasteRecyclingFee
+                                                    [TaxAmount] => 0.0
+                                                )
+
+                                        )
+
+                                )
+
+                            [ActualShippingCost] => 0.0
+                            [ActualHandlingCost] => 0.0
+                            [OrderLineItemID] => 221838099902-1884753455012
+                            [ExtendedOrderID] => 227311893018!821981965016
+                            [eBayPlusTransaction] => false
+                        )
+
+                )
+
+        )
+
+    [BuyerUserID] => diggs-ream*2009
+    [PaidTime] => 2017-03-26T20:03:25.000Z
+    [ShippedTime] => 2017-03-27T19:29:13.000Z
+    [IntegratedMerchantCreditCardEnabled] => false
+    [EIASToken] => nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wNkoKlCZKHpwqdj6x9nY+seQ==
+    [PaymentHoldStatus] => None
+    [IsMultiLegShipping] => false
+    [MonetaryDetails] => SimpleXMLElement Object
+        (
+            [Payments] => SimpleXMLElement Object
+                (
+                    [Payment] => SimpleXMLElement Object
+                        (
+                            [PaymentStatus] => Succeeded
+                            [Payer] => diggs-ream*2009
+                            [Payee] => mymusiclife-id
+                            [PaymentTime] => 2017-03-26T20:03:24.000Z
+                            [PaymentAmount] => 54.39
+                            [ReferenceID] => 3VF1743346372645U
+                            [FeeOrCreditAmount] => 1.88
+                        )
+
+                )
+
+        )
+
+    [SellerUserID] => mymusiclife-id
+    [SellerEIASToken] => nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wMl4enCpeHqQSdj6x9nY+seQ==
+    [CancelStatus] => NotApplicable
+    [ExtendedOrderID] => 227311893018!821981965016
+    [ContainseBayPlusTransaction] => false
+)

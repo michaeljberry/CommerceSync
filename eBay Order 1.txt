@@ -1,0 +1,397 @@
+SimpleXMLElement Object
+(
+    [OrderID] => 221873055267-1885443755012
+    [OrderStatus] => Completed
+    [AdjustmentAmount] => 0.0
+    [AmountPaid] => 29.64
+    [AmountSaved] => 0.0
+    [CheckoutStatus] => SimpleXMLElement Object
+        (
+            [eBayPaymentStatus] => NoPaymentFailure
+            [LastModifiedTime] => 2017-03-28T19:28:38.000Z
+            [PaymentMethod] => PayPal
+            [Status] => Complete
+            [IntegratedMerchantCreditCardEnabled] => false
+        )
+
+    [ShippingDetails] => SimpleXMLElement Object
+        (
+            [SalesTax] => SimpleXMLElement Object
+                (
+                    [SalesTaxPercent] => 0.0
+                    [SalesTaxState] => SimpleXMLElement Object
+                        (
+                        )
+
+                    [ShippingIncludedInTax] => false
+                    [SalesTaxAmount] => 0.0
+                )
+
+            [ShippingServiceOptions] => SimpleXMLElement Object
+                (
+                    [ShippingService] => ShippingMethodStandard
+                    [ShippingServiceCost] => 0.0
+                    [ShippingServicePriority] => 1
+                    [ExpeditedService] => false
+                    [ShippingTimeMin] => 1
+                    [ShippingTimeMax] => 5
+                )
+
+            [InternationalShippingServiceOption] => SimpleXMLElement Object
+                (
+                    [ShippingService] => InternationalPriorityShipping
+                    [ShippingServicePriority] => 1
+                    [ShipToLocation] => Array
+                        (
+                            [0] => CA
+                            [1] => GB
+                            [2] => DK
+                            [3] => RO
+                            [4] => SK
+                            [5] => BG
+                            [6] => CZ
+                            [7] => FI
+                            [8] => HU
+                            [9] => LV
+                            [10] => LT
+                            [11] => MT
+                            [12] => EE
+                            [13] => AU
+                            [14] => GR
+                            [15] => PT
+                            [16] => CY
+                            [17] => SI
+                            [18] => JP
+                            [19] => CN
+                            [20] => SE
+                            [21] => KR
+                            [22] => ID
+                            [23] => TW
+                            [24] => ZA
+                            [25] => TH
+                            [26] => BE
+                            [27] => FR
+                            [28] => HK
+                            [29] => IE
+                            [30] => NL
+                            [31] => PL
+                            [32] => ES
+                            [33] => IT
+                            [34] => DE
+                            [35] => AT
+                            [36] => RU
+                            [37] => IL
+                            [38] => MX
+                            [39] => NZ
+                            [40] => PH
+                            [41] => SG
+                            [42] => CH
+                            [43] => NO
+                            [44] => SA
+                            [45] => UA
+                            [46] => AE
+                            [47] => QA
+                            [48] => KW
+                            [49] => BH
+                            [50] => HR
+                            [51] => MY
+                            [52] => BR
+                            [53] => CL
+                            [54] => CO
+                            [55] => CR
+                            [56] => DO
+                            [57] => PA
+                            [58] => TT
+                            [59] => GT
+                            [60] => SV
+                            [61] => HN
+                            [62] => JM
+                            [63] => AG
+                            [64] => AW
+                            [65] => BZ
+                            [66] => DM
+                            [67] => GD
+                            [68] => KN
+                            [69] => LC
+                            [70] => MS
+                            [71] => TC
+                            [72] => BB
+                            [73] => BD
+                            [74] => BM
+                            [75] => BN
+                            [76] => BO
+                            [77] => EC
+                            [78] => EG
+                            [79] => GF
+                            [80] => GG
+                            [81] => GI
+                            [82] => GP
+                            [83] => IS
+                            [84] => JE
+                            [85] => JO
+                            [86] => KH
+                            [87] => KY
+                            [88] => LI
+                            [89] => LK
+                            [90] => LU
+                            [91] => MC
+                            [92] => MO
+                            [93] => MQ
+                            [94] => MV
+                            [95] => NI
+                            [96] => OM
+                            [97] => PE
+                            [98] => PK
+                            [99] => PY
+                            [100] => RE
+                        )
+
+                )
+
+            [SellingManagerSalesRecordNumber] => 26836
+            [TaxTable] => SimpleXMLElement Object
+                (
+                    [TaxJurisdiction] => Array
+                        (
+                            [0] => SimpleXMLElement Object
+                                (
+                                    [SalesTaxPercent] => 8.3
+                                    [ShippingIncludedInTax] => false
+                                )
+
+                            [1] => SimpleXMLElement Object
+                                (
+                                    [SalesTaxPercent] => 6.0
+                                    [ShippingIncludedInTax] => false
+                                )
+
+                            [2] => SimpleXMLElement Object
+                                (
+                                    [SalesTaxPercent] => 9.0
+                                    [ShippingIncludedInTax] => false
+                                )
+
+                        )
+
+                )
+
+            [GetItFast] => false
+        )
+
+    [CreatedTime] => 2017-03-28T05:29:24.000Z
+    [PaymentMethods] => PayPal
+    [SellerEmail] => mymusiclifecs@gmail.com
+    [ShippingAddress] => SimpleXMLElement Object
+        (
+            [Name] => Joanna Ellis
+            [Street1] => 2 Heol Eifion Wyn
+            [Street2] => SimpleXMLElement Object
+                (
+                )
+
+            [CityName] => Trallwn
+            [StateOrProvince] => Swansea
+            [Country] => GB
+            [CountryName] => United Kingdom
+            [Phone] => 07902 874948
+            [PostalCode] => SA7 9TN
+            [AddressID] => 820805726010
+            [AddressOwner] => eBay
+            [ExternalAddressID] => SimpleXMLElement Object
+                (
+                )
+
+        )
+
+    [ShippingServiceSelected] => SimpleXMLElement Object
+        (
+            [ShippingService] => InternationalPriorityShipping
+            [ShippingServiceCost] => 16.9
+            [ImportCharge] => 0.0
+        )
+
+    [Subtotal] => 12.74
+    [Total] => 29.64
+    [ExternalTransaction] => SimpleXMLElement Object
+        (
+            [ExternalTransactionID] => 764636423R1022520
+            [ExternalTransactionTime] => 2017-03-28T05:29:21.000Z
+            [FeeOrCreditAmount] => 0.8
+            [PaymentOrRefundAmount] => 29.64
+            [ExternalTransactionStatus] => Succeeded
+        )
+
+    [TransactionArray] => SimpleXMLElement Object
+        (
+            [Transaction] => SimpleXMLElement Object
+                (
+                    [Buyer] => SimpleXMLElement Object
+                        (
+                            [Email] => red.josephine@hotmail.co.uk
+                            [StaticAlias] => whitet_ez4397sczc@members.ebay.co.uk
+                            [UserFirstName] => Joanna
+                            [UserLastName] => Ellis
+                        )
+
+                    [ShippingDetails] => SimpleXMLElement Object
+                        (
+                            [SellingManagerSalesRecordNumber] => 26836
+                            [ShipmentTrackingDetails] => Array
+                                (
+                                    [0] => SimpleXMLElement Object
+                                        (
+                                            [ShippingCarrierUsed] => PBI
+                                            [ShipmentTrackingNumber] => UPAAB000000203308650
+                                        )
+
+                                    [1] => SimpleXMLElement Object
+                                        (
+                                            [ShippingCarrierUsed] => USPS
+                                            [ShipmentTrackingNumber] => 9400110200830511834411
+                                        )
+
+                                )
+
+                        )
+
+                    [CreatedDate] => 2017-03-28T05:29:24.000Z
+                    [Item] => SimpleXMLElement Object
+                        (
+                            [ItemID] => 221873055267
+                            [Site] => US
+                            [Title] => Fort Bryan 2" Guitar Strap - Grim Reaper
+                            [SKU] => DD708
+                            [ConditionID] => 1000
+                            [ConditionDisplayName] => New
+                        )
+
+                    [QuantityPurchased] => 1
+                    [Status] => SimpleXMLElement Object
+                        (
+                            [PaymentHoldStatus] => None
+                            [InquiryStatus] => NotApplicable
+                            [ReturnStatus] => NotApplicable
+                        )
+
+                    [TransactionID] => 1885443755012
+                    [TransactionPrice] => 12.74
+                    [ShippingServiceSelected] => SimpleXMLElement Object
+                        (
+                            [ShippingPackageInfo] => SimpleXMLElement Object
+                                (
+                                    [EstimatedDeliveryTimeMin] => 2017-04-05T05:27:00.000Z
+                                    [EstimatedDeliveryTimeMax] => 2017-04-14T05:27:00.000Z
+                                )
+
+                        )
+
+                    [TransactionSiteID] => UK
+                    [Platform] => eBay
+                    [Taxes] => SimpleXMLElement Object
+                        (
+                            [TotalTaxAmount] => 0.0
+                            [TaxDetails] => Array
+                                (
+                                    [0] => SimpleXMLElement Object
+                                        (
+                                            [Imposition] => SalesTax
+                                            [TaxDescription] => SalesTax
+                                            [TaxAmount] => 0.0
+                                            [TaxOnSubtotalAmount] => 0.0
+                                            [TaxOnShippingAmount] => 0.0
+                                            [TaxOnHandlingAmount] => 0.0
+                                        )
+
+                                    [1] => SimpleXMLElement Object
+                                        (
+                                            [Imposition] => WasteRecyclingFee
+                                            [TaxDescription] => ElectronicWasteRecyclingFee
+                                            [TaxAmount] => 0.0
+                                        )
+
+                                )
+
+                        )
+
+                    [ActualShippingCost] => 16.9
+                    [ActualHandlingCost] => 0.0
+                    [OrderLineItemID] => 221873055267-1885443755012
+                    [ExtendedOrderID] => 221873055267-1885443755012!822935156010
+                    [eBayPlusTransaction] => false
+                )
+
+        )
+
+    [BuyerUserID] => whitetitch
+    [PaidTime] => 2017-03-28T05:29:24.000Z
+    [ShippedTime] => 2017-03-28T19:26:55.000Z
+    [IntegratedMerchantCreditCardEnabled] => false
+    [EIASToken] => nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFlIajDpaEqQydj6x9nY+seQ==
+    [PaymentHoldStatus] => None
+    [IsMultiLegShipping] => true
+    [MultiLegShippingDetails] => SimpleXMLElement Object
+        (
+            [SellerShipmentToLogisticsProvider] => SimpleXMLElement Object
+                (
+                    [ShippingServiceDetails] => SimpleXMLElement Object
+                        (
+                            [ShippingService] => ShippingMethodStandard
+                            [TotalShippingCost] => 0.0
+                        )
+
+                    [ShipToAddress] => SimpleXMLElement Object
+                        (
+                            [Name] => Joanna Ellis
+                            [Street1] => 1850 Airport Exchange Blvd #200
+                            [CityName] => Erlanger
+                            [StateOrProvince] => KY
+                            [Country] => US
+                            [CountryName] => United States
+                            [PostalCode] => 41025
+                            [ReferenceID] => OREUSA2495164878GB
+                        )
+
+                    [ShippingTimeMin] => 1
+                    [ShippingTimeMax] => 5
+                )
+
+        )
+
+    [MonetaryDetails] => SimpleXMLElement Object
+        (
+            [Payments] => SimpleXMLElement Object
+                (
+                    [Payment] => Array
+                        (
+                            [0] => SimpleXMLElement Object
+                                (
+                                    [PaymentStatus] => Succeeded
+                                    [Payer] => whitetitch
+                                    [Payee] => PitneyBowes
+                                    [PaymentTime] => 2017-03-28T05:29:21.000Z
+                                    [PaymentAmount] => 16.9
+                                )
+
+                            [1] => SimpleXMLElement Object
+                                (
+                                    [PaymentStatus] => Succeeded
+                                    [Payer] => whitetitch
+                                    [Payee] => mymusiclife-id
+                                    [PaymentTime] => 2017-03-28T05:29:21.000Z
+                                    [PaymentAmount] => 12.74
+                                    [ReferenceID] => 764636423R1022520
+                                    [FeeOrCreditAmount] => 0.8
+                                )
+
+                        )
+
+                )
+
+        )
+
+    [SellerUserID] => mymusiclife-id
+    [SellerEIASToken] => nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wMl4enCpeHqQSdj6x9nY+seQ==
+    [CancelStatus] => NotApplicable
+    [ExtendedOrderID] => 221873055267-1885443755012!822935156010
+    [ContainseBayPlusTransaction] => false
+)

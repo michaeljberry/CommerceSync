@@ -83,7 +83,7 @@ if($general->logged_in() === true){
     require WEBPLUGIN . 'wm/wmvar.php';
 
     //EcomDash Variables
-    require WEBPLUGIN . 'ecd/ecdvar.php';
+//    require WEBPLUGIN . 'ecd/ecdvar.php';
 }else{
 
 }

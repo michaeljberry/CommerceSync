@@ -1,0 +1,17 @@
+{
+	"require": {
+	  "phpmailer/phpmailer": "~5.2",
+	  "owasp/phprbac": "2.0.*@dev",
+	  "dompdf/dompdf":"0.6.*",
+	  "bigcommerce/api":"3.0.0",
+	  "dts/ebay-sdk-php": "^0.2.0",
+      "rackspace/php-opencloud": "^1.15",
+      "automattic/woocommerce": "^1.0",
+		"fillup/walmart-partner-api-sdk-php": "^1.0.9"
+	},
+	"autoload": {
+	  "psr-4": {
+		"": "core/classes/"
+	  }
+	}
+}

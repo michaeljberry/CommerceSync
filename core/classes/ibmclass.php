@@ -1,0 +1,249 @@
+<?php
+
+class GeneralIBM{
+    public static $ibmdb;
+
+    public function __construct($database){
+        $this->db = $database;
+    }
+    public function get_vai_info(){
+        $company = "2";
+        $location = "3";
+        $library = "R37MODSDTA";
+        $library2 = "R37FILES";
+        $file = "VINITMB";
+        $file2 = "VINITEM";
+        $libfile = "VINUDEF";
+        $i = 0;
+        $fields[$i++] = "IFCOMP";
+        $fields[$i++] = "IFLOC";
+        $fields[$i++] = "IFITEM";
+        $fields[$i++] = "ICTITL";
+        $fields[$i++] = "CCITEM";
+        $fields[$i++] = "ICITEM";
+        $AryLength = count($fields);
+        $sql = "SELECT " . $fields[0] ;
+        for($x = 1; $x < $AryLength; $x++) {
+            $sql = $sql . "," . $fields[$x] ;
+        }
+        $sql = $sql." FROM " . $library . "/" . $file . " LEFT OUTER JOIN " . $library . "/" . $file2 . " ON IFITEM = " . $file2 . ".ICITEM" . " LEFT OUTER JOIN " . $library2 . "/" . $libfile . " ON " . $file . ".IFITEM = " . $libfile . ".CCITEM" . " WHERE IFCOMP = '" . $company . "' AND IFLOC = '" . $location . "' AND IFITEM NOT LIKE '+%' AND IFITEM NOT LIKE '*%' AND IFITEM NOT LIKE '#%' FETCH FIRST 50 ROWS ONLY";
+        echo $sql;
+        echo "<br>";
+        $result = $this->db->query($sql);
+        echo "<table><tr>";
+        for($x = 0; $x < $AryLength; $x++) {
+            echo "<th> $fields[$x] </th>";
+        }
+        echo "</tr>";
+        
+        // Output Data of each row
+        while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            echo "<tr> ";
+        for($x = 0; $x < $AryLength; $x++) {
+            echo "<td>" . $row[$fields[$x]] . "</td>";
+        }
+        echo "</tr>";
+        }
+        echo "</table>";
+        $sqlcount = "SELECT COUNT(" . $fields[0] . ") AS COUNT FROM " . $library . "/" . $file . " WHERE IFCOMP = '" . $company . "' AND IFLOC = '" . $location . "'";
+        $result = $this->db->query($sqlcount);
+        $count = $result->fetchColumn();
+        echo $count . "<br />";
+        $as400conn = null;
+//        $query = $this->db->prepare("SELECT * FROM R37MODSDTA/JFILE4 WHERE IFITEM = 125839");
+//        $query->execute();
+//        return $query->fetchAll();
+    }
+    public function get_vai_inventory(){
+        $sql = "SELECT CCITEM, CCF064, ICDIV, ICCLS, J6PL09 AS MAP, J6LPRC AS MSRP, J6PL10 AS PL10, (IFQOH - IFQCM) AS AVAIL, IFMOKI, CCF002 FROM R37MODSDTA/VINITMB LEFT OUTER JOIN R37MODSDTA/VINITEM ON IFITEM = ICITEM LEFT OUTER JOIN R37FILES/VINUDEF ON IFITEM = CCITEM LEFT OUTER JOIN R37FILES/VINPMAT ON IFCOMP = J6CMP AND IFLOC = J6LOC AND CCITEM = J6ITEM WHERE IFCOMP = '2' OR IFCOMP = '1' AND IFLOC NOT LIKE '2' AND IFLOC NOT LIKE '1Z' AND IFLOC NOT LIKE '8S' AND IFLOC NOT LIKE '1VRM' AND IFLOC NOT LIKE '4R' AND IFITEM NOT LIKE '+%' AND IFITEM NOT LIKE '*%' AND IFITEM NOT LIKE '#%' AND IFDEL NOT LIKE 'D' AND IFDEL NOT LIKE 'I' GROUP BY CCITEM, CCF064, ICDIV, ICCLS, J6PL09, J6LPRC, J6PL10, IFQOH, IFQCM, IFMOKI, CCF002 FETCH FIRST 50 ROWS ONLY";
+        $result = $this->db->query($sql);
+        echo "<table>";
+
+        $i = 0;
+        $count = 0;
+//        // Output Data of each row
+        while($row = $result->fetch(PDO::FETCH_ASSOC)) {
+            echo "<tr>";
+            if($i == 0){
+                foreach($row as $key => $value) {
+                    echo "<th>" . $key . "</th>";
+                }
+            }
+            echo "</tr>";
+            echo "<tr>";
+            foreach($row as $r) {
+                echo "<td>" . $r . "</td>";
+            }
+            echo "</tr>";
+            $i++;
+            $count++;
+        }
+        echo "</table>";
+        echo $count . "<br />";
+    }
+    public function sample_inv(){
+        $sql = "SELECT ITITEM, ITAMPRICE, ITMMLITEM, ITMMLQTY, ITAMPRICE, ITAMITEM, ITAMQTY, ITEBITEM, ITEBQTY FROM R37MODSDTA/VIOSELLERC WHERE ITITEM NOT LIKE '+%' AND ITITEM NOT LIKE '*%' AND ITITEM NOT LIKE '#%' FETCH FIRST 50 ROWS ONLY";
+        $result = $this->db->query($sql);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_vio_count(){
+        $sql = "SELECT COUNT(ITITEM) AS COUNT FROM R37MODSDTA/VIOSELLERC WHERE ITITEM NOT LIKE '+%' AND ITITEM NOT LIKE '*%' AND ITITEM NOT LIKE '#%'";
+        $result = $this->db->query($sql);
+        $count = $result->fetchColumn();
+        return $count;
+    }
+    public function get_bc_inven(){
+        $sql = "SELECT ITITEM, ITMMLPRICE AS PRICE, ITMMLITEM AS ITEM, ITMMLQTY AS QTY FROM R37MODSDTA/VIOSELLCRM";
+        $result = $this->db->query($sql);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_wc_inven(){
+        $sql = "SELECT ITITEM, ITMMLMSRP AS PRICE, ITMMLITEM AS ITEM, ITMMLQTY AS QTY FROM R37MODSDTA/VIOSELLCRM";
+        $result = $this->db->query($sql);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_ecom_inven(){
+        $sql = "SELECT ITITEM, ITMMLPRICE AS PRICE, ITMMLITEM AS ITEM, ITMMLQTY1 AS QTY FROM R37MODSDTA/VIOSELLCRM";
+        $result = $this->db->query($sql);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_inven(){
+        $sql = "SELECT ITITEM, {price column} AS PRICE, {item column} AS ITEM, {qty column} AS QTY FROM R37MODSDTA/VIOSELLERC";
+        $result = $this->db->query($sql);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_am_inven(){
+        $sql = "SELECT ITITEM, ITAMPRICE AS PRICE, ITAMITEM AS ITEM, ITAMQTY AS QTY FROM R37MODSDTA/VIOSELLCRA";
+        $result = $this->db->query($sql);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_ebay_inven(){
+        $sql = "SELECT ITITEM, ITEBPRICE AS PRICE, ITEBITEM AS ITEM, ITEBQTY AS QTY FROM R37MODSDTA/VIOSELLCRE"; //ITEBPRICE AS PRICE,
+        $result = $this->db->query($sql);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_reverb_inven(){
+        $sql = "SELECT ITITEM, ITREVPRICE AS PRICE, ITREVITEM AS ITEM, ITREVQTY AS QTY FROM R37MODSDTA/VIOSELLCRR";
+        $result = $this->db->query($sql);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function find_inventory($item, $channel){
+        $qty1 = '';
+        $qty2 = '';
+        if($channel == 'Amazon'){
+            $itemcol = 'ITAMITEM';
+            $qty1 = 'ITAMQTY1';
+            $qty2 = 'ITAMQTY2';
+        }elseif($channel == 'Ebay'){
+            $itemcol = 'ITEBITEM';
+            $qty1 = 'ITEBQTY1';
+            $qty2 = 'ITEBQTY2';
+        }elseif($channel == 'BigCommerce'){
+            $itemcol = 'ITMMLITEM';
+            $qty1 = 'ITMMLQTY1';
+            $qty2 = 'ITMMLQTY2';
+        }elseif($channel == 'Reverb'){
+            $itemcol = 'ITREVITEM';
+            $qty1 = 'ITREVQTY1';
+            $qty2 = 'ITREVQTY2';
+        }elseif ($channel == 'Walmart'){
+            $itemcol = 'ITWAITEM';
+            $qty1 = 'ITWAQTY1';
+            $qty2 = 'ITWAQTY2';
+        }
+        $sql = $this->db->prepare("SELECT $qty1 AS CO_ONE, $qty2 AS CO_TWO FROM R37MODSDTA/VIOSELLERC WHERE $itemcol = :item");
+        $query_params = array(
+            ':item' => $item
+        );
+//        $sql->bindParam(1, $item);
+        $sql->execute($query_params);
+        $result = $sql->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_count(){
+//        $query = "SELECT COUNT(ICITEM) AS COUNT FROM R37MODSDTA/VINITEM WHERE ICITEM NOT LIKE '+%' AND ICITEM NOT LIKE '*%'";
+        $query = "SELECT COUNT(*) AS COUNT FROM (SELECT ICDEL, ICITEM, ICTITL, ICSUBT, ICDSC1, UP.IVVUPC0404 AS ICUPC, ICWGHT, ROW_NUMBER() OVER(ORDER BY ICITEM) AS ROWNUMBER FROM R37MODSDTA/VINITEM JOIN MELQRY/UPCFILE UP ON ICITEM = IVITEM LEFT JOIN R37MODSDTA/VINITMB ON IFITEM = ICITEM WHERE (ICDEL = 'A') OR (ICDEL != 'A' AND IFQOH > 3) GROUP BY ICDEL, ICITEM, ICTITL, ICSUBT, ICDSC1, UP.IVVUPC0404, ICWGHT) AS xxx";
+        $result = $this->db->query($query);
+        $count = $result->fetchColumn();
+        return $count;
+    }
+    public function sync_vai($low = null, $high = null, $sku = null){
+        if(!$sku) {
+            $query = "SELECT * FROM (SELECT ICDEL, ICITEM, ICTITL, ICSUBT, ICDSC1, UP.IVVUPC0404 AS ICUPC, ICWGHT, ROW_NUMBER() OVER(ORDER BY ICITEM) AS ROWNUMBER FROM R37MODSDTA/VINITEM LEFT JOIN MELQRY/UPCFILE UP ON ICITEM = IVITEM LEFT JOIN R37MODSDTA/VINITMB ON IFITEM = ICITEM WHERE ICDEL != 'D' GROUP BY ICDEL, ICITEM, ICTITL, ICSUBT, ICDSC1, UP.IVVUPC0404, ICWGHT) AS xxx WHERE ROWNUMBER BETWEEN $low AND $high ORDER BY ICITEM";
+        }else{
+            $query = "SELECT ICDEL, ICITEM, ICTITL, ICSUBT, ICDSC1, UP.IVVUPC0404 AS ICUPC, ICWGHT, ROW_NUMBER() OVER(ORDER BY ICITEM) AS ROWNUMBER FROM R37MODSDTA/VINITEM LEFT JOIN MELQRY/UPCFILE UP ON ICITEM = IVITEM LEFT JOIN R37MODSDTA/VINITMB ON IFITEM = ICITEM WHERE ICDEL != 'D' AND IFITEM = '$sku' GROUP BY ICDEL, ICITEM, ICTITL, ICSUBT, ICDSC1, UP.IVVUPC0404, ICWGHT";
+        }
+        $result = $this->db->query($query);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public function sync_vai_price($low = null, $high = null, $company = 1)
+    {
+        $query = "SELECT * FROM (SELECT J6ITEM, MAX(J6LPRC) AS J6LPRC, MAX(J6PL01) AS J6PL01, MAX(J6PL09) AS J6PL09, MAX(J6PL10) AS J6PL10, DECIMAL(AVG(FIFOCOST), 5, 2) AS FIFOCOST, ROW_NUMBER() OVER(ORDER BY J6ITEM) AS ROWNUMBER FROM R37FILES/VINPMAT LEFT JOIN MELQRY/FIFOCOST ON J6ITEM = U8ITEM LEFT JOIN R37MODSDTA/VIOSELLCRM ON ITITEM = J6ITEM WHERE J6CMP = $company AND J6LOC != '1VRM' AND J6DEL != 'I' AND J6PL10 > 0 AND ITMMLPRICE = J6PL10 GROUP BY J6ITEM ORDER BY J6ITEM) AS xxx WHERE ROWNUMBER BETWEEN $low AND $high ORDER BY J6ITEM";
+        $result = $this->db->query($query);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function sync_vai_prices($sku, $company){
+        $query = "SELECT J6DEL, J6ITEM, J6LPRC, J6PL01, J6PL10, FIFOCOST FROM R37FILES/VINPMAT LEFT JOIN MELQRY/FIFOCOST ON J6ITEM = U8ITEM WHERE J6CMP = $company AND J6LOC != '1VRM' AND J6ITEM = '$sku'";
+        $result = $this->db->query($query);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_product_status(){
+        $query = "SELECT IFDEL FROM R37MODSDTA/VINITMB WHERE (IFDEL = 'A') OR (IFDEL != 'A' AND IFQOH > 3)";
+        $result = $this->db->query($query);
+        $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    public function get_ups_tracking_num($order_id, $channelNumbers){
+        $query = "SELECT  FROM R37MODSDTA/VCOHEAD JOIN R37MODSDTA/VCOSHB ON E3ORD = OAORD WHERE OACPO = '$order_id' AND OACUST IN ($channelNumbers)";
+        $result = $this->db->query($query);
+        $tracking_id = $result->fetchColumn();
+        return $tracking_id;
+    }
+    public function getTrackingNum($order_id, $channelNumbers){
+        $query = "SELECT CHCOM1 as USPS, E3TRAC as UPS FROM R37MODSDTA/VCOHEAD JOIN R37FILES/VCOONOT ON CHORD = OAORD JOIN R37MODSDTA/VCOSHB ON E3ORD = OAORD WHERE OACPO = '$order_id' AND OACUST IN ($channelNumbers)";
+        $result = $this->db->query($query);
+        $tracking_id = $result->fetch(PDO::FETCH_ASSOC);
+        return $tracking_id;
+    }
+    public function getManualTrackingNum($order_id, $channelNumbers){
+        $query = "SELECT SHCOM1 FROM R37MODSDTA/VSAHEAD JOIN R37FILES/VSAONOT ON SHORD = SAORD WHERE SACPO = '$order_id' AND SACUST IN ($channelNumbers)";
+        $result = $this->db->query($query);
+        $tracking_id = $result->fetchColumn();
+        return $tracking_id;
+    }
+    public function getSimilarTrackingNum($order_id, $channelNumbers){
+        $query = "SELECT CHCOM1 FROM R37MODSDTA/VCOHEAD JOIN R37FILES/VCOONOT ON CHORD = OAORD WHERE OACPO LIKE '$order_id%' AND OACUST IN ($channelNumbers)";
+        $result = $this->db->query($query);
+        $tracking_id = $result->fetchColumn();
+        return $tracking_id;
+    }
+    public function find_nonstock_item($sku){
+        if(empty($sku)) {
+            $query = "SELECT IFITEM, IFQOH FROM (SELECT IFITEM, IFQOH, row_number() OVER (PARTITION BY IFITEM ORDER BY IFITEM) AS seqnum FROM R37MODSDTA/VINITMB WHERE ((IFDEL = 'I' AND IFQOH > 2) OR (IFDEL != 'I')) AND IFCOMP != '5' AND (IFLOC = '1' OR IFLOC = '1Z' OR IFLOC = '3' OR IFLOC = '4' OR IFLOC = '5' OR IFLOC = '3Z' OR IFLOC = '7S' OR IFLOC = '8' OR IFLOC = '8S') GROUP BY IFITEM, IFQOH) t WHERE seqnum = 1 ORDER BY IFITEM";
+            $result = $this->db->query($query);
+            $result = $result->fetchAll(PDO::FETCH_ASSOC);
+        }else {
+            $query = "SELECT IFITEM FROM (SELECT IFITEM, IFQOH, row_number() OVER (PARTITION BY IFITEM ORDER BY IFITEM) AS seqnum FROM R37MODSDTA/VINITMB WHERE ((IFDEL = 'I' AND IFQOH > 2) OR (IFDEL != 'I')) AND IFCOMP != '5' AND (IFLOC = '1' OR IFLOC = '1Z' OR IFLOC = '3' OR IFLOC = '4' OR IFLOC = '5' OR IFLOC = '3Z' OR IFLOC = '7S' OR IFLOC = '8' OR IFLOC = '8S') GROUP BY IFITEM, IFQOH) t WHERE seqnum = 1 AND IFITEM = '$sku'";
+            $result = $this->db->query($query);
+            $result = $result->fetchColumn();
+        }
+        return $result;
+    }
+    public function get_sku_to_delete(){
+        $query= "SELECT IFITEM FROM R37MODSDTA/VINITMB JOIN R37MODSDTA/VIOSELLCRA ON IFITEM = ITITEM WHERE ((IFDEL = 'I' AND IFQOH < 3) OR (IFDEL = 'N') OR (IFQOH < 2 AND IFLOD < '20141231')) AND (IFCOMP != '5' OR IFCOMP != '2') AND (IFLOC = '1' OR IFLOC = '4' OR IFLOC = '8') GROUP BY IFITEM ORDER BY IFITEM";
+        $result = $this->db->query($query);
+        return $result->fetchAll(PDO::FETCH_ASSOC);
+    }
+}

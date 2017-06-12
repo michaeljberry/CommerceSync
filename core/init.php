@@ -6,7 +6,6 @@ require 'config.php';
 require WEBVENDOR . 'autoload.php';
 spl_autoload_register(function ($class) {
     $file = WEBCLASSES . str_replace('\\', '/', $class) . '.php';
-    echo "$file<br>";
     if (file_exists($file)) {
         require $file;
     }

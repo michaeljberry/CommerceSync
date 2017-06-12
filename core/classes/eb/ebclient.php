@@ -4,9 +4,9 @@ namespace eb;
 
 use controllers\channels\ChannelController;
 use Crypt;
-use ecommerce\ecommerceInterface;
+use ecommerce\EcommerceInterface;
 
-class ebclient extends ChannelController implements ecommerceInterface
+class ebclient extends ChannelController implements EcommerceInterface
 {
     public $eb_dev_id;
     public $eb_app_id;

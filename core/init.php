@@ -14,7 +14,7 @@ spl_autoload_register(function ($class) {
 //require 'classes/ecommerce/EcommerceInterface.php';
 //include_once 'connect/DB.php';
 //include_once 'classes/bcrypt.php';
-//include_once 'classes/crypt.php';
+//include_once 'classes/Crypt.php';
 ////include_once 'classes/email.php';
 //include_once 'classes/User.php';
 //include_once 'classes/company.php';

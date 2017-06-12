@@ -70,6 +70,7 @@ $rbac = new Rbac();
 //$mail->Password = EMAILPASSWORD;
 //$mail->SMTPSecure = 'ssl';
 //$mail->SMTPDebug = 1;
+print_r(get_declared_classes());
 
 if($general->logged_in() === true){
     $user_id = $_SESSION['id'];

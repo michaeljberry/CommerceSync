@@ -4,7 +4,7 @@ namespace models;
 
 use connect\DB;
 
-class modelDB
+class ModelDB
 {
 
     private $db;

@@ -3,8 +3,8 @@
 namespace ecommerceclass;
 
 use PDO;
-use controllers\channels\channelHelperController as CHC;
-use models\modelDB as EDB;
+use controllers\channels\ChannelHelperController as CHC;
+use models\ModelDB as EDB;
 
 class ecommerceclass
 {

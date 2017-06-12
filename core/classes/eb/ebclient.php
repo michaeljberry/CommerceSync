@@ -2,11 +2,11 @@
 
 namespace eb;
 
-use controllers\channels\channelController;
+use controllers\channels\ChannelController;
 use Crypt;
 use ecommerce\ecommerceInterface;
 
-class ebclient extends channelController implements ecommerceInterface
+class ebclient extends ChannelController implements ecommerceInterface
 {
     public $eb_dev_id;
     public $eb_app_id;
@@ -36,7 +36,7 @@ class ebclient extends channelController implements ecommerceInterface
             'token'
         ];
 
-        $this->ebinfo = channelController::getAppInfo($user_id, $table, $channel, $columns);
+        $this->ebinfo = ChannelController::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setDevID()

@@ -2,7 +2,7 @@
 
 namespace controllers\channels;
 
-class channelHelperController
+class ChannelHelperController
 {
     //To sanitize column names before inserted into query directly
     public static function sanitize_table_name($tab){

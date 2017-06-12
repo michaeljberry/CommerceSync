@@ -2,10 +2,10 @@
 
 namespace controllers\channels;
 
-use models\modelDB as EDB;
+use models\ModelDB as EDB;
 use Crypt;
 
-class channelController
+class ChannelController
 {
     public static function getAppInfo($user_id, $table, $channel, $columns)
     {

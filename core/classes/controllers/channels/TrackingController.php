@@ -2,7 +2,7 @@
 
 namespace controllers\channels;
 
-use models\modelDB as EDB;
+use models\ModelDB as EDB;
 
 class TrackingController
 {

@@ -18,7 +18,7 @@ spl_autoload_register(function ($class) {
 ////include_once 'classes/email.php';
 //include_once 'classes/User.php';
 //include_once 'classes/company.php';
-//include_once 'classes/general.php';
+//include_once 'classes/General.php';
 
 //Walmart Classes
 include_once 'classes/wm/wmclass.php';

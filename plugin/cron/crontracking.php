@@ -1,6 +1,6 @@
 <?php
 
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 use controllers\channels\TrackingController;
 
 error_reporting(-1);

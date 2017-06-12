@@ -4,7 +4,7 @@ namespace wc;
 
 use Crypt;
 use connect\DB;
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 use Automattic\WooCommerce\Client;
 
 class woocommerceclass{

@@ -3,7 +3,7 @@
 namespace bcinv;
 
 use bc\bigcommerceclass;
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 
 class bcinvclass extends bigcommerceclass
 {

@@ -9,6 +9,6 @@ if(isset($_GET['channel']) && !empty($_GET['channel'])){
 }
 $results = OrderStatsController::getOrderStats($channel);
 
-$jsonarray2 = \ecommerceclass\ecommerceclass::prepareStatJson($results, 'daily');
+$jsonarray2 = \ecommerce\Ecommerce::prepareStatJson($results, 'daily');
 //\ecommerceclass\ecommerceclass::dd(json_encode($jsonarray2));
 echo json_encode($jsonarray2);

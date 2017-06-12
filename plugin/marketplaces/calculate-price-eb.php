@@ -1,6 +1,6 @@
 <?php
 
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 
 require '../../core/init.php';
 
@@ -46,7 +46,7 @@ if ($_POST['price_sku']) {
         ]
     ];
 
-    echo \ecommerceclass\ecommerceclass::arrayToTable($tableArray, $label);
+    echo \ecommerce\Ecommerce::arrayToTable($tableArray, $label);
     echo "<br><br>";
 
     if (!empty($override)) {
@@ -61,14 +61,14 @@ if ($_POST['price_sku']) {
     $label = "Current Pricing Model";
     $tableArray = $ebay->pricingTables($currentPriceArray);
 
-    echo \ecommerceclass\ecommerceclass::arrayToTable($tableArray, $label);
+    echo \ecommerce\Ecommerce::arrayToTable($tableArray, $label);
     echo "<br><br>";
 
     $label = "Proposed Pricing Model to Adjust Price";
     $proposerdPriceArray = $ebay->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, 1);
     $tableArray = $ebay->pricingTables($proposerdPriceArray);
 
-    echo \ecommerceclass\ecommerceclass::arrayToTable($tableArray, $label);
+    echo \ecommerce\Ecommerce::arrayToTable($tableArray, $label);
     echo "<br><br>";
 
     $ebaySellers = $ebinv->sorteBaySearchResults($currentEbayListings);
@@ -92,7 +92,7 @@ if ($_POST['price_sku']) {
         ];
     }
 
-    echo \ecommerceclass\ecommerceclass::arrayToTable($tableArray, $label);
+    echo \ecommerce\Ecommerce::arrayToTable($tableArray, $label);
 
     $amazonPrice = $ourAmazonPrice->GetMyPriceForSKUResult->Product->Offers->Offer->BuyingPrice->ListingPrice->Amount;
     $amazonShipping = $ourAmazonPrice->GetMyPriceForSKUResult->Product->Offers->Offer->BuyingPrice->Shipping->Amount;
@@ -116,7 +116,7 @@ if ($_POST['price_sku']) {
         ];
     }
 
-    echo \ecommerceclass\ecommerceclass::arrayToTable($tableArray, $label);
+    echo \ecommerce\Ecommerce::arrayToTable($tableArray, $label);
 
     ?>
     <div id='ourSalesHistoryChart'></div><br><br>

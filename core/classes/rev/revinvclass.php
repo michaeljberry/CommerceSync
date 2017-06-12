@@ -3,7 +3,7 @@
 namespace rev;
 
 use rev\reverbclass;
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 
 class revinvclass extends reverbclass
 {

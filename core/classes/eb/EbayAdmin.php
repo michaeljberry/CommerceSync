@@ -1,16 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: marketing
- * Date: 11/25/15
- * Time: 11:35 AM
- */
 
-namespace ebad;
+namespace eb;
 
-use eb\ebayclass;
-
-class ebadminclass extends ebayclass
+class EbayAdmin extends Ebay
 {
     public function get_ebay_categories(){
         $requestName = 'GetCategories';

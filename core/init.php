@@ -13,7 +13,7 @@ spl_autoload_register(function ($class) {
 
 //require 'classes/ecommerce/EcommerceInterface.php';
 //include_once 'connect/DB.php';
-//include_once 'classes/bcrypt.php';
+//include_once 'classes/Bcrypt.php';
 //include_once 'classes/Crypt.php';
 ////include_once 'classes/email.php';
 //include_once 'classes/User.php';
@@ -32,7 +32,7 @@ include_once 'classes/ecd/ecdclass.php';
 include_once 'classes/ecd/ecdordclass.php';
 include_once 'classes/ecd/ecdinvclass.php';
 
-include_once 'classes/ecommerceclass.php';
+//include_once 'classes/Ecommerce.php';
 //include_once 'classes/ecommerce/ChannelHelperController.php';
 //include_once 'classes/ecommerce/ModelDB.php';
 include_once 'classes/query/querybuilder.php';
@@ -43,7 +43,7 @@ include_once WEBCLASSES . 'template.php';
 
 $template = new Template();
 $users = new User();
-$company = new company();
+$company = new Company();
 $general = new General();
 
 //Walmart Class Declarations
@@ -56,7 +56,7 @@ $ecd = new \ecd\ecdclass();
 $ecdord = new \ecdord\ecdordclass();
 $ecdinv = new \ecdinv\ecdinvclass();
 
-$ecommerce = new \ecommerceclass\ecommerceclass();
+$ecommerce = new \ecommerce\Ecommerce();
 
 use PhpRbac\Rbac;
 $rbac = new Rbac();

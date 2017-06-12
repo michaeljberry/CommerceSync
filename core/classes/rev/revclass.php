@@ -4,7 +4,7 @@ namespace rev;
 
 use Crypt;
 use connect\DB;
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 
 class reverbclass
 {

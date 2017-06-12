@@ -2,10 +2,10 @@
 
 namespace eb;
 
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 use models\channels\channelModel;
 
-class ebayclass
+class Ebay
 {
     public $db;
     public $eb_dev_id;

@@ -1,11 +1,10 @@
 <?php
 
-namespace ebinv;
+namespace eb;
 
-use eb\ebayclass;
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 
-class ebinvclass extends ebayclass
+class EbayInventory extends Ebay
 {
     public function sync_ebay_products($store_id, $e){
         $requestName = 'GetMyeBaySelling';

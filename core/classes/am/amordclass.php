@@ -3,7 +3,7 @@
 namespace amord;
 
 use am\amazonclass;
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 use \DateTime;
 use \DateTimeZone;
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace ecommerceclass;
+namespace ecommerce;
 
 use PDO;
 use controllers\channels\ChannelHelperController as CHC;
 use models\ModelDB as EDB;
 
-class ecommerceclass
+class Ecommerce
 {
     private $eq;
 
@@ -1843,7 +1843,7 @@ EOD;
     {
         $sku = $item['sku'];
         $name = $item['name'];
-        $price = \ecommerceclass\ecommerceclass::formatMoney($item['price']);
+        $price = \ecommerce\Ecommerce::formatMoney($item['price']);
         $total += $price;
         $quantity = $item['quantity'];
         $itemHtml = "<dt><span class='hide'>Quantity x Name</span></dt>

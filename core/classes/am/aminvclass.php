@@ -3,7 +3,7 @@
 namespace aminv;
 
 use am\amazonclass;
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 
 class aminvclass extends amazonclass
 {

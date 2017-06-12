@@ -1,6 +1,6 @@
 <?php
 
-namespace Ecommerce;
+namespace ecommerce;
 
 interface EcommerceInterface {
 

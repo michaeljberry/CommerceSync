@@ -15,10 +15,10 @@ echo $count . '<br>';
 
 $updatedPrices = $ecommerce->get_inventory_prices(15);
 
-$reverbListings = \ecommerceclass\ecommerceclass::getChannelListingsFromDB('reverb');
-$ebayListings = \ecommerceclass\ecommerceclass::getChannelListingsFromDB('ebay');
-$amazonListings = \ecommerceclass\ecommerceclass::getChannelListingsFromDB('amazon');
-$bigcommerceListings = \ecommerceclass\ecommerceclass::getChannelListingsFromDB('bigcommerce');
+$reverbListings = \ecommerce\Ecommerce::getChannelListingsFromDB('reverb');
+$ebayListings = \ecommerce\Ecommerce::getChannelListingsFromDB('ebay');
+$amazonListings = \ecommerce\Ecommerce::getChannelListingsFromDB('amazon');
+$bigcommerceListings = \ecommerce\Ecommerce::getChannelListingsFromDB('bigcommerce');
 
 $x = 1;
 $y = 0;
@@ -34,12 +34,12 @@ foreach($updatedPrices as $key => $prices){
     if(array_key_exists($key, $reverbListings)){
         echo "Reverb: $key -> $pl10 -> {$reverbListings[$key]['id']}<br>";
         $response = $revinv->updateListing($reverbListings[$key]['id'], $pl10);
-        \ecommerceclass\ecommerceclass::dd($response);
+        \ecommerce\Ecommerce::dd($response);
     }
     if(array_key_exists($key, $ebayListings)){
         echo "Ebay: $key -> $pl10 -> {$ebayListings[$key]['id']}<br>";
         $response = $ebinv->update_all_ebay_inventory($ebayListings[$key]['id'], $pl10);
-        \ecommerceclass\ecommerceclass::dd($response);
+        \ecommerce\Ecommerce::dd($response);
     }
     if(array_key_exists($key, $amazonListings)){
         echo "Amazon: $key -> $pl10 -> {$amazonListings[$key]['id']}<br>";
@@ -51,7 +51,7 @@ foreach($updatedPrices as $key => $prices){
         );
         if($x % 30000 == 0){
             $response = $aminv->updateAmazonInventoryPrice($amazonXML);
-            \ecommerceclass\ecommerceclass::dd($response);
+            \ecommerce\Ecommerce::dd($response);
             $y = 0;
         }
         $x++;
@@ -59,12 +59,12 @@ foreach($updatedPrices as $key => $prices){
     if(array_key_exists($key, $bigcommerceListings)){
         echo "BigCommerce: $key -> $pl10 -> {$bigcommerceListings[$key]['id']}<br>";
         $response = $bcinv->updateInventory($bigcommerceListings[$key]['id'], $pl10);
-        \ecommerceclass\ecommerceclass::dd($response);
+        \ecommerce\Ecommerce::dd($response);
     }
     echo "<br><br>";
 }
 $response = $aminv->updateAmazonInventoryPrice($amazonXML);
-\ecommerceclass\ecommerceclass::dd($response);
+\ecommerce\Ecommerce::dd($response);
 
 $endTime = microtime(true);
 $executionTime = ($endTime - $startTime)/60;

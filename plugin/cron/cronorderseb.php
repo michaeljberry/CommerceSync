@@ -4,7 +4,7 @@ include __DIR__ . '/../../core/init.php';
 include WEBCORE . 'ibminit.php';
 include_once WEBPLUGIN . 'eb/ebvar.php';
 
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 
 $start_time = microtime(true);
 $user_id = 838;
@@ -63,7 +63,7 @@ function parseOrders($xml_orders, $folder, $ecommerce, $ibmdata, $ebord){
 
             if (!$found)
             {
-                \ecommerceclass\ecommerceclass::dd($xml);
+                \ecommerce\Ecommerce::dd($xml);
                 $timestamp = $xml->CreatedTime;
                 $order_date = $timestamp;
                 $ismultilegshipping = $xml->IsMultiLegShipping;
@@ -109,7 +109,7 @@ function parseOrders($xml_orders, $folder, $ecommerce, $ibmdata, $ebord){
                 $shipping = $ecommerce->shippingCode($total, $erlanger);
 
                 $item_taxes = ecom::formatMoney((float)$xml->ShippingDetails->SalesTax->SalesTaxAmount);
-                \ecommerceclass\ecommerceclass::dd($item_taxes);
+                \ecommerce\Ecommerce::dd($item_taxes);
                 $trans_id = $xml->ShippingDetails->SellingManagerSalesRecordNumber;
 
                 //Get Info into DB

@@ -1,10 +1,8 @@
 <?php
 
-namespace ebord;
+namespace eb;
 
-use eb\ebayclass;
-
-class ebordclass extends ebayclass
+class EbayOrder extends Ebay
 {
 
     public function getOrderXml($ebayDays, $pagenumber)

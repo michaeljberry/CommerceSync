@@ -3,7 +3,7 @@
 namespace bcord;
 
 use bc\bigcommerceclass;
-use ecommerceclass\ecommerceclass as ecom;
+use ecommerce\Ecommerce as ecom;
 
 class bcordclass extends bigcommerceclass
 {

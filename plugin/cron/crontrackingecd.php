@@ -13,7 +13,7 @@ require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 require WEBPLUGIN . 'ecd/ecdvar.php';
 
-$orders_last_day = \ecommerceclass\channelHelperController::getOrdersInLastDay();
+$orders_last_day = \ecommerce\channelHelperController::getOrdersInLastDay();
 $folder = '/var/www/html/portal/';
 $log_file_name = 'Tracking - ' . date('ymd') . '.txt';
 $tracking_log = $folder . 'log/tracking/' . $log_file_name;

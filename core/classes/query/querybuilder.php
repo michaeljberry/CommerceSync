@@ -2,7 +2,7 @@
 
 namespace QB;
 
-use ecommerceclass\ecommerceclass;
+use ecommerce\Ecommerce;
 
 class querybuilder
 {

@@ -48,7 +48,7 @@ function getOrders($wmorder, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_ke
 //        $nextCursor = $orders['meta']['nextCursor'];
         echo 'Order Count: ' . count($orders['elements']) . '<br><br>';
 
-        \ecommerceclass\ecommerceclass::dd($orders['elements']['order']);
+        \ecommerce\Ecommerce::dd($orders['elements']['order']);
 
         if (count($orders['elements']['order']) > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
             foreach ($orders['elements']['order'] as $o) {

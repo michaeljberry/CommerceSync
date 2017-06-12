@@ -6,7 +6,7 @@ use controllers\channels\ChannelController;
 use Crypt;
 use ecommerce\EcommerceInterface;
 
-class ebclient extends ChannelController implements EcommerceInterface
+class EbayClient extends ChannelController implements EcommerceInterface
 {
     public $eb_dev_id;
     public $eb_app_id;

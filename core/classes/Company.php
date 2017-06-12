@@ -2,7 +2,7 @@
 
 use connect\DB;
 
-class company
+class Company
 {
     private $db;
     public function __construct(){

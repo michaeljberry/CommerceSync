@@ -39,7 +39,6 @@ include_once 'classes/query/querybuilder.php';
 
 
 include_once WEBCLASSES . 'template.php';
-$bcrypt = new Bcrypt(12);
 $crypt = new Crypt();
 
 $template = new Template();

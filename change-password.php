@@ -6,7 +6,7 @@ include_once 'core/init.php';
         if(empty($_POST) === false){
             if(empty($_POST['current_password']) || empty($_POST['password']) || empty($_POST['password_again'])){
                 $errors[] = 'All fields are required';
-            }else if($bcrypt->verifyPass($_POST['current_password'], $user['password']) === true){
+            }else if(Bcrypt::verifyPass($_POST['current_password'], $user['password']) === true){
                 if(trim($_POST['password']) != trim($_POST['password_again'])){
                     $errors[] = 'Your new passwords do not match.';
                 }else if(strlen($_POST['password'])< 6){

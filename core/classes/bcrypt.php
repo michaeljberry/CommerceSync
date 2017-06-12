@@ -27,11 +27,11 @@ class Bcrypt {
 //            return false;
 //        }
 //    }
-    public function hashPass($password){
+    public static function hashPass($password){
         $hash = password_hash($password, PASSWORD_DEFAULT);
         return $hash;
     }
-    public function verifyPass($password){
+    public static function verifyPass($password){
         $hash = password_hash($password, PASSWORD_DEFAULT);;
         if(password_verify($password, $hash)){
             return true;

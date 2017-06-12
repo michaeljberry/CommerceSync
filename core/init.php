@@ -39,7 +39,7 @@ include_once 'classes/query/querybuilder.php';
 
 
 include_once WEBCLASSES . 'template.php';
-$crypt = new Crypt();
+//$crypt = new Crypt();
 
 $template = new Template();
 $users = new User();

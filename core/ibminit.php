@@ -1,7 +1,7 @@
 <?php
 
-include_once 'connect/ibmdatabase.php';
-include_once 'classes/ibmclass.php';
+include_once WEBCLASSES . 'connect/ibmdatabase.php';
+include_once WEBCLASSES . 'ibmclass.php';
 
 $ibmdata = new GeneralIBM($ibmdb);
 

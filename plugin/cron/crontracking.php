@@ -58,6 +58,7 @@ foreach($unshippedOrders as $o){
     }
     echo "$channel: $order_num -> $tracking_id<br>";
     if(!empty($tracking_id)) {
+        $shipped = false;
         $success = false;
         echo $order_id . ': ' . $tracking_id . '; Channel: ' . $channel . '<br>';
         $result = $ecommerce->updateTrackingNum($order_id, $tracking_id, $carrier);
@@ -65,15 +66,15 @@ foreach($unshippedOrders as $o){
         if (strtolower($channel) == 'bigcommerce') {;
             //Update BC
             $response = $bcord->update_bc_tracking($order_num, $tracking_id, $carrier);
-            $success = $ecommerce->markAsShipped($order_num, $channel);
+            if($response){
+                $shipped = true;
+            }
         } elseif (strtolower($channel) == 'ebay') {
             //Update Ebay
             $response = $ebord->update_ebay_tracking($tracking_id, $carrier, $item_id, $trans_id);
-            echo "eBay:";
-            $ecommerce->dd($response);
             $successMessage = 'Success';
             if(strpos($response, $successMessage)){
-                $success = $ecommerce->markAsShipped($order_num, $channel);
+                $shipped = true;
             }
         } elseif (strtolower($channel) == 'amazon') {
             if($amazon_throttle){
@@ -83,24 +84,18 @@ foreach($unshippedOrders as $o){
                 //Update Amazon
                 $amazonOrdersThatHaveShipped[] = $order_num;
                 $amazonTrackingXML .= $amord->updateTrackingInfo($order_num, $tracking_id, $carrier, $amazonOrderCount);
-
             }
             $amazonOrderCount++;
         } elseif (strtolower($channel) == 'reverb'){
             //Update Reverb
             $response = $revord->update_reverb_tracking($order_num, $tracking_id, $carrier, 'false');
-            print_r($response);
-            echo '<br>';
             $successMessage = '"shipped"';
             if(strpos($response, $successMessage)){
-                $success = $ecommerce->markAsShipped($order_num, $channel);
+                $shipped = true;
             }
-        } elseif (strtolower($channel) == 'walmart' && $order_num == '3579207393850'){
+        } elseif (strtolower($channel) == 'walmart'){
             //Update Walmart
             $response = $wmord->update_walmart_tracking($wm_consumer_key, $wm_secret_key, $wm_api_header, $order_num, $tracking_id, $carrier);
-            print_r($response);
-            echo '<br>';
-            $shipped = false;
             if(array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
                 if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
                     $shipped = true;
@@ -108,9 +103,10 @@ foreach($unshippedOrders as $o){
             }elseif(array_key_exists('trackingNumber', $response['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['trackingInfo'])){
                 $shipped = true;
             }
-             if($shipped){
-                $success = $ecommerce->markAsShipped($order_num, $channel);
-            }
+        }
+        ecom::dd($response);
+        if($shipped){
+            $success = $ecommerce->markAsShipped($order_num, $channel);
         }
         if($success) {
             echo $channel . '-> ' . $order_num . ': ' . $tracking_id . PHP_EOL . '<br>';

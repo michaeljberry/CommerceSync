@@ -30,6 +30,7 @@ class ModelDB
     public static function query($sql, $args = null, $returnMethod = '', $returnMethodParams = null)
     {
         $bool = false;
+        $id = '';
         if(strpos($sql, 'INSERT') !== false || strpos($sql, 'UPDATE') !== false){
             $id = static::insert_transact($sql, $args);
             if($id){

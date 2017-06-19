@@ -1,0 +1,64 @@
+Array (
+    [statusCode] => 200
+    [purchaseOrderId] => 3579299999999
+    [customerOrderId] => 4371799999999
+    [customerEmailId] => B11762C880234835950BA69999999999@relay.walmart.com
+    [orderDate] => 2017-06-16T01:56:06.000Z
+    [shippingInfo] => Array (
+        [phone] => 1234567890
+        [estimatedDeliveryDate] => 2017-06-29T06:00:00.000Z
+        [estimatedShipDate] => 2017-06-20T06:00:00.000Z
+        [methodCode] => Value
+        [postalAddress] => Array (
+            [name] => customer name
+            [address1] => 123 Main St
+            [city] => Somewhere
+            [state] => NY
+            [postalCode] => 11111
+            [country] => USA
+            [addressType] => RESIDENTIAL
+        )
+    )
+    [orderLines] => Array (
+        [orderLine] => Array (
+            [lineNumber] => 2
+            [item] => Array (
+                [productName] => Product Name
+                [sku] => ProductSKU
+            )
+            [charges] => Array (
+                [charge] => Array (
+                    [chargeType] => PRODUCT
+                    [chargeName] => ItemPrice
+                    [chargeAmount] => Array (
+                        [currency] => USD
+                        [amount] => 61.98
+                    )
+                )
+            )
+            [orderLineQuantity] => Array (
+                [unitOfMeasurement] => EACH
+                [amount] => 1
+            )
+            [statusDate] => 2017-06-19T14:00:34.000Z
+            [orderLineStatuses] => Array (
+                [orderLineStatus] => Array (
+                    [status] => Shipped
+                    [statusQuantity] => Array (
+                        [unitOfMeasurement] => EACH
+                        [amount] => 1
+                    )
+                    [trackingInfo] => Array (
+                        [shipDateTime] => 2017-06-19T08:00:33.000Z
+                        [carrierName] => Array (
+                            [carrier] => USPS
+                        )
+                        [methodCode] => Value
+                        [trackingNumber] => 9400110200882432399999
+                        [trackingURL] => http://walmart.narvar.com/walmart/tracking/usps?&type=MP&seller_id=2829&promise_date=06/29/2017&dzip=11111&tracking_numbers=9400110200882432399999
+                    )
+                )
+            )
+        )
+    )
+)

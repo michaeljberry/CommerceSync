@@ -58,6 +58,7 @@ foreach($unshippedOrders as $o){
     }
     echo "$channel: $order_num -> $tracking_id<br>";
     if(!empty($tracking_id)) {
+        $response = '';
         $shipped = false;
         $success = false;
         echo $order_id . ': ' . $tracking_id . '; Channel: ' . $channel . '<br>';

@@ -2,12 +2,13 @@
 include_once '../../core/config.php';
 
 //Reverb Classes
-include_once WEBCLASSES . 'rev/revclass.php';
-include_once WEBCLASSES . 'rev/revordclass.php';
-include_once WEBCLASSES . 'rev/revinvclass.php';
-include_once WEBCLASSES . 'ecommerceclass.php';
+//include_once WEBCLASSES . 'rev/Reverb.php';
+//include_once WEBCLASSES . 'rev/ReverbOrder.php';
+//include_once WEBCLASSES . 'rev/ReverbInventory.php.php';
+//include_once WEBCLASSES . 'ecommerceclass.php';
 
 //Reverb Class Declarations
-$reverb = new \rev\reverbclass($user_id);
-$revord = new \rev\revordclass($user_id);
-$revinv = new \rev\revinvclass($user_id);
+$reverbClient = new \rev\ReverbClient($user_id);
+$reverb = new \rev\Reverb($reverbClient);
+$revord = new \rev\ReverbOrder($reverbClient);
+$revinv = new \rev\ReverbInventory($reverbClient);

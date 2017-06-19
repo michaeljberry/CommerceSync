@@ -5,23 +5,18 @@ namespace rev;
 use Crypt;
 use connect\DB;
 use ecommerce\Ecommerce as ecom;
+use models\channels\channelModel;
 
-class reverbclass
+class Reverb
 {
     public $db;
-    protected $reverb_email;
-    protected $reverb_password;
     protected $reverb_auth;
     public $reverb_store_id;
 
-    public function __construct($user_id){
-        $this->db = DB::instance();
-        $reverbinfo = $this->get_reverb_app_id($user_id);
-        $this->reverb_email = $reverbinfo['reverb_email'];
-        $this->reverb_password = Crypt::decrypt($reverbinfo['reverb_pass']);
-        $this->reverb_auth = Crypt::decrypt($reverbinfo['reverb_auth_token']);
-        $this->reverb_store_id = $reverbinfo['store_id'];
-//        ecom::dd($this->reverb_auth);
+    public function __construct($reverbClient){
+        $this->db = channelModel::getDBInstance();
+        $this->reverb_auth = $reverbClient->getAuthToken();
+        $this->reverb_store_id = $reverbClient->getStoreID();
     }
     public function get_reverb_app_id($user_id){
         $query = $this->db->prepare("SELECT store_id, reverb_email, reverb_pass, reverb_auth_token FROM api_reverb INNER JOIN store ON api_reverb.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Reverb'");

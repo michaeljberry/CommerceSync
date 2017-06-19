@@ -2,10 +2,9 @@
 
 namespace rev;
 
-use rev\reverbclass;
 use ecommerce\Ecommerce as ecom;
 
-class revordclass extends reverbclass
+class ReverbOrder extends Reverb
 {
     public function get_orders($order = null){
         if(empty($order)) {

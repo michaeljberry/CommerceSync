@@ -9,8 +9,6 @@ use ecommerce\EcommerceInterface;
 class ReverbClient extends ChannelController implements EcommerceInterface
 {
     public $db;
-    protected $reverbEmail;
-    protected $reverbPassword;
     protected $reverbAuth;
     public $reverbStoreID;
     private $reverbInfo;

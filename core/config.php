@@ -34,6 +34,7 @@ define('WEBVENDOR', WEBROOT . 'vendor/');
 define('WEBPLUGIN', WEBROOT . 'plugin/');
 define('WEBCSS', WEBINCLUDES . 'css/');
 define('WEBJS', WEBINCLUDES . 'js/');
+
 define('DB_HOST', $iniArray['DB_HOST']);
 define('DB_NAME', $iniArray['DB_NAME']);
 define('DB_USER', $iniArray['DB_USER']);

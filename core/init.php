@@ -11,15 +11,6 @@ spl_autoload_register(function ($class) {
     }
 });
 
-//require 'classes/ecommerce/EcommerceInterface.php';
-//include_once 'connect/DB.php';
-//include_once 'classes/Bcrypt.php';
-//include_once 'classes/Crypt.php';
-////include_once 'classes/email.php';
-//include_once 'classes/User.php';
-//include_once 'classes/company.php';
-//include_once 'classes/General.php';
-
 //Walmart Classes
 include_once 'classes/wm/wmclass.php';
 include_once 'classes/wm/wmordclass.php';
@@ -32,14 +23,9 @@ include_once 'classes/ecd/ecdclass.php';
 include_once 'classes/ecd/ecdordclass.php';
 include_once 'classes/ecd/ecdinvclass.php';
 
-//include_once 'classes/Ecommerce.php';
-//include_once 'classes/ecommerce/ChannelHelperController.php';
-//include_once 'classes/ecommerce/ModelDB.php';
 include_once 'classes/query/querybuilder.php';
 
-
 include_once WEBCLASSES . 'template.php';
-//$crypt = new Crypt();
 
 $template = new Template();
 $users = new User();
@@ -60,16 +46,6 @@ $ecommerce = new \ecommerce\Ecommerce();
 
 use PhpRbac\Rbac;
 $rbac = new Rbac();
-
-//$mail = new PHPMailer();
-//$mail->isSMTP();
-//$mail->Host = EMAILHOST;
-//$mail->Port = EMAILPORT;
-//$mail->SMTPAuth = true;
-//$mail->Username = EMAILUSER;
-//$mail->Password = EMAILPASSWORD;
-//$mail->SMTPSecure = 'ssl';
-//$mail->SMTPDebug = 1;
 
 if($general->logged_in() === true){
     $user_id = $_SESSION['id'];

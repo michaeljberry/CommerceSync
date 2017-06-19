@@ -1201,6 +1201,22 @@ class Ecommerce
         ];
         return EDB::query($sql, $query_params, 'rowCount');
     }
+
+    public function orderExists($orderNum)
+    {
+        if (!empty($orderNum))
+        {
+            $number = $this->findDownloadedVaiOrder($orderNum);
+
+            if ($number > 0)
+            {
+                static::dd("Found in database");
+                return true;
+            }
+        }
+        return false;
+    }
+
     //Create order for download to VAI to allow for XML creation
     public function insertOrder($order_id, $success = 1, $type = 'Amazon'){
         $sql = "INSERT INTO order_sync (order_id, success, type) VALUES (:order_id, :success, :type)";
@@ -1598,21 +1614,6 @@ EOD;
             }
         }
         return $generatedXML;
-    }
-
-    public function orderExists($orderNum)
-    {
-        if (!empty($orderNum))
-        {
-            $number = $this->findDownloadedVaiOrder($orderNum);
-
-            if ($number > 0)
-            {
-                static::dd("Found in database");
-                return true;
-            }
-        }
-        return false;
     }
 
     protected static function determineErlanger($shipping, $address)

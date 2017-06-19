@@ -1,7 +1,5 @@
 <?php
 
-namespace globe;
-
 function dd($data)
 {
     echo '<br><pre>';

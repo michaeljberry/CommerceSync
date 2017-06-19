@@ -1,7 +1,7 @@
 <?php
 error_reporting(-1);
 include __DIR__ . '/../../core/init.php';
-include WEBCORE . 'ibminit.php';
+//include WEBCORE . 'ibminit.php';
 include_once WEBPLUGIN . 'eb/ebvar.php';
 
 use ecommerce\Ecommerce as ecom;
@@ -60,6 +60,8 @@ function parseOrders($xml_orders, $folder, $ecommerce, $ibmdata, $ebord){
             echo "Order: $order_num -> Status: $order_status<br>";
             echo $xml->OrderID . '<br>';
             $found = $ecommerce->orderExists($order_num);
+            $found = \eb\Ebay::where('order_sync', '=', $order_num)->get();
+            dd($found);
 
             if (!$found)
             {

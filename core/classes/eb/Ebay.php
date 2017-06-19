@@ -3,9 +3,10 @@
 namespace eb;
 
 use ecommerce\Ecommerce as ecom;
+use Illuminate\Database\Eloquent\Model;
 use models\channels\channelModel;
 
-class Ebay
+class Ebay extends Model
 {
     public $db;
     public $eb_dev_id;
@@ -15,6 +16,7 @@ class Ebay
     public $eb_store_id;
 
     public function __construct($ebayclient){
+        parent::__construct();
         $this->db = channelModel::getDBInstance();
         $this->eb_dev_id = $ebayclient->getDevID();
         $this->eb_app_id = $ebayclient->getAppID();

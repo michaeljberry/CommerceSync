@@ -95,7 +95,7 @@ foreach($unshippedOrders as $o){
             if(strpos($response, $successMessage)){
                 $success = $ecommerce->markAsShipped($order_num, $channel);
             }
-        } elseif (strtolower($channel) == 'walmart'){
+        } elseif (strtolower($channel) == 'walmart' && $order_num == '3579207393850'){
             //Update Walmart
             $response = $wmord->update_walmart_tracking($wm_consumer_key, $wm_secret_key, $wm_api_header, $order_num, $tracking_id, $carrier);
             print_r($response);

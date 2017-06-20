@@ -59,6 +59,7 @@ class EbayOrder extends Ebay
         $poNumber = 1;
 
         $itemObject = [];
+        $itemObject['itemXml'] = '';
 
         if(count($items->Transaction) > 1){
             foreach($items->Transaction as $item){
@@ -94,8 +95,7 @@ class EbayOrder extends Ebay
                 echo $xml->OrderID . '<br>';
                 $found = ecom::orderExists($order_num);
 
-                if (!$found)
-                {
+                if (!$found) {
                     ecom::dd($xml);
                     $timestamp = $xml->CreatedTime;
                     $order_date = $timestamp;
@@ -165,7 +165,7 @@ class EbayOrder extends Ebay
                     $channel_name = 'Ebay';
                     $channel_num = $ecommerce->get_channel_num($ibmdata, $channel_name, $sku);
                     $orderXml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
-//                \ecommerceclass\ecommerceclass::dd($orderXml);
+                    ecom::dd($orderXml);
                     $ecommerce->saveXmlToFTP($order_num, $orderXml, $folder, 'Ebay');
                 }
             }

@@ -5,7 +5,7 @@ include WEBCORE . 'ibminit.php';
 
 use ecommerce\Ecommerce as ecom;
 
-$start_time = microtime(true);
+$start = startClock();
 $user_id = 838;
 require WEBPLUGIN . 'wm/wmvar.php';
 
@@ -70,3 +70,5 @@ function getOrders($wmorder, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_ke
 }
 
 getOrders($wmorder, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $wm_api_header, $wm_store_id, $ibmdata);
+
+endClock($start);

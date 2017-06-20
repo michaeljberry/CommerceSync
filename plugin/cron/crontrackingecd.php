@@ -4,7 +4,7 @@ require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 
 $start_time = microtime(true);
-echo date("Y/m/d H:i:s"). substr((string)$start_time, 1,6) . '<br>';
+$start = startClock();
 $user_id = 838;
 require WEBPLUGIN . 'am/amvar.php';
 require WEBPLUGIN . 'bc/bcvar.php';
@@ -78,3 +78,4 @@ foreach($orders->data as $o){
 //        }
 //    }
 }
+endClock($start);

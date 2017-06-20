@@ -1,7 +1,8 @@
 <?php
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
-$start_time = microtime(true);
+
+$start = startClock();
 
 $results = $ecommerce->getOrderStatsWeek();
 print_r($results);
@@ -17,6 +18,4 @@ foreach($results as $r){
     }
 }
 
-$end_time = microtime(true);
-$execution_time = ($end_time - $start_time)/60;
-echo "Execution time: $execution_time mins";
+endClock($start);

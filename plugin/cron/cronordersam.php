@@ -5,7 +5,7 @@ include __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 include_once WEBPLUGIN . 'am/amvar.php';
 
-$startTime = microtime(true);
+$start = startClock();
 $userId = 838;
 $companyId = 1;
 $folder = '/home/chesbro_amazon/';
@@ -17,6 +17,4 @@ $orders = $amord->getOrders();
 
 $amord->parseOrders($orders, $ecommerce, $ibmdata, $folder, $companyId);
 
-$endTime = microtime(true);
-$executionTime = ($endTime - $startTime)/60;
-echo "Execution time: $executionTime mins";
+endClock($start);

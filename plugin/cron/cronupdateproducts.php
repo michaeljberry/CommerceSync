@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
-$start_time = microtime(true);
+$start = startClock();
 
 $debug = false;
 $sku_test = 'z11102-95-p-blk-7str';
@@ -86,6 +86,4 @@ if(!$debug) {
         echo $sku_id . ' not successfully added/updated.';
     }
 }
-$end_time = microtime(true);
-$execution_time = ($end_time - $start_time)/60;
-echo "Execution time: $execution_time mins";
+endClock($start);

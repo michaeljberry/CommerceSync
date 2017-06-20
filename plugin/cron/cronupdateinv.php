@@ -5,14 +5,12 @@ use ecommerce\Ecommerce as ecom;
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
-
-ob_start();
-
-$start_time = microtime(true);
-$user_id = 838;
 require WEBPLUGIN . 'ecd/ecdvar.php';
 
-echo "DateTime: " . date('Y-m-d H:i:s') . "<br>";
+//ob_start();
+
+$start = startClock();
+$user_id = 838;
 
 $table = 'listing_ecd';
 $vaidata = $ibmdata->get_ecom_inven();
@@ -42,12 +40,7 @@ foreach($vaidata as $v){
         }
     }
 }
-
-$end_time = microtime(true);
-$execution_time = ($end_time - $start_time)/60;
-$execution = "Execution time: $execution_time mins";
-echo $execution;
-echo "DateTime: " . date('Y-m-d H:i:s') . "<br>";
-$content = ob_get_contents();
-ob_end_clean();
-file_put_contents($inventory_log, $content, FILE_APPEND);
+endClock($start);
+//$content = ob_get_contents();
+//ob_end_clean();
+//file_put_contents($inventory_log, $content, FILE_APPEND);

@@ -4,7 +4,7 @@ require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 include_once WEBPLUGIN . 'am/amvar.php';
 
-$start_time = microtime(true);
+$start = startClock();
 $user_id = 838;
 require WEBPLUGIN . 'am/amvar.php';
 
@@ -36,6 +36,4 @@ $response = $aminv->updateAmazonInventoryPrice($amazon_price_xml);
 print_r($response);
 echo '<br>';
 
-$end_time = microtime(true);
-$execution_time = ($end_time - $start_time)/60;
-echo "Execution time: $execution_time mins";
+endClock($start);

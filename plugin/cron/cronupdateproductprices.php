@@ -4,7 +4,7 @@ require WEBCORE . 'ibminit.php';
 
 use ecommerce\Ecommerce as ecom;
 
-$start_time = microtime(true);
+$start = startClock();
 
 $count = $ibmdata->get_count();
 echo $count . '<br>';
@@ -41,8 +41,4 @@ for ($low = 0; $low < $count; $low += 500) {
     }
 }
 
-$end_time = microtime(true);
-$execution_time = ($end_time - $start_time)/60;
-$execution = "Execution time: $execution_time mins";
-echo $execution;
-echo "DateTime: " . date('Y-m-d H:i:s') . "<br>";
+endClock($start);

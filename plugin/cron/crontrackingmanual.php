@@ -6,15 +6,14 @@ use controllers\channels\TrackingController;
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
-
-$start_time = microtime(true);
-$user_id = 838;
-
 require WEBPLUGIN . 'am/amvar.php';
 require WEBPLUGIN . 'bc/bcvar.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
+
+$start = startClock();
+$user_id = 838;
 
 $amazon_throttle = false;
 
@@ -128,10 +127,7 @@ if(!empty($amazonTrackingXML)){
         echo 'Amazon is throttled.<br>';
     }
 }
-$end_time = microtime(true);
-$execution_time = ($end_time - $start_time)/60;
-echo "Execution time: $execution_time mins";
-echo "DateTime: " . date('Y-m-d H:i:s') . "<br>";
+endClock($start);
 //$content = ob_get_contents();
 //ob_end_clean();
 //file_put_contents($inventory_log, $content, FILE_APPEND);

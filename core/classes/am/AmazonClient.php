@@ -1,12 +1,11 @@
 <?php
 
-
 namespace am;
 
 use Crypt;
 use connect\DB;
 
-class amclient
+class AmazonClient
 {
     public $db;
     protected $am_merchant_id;
@@ -53,13 +52,5 @@ class amclient
     public function getDBInstance()
     {
         return $this->db;
-    }
-    public function get_amazon_app_id($user_id){
-        $query = $this->db->prepare("SELECT store_id, merchantid, marketplaceid, aws_access_key, secret_key FROM api_amazon INNER JOIN store ON api_amazon.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Amazon'");
-        $query_params = array(
-            ':user_id' => $user_id
-        );
-        $query->execute($query_params);
-        return $query->fetch();
     }
 }

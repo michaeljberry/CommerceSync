@@ -5,7 +5,7 @@ use controllers\channels\TrackingController;
 
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
-require WEBCORE . 'ibminit.php';
+//require WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'am/amvar.php';
 require WEBPLUGIN . 'bc/bcvar.php';
 require WEBPLUGIN . 'eb/ebvar.php';

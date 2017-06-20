@@ -5,9 +5,6 @@ $user_id = 838;
 require 'config.php';
 require WEBVENDOR . 'autoload.php';
 
-use connect\Database;
-new Database();
-
 spl_autoload_register(function ($class) {
     $file = WEBCLASSES . str_replace('\\', '/', $class) . '.php';
     if (file_exists($file)) {
@@ -30,6 +27,7 @@ include_once 'classes/ecd/ecdinvclass.php';
 include_once 'classes/query/querybuilder.php';
 
 include_once WEBCLASSES . 'template.php';
+require WEBCORE . 'Functions.php';
 
 $template = new Template();
 $users = new User();

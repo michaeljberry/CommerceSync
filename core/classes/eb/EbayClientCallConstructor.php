@@ -13,9 +13,9 @@ class EbayClientCallConstructor extends EbayClient
             "Content-length: " . strlen($post_string),
             "Connection: close",
             "X-EBAY-API-COMPATIBILITY-LEVEL: 997",
-            "X-EBAY-API-DEV-NAME: $this->eb_dev_id",
-            "X-EBAY-API-APP-NAME: $this->eb_app_id",
-            "X-EBAY-API-CERT-NAME: $this->eb_cert_id",
+            "X-EBAY-API-DEV-NAME: $this->eBayDevID",
+            "X-EBAY-API-APP-NAME: $this->eBayAppID",
+            "X-EBAY-API-CERT-NAME: $this->eBayCertID",
             "X-EBAY-API-CALL-NAME: $callName",
             "X-EBAY-API-SITEID: 0",
             "X-EBAY-API-DETAIL-LEVEL:0"
@@ -29,7 +29,7 @@ class EbayClientCallConstructor extends EbayClient
             "X-EBAY-SOA-OPERATION-NAME: $callName",
             "X-EBAY-SOA-SERVICE-VERSION: 1.13.0",
             "X-EBAY-SOA-GLOBAL-ID: EBAY-US",
-            "X-EBAY-SOA-SECURITY-APPNAME: $this->eb_app_id",
+            "X-EBAY-SOA-SECURITY-APPNAME: $this->eBayAppID",
             "X-EBAY-SOA-REQUEST-DATA-FORMAT: XML"
         ];
         return $headers;
@@ -40,7 +40,7 @@ class EbayClientCallConstructor extends EbayClient
             "X-EBAY-SOA-OPERATION-NAME: $callName",
             "X-EBAY-SOA-REQUEST-DATA-FORMAT: XML",
             "X-EBAY-SOA-SERVICE-VERSION: 1.5.0",
-            "EBAY-SOA-CONSUMER-ID: $this->eb_app_id",
+            "EBAY-SOA-CONSUMER-ID: $this->eBayAppID",
             "X-EBAY-SOA-GLOBAL-ID: EBAY-US"
         ];
         return $headers;
@@ -49,7 +49,7 @@ class EbayClientCallConstructor extends EbayClient
     protected function createShoppingHeader($callName)
     {
         $headers = [
-            "X-EBAY-API-APP-ID: $this->eb_app_id",
+            "X-EBAY-API-APP-ID: $this->eBayAppID",
             "X-EBAY-API-CALL-NAME: $callName",
             "X-EBAY-API-REQUEST-ENCODING: XML",
             "X-EBAY-API-VERSION: 997",
@@ -91,7 +91,7 @@ class EbayClientCallConstructor extends EbayClient
     {
         $credentialTag = 'RequesterCredentials';
         $credentials = ecom::openXMLParentTag($credentialTag);
-        $credentials .= ecom::xmlTag('eBayAuthToken', $this->eb_token);
+        $credentials .= ecom::xmlTag('eBayAuthToken', $this->eBayToken);
         $credentials .= ecom::closeXMLParentTag($credentialTag);
         return $credentials;
     }

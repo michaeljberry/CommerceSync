@@ -3,10 +3,9 @@
 namespace eb;
 
 use ecommerce\Ecommerce as ecom;
-use Illuminate\Database\Eloquent\Model;
 use models\channels\channelModel;
 
-class Ebay extends Model
+class Ebay
 {
     public $db;
 

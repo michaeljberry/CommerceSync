@@ -1,13 +1,12 @@
 <?php
 
-namespace amord;
+namespace am;
 
-use am\amazonclass;
 use ecommerce\Ecommerce as ecom;
 use \DateTime;
 use \DateTimeZone;
 
-class amordclass extends amazonclass
+class AmazonOrder extends Amazon
 {
 
     public function updateTrackingInfo($orderNum, $trackingID, $carrier, $num)

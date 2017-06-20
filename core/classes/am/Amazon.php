@@ -6,7 +6,7 @@ use Crypt;
 use connect\DB;
 use ecommerce\Ecommerce as ecom;
 
-class amazonclass
+class Amazon
 {
     public $db;
     protected $am_merchant_id;

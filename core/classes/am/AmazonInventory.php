@@ -1,11 +1,10 @@
 <?php
 
-namespace aminv;
+namespace am;
 
-use am\amazonclass;
 use ecommerce\Ecommerce as ecom;
 
-class aminvclass extends amazonclass
+class AmazonInventory extends Amazon
 {
     public function getFbaInventory($sku){
         $action = 'ListInventorySupply';

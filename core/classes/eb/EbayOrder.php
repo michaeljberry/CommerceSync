@@ -6,6 +6,10 @@ use ecommerce\Ecommerce as ecom;
 
 class EbayOrder extends Ebay
 {
+
+    protected $orderNumber;
+    protected $channel;
+
     public function getOrderXml($ebayDays, $pagenumber)
     {
         $xml = [

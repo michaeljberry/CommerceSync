@@ -12,7 +12,7 @@ class bcordclass extends bigcommerceclass
         if($orders) {
             foreach ($orders as $o) {
                 $order_num = $o->id;
-                $found = $ecommerce->orderExists($order_num);
+                $found = ecom::orderExists($order_num);
                 if(!$found) {
                     $state_code = $o->shipping_addresses[0]->state;
                     $total_tax = $o->total_tax;
@@ -163,7 +163,7 @@ class bcordclass extends bigcommerceclass
             $quantity = $i->quantity;
             $title = $i->name;
             $principle = (float)$i->total_ex_tax;
-            $item_total = $ecommerce->removeCommasInNumber($principle)/$quantity;
+            $item_total = ecom::removeCommasInNumber($principle)/$quantity;
             $sku = $i->sku;
             $upc = $this->get_bc_product_upc($product_id);
             $sku_id = $ecommerce->skuSoi($sku);

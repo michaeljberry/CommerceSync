@@ -8,8 +8,6 @@ use models\ModelDB as EDB;
 
 class Ecommerce
 {
-    private $eq;
-
     public function getCustomersCompanies()
     {
         $sql = "SELECT c.id as company FROM account a LEFT OUTER JOIN sync_userroles sur ON sur.UserID = a.id LEFT OUTER JOIN sync_rolepermissions srp ON srp.RoleID = sur.RoleID LEFT OUTER JOIN sync_permissions sp ON srp.PermissionID = sp.ID LEFT OUTER JOIN company c ON c.id = a.company_id WHERE sp.Title IN ('root', 'management') GROUP BY company";
@@ -1194,7 +1192,7 @@ class Ecommerce
     }
 
     //Find if order has been downloaded to VAI
-    public function findDownloadedVaiOrder($order_id){
+    public static function findDownloadedVaiOrder($order_id){
         $sql = "SELECT * FROM order_sync WHERE order_id = :order_id AND success = 1";
         $query_params = [
             ':order_id' => $order_id
@@ -1202,11 +1200,11 @@ class Ecommerce
         return EDB::query($sql, $query_params, 'rowCount');
     }
 
-    public function orderExists($orderNum)
+    public static function orderExists($orderNum)
     {
         if (!empty($orderNum))
         {
-            $number = $this->findDownloadedVaiOrder($orderNum);
+            $number = self::findDownloadedVaiOrder($orderNum);
 
             if ($number > 0)
             {
@@ -1821,7 +1819,7 @@ EOD;
         return $number;
     }
 
-    public function removeCommasInNumber($number)
+    public static function removeCommasInNumber($number)
     {
         $number = number_format($number, '2', '.', '');
         return $number;
@@ -1844,7 +1842,7 @@ EOD;
     {
         $sku = $item['sku'];
         $name = $item['name'];
-        $price = \ecommerce\Ecommerce::formatMoney($item['price']);
+        $price = self::formatMoney($item['price']);
         $total += $price;
         $quantity = $item['quantity'];
         $itemHtml = "<dt><span class='hide'>Quantity x Name</span></dt>

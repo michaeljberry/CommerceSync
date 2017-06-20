@@ -26,7 +26,7 @@ class ReverbOrder extends Reverb
             foreach ($orders as $o) {
                 foreach ($o as $order) {
                     $order_num = $order->order_number;
-                    $found = $ecommerce->orderExists($order_num);
+                    $found = ecom::orderExists($order_num);
                     if (!$found) {
                         $ship_to_name = $order->buyer_name;
                         $name = explode(' ', $ship_to_name);

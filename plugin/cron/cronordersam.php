@@ -14,7 +14,6 @@ $taxableStates = $ecommerce->getCompanyTaxInfo($companyId);
 //\ecommerceclass\ecommerceclass::dd($taxableStates);
 
 $orders = $amord->getOrders();
-//\ecommerceclass\ecommerceclass::dd($orders);
 
 $amord->parseOrders($orders, $ecommerce, $ibmdata, $folder, $companyId);
 

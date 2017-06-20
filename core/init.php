@@ -4,6 +4,10 @@ error_reporting(-1);
 $user_id = 838;
 require 'config.php';
 require WEBVENDOR . 'autoload.php';
+
+use connect\Database;
+new Database();
+
 spl_autoload_register(function ($class) {
     $file = WEBCLASSES . str_replace('\\', '/', $class) . '.php';
     if (file_exists($file)) {

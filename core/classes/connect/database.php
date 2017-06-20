@@ -1,6 +1,6 @@
 <?php
 
-namespace models;
+namespace connect;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 

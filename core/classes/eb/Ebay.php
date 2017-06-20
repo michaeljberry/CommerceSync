@@ -9,21 +9,11 @@ use models\channels\channelModel;
 class Ebay extends Model
 {
     public $db;
-    public $eb_dev_id;
-    public $eb_app_id;
-    public $eb_cert_id;
-    public $eb_token;
-    public $eb_store_id;
 
     public function __construct($ebayclient){
-        parent::__construct();
         $this->db = channelModel::getDBInstance();
-        $this->eb_dev_id = $ebayclient->getDevID();
-        $this->eb_app_id = $ebayclient->getAppID();
-        $this->eb_cert_id = $ebayclient->getCertID();
-        $this->eb_token = $ebayclient->getToken();
-        $this->eb_store_id = $ebayclient->getStoreID();
     }
+
     public function sanitize_column_name($col){
         switch($col){
             case $col == "token":
@@ -111,7 +101,7 @@ class Ebay extends Model
         return $query->fetchColumn();
     }
 
-    public function get_transaction_id($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $item_id){
+    public function get_transaction_id($item_id){
         $requestName = 'GetItemTransactions';
 
         $xml = [
@@ -245,163 +235,4 @@ class Ebay extends Model
         $query->execute($query_params);
         return true;
     }
-
-    protected function createHeader($post_string, $callName, $callType)
-    {
-        $headers = [];
-
-        if($callType === 'trading') {
-            $headers = $this->createTradingHeader($post_string, $callName);
-        }elseif ($callType === 'finding'){
-            $headers = $this->createFindingHeader($callName);
-        }elseif($callType === 'merchandising'){
-            $headers = $this->createMerchandisingHeader($callName);
-        }elseif($callType === 'shopping'){
-            $headers = $this->createShoppingHeader($callName);
-        }
-        return $headers;
-    }
-
-    protected function createTradingHeader($post_string, $callName)
-    {
-        $headers = [
-            "Content-type: text/xml",
-            "Content-length: " . strlen($post_string),
-            "Connection: close",
-            "X-EBAY-API-COMPATIBILITY-LEVEL: 997",
-            "X-EBAY-API-DEV-NAME: $this->eb_dev_id",
-            "X-EBAY-API-APP-NAME: $this->eb_app_id",
-            "X-EBAY-API-CERT-NAME: $this->eb_cert_id",
-            "X-EBAY-API-CALL-NAME: $callName",
-            "X-EBAY-API-SITEID: 0",
-            "X-EBAY-API-DETAIL-LEVEL:0"
-        ];
-        return $headers;
-    }
-
-        protected function createFindingHeader($callName){
-        $headers = [
-            "X-EBAY-SOA-SERVICE-NAME: FindingService",
-            "X-EBAY-SOA-OPERATION-NAME: $callName",
-            "X-EBAY-SOA-SERVICE-VERSION: 1.13.0",
-            "X-EBAY-SOA-GLOBAL-ID: EBAY-US",
-            "X-EBAY-SOA-SECURITY-APPNAME: $this->eb_app_id",
-            "X-EBAY-SOA-REQUEST-DATA-FORMAT: XML"
-        ];
-        return $headers;
-    }
-
-    protected function createMerchandisingHeader($callName){
-        $headers = [
-            "X-EBAY-SOA-OPERATION-NAME: $callName",
-            "X-EBAY-SOA-REQUEST-DATA-FORMAT: XML",
-            "X-EBAY-SOA-SERVICE-VERSION: 1.5.0",
-            "EBAY-SOA-CONSUMER-ID: $this->eb_app_id",
-            "X-EBAY-SOA-GLOBAL-ID: EBAY-US"
-        ];
-        return $headers;
-    }
-
-    protected function createShoppingHeader($callName)
-    {
-        $headers = [
-            "X-EBAY-API-APP-ID: $this->eb_app_id",
-            "X-EBAY-API-CALL-NAME: $callName",
-            "X-EBAY-API-REQUEST-ENCODING: XML",
-            "X-EBAY-API-VERSION: 997",
-            "Content-type: text/xml",
-        ];
-        return $headers;
-    }
-
-    protected function setCurlUrl($callType = 'trading')
-    {
-        $url = '';
-
-        if($callType === 'trading') {
-            $url = 'https://api.ebay.com/ws/api.dll';
-        }elseif ($callType === 'finding'){
-            $url = 'http://svcs.ebay.com/services/search/FindingService/v1';
-        }elseif($callType === 'merchandising'){
-            $url = 'http://svcs.ebay.com/MerchandisingService?';
-        }elseif($callType === 'shopping'){
-            $url = 'http://open.api.ebay.com/shopping?';
-        }
-
-        return $url;
-    }
-
-    protected function setCurlOptions($headers, $post_string, $url)
-    {
-        $request = curl_init($url);
-        curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($request, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($request, CURLOPT_HEADER, false);
-        curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
-        curl_setopt($request, CURLOPT_POST, true);
-        curl_setopt($request, CURLOPT_SSL_VERIFYPEER, 0);
-        return $request;
-    }
-
-    protected function headerParameter($callType)
-    {
-        $param = '';
-
-        if($callType === 'trading' || $callType === 'shopping'){
-            $param = 'xmlns="urn:ebay:apis:eBLBaseComponents"';
-        }elseif ($callType === 'finding'){
-            $param = 'xmlns="http://www.ebay.com/marketplace/search/v1/services"';
-        }
-
-        return $param;
-    }
-
-    protected function xmlHeader($requestName, $callType)
-    {
-        $header = ecom::xmlOpenTag();
-        $request = $requestName . 'Request';
-        $param = $this->headerParameter($callType);
-        $header .= ecom::openXMLParentTag($request, $param);
-        if($callType !== 'finding' && $callType !== 'shopping') {
-            $header .= $this->eBayCredentialsXML();
-        }
-        return $header;
-    }
-
-    protected function xmlFooter($requestName)
-    {
-        $request = $requestName . 'Request';
-        $footer = ecom::closeXMLParentTag($request);
-        return $footer;
-    }
-
-    protected function eBayCredentialsXML()
-    {
-        $credentialTag = 'RequesterCredentials';
-        $credentials = ecom::openXMLParentTag($credentialTag);
-        $credentials .= ecom::xmlTag('eBayAuthToken', $this->eb_token);
-        $credentials .= ecom::closeXMLParentTag($credentialTag);
-        return $credentials;
-    }
-
-    protected function curlPostString($requestName, $xml, $callType)
-    {
-        $post_string = $this->xmlHeader($requestName, $callType);
-        $post_string .= ecom::makeXML($xml);
-        $post_string .= $this->xmlFooter($requestName);
-        return $post_string;
-    }
-
-    public function ebayCurl($requestName, $xml, $callType = 'trading')
-    {
-        $post_string = $this->curlPostString($requestName, $xml, $callType);
-        $headers = $this->createHeader($post_string, $requestName, $callType);
-        $curlUrl = $this->setCurlUrl($callType);
-        $request = $this->setCurlOptions($headers, $post_string, $curlUrl);
-        $response = ecom::curlRequest($request);
-
-        return $response;
-    }
-
 }

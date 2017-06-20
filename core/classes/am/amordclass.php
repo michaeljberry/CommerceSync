@@ -212,7 +212,7 @@ class amordclass extends amazonclass
 
             $orderNum = $order->AmazonOrderId;
 
-            $found = $ecommerce->orderExists($orderNum);
+            $found = ecom::orderExists($orderNum);
 
             if(!$found) {
 

@@ -3,6 +3,8 @@ error_reporting(-1);
 include __DIR__ . '/../../core/init.php';
 include WEBCORE . 'ibminit.php';
 
+use ecommerce\Ecommerce as ecom;
+
 $start_time = microtime(true);
 $user_id = 838;
 require WEBPLUGIN . 'wm/wmvar.php';
@@ -13,7 +15,7 @@ function parseOrder($o, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $w
 //    \ecommerceclass\ecommerceclass::dd($o);
     $order_num = $o['purchaseOrderId'];
     echo "Order: $order_num<br><br>";
-    $found = $ecommerce->orderExists($order_num);
+    $found = ecom::orderExists($order_num);
     if (!$found) {
         $acknowledged = $wmord->acknowledge_order($wm_consumer_key, $wm_secret_key, $wm_api_header, $o);
 //        echo 'Acknowledgement: <br><pre>';

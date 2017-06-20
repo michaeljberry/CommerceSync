@@ -88,4 +88,5 @@ class EbayClient extends ChannelController implements EcommerceInterface
     {
         return $this->eb_store_id;
     }
+
 }

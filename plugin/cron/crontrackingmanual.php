@@ -12,6 +12,8 @@ require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
+//ob_start();
+
 $start = startClock();
 $user_id = 838;
 
@@ -37,6 +39,7 @@ foreach($unshippedOrders as $o){
     $item_id = $o['item_id'];
     $trans_id = '';
     if(!empty($item_id)){
+        echo "Item ID: $item_id<br>";
         $num_id = explode('-',$item_id);
         $item_id = $num_id[0];
         $trans_id = $num_id[1];
@@ -50,6 +53,8 @@ foreach($unshippedOrders as $o){
     echo "$channel: $order_num -> $tracking_id";
 
     if(!empty($tracking_id)) {
+        $response = '';
+        $shipped = false;
         $success = false;
         echo $order_id . ': ' . $tracking_id . '; Channel: ' . $channel . '<br>';
         $result = $ecommerce->updateTrackingNum($order_id, $tracking_id, $carrier);
@@ -58,18 +63,13 @@ foreach($unshippedOrders as $o){
             //update BC
             $response = $bcord->update_bc_tracking($order_num, $tracking_id, $carrier);
             if($response){
-                $ecommerce->markAsShipped($order_num, $channel);
-                echo 'Tracking for MML order ' . $order_num . ' was updated!<br><br>';
-                $success = true;
+                $shipped = true;
             }
         } elseif (strtolower($channel) == 'ebay') {
             //update Ebay
-            $response = $ebord->update_ebay_tracking($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $tracking_id, $carrier, $item_id, $trans_id);
-//            print_r($response);
-//            echo '<br>';
-            if(strpos($response, 'Success')){
-                $ecommerce->markAsShipped($order_num, $channel);
-                echo 'Tracking for eBay order ' . $order_num . ' was updated!<br><br>';
+            $response = $ebord->update_ebay_tracking($tracking_id, $carrier, $item_id, $trans_id);
+            $successMessage = 'Success';
+            if(strpos($response, $successMessage)){
                 $success = true;
             }
         } elseif (strtolower($channel) == 'amazon') {
@@ -80,40 +80,38 @@ foreach($unshippedOrders as $o){
                 //Update Amazon
                 $amazonOrdersThatHaveShipped[] = $order_num;
                 $amazonTrackingXML .= $amord->updateTrackingInfo($order_num, $tracking_id, $carrier, $amazonOrderCount);
-
             }
             $amazonOrderCount++;
         } elseif (strtolower($channel) == 'reverb') {
+            //Update Reverb
             $response = $revord->update_reverb_tracking($order_num, $tracking_id, $carrier, 'false');
-            print_r($response);
-            echo '<br>';
-            if(strpos($response, '"shipped"')){
-                $ecommerce->markAsShipped($order_num, $channel);
-                echo 'Tracking for Reverb order ' . $order_num . ' was updated!<br><br>';
+            $successMessage = '"shipped"';
+            if(strpos($response, $successMessage)){
                 $success = true;
             }
         } elseif (strtolower($channel) == 'walmart'){
-//            if($order_num == '4578065682141') {
-//                try {
-//                    $response = $wmord->update_walmart_tracking($wm_consumer_key, $wm_secret_key, $wm_api_header, $order_num, $tracking_id, $carrier);
-//                    print_r($response);
-//                    echo '<br>';
-//                if (strpos($response, '"status":"shipped"')) {
-//                    $ecommerce->update_tracking_successful($order_num);
-//                    echo 'Tracking for Walmart order ' . $order_num . ' was updated!<br><br>';
-//                    $success = true;
-//                }
-//                }catch(Exception $e){
-//                    die("There was a problem requesting the data: " . $e->getMessage());
-//                }
-//            }
+            //Update Walmart
+            $response = $wmord->update_walmart_tracking($wm_consumer_key, $wm_secret_key, $wm_api_header, $order_num, $tracking_id, $carrier);
+            if(array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
+                if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
+                    $shipped = true;
+                }
+            }elseif(array_key_exists('trackingNumber', $response['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['trackingInfo'])){
+                $shipped = true;
+            }
+        }
+        ecom::dd($response);
+        if($shipped){
+            $success = $ecommerce->markAsShipped($order_num, $channel);
         }
         if($success) {
-            echo $channel . '-> ' . $order_num . ': ' . $tracking_id . PHP_EOL;
+            echo $channel . '-> ' . $order_num . ': ' . $tracking_id . PHP_EOL . '<br>';
         }
     }
 }
+
 if(!empty($amazonTrackingXML)){
+    ecom::dd($amazonTrackingXML);
     $response = $amord->update_amazon_tracking($amazonTrackingXML);
     print_r($response);
     echo '<br>';

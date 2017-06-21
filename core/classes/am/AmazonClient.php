@@ -71,19 +71,19 @@ class AmazonClient extends ChannelController implements EcommerceInterface
     }
     public function getMarketplaceID()
     {
-        return $this->am_merchant_id;
+        return $this->am_marketplace_id;
     }
     public function getAWSAccessKey()
     {
-        return $this->am_merchant_id;
+        return $this->am_aws_access_key;
     }
     public function getSecretKey()
     {
-        return $this->am_merchant_id;
+        return $this->am_secret_key;
     }
     public function getStoreID()
     {
-        return $this->am_merchant_id;
+        return $this->am_store_id;
     }
 
     public function getDBInstance()

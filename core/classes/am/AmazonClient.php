@@ -62,7 +62,7 @@ class AmazonClient extends ChannelController implements EcommerceInterface
 
     private function setStoreID()
     {
-        $this->am_store_id = Crypt::decrypt($this->aminfo['store_id']);
+        $this->am_store_id = $this->aminfo['store_id'];
     }
 
     public function getMerchantID()

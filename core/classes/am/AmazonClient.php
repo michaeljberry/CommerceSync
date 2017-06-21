@@ -5,6 +5,7 @@ namespace am;
 use controllers\channels\ChannelController;
 use Crypt;
 use ecommerce\EcommerceInterface;
+use ecommerce\ecommerce as ecom;
 
 class AmazonClient extends ChannelController implements EcommerceInterface
 {

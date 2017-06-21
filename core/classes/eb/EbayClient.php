@@ -5,6 +5,7 @@ namespace eb;
 use controllers\channels\ChannelController;
 use Crypt;
 use ecommerce\EcommerceInterface;
+use ecommerce\ecommerce as ecom;
 
 class EbayClient extends ChannelController implements EcommerceInterface
 {

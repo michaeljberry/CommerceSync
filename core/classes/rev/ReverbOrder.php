@@ -13,7 +13,7 @@ class ReverbOrder extends Reverb
             $url = 'https://reverb.com/api/my/orders/selling/' . $order;
         }
         $post_string = '';
-        $response = $this->reverbCurl($url, 'GET', $post_string);
+        $response = $this->ReverbClient->reverbCurl($url, 'GET', $post_string);
         return $response;
     }
 
@@ -101,7 +101,7 @@ class ReverbOrder extends Reverb
             'tracking_number' => $tracking_id,
             'send_notification' => $notification,
         ];
-        $response = $this->reverbCurl(
+        $response = $this->ReverbClient->reverbCurl(
             $url,
             'POST',
             json_encode($postString)

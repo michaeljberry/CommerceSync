@@ -10,7 +10,7 @@ class AmazonInventory extends Amazon
         $action = 'ListInventorySupply';
         $feedtype = '';
         $feed = 'FulfillmentInventory';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -22,7 +22,7 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['ResponseGroup'] = 'Basic';
 
@@ -36,7 +36,7 @@ class AmazonInventory extends Amazon
             $param['SellerSkus.member.1'] = $sku;
         }
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -44,7 +44,7 @@ class AmazonInventory extends Amazon
         $action = 'SubmitFeed';
         $feedtype = '_POST_PRODUCT_DATA_';
         $feed = 'Feeds';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = [
@@ -59,9 +59,9 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -69,7 +69,7 @@ class AmazonInventory extends Amazon
         $action = 'SubmitFeed';
         $feedtype = '_POST_PRODUCT_PRICING_DATA_';
         $feed = 'Feeds';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = [
@@ -83,9 +83,9 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -93,7 +93,7 @@ class AmazonInventory extends Amazon
         $action = ucfirst(__FUNCTION__);
         $feedtype = '';
         $feed = 'Products';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -105,11 +105,11 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['Query'] = $searchTerm;
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -117,7 +117,7 @@ class AmazonInventory extends Amazon
         $action = ucfirst(__FUNCTION__);
         $feedtype = '';
         $feed = 'Products';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -129,11 +129,11 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['ASINList.ASIN.1'] = $asin;
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -141,7 +141,7 @@ class AmazonInventory extends Amazon
         $action = ucfirst(__FUNCTION__);
         $feedtype = '';
         $feed = 'Products';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -153,11 +153,11 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['SellerSKUList.SellerSKU.1'] = $sku;
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -165,7 +165,7 @@ class AmazonInventory extends Amazon
         $action = 'SubmitFeed';
         $feedtype = '_POST_PRODUCT_DATA_';
         $feed = 'Feeds';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = [
@@ -193,9 +193,9 @@ class AmazonInventory extends Amazon
             $xml['Message']['Product']['DescriptionData']['Bullet'][] = $b;
         }
 
-        $param = $this->setParams($action, $feedtype, $version);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version);
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -203,17 +203,17 @@ class AmazonInventory extends Amazon
         $action = 'GetMatchingProductForId';
         $feedtype = '';
         $feed = 'Products';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
 
-        $param = $this->setParams($action, $feedtype, $version);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version);
 
         $param['IdType'] = 'ASIN';
         $param['IdList.Id.1'] = $asin;
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -222,7 +222,7 @@ class AmazonInventory extends Amazon
         $action = 'RequestReport';
         $feedtype = '_GET_FLAT_FILE_OPEN_LISTINGS_DATA_';
         $feed = 'doc';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -233,11 +233,11 @@ class AmazonInventory extends Amazon
             'PurgeAndReplace'
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['ReportType'] = $feedtype;
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -247,7 +247,7 @@ class AmazonInventory extends Amazon
         $action = ucfirst(__FUNCTION__);
         $feedtype = '';
         $feed = 'Products';
-        $version = $this->apiFeedInfo[$feed]['versionDate'];
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -257,12 +257,12 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['ItemCondition'] = 'New';
         $param['SellerSKUList.SellerSKU.1'] = $sku;
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
 

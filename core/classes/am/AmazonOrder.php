@@ -28,18 +28,19 @@ class AmazonOrder extends Amazon
         return $amazonFeed;
     }
 
-    public function update_amazon_tracking($xml1){
+    public function update_amazon_tracking($xml1)
+    {
         $action = 'SubmitFeed';
         $feedtype = '_POST_ORDER_FULFILLMENT_DATA_';
-        $version = '2009-01-01';
         $feed = 'Feeds';
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
 
         $paramAdditionalConfig = [
             'SellerId'
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $xml = [
             'MessageType' => 'OrderFulfillment',
@@ -47,7 +48,7 @@ class AmazonOrder extends Amazon
         $xml = ecom::makeXML($xml);
         $xml .= $xml1;
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -56,21 +57,21 @@ class AmazonOrder extends Amazon
     {
         $action = 'ListOrders';
         $feedtype = '';
-        $version = '2013-09-01';
         $feed = 'Orders';
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'MarketplaceId.Id.1',
             'SellerId',
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['OrderStatus.Status.1'] = 'Unshipped';
         $param['OrderStatus.Status.2'] = 'PartiallyShipped';
 //        $param['OrderStatus.Status.1'] = 'Shipped';
 //        $param['FulfillmentChannel.Channel.1'] = 'MFN';
-        $from = $this->get_order_dates($this->am_store_id);
+        $from = $this->get_order_dates($this->AmazonClient->am_store_id);
         $from = $from['api_pullfrom'];
 //        $from = "-1";
         $from .= ' days';
@@ -80,7 +81,7 @@ class AmazonOrder extends Amazon
 
         $xml = '';
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -89,21 +90,21 @@ class AmazonOrder extends Amazon
     {
         $action = 'ListOrdersByNextToken';
         $feedtype = '';
-        $version = '2013-09-01';
         $feed = 'Orders';
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'MarketplaceId.Id.1',
             'SellerId',
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['NextToken'] = $nextToken;
 
         $xml = '';
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -112,19 +113,19 @@ class AmazonOrder extends Amazon
     {
         $action = 'ListOrderItems';
         $feedtype = '';
-        $version = '2013-09-01';
         $feed = 'Orders';
+        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'SellerId'
         ];
 
-        $param = $this->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
         $param['AmazonOrderId'] = $orderNum;
 
         $xml = '';
 
-        $response = $this->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -258,7 +259,7 @@ class AmazonOrder extends Amazon
                 $zipId = $ecommerce->zipSoi($shippingPostalCode, $stateId);
                 $cityId = $ecommerce->citySoi($shippingCity, $stateId);
                 $custId = $ecommerce->customer_soi($firstName,$lastName,ucwords(strtolower($shippingAddressLine1)),ucwords(strtolower($shippingAddressLine2)),$cityId,$stateId,$zipId);
-                $orderId = $ecommerce->save_order($this->am_store_id, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
+                $orderId = $ecommerce->save_order($this->AmazonClient->am_store_id, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
 
                 $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);
 

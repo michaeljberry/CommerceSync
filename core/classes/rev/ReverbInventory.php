@@ -9,7 +9,7 @@ class ReverbInventory extends Reverb
     public function get_reverb_listings($page){
         $url = 'https://reverb.com/api/my/listings.json?page=' . $page;
         $post_string = '';
-        $response = $this->reverbCurl(
+        $response = $this->ReverbClient->reverbCurl(
             $url,
             'GET',
             $post_string
@@ -25,7 +25,7 @@ class ReverbInventory extends Reverb
                 'amount' => $price
             ]
         ];
-        $response = $this->reverbCurl(
+        $response = $this->ReverbClient->reverbCurl(
             $url,
             'PUT',
             json_encode($postString)

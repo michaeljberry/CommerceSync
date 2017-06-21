@@ -7,7 +7,7 @@ use Crypt;
 use ecommerce\EcommerceInterface;
 use ecommerce\ecommerce as ecom;
 
-class EbayClient extends ChannelController implements EcommerceInterface
+class EbayClient implements EcommerceInterface
 {
     protected $eBayDevID;
     protected $eBayAppID;
@@ -37,7 +37,7 @@ class EbayClient extends ChannelController implements EcommerceInterface
             'token'
         ];
 
-        $this->ebinfo = self::getAppInfo($user_id, $table, $channel, $columns);
+        $this->ebinfo = ChannelController::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setDevID()
@@ -184,7 +184,7 @@ class EbayClient extends ChannelController implements EcommerceInterface
     {
         $header = ecom::xmlOpenTag();
         $request = $requestName . 'Request';
-        $param = self::headerParameter($callType);
+        $param = EbayClient::headerParameter($callType);
         $header .= ecom::openXMLParentTag($request, $param);
         if($callType !== 'finding' && $callType !== 'shopping') {
             $header .= $this->eBayCredentialsXML();
@@ -220,7 +220,7 @@ class EbayClient extends ChannelController implements EcommerceInterface
     {
         $post_string = $this->xmlHeader($requestName, $callType);
         $post_string .= ecom::makeXML($xml);
-        $post_string .= self::xmlFooter($requestName);
+        $post_string .= EbayClient::xmlFooter($requestName);
         return $post_string;
     }
 
@@ -241,8 +241,8 @@ class EbayClient extends ChannelController implements EcommerceInterface
     {
         $post_string = $this->curlPostString($requestName, $xml, $callType);
         $headers = $this->createHeader($post_string, $requestName, $callType);
-        $curlUrl = self::setCurlUrl($callType);
-        $request = self::setCurlOptions($headers, $post_string, $curlUrl);
+        $curlUrl = EbayClient::setCurlUrl($callType);
+        $request = EbayClient::setCurlOptions($headers, $post_string, $curlUrl);
         $response = ecom::curlRequest($request);
 
         return $response;

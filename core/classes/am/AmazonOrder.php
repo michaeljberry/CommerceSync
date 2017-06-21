@@ -74,7 +74,6 @@ class AmazonOrder extends Amazon
         $from = $from['api_pullfrom'];
 //        $from = "-1";
         $from .= ' days';
-        ecom::dd($this->am_store_id);
         $createdAfter = new DateTime($from, new DateTimeZone('America/Boise'));
         $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");
         $param['CreatedAfter'] = $createdAfter;

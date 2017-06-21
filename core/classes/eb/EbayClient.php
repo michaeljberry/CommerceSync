@@ -9,10 +9,10 @@ use ecommerce\ecommerce as ecom;
 
 class EbayClient extends ChannelController implements EcommerceInterface
 {
-    private $eBayDevID;
-    private $eBayAppID;
-    private $eBayCertID;
-    private $eBayToken;
+    protected $eBayDevID;
+    protected $eBayAppID;
+    protected $eBayCertID;
+    protected $eBayToken;
     public $eBayStoreID;
     private $ebinfo;
 
@@ -158,7 +158,7 @@ class EbayClient extends ChannelController implements EcommerceInterface
         return $headers;
     }
 
-    protected function headerParameter($callType)
+    protected static function headerParameter($callType)
     {
         $param = '';
 
@@ -184,7 +184,7 @@ class EbayClient extends ChannelController implements EcommerceInterface
     {
         $header = ecom::xmlOpenTag();
         $request = $requestName . 'Request';
-        $param = $this->headerParameter($callType);
+        $param = self::headerParameter($callType);
         $header .= ecom::openXMLParentTag($request, $param);
         if($callType !== 'finding' && $callType !== 'shopping') {
             $header .= $this->eBayCredentialsXML();
@@ -192,14 +192,14 @@ class EbayClient extends ChannelController implements EcommerceInterface
         return $header;
     }
 
-    protected function xmlFooter($requestName)
+    protected static function xmlFooter($requestName)
     {
         $request = $requestName . 'Request';
         $footer = ecom::closeXMLParentTag($request);
         return $footer;
     }
 
-    protected function setCurlUrl($callType = 'trading')
+    protected static function setCurlUrl($callType = 'trading')
     {
         $url = '';
 
@@ -220,11 +220,11 @@ class EbayClient extends ChannelController implements EcommerceInterface
     {
         $post_string = $this->xmlHeader($requestName, $callType);
         $post_string .= ecom::makeXML($xml);
-        $post_string .= $this->xmlFooter($requestName);
+        $post_string .= self::xmlFooter($requestName);
         return $post_string;
     }
 
-    protected function setCurlOptions($headers, $post_string, $url)
+    protected static function setCurlOptions($headers, $post_string, $url)
     {
         $request = curl_init($url);
         curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
@@ -241,8 +241,8 @@ class EbayClient extends ChannelController implements EcommerceInterface
     {
         $post_string = $this->curlPostString($requestName, $xml, $callType);
         $headers = $this->createHeader($post_string, $requestName, $callType);
-        $curlUrl = $this->setCurlUrl($callType);
-        $request = $this->setCurlOptions($headers, $post_string, $curlUrl);
+        $curlUrl = self::setCurlUrl($callType);
+        $request = self::setCurlOptions($headers, $post_string, $curlUrl);
         $response = ecom::curlRequest($request);
 
         return $response;

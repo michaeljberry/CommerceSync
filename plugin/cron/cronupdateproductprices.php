@@ -9,7 +9,7 @@ $start = startClock();
 $count = $ibmdata->get_count();
 echo $count . '<br>';
 
-$currentPrices = $ecommerce->get_inventory_prices();
+$currentPrices = ecom::get_inventory_prices();
 
 for ($low = 0; $low < $count; $low += 500) {
     $high = $low + 500;

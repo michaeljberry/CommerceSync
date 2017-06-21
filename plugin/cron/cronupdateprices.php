@@ -1,4 +1,5 @@
 <?php
+error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 
@@ -15,7 +16,7 @@ $start = startClock();
 $count = $ibmdata->get_count();
 echo $count . '<br>';
 
-$updatedPrices = $ecommerce->get_inventory_prices(15);
+$updatedPrices = ecom::get_inventory_prices(15);
 
 $reverbListings = ecom::getChannelListingsFromDB('reverb');
 $ebayListings = ecom::getChannelListingsFromDB('ebay');

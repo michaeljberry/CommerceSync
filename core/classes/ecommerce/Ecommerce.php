@@ -871,7 +871,7 @@ class Ecommerce
         return EDB::query($sql, [], 'fetchAll');
     }
 
-    public function get_inventory_prices($hours = null)
+    public static function get_inventory_prices($hours = null)
     {
         $sql = "SELECT sk.sku, (pc.msrp/100) as msrp, (pc.pl10/100) as pl10, (pc.map/100) as map, (pc.pl1/100) as pl1, (pc.cost/100) as cost FROM product_cost pc LEFT OUTER JOIN sku sk ON sk.id = pc.sku_id";
         if($hours) {

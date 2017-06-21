@@ -11,8 +11,4 @@ class channelModel
     {
         return DB::instance();
     }
-
-    public static function getEloquent(){
-        new Database();
-    }
 }

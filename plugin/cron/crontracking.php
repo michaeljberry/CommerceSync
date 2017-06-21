@@ -56,6 +56,7 @@ foreach($unshippedOrders as $o){
         $carrier = 'UPS';
     }
     echo "$channel: $order_num -> $tracking_id<br>";
+
     if(!empty($tracking_id)) {
         $response = '';
         $shipped = false;
@@ -129,7 +130,6 @@ if(!empty($amazonTrackingXML)){
         echo 'Amazon is throttled.<br>';
     }
 }
-
 endClock($start);
 //$content = ob_get_contents();
 //ob_end_clean();

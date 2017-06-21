@@ -19,7 +19,7 @@ class EbayInventory extends Ebay
                     'Sort' => 'ItemID'
                 ]
             ];
-            $response = $this->ebayCurl($requestName, $xml);
+            $response = $this->EbayClient($requestName, $xml);
 
             $xml_items = simplexml_load_string($response);
             foreach ($xml_items->ActiveList->ItemArray->Item as $xml){
@@ -128,7 +128,7 @@ class EbayInventory extends Ebay
             $xml['InventoryStatus']['StartPrice'] = $price;
         }
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient->ebayCurl($requestName, $xml);
         return $response;
     }
     public function update_all_ebay_inventory($item_id, $price){ //$price
@@ -169,7 +169,7 @@ class EbayInventory extends Ebay
 //            ]
 //        ];
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient->ebayCurl($requestName, $xml);
         return $response;
     }
     //<IncludeItemSpecifics>true</IncludeItemSpecifics>
@@ -181,7 +181,7 @@ class EbayInventory extends Ebay
             'ItemID' => $item_id
         ];
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient($requestName, $xml);
         return $response;
     }
     public function add_ebay_inventory($ebay_category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price){
@@ -274,7 +274,7 @@ class EbayInventory extends Ebay
             ];
         }
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient($requestName, $xml);
         return $response;
     }
 
@@ -310,7 +310,7 @@ class EbayInventory extends Ebay
             $xml['Item']['ProductListingDetails'][] = ['EAN' => 'Does not apply'];
         }
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient($requestName, $xml);
         return $response;
     }
     public function deleteItem($item_id){
@@ -321,7 +321,7 @@ class EbayInventory extends Ebay
             'EndingReason' => 'NotAvailable'
         ];
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient($requestName, $xml);
         return $response;
     }
 
@@ -335,7 +335,7 @@ class EbayInventory extends Ebay
             'IncludeItemSpecifics' => 'true'
         ];
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient($requestName, $xml);
         return $response;
     }
 
@@ -348,7 +348,7 @@ class EbayInventory extends Ebay
             'outputSelector' => 'SellerInfo'
         ];
 
-        $response = $this->ebayCurl($requestName, $xml, 'finding');
+        $response = $this->EbayClient($requestName, $xml, 'finding');
         return $response;
     }
 
@@ -360,7 +360,7 @@ class EbayInventory extends Ebay
             'outputSelector' => 'SellerInfo',
             'outputSelector' => 'ListingInfo'
         ];
-        $response = $this->ebayCurl($requestName, $xml, 'finding');
+        $response = $this->EbayClient($requestName, $xml, 'finding');
         return $response;
     }
 
@@ -386,7 +386,7 @@ class EbayInventory extends Ebay
             'EndTimeTo' => date('Y-m-d')
         ];
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient($requestName, $xml);
         return $response;
     }
 

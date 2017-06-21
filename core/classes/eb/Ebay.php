@@ -3,14 +3,16 @@
 namespace eb;
 
 use ecommerce\Ecommerce as ecom;
-use models\channels\channelModel;
+use models\ModelDB as EDB;
 
 class Ebay
 {
-    public $db;
 
-    public function __construct($ebayclient){
-        $this->db = channelModel::getDBInstance();
+    protected $EbayClient;
+
+    public function __construct(EbayClient $ebayClient)
+    {
+        $this->EbayClient = $ebayClient;
     }
 
     public function sanitize_column_name($col){
@@ -39,65 +41,55 @@ class Ebay
 
     public function update_app_info($crypt, $store_id, $column, $id){
         $column = $this->sanitize_column_name($column);
-        $query = $this->db->prepare("UPDATE api_ebay SET $column = :id WHERE store_id = :store_id");
+        $sql = "UPDATE api_ebay SET $column = :id WHERE store_id = :store_id";
         $query_params = [
             ':id' => $crypt->encrypt($id),
             ':store_id' => $store_id
         ];
-        $query->execute($query_params);
-        return true;
+        EDB::query($sql, $query_params);
     }
     public function get_ebay_app_id($user_id, $sand = null){
         if(empty($sand)) {
-            $query = $this->db->prepare("SELECT store_id, devid, appid, certid, token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'");
-            $query_params = [
-                ':user_id' => $user_id
-            ];
-            $query->execute($query_params);
+            $sql = "SELECT store_id, devid, appid, certid, token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'";
         }else{
-            $query = $this->db->prepare("SELECT store_id, sandbox_devid AS devid, sandbox_appid AS appid, sandbox_certid AS certid, sandbox_token AS token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'");
-            $query_params = [
-                ':user_id' => $user_id
-            ];
-            $query->execute($query_params);
+            $sql = "SELECT store_id, sandbox_devid AS devid, sandbox_appid AS appid, sandbox_certid AS certid, sandbox_token AS token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'";
         }
-        return $query->fetch();
+        $query_params = [
+            ':user_id' => $user_id
+        ];
+        return EDB::query($sql, $query_params, 'fetch');
     }
     public function get_listings($item_id = null){
         if(!$item_id) {
-            $query = $this->db->prepare("SELECT id, store_listing_id, price FROM listing_ebay");
-            $query->execute();
-            return $query->fetchAll();
+            $sql = "SELECT id, store_listing_id, price FROM listing_ebay";
+            return EDB::query($sql, [], 'fetchAll');
         }else{
-            $query = $this->db->prepare("SELECT id FROM listing_ebay WHERE store_listing_id = :item_id");
+            $sql = "SELECT id FROM listing_ebay WHERE store_listing_id = :item_id";
             $query_params = [
                 'item_id' => $item_id
             ];
-            $query->execute($query_params);
-            return $query->fetchColumn();
+            return EDB::query($sql, $query_params, 'fetchColumn');
         }
     }
 
     public function get_recently_updated_listings()
     {
-        $query = $this->db->prepare("SELECT store_listing_id, description FROM listing_ebay WHERE DATE(last_edited) = CURRENT_DATE ");
-        $query->execute();
-        return $query->fetchAll();
+        $sql = "SELECT store_listing_id, description FROM listing_ebay WHERE DATE(last_edited) = CURRENT_DATE ";
+        return EDB::query($sql, [], 'fetchAll');
     }
 
-    public function get_listing_upc(){
-        $query = $this->db->prepare("SELECT le.id, le.store_listing_id, le.sku, p.upc FROM listing_ebay le LEFT JOIN sku sk ON le.sku = sk.sku LEFT JOIN product p ON p.id = sk.product_id");
-        $query->execute();
-        return $query->fetchAll();
+    public function get_listing_upc()
+    {
+        $sql = "SELECT le.id, le.store_listing_id, le.sku, p.upc FROM listing_ebay le LEFT JOIN sku sk ON le.sku = sk.sku LEFT JOIN product p ON p.id = sk.product_id";
+        return EDB::query($sql, [], 'fetchAll');
     }
 
     public function get_listing_id($sku){
-        $query = $this->db->prepare("SELECT store_listing_id FROM listing_ebay WHERE sku = :sku");
+        $sql = "SELECT store_listing_id FROM listing_ebay WHERE sku = :sku";
         $query_params = [
             ':sku' => $sku
         ];
-        $query->execute($query_params);
-        return $query->fetchColumn();
+        return EDB::query($sql, $query_params, 'fetchColumn');
     }
 
     public function get_transaction_id($item_id){
@@ -217,21 +209,21 @@ class Ebay
         return $tableArray;
     }
 
-    public function get_order_days($store_id){
-        $query = $this->db->prepare("SELECT api_days FROM api_ebay WHERE store_id = :store_id");
+    public function get_order_days($store_id)
+    {
+        $sql = "SELECT api_days FROM api_ebay WHERE store_id = :store_id";
         $query_params = [
             ':store_id' => $store_id
         ];
-        $query->execute($query_params);
-        return $query->fetchColumn();
+        return EDB::query($sql, $query_params, 'fetchColumn');
     }
-    public function set_order_days($store_id, $days){
-        $query = $this->db->prepare("UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id");
+    public function set_order_days($store_id, $days)
+    {
+        $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
         $query_params = [
             ':store_id' => $store_id,
             ':api_days' => $days
         ];
-        $query->execute($query_params);
-        return true;
+        EDB::query($sql, $query_params);
     }
 }

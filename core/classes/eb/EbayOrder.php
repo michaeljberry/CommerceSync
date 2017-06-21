@@ -40,7 +40,7 @@ class EbayOrder extends Ebay
             ]
         ];
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient($requestName, $xml);
         return $response;
     }
     protected function saveItems($item, $poNumber, $order_id, $ecommerce, $itemObject){
@@ -100,7 +100,6 @@ class EbayOrder extends Ebay
                 $found = ecom::orderExists($order_num);
 
                 if (!$found) {
-                    ecom::dd($xml);
                     $timestamp = $xml->CreatedTime;
                     $order_date = $timestamp;
                     $ismultilegshipping = $xml->IsMultiLegShipping;
@@ -169,7 +168,7 @@ class EbayOrder extends Ebay
                     $channel_name = 'Ebay';
                     $channel_num = $ecommerce->get_channel_num($ibmdata, $channel_name, $sku);
                     $orderXml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
-                    ecom::dd($orderXml);
+//                    ecom::dd($orderXml);
                     $ecommerce->saveXmlToFTP($order_num, $orderXml, $folder, 'Ebay');
                 }
             }

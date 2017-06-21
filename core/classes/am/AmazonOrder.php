@@ -185,7 +185,7 @@ class AmazonOrder extends Amazon
             ecom::dd("Total Tax: $totalTax");
 
             $skuId = $ecommerce->skuSoi($sku);
-//            $ecommerce->save_order_items($orderId, $skuId, $itemPrice, $quantity);
+            $ecommerce->save_order_items($orderId, $skuId, $itemPrice, $quantity);
             $itemXml .= $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
             $poNumber++;
         }
@@ -258,14 +258,14 @@ class AmazonOrder extends Amazon
                 $zipId = $ecommerce->zipSoi($shippingPostalCode, $stateId);
                 $cityId = $ecommerce->citySoi($shippingCity, $stateId);
                 $custId = $ecommerce->customer_soi($firstName,$lastName,ucwords(strtolower($shippingAddressLine1)),ucwords(strtolower($shippingAddressLine2)),$cityId,$stateId,$zipId);
-//                $orderId = $ecommerce->save_order($this->am_store_id, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
+                $orderId = $ecommerce->save_order($this->am_store_id, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
 
                 $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);
 
                 $poNumber = (string)$items->poNumber;
-                $totalTax = (float)$items->totalTax;
+                $totalTax = ecom::formatMoney((float)$items->totalTax);
                 $totalWithoutTax = (float)$items->totalWithoutTax;
-                $totalShipping = (float)$items->totalShipping;
+                $totalShipping = ecom::formatMoney((float)$items->totalShipping);
                 $sku = (string)$items->sku;
                 $itemXml = (string)$items->itemXml;
 
@@ -276,7 +276,7 @@ class AmazonOrder extends Amazon
                         // Need to calculate taxes and subtract from sales price of item(s)
                         $totalTax = $ecommerce->calculateTax($taxableStates[$shippingState], $totalWithoutTax, $totalShipping);
                     }
-                    $itemXml .= $ecommerce->get_tax_item_xml(
+                    $itemXml .= ecom::get_tax_item_xml(
                         $shippingState,
                         $poNumber,
                         $totalTax,
@@ -289,7 +289,7 @@ class AmazonOrder extends Amazon
                 $channelNum = $ecommerce->get_channel_num($ibmdata, $channelName, $sku);
 
                 $orderXml = $ecommerce->create_xml($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
-//                $ecommerce->saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
+                $ecommerce->saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
             }
         }
 

@@ -31,6 +31,7 @@ class ModelDB
     {
         $bool = false;
         $id = '';
+        $results = '';
         if(strpos($sql, 'INSERT') !== false || strpos($sql, 'UPDATE') !== false){
             $id = static::insert_transact($sql, $args);
             if($id){

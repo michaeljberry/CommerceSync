@@ -166,7 +166,7 @@ class EbayOrder extends Ebay
                     $sku = (string)$items->sku;
                     $itemXml = (string)$items->itemXml;
 
-                    $itemXml .= $ecommerce->get_tax_item_xml($state, $poNumber, $item_taxes);
+                    $itemXml .= ecom::get_tax_item_xml($state, $poNumber, $item_taxes);
                     $channel_name = 'Ebay';
                     $channel_num = $ecommerce->get_channel_num($ibmdata, $channel_name, $sku);
                     $orderXml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);

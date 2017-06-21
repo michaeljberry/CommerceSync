@@ -2,9 +2,8 @@
 
 namespace am;
 
-use Crypt;
-use connect\DB;
 use ecommerce\Ecommerce as ecom;
+use models\channels\channelModel;
 
 class Amazon
 {
@@ -30,12 +29,12 @@ class Amazon
     ];
 
     public function __construct($amclient){
-        $this->db = $amclient->getDBInstance();
-        $this->am_merchant_id = $amclient->getAmazonMerchantID();
-        $this->am_marketplace_id = $amclient->getAmazonMarketplaceID();
-        $this->am_aws_access_key = $amclient->getAmazonAWSAccessKey();
-        $this->am_secret_key = $amclient->getAmazonSecretKey();
-        $this->am_store_id = $amclient->getAmazonStoreID();
+        $this->db = channelModel::getDBInstance();
+        $this->am_merchant_id = $amclient->getMerchantID();
+        $this->am_marketplace_id = $amclient->getMarketplaceID();
+        $this->am_aws_access_key = $amclient->getAWSAccessKey();
+        $this->am_secret_key = $amclient->getSecretKey();
+        $this->am_store_id = $amclient->getStoreID();
     }
     public function sanitizeColumnName($col){
         switch($col){

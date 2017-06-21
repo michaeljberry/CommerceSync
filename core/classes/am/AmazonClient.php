@@ -2,49 +2,85 @@
 
 namespace am;
 
+use controllers\channels\ChannelController;
 use Crypt;
-use connect\DB;
+use ecommerce\EcommerceInterface;
 
-class AmazonClient
+class AmazonClient extends ChannelController implements EcommerceInterface
 {
-    public $db;
-    protected $am_merchant_id;
-    protected $am_marketplace_id;
-    protected $am_aws_access_key;
-    protected $am_secret_key;
+    private $am_merchant_id;
+    private $am_marketplace_id;
+    private $am_aws_access_key;
+    private $am_secret_key;
     public $am_store_id;
+    private $aminfo;
 
     public function __construct($user_id){
-        $this->db = DB::instance();
-        $amazonappid = $this->get_amazon_app_id($user_id);
-        $this->am_merchant_id = Crypt::decrypt($amazonappid['merchantid']);
-        $this->am_marketplace_id = Crypt::decrypt($amazonappid['marketplaceid']);
-        $this->am_aws_access_key = Crypt::decrypt($amazonappid['aws_access_key']);
-        $this->am_secret_key = Crypt::decrypt($amazonappid['secret_key']);
-        $this->am_store_id = $amazonappid['store_id'];
-        //        ecom::dd($this->am_merchant_id);
-        //        ecom::dd($this->am_marketplace_id);
-        //        ecom::dd($this->am_aws_access_key);
-        //        ecom::dd($this->am_secret_key);
+        $this->setInfo($user_id);
+        $this->setMerchantID();
+        $this->setMarketplaceID();
+        $this->setAWSAccessKey();
+        $this->setSecretKey();
+        $this->setStoreID();
     }
 
-    public function getAmazonMerchantID()
+    private function setInfo($user_id)
+    {
+        $table = 'api_amazon';
+        $channel = 'Amazon';
+        $columns = [
+            'store_id',
+            'merchantid',
+            'marketplaceid',
+            'aws_access_key',
+            'secret_key'
+        ];
+
+        $this->aminfo = self::getAppInfo($user_id, $table, $channel, $columns);
+    }
+
+    private function setMerchantID()
+    {
+        $this->am_merchant_id = Crypt::decrypt($this->aminfo['merchantid']);
+    }
+
+    private function setMarketplaceID()
+    {
+        $this->am_marketplace_id = Crypt::decrypt($this->aminfo['marketplaceid']);
+    }
+
+    private function setAWSAccessKey()
+    {
+        $this->am_aws_access_key = Crypt::decrypt($this->aminfo['aws_access_key']);
+    }
+
+    private function setSecretKey()
+    {
+        $this->am_secret_key = Crypt::decrypt($this->aminfo['secret_key']);
+    }
+
+    private function setStoreID()
+    {
+        $this->am_store_id = Crypt::decrypt($this->aminfo['store_id']);
+    }
+
+    public function getMerchantID()
     {
         return $this->am_merchant_id;
     }
-    public function getAmazonMarketplaceID()
+    public function getMarketplaceID()
     {
         return $this->am_merchant_id;
     }
-    public function getAmazonAWSAccessKey()
+    public function getAWSAccessKey()
     {
         return $this->am_merchant_id;
     }
-    public function getAmazonSecretKey()
+    public function getSecretKey()
     {
         return $this->am_merchant_id;
     }
-    public function getAmazonStoreID()
+    public function getStoreID()
     {
         return $this->am_merchant_id;
     }

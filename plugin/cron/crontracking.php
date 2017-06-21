@@ -1,8 +1,5 @@
 <?php
 
-use ecommerce\Ecommerce as ecom;
-use controllers\channels\TrackingController;
-
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
@@ -11,6 +8,9 @@ require WEBPLUGIN . 'bc/bcvar.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
+
+use ecommerce\Ecommerce as ecom;
+use controllers\channels\TrackingController;
 
 //ob_start();
 

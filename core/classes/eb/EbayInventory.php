@@ -181,7 +181,7 @@ class EbayInventory extends Ebay
             'ItemID' => $item_id
         ];
 
-        $response = $this->EbayClient($requestName, $xml);
+        $response = $this->EbayClient->ebayCurl($requestName, $xml);
         return $response;
     }
     public function add_ebay_inventory($ebay_category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price){

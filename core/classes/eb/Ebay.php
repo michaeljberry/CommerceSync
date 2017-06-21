@@ -99,7 +99,7 @@ class Ebay
             'ItemID' => $item_id
         ];
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = $this->EbayClient->ebayCurl($requestName, $xml);
         return $response;
     }
 

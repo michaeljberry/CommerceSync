@@ -40,3 +40,8 @@ define('DB_NAME', $iniArray['DB_NAME']);
 define('DB_USER', $iniArray['DB_USER']);
 define('DB_PASS', $iniArray['DB_PASS']);
 define('DB_CHAR', $iniArray['DB_CHAR']);
+
+define('IBM_HOST', $iniArray['IBM_HOST']);
+define('IBM_NAME', $iniArray['IBM_NAME']);
+define('IBM_USER', $iniArray['IBM_USER']);
+define('IBM_PASS', $iniArray['IBM_PASS']);

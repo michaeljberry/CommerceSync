@@ -9,19 +9,21 @@ class ModelDB
 
     private $db;
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->db = DB::instance();
     }
 
     //To put every insert/update statement inside a transaction
-    public static function insert_transact($sql, $query_params){
+    public static function transactStatement($sql, $query_params)
+    {
         try {
             DB::beginTransaction();
             DB::run($sql, $query_params);
             $id = DB::lastInsertId();
             DB::commit();
             return $id;
-        } catch (Exception $e){
+        } catch (Exception $e) {
             DB::rollback();
             die($e->getMessage());
         }
@@ -32,15 +34,15 @@ class ModelDB
         $bool = false;
         $id = '';
         $results = '';
-        if(strpos($sql, 'INSERT') !== false || strpos($sql, 'UPDATE') !== false){
-            $id = static::insert_transact($sql, $args);
-            if($id){
+        if (strpos($sql, 'INSERT') !== false || strpos($sql, 'UPDATE') !== false) {
+            $id = static::transactStatement($sql, $args);
+            if ($id) {
                 $bool = true;
             }
-        }else {
+        } else {
             $query = DB::run($sql, $args);
         }
-        switch ($returnMethod){
+        switch ($returnMethod) {
             case 'fetchAll':
                 $results = $query->fetchAll($returnMethodParams);
                 break;

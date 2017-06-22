@@ -3,6 +3,7 @@ define("ROOT", $_SERVER['DOCUMENT_ROOT'] . '/');
 
 if(file_exists(ROOT . '.local')){
     $localArray = parse_ini_file(ROOT . '.local');
+    define('LOCAL', true);
     define('ROOTFOLDER', $localArray['ROOT_FOLDER']);
 }else{
     define('ROOTFOLDER', '/var/www/portal/');

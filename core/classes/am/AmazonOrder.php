@@ -186,7 +186,7 @@ class AmazonOrder extends Amazon
             ecom::dd("Total Tax: $totalTax");
 
             $skuId = $ecommerce->skuSoi($sku);
-            if (!defined(LOCAL)) {
+            if (!LOCAL) {
                 $ecommerce->save_order_items($orderId, $skuId, $itemPrice, $quantity);
             }
             $itemXml .= $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
@@ -261,7 +261,7 @@ class AmazonOrder extends Amazon
                 $zipId = $ecommerce->zipSoi($shippingPostalCode, $stateId);
                 $cityId = $ecommerce->citySoi($shippingCity, $stateId);
                 $custId = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)), ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
-                if (!defined(LOCAL)) {
+                if (!LOCAL) {
                     $orderId = $ecommerce->save_order($this->AmazonClient->amazonStoreID, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
                 }
 
@@ -294,7 +294,7 @@ class AmazonOrder extends Amazon
                 $channelNum = $ecommerce->get_channel_num($ibmdata, $channelName, $sku);
 
                 $orderXml = $ecommerce->create_xml($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
-                if (!defined(LOCAL)) {
+                if (!LOCAL) {
                     $ecommerce->saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
                 }
             }

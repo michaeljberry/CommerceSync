@@ -134,10 +134,10 @@ class AmazonOrder extends Amazon
     {
         $orderItems = simplexml_load_string($this->getOrderItems($orderNum));
 
-        if(isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
+        if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
             $items = $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $orderId, $totalTax, $totalShipping, $ecommerce);
             return $items;
-        }else{
+        } else {
             sleep(2);
             $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);
         }
@@ -186,7 +186,7 @@ class AmazonOrder extends Amazon
             ecom::dd("Total Tax: $totalTax");
 
             $skuId = $ecommerce->skuSoi($sku);
-            if(!LOCAL) {
+            if (!defined(LOCAL)) {
                 $ecommerce->save_order_items($orderId, $skuId, $itemPrice, $quantity);
             }
             $itemXml .= $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
@@ -207,16 +207,16 @@ class AmazonOrder extends Amazon
         $xmlOrders = simplexml_load_string($orders);
 
         $page = "ListOrdersResult";
-        if($nextPage){
+        if ($nextPage) {
             $page = "ListOrdersByNextTokenResult";
         }
-        foreach($xmlOrders->{$page}->Orders->Order as $order){
+        foreach ($xmlOrders->{$page}->Orders->Order as $order) {
 
             $orderNum = $order->AmazonOrderId;
 
             $found = ecom::orderExists($orderNum);
 
-            if(!$found) {
+            if (!$found) {
 
                 $latestDeliveryDate = $order->LatestDeliveryDate;
                 $orderType = (string)$order->OrderType;
@@ -233,7 +233,7 @@ class AmazonOrder extends Amazon
                 $shipToName = (string)$order->ShippingAddress->Name;
                 $buyerName = explode(' ', $shipToName);
                 $lastName = ucwords(strtolower(array_pop($buyerName)));
-                $firstName = ucwords(strtolower(implode(' ',$buyerName)));
+                $firstName = ucwords(strtolower(implode(' ', $buyerName)));
                 $buyerEmail = (string)$order->BuyerEmail;
                 $shippingPhone = (string)$order->ShippingAddress->Phone;
                 $shipByDate = (string)$order->LatestShipDate;
@@ -242,7 +242,7 @@ class AmazonOrder extends Amazon
                 $shippingAddressLine2 = (string)$order->ShippingAddress->AddressLine2 ?? '';
                 $shippingCity = (string)$order->ShippingAddress->City;
                 $shippingState = strtolower((string)$order->ShippingAddress->StateOrRegion);
-                if(strlen($shippingState) > 2){
+                if (strlen($shippingState) > 2) {
                     $shippingState = $ecommerce->stateToAbbr(ucfirst($shippingState));
                 }
                 $shippingState = strtoupper($shippingState);
@@ -260,8 +260,8 @@ class AmazonOrder extends Amazon
                 $stateId = $ecommerce->stateId(strtoupper($shippingState));
                 $zipId = $ecommerce->zipSoi($shippingPostalCode, $stateId);
                 $cityId = $ecommerce->citySoi($shippingCity, $stateId);
-                $custId = $ecommerce->customer_soi($firstName,$lastName,ucwords(strtolower($shippingAddressLine1)),ucwords(strtolower($shippingAddressLine2)),$cityId,$stateId,$zipId);
-                if(!LOCAL) {
+                $custId = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)), ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
+                if (!defined(LOCAL)) {
                     $orderId = $ecommerce->save_order($this->AmazonClient->amazonStoreID, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
                 }
 
@@ -274,9 +274,9 @@ class AmazonOrder extends Amazon
                 $sku = (string)$items->sku;
                 $itemXml = (string)$items->itemXml;
 
-                if($ecommerce->taxableState($taxableStates, $shippingState)){
+                if ($ecommerce->taxableState($taxableStates, $shippingState)) {
                     echo 'Should be taxed<br>';
-                    if($totalTax == 0){
+                    if ($totalTax == 0) {
                         // No tax collected, but tax is required to remit.
                         // Need to calculate taxes and subtract from sales price of item(s)
                         $totalTax = $ecommerce->calculateTax($taxableStates[$shippingState], $totalWithoutTax, $totalShipping);
@@ -294,17 +294,17 @@ class AmazonOrder extends Amazon
                 $channelNum = $ecommerce->get_channel_num($ibmdata, $channelName, $sku);
 
                 $orderXml = $ecommerce->create_xml($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
-                if(!LOCAL) {
+                if (!defined(LOCAL)) {
                     $ecommerce->saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
                 }
             }
         }
 
-        if(isset($xmlOrders->{$page}->NextToken)) {
+        if (isset($xmlOrders->{$page}->NextToken)) {
             $nextToken = (string)$xmlOrders->{$page}->NextToken;
             ecom::dd("Next Token:" . $nextToken);
         }
-        if(isset($nextToken)){
+        if (isset($nextToken)) {
             $orders = $this->getMoreOrders($nextToken);
 
             $this->parseOrders($orders, $ecommerce, $ibmdata, $folder, $companyId, true);

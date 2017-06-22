@@ -3,7 +3,7 @@ error_reporting(-1);
 include __DIR__ . '/../../core/init.php';
 include WEBCORE . 'ibminit.php';
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
 $start = startClock();
 $user_id = 838;
@@ -15,7 +15,7 @@ function parseOrder($o, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $w
 //    \ecommerceclass\ecommerceclass::dd($o);
     $order_num = $o['purchaseOrderId'];
     echo "Order: $order_num<br><br>";
-    $found = ecom::orderExists($order_num);
+    $found = Ecommerce::orderExists($order_num);
     if (!$found) {
         $acknowledged = $wmord->acknowledge_order($wm_consumer_key, $wm_secret_key, $wm_api_header, $o);
 //        echo 'Acknowledgement: <br><pre>';
@@ -50,7 +50,7 @@ function getOrders($wmorder, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_ke
 //        $nextCursor = $orders['meta']['nextCursor'];
         echo 'Order Count: ' . count($orders['elements']) . '<br><br>';
 
-        \ecommerce\Ecommerce::dd($orders['elements']['order']);
+        Ecommerce::dd($orders['elements']['order']);
 
         if (count($orders['elements']['order']) > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
             foreach ($orders['elements']['order'] as $o) {

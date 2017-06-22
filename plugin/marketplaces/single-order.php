@@ -1,11 +1,14 @@
 <?php
 require '../../core/init.php';
+
+use ecommerce\Ecommerce;
+
 if(isset($_POST['id']) && !empty($_POST['id'])){
     $id = htmlentities($_POST['id']);
     $oi = $ecommerce->getOrder($id);
     $items = $ecommerce->getOrderItems($id);
 
-    $total = \ecommerce\Ecommerce::formatMoney($oi['taxes']);
+    $total = Ecommerce::formatMoney($oi['taxes']);
     $item_html = "";
     foreach($items as $i){
         $itemInfo = $ecommerce->orderItemHtml($i, $total);

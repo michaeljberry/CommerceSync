@@ -2,7 +2,6 @@
 
 namespace bc;
 
-use ecommerce\Ecommerce as ecom;
 use ecommerce\Ecommerce;
 
 class BigCommerceOrder extends BigCommerce
@@ -12,7 +11,7 @@ class BigCommerceOrder extends BigCommerce
         if($orders) {
             foreach ($orders as $o) {
                 $order_num = $o->id;
-                $found = ecom::orderExists($order_num);
+                $found = Ecommerce::orderExists($order_num);
                 if(!$found) {
                     $state_code = $o->shipping_addresses[0]->state;
                     $total_tax = $o->total_tax;
@@ -166,16 +165,18 @@ class BigCommerceOrder extends BigCommerce
         $item_xml = '';
         $ponumber = 1;
         foreach($items as $i){
-            ecom::dd($i);
+            Ecommerce::dd($i);
             $product_id = (string)$i->product_id;
             $quantity = (integer)$i->quantity;
             $title = (string)$i->name;
             $principle = (float)$i->total_ex_tax;
-            $item_total = ecom::removeCommasInNumber($principle)/$quantity;
+            $item_total = Ecommerce::removeCommasInNumber($principle)/$quantity;
             $sku = (string)$i->sku;
             $upc = $this->get_bc_product_upc($product_id);
             $sku_id = $ecommerce->skuSoi($sku);
-            $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
+            if (!LOCAL) {
+                $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
+            }
             $item_xml .= $ecommerce->create_item_xml($sku, $title, $ponumber, $quantity, $item_total, $upc);
             $ponumber++;
         }

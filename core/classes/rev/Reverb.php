@@ -4,7 +4,6 @@ namespace rev;
 
 use Crypt;
 use models\ModelDB as MDB;
-use ecommerce\Ecommerce as ecom;
 
 class Reverb
 {

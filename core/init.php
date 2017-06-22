@@ -31,7 +31,6 @@ require WEBCORE . 'Functions.php';
 
 $template = new Template();
 $users = new User();
-$company = new Company();
 $general = new General();
 
 //Walmart Class Declarations

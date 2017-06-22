@@ -2,7 +2,7 @@
 
 namespace am;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
 class AmazonInventory extends Amazon
 {
@@ -50,9 +50,9 @@ class AmazonInventory extends Amazon
         $xml = [
             'MessageType' => 'Product'
         ];
-        $xml = ecom::makeXML($xml);
+        $xml = Ecommerce::makeXML($xml);
         $xml .= $xml1;
-//        ecom::dd($xml);
+//        Ecommerce::dd($xml);
 
         $paramAdditionalConfig = [
             'MarketplaceId',
@@ -75,7 +75,7 @@ class AmazonInventory extends Amazon
         $xml = [
             'MessageType' => 'Price'
         ];
-        $xml = ecom::makeXML($xml);
+        $xml = Ecommerce::makeXML($xml);
         $xml .= $xml1;
 
         $paramAdditionalConfig = [
@@ -278,7 +278,7 @@ class AmazonInventory extends Amazon
                 ]
             ]
         ];
-        $amazon_feed = ecom::makeXML($xml);
+        $amazon_feed = Ecommerce::makeXML($xml);
 
         return $amazon_feed;
     }
@@ -292,7 +292,7 @@ class AmazonInventory extends Amazon
                 ]
             ]
         ];
-        $amazon_feed = ecom::makeXML($xml);
+        $amazon_feed = Ecommerce::makeXML($xml);
         return $amazon_feed;
     }
 
@@ -312,7 +312,7 @@ class AmazonInventory extends Amazon
                 ]
             ]
         ];
-        $amazonFeed = ecom::makeXML($xml);
+        $amazonFeed = Ecommerce::makeXML($xml);
         return $amazonFeed;
     }
 
@@ -330,7 +330,7 @@ class AmazonInventory extends Amazon
                 ]
             ]
         ];
-        $amazonFeed = ecom::makeXML($xml);
+        $amazonFeed = Ecommerce::makeXML($xml);
         return $amazonFeed;
     }
 
@@ -346,7 +346,7 @@ class AmazonInventory extends Amazon
 
             $listings[] = compact('numOfListingsAtThisPrice', 'sellerRating', 'shippingTime', 'price', 'shipping', 'total');
         }
-        $sellers = ecom::sortBy($listings, 'total');
+        $sellers = Ecommerce::sortBy($listings, 'total');
 
         return $sellers;
     }

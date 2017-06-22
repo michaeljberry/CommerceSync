@@ -4,18 +4,17 @@ namespace wc;
 
 use Crypt;
 use connect\DB;
-use ecommerce\Ecommerce as ecom;
+use models\ModelDB as MDB;
+use ecommerce\Ecommerce;
 use Automattic\WooCommerce\Client;
 
 class woocommerceclass{
-    public $db;
     protected $wc_consumer_key;
     protected $wc_secret_key;
     protected $wc_site;
     public $wc_store_id;
 
     public function __construct($user_id){
-        $this->db = DB::instance();
         $wcinfo = $this->getAppId($user_id);
         $this->wc_consumer_key = Crypt::decrypt($wcinfo['consumer_key']);
         $this->wc_secret_key = Crypt::decrypt($wcinfo['consumer_secret']);
@@ -52,48 +51,43 @@ class woocommerceclass{
         return $column;
     }
     public function get_all_apps($user_id){
-        $query = $this->db->prepare("SELECT store.id, store.name FROM store INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'WooCommerce'");
+        $sql = "SELECT store.id, store.name FROM store INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'WooCommerce'";
         $query_params = array(
             ':user_id' => $user_id
         );
-        $query->execute($query_params);
-        return $query->fetchAll();
+        return MDB::query($sql, $query_params, 'fetchAll');
     }
     public function getAppId($user_id){
-        $query = $this->db->prepare("SELECT store_id, consumer_key, consumer_secret, site FROM api_wc INNER JOIN store ON api_wc.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'WooCommerce'");
+        $sql = "SELECT store_id, consumer_key, consumer_secret, site FROM api_wc INNER JOIN store ON api_wc.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'WooCommerce'";
         $query_params = array(
             ':user_id' => $user_id
         );
-        $query->execute($query_params);
-        return $query->fetch();
+        return MDB::query($sql, $query_params, 'fetch');
     }
     public function saveAppInfo($crypt, $store_id, $consumer_key, $consumer_secret){
-        $query = $this->db->prepare("INSERT INTO api_wc (store_id, consumer_key, consumer_secret) VALUES (:store_id, :consumer_key, :consumer_secret)");
+        $sql = "INSERT INTO api_wc (store_id, consumer_key, consumer_secret) VALUES (:store_id, :consumer_key, :consumer_secret)";
         $query_params = array(
             ":store_id" => $store_id,
             ":consumer_key" => $crypt->encrypt($consumer_key),
             ":consumer_secret" => $crypt->encrypt($consumer_secret)
         );
-        $query->execute($query_params);
-        return true;
+        MDB::query($sql, $query_params);
     }
     public function updateAppInfo($crypt, $store_id, $column, $id){
         $column = $this->sanitize_column_name($column);
-        $query = $this->db->prepare("UPDATE api_wc SET $column = :id WHERE store_id = :store_id");
+        $sql = "UPDATE api_wc SET $column = :id WHERE store_id = :store_id";
         $query_params = array(
             ':id' => $crypt->encrypt($id),
             ':store_id' => $store_id
         );
-        $query->execute($query_params);
-        return true;
+        MDB::query($sql, $query_params);
     }
     public function isVariation($sku){
-        $query = $this->db->prepare("SELECT variations FROM listing_wc WHERE sku = :sku");
+        $sql = "SELECT variations FROM listing_wc WHERE sku = :sku";
         $query_params = [
             ':sku' => $sku
         ];
-        $query->execute($query_params);
-        return $query->fetchColumn();
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     protected function createHeader($method, $post_string)
@@ -125,7 +119,7 @@ class woocommerceclass{
     public function woocommerceCurl($url, $method, $post_string = null)
     {
         $request = $this->setCurlOptions($url, $method, $post_string);
-        $response = ecom::curlRequest($request);
+        $response = Ecommerce::curlRequest($request);
         return $response;
     }
 }

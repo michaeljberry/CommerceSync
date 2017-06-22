@@ -2,7 +2,7 @@
 
 namespace rev;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
 trait ReverbClientCurl
 {
@@ -42,7 +42,7 @@ trait ReverbClientCurl
     {
         $headers = $this->createHeader();
         $request = ReverbClientCurl::setCurlOptions($url, $method, $headers, $post_string);
-        $response = ecom::curlRequest($request);
+        $response = Ecommerce::curlRequest($request);
         return $response;
     }
 }

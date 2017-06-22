@@ -2,7 +2,7 @@
 
 namespace eb;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
 class EbayInventory extends Ebay
 {
@@ -409,7 +409,7 @@ class EbayInventory extends Ebay
             );
         }
 
-        $sellers = ecom::sortBy($sellers, 'total');
+        $sellers = Ecommerce::sortBy($sellers, 'total');
 
         return $sellers;
     }

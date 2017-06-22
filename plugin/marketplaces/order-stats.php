@@ -2,6 +2,7 @@
 require '../../core/init.php';
 
 use models\channels\OrderStatsModel;
+use ecommerce\Ecommerce;
 
 $channel = '';
 if(isset($_GET['channel']) && !empty($_GET['channel'])){
@@ -9,6 +10,6 @@ if(isset($_GET['channel']) && !empty($_GET['channel'])){
 }
 $results = OrderStatsModel::getOrderStats($channel);
 
-$jsonarray2 = \ecommerce\Ecommerce::prepareStatJson($results, 'daily');
+$jsonarray2 = Ecommerce::prepareStatJson($results, 'daily');
 //\ecommerceclass\ecommerceclass::dd(json_encode($jsonarray2));
 echo json_encode($jsonarray2);

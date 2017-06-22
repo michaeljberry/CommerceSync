@@ -2,22 +2,20 @@
 
 namespace bc;
 
-use ecommerce\Ecommerce as ecom;
+use models\ModelDB as MDB;
 
 class BigCommerceInventory extends BigCommerce
 {
     public function count_inventory_for_bc(){
-        $query = $this->db->prepare("SELECT COUNT(Distinct l.stock_id) AS idcount FROM listing_bigcommerce l JOIN stock st ON st.id = l.stock_id JOIN store ON store.id = l.store_id JOIN product_availability pa ON pa.store_id = store.id WHERE store.id = '3' AND pa.is_available = '1'");
-        $query->execute();
-        return $query->fetchColumn();
+        $sql = "SELECT COUNT(Distinct l.stock_id) AS idcount FROM listing_bigcommerce l JOIN stock st ON st.id = l.stock_id JOIN store ON store.id = l.store_id JOIN product_availability pa ON pa.store_id = store.id WHERE store.id = '3' AND pa.is_available = '1'";
+        return MDB::query($sql, [], 'fetchColumn');
     }
     public function pull_inventory_for_bc_update($offset, $limit, $store_id){
-        $query = $this->db->prepare("SELECT l.store_listing_id, pp.price, st.stock_qty FROM listing_bigcommerce l JOIN stock st ON st.id = l.stock_id JOIN store ON store.id = l.store_id JOIN product_availability pa ON pa.store_id = store.id JOIN product_price pp ON pp.sku_id = st.sku_id WHERE store.id = :store_id AND pa.is_available = '1' LIMIT $offset, $limit");
+        $sql = "SELECT l.store_listing_id, pp.price, st.stock_qty FROM listing_bigcommerce l JOIN stock st ON st.id = l.stock_id JOIN store ON store.id = l.store_id JOIN product_availability pa ON pa.store_id = store.id JOIN product_price pp ON pp.sku_id = st.sku_id WHERE store.id = :store_id AND pa.is_available = '1' LIMIT $offset, $limit";
         $query_params = array(
             ':store_id' => $store_id
         );
-        $query->execute($query_params);
-        return $query->fetchAll();
+        return MDB::query($sql, $query_params, 'fetchAll');
     }
     public function update_bc_inventory($stock_id, $stock_qty, $price, $e){ //$BC
         $store_listing_id = $e->get_listing_id($stock_id, 'listing_bigcommerce');

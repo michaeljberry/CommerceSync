@@ -2,7 +2,7 @@
 
 namespace eb;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 use models\ModelDB as MDB;
 
 class Ebay
@@ -110,43 +110,43 @@ class Ebay
         $paypalFeePercent = .029; //Round up
         $paypalFeeFlat = 0.30;
 
-        $cost = ecom::formatMoney($cost);
+        $cost = Ecommerce::formatMoney($cost);
 
         $costOfQty = $cost * $quantity;
 
         if(empty($propose)) {
             $totalPrice = $pl10 * $quantity;
         }elseif(empty($increaseBy)){
-            $totalPrice = ecom::roundMoney($costOfQty/(1-($minimumProfitPercent/100)));
-            $pl10 = ecom::formatMoney($totalPrice/$quantity);
+            $totalPrice = Ecommerce::roundMoney($costOfQty/(1-($minimumProfitPercent/100)));
+            $pl10 = Ecommerce::formatMoney($totalPrice/$quantity);
         }else{
-            $totalPrice = ecom::formatMoney($increaseBy);
-            $pl10 = ecom::formatMoney($totalPrice/$quantity);
+            $totalPrice = Ecommerce::formatMoney($increaseBy);
+            $pl10 = Ecommerce::formatMoney($totalPrice/$quantity);
         }
 
         $shippingCost = 3.99; //Amount we paid to ship the product
 
         $ebayFeePercent = $ecommerce->getCategoryFeeOfSKU('categories_ebay', 'listing_ebay', $sku);
 
-        $shippingCollected = ecom::formatMoney($shippingIncludedInPrice ? $shippingCharged : 0);
+        $shippingCollected = Ecommerce::formatMoney($shippingIncludedInPrice ? $shippingCharged : 0);
 
-        $ebayTotalFee = ecom::roundMoney((($totalPrice + $shippingCollected) * $ebayFeePercent) < $ebayFeeMax ? (($totalPrice + $shippingCollected) * $ebayFeePercent) : $ebayFeeMax);
+        $ebayTotalFee = Ecommerce::roundMoney((($totalPrice + $shippingCollected) * $ebayFeePercent) < $ebayFeeMax ? (($totalPrice + $shippingCollected) * $ebayFeePercent) : $ebayFeeMax);
 
-        $paypalTotalFee = ecom::roundMoney(($totalPrice + $shippingCollected) * $paypalFeePercent) + $paypalFeeFlat;
+        $paypalTotalFee = Ecommerce::roundMoney(($totalPrice + $shippingCollected) * $paypalFeePercent) + $paypalFeeFlat;
 
-        $totalFees = ecom::formatMoney($ebayTotalFee + $paypalTotalFee + $shippingCost);
+        $totalFees = Ecommerce::formatMoney($ebayTotalFee + $paypalTotalFee + $shippingCost);
 
         $totalCost = $costOfQty + $totalFees;
 
         $grossProfit = $totalPrice + $shippingCollected - $costOfQty;
-        $grossProfitPercent = ecom::formatMoney($grossProfit / $totalPrice, 4) * 100;
+        $grossProfitPercent = Ecommerce::formatMoney($grossProfit / $totalPrice, 4) * 100;
 
-        $netProfit = ecom::formatMoney($grossProfit - $ebayTotalFee - $paypalTotalFee - $shippingCost);
-        $netProfitPercent = ecom::formatMoney($netProfit / $totalPrice, 4) * 100;
+        $netProfit = Ecommerce::formatMoney($grossProfit - $ebayTotalFee - $paypalTotalFee - $shippingCost);
+        $netProfitPercent = Ecommerce::formatMoney($netProfit / $totalPrice, 4) * 100;
 
         if(!empty($propose) && ($grossProfitPercent < $minimumProfitPercent || $netProfitPercent < $minimumNetProfitPercent)){
             $totalPrice = $totalPrice + $increment;
-            $totalPrice = ecom::formatMoney($totalPrice);
+            $totalPrice = Ecommerce::formatMoney($totalPrice);
             $priceArray = $this->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, 1, $totalPrice);
         }else {
             $priceArray = compact(

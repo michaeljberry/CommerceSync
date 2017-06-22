@@ -2,7 +2,7 @@
 
 namespace eb;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
 class EbayOrder extends Ebay
 {
@@ -49,10 +49,12 @@ class EbayOrder extends Ebay
         $title = $item->Item->Title;
         $quantity = $item->QuantityPurchased;
         $upc = '';
-        $principle = ecom::removeCommasInNumber((float)$item->TransactionPrice);
+        $principle = Ecommerce::removeCommasInNumber((float)$item->TransactionPrice);
         $item_id = $item->Item->ItemID . '-' . $item->TransactionID;
         $sku_id = $ecommerce->skuSoi($sku);
-        $ecommerce->save_order_items($order_id, $sku_id, $principle, $quantity, $item_id);
+        if (!LOCAL) {
+            $ecommerce->save_order_items($order_id, $sku_id, $principle, $quantity, $item_id);
+        }
         $itemXml = $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
         $itemObject['sku'] = $sku;
         $itemObject['itemXml'] .= $itemXml;
@@ -89,7 +91,7 @@ class EbayOrder extends Ebay
         foreach($xml_orders->OrderArray->Order as $xml)
         {
             $order_num = (string)$xml->ExternalTransaction->ExternalTransactionID;
-            $fee = ecom::formatMoney((float)$xml->ExternalTransaction->FeeOrCreditAmount);
+            $fee = Ecommerce::formatMoney((float)$xml->ExternalTransaction->FeeOrCreditAmount);
 
             $order_status = trim($xml->OrderStatus);
 
@@ -98,10 +100,10 @@ class EbayOrder extends Ebay
 
                 echo "Order: $order_num -> Status: $order_status<br>";
                 echo $xml->OrderID . '<br>';
-                $found = ecom::orderExists($order_num);
+                $found = Ecommerce::orderExists($order_num);
 
                 if (!$found) {
-                    ecom::dd($xml);
+                    Ecommerce::dd($xml);
                     $timestamp = $xml->CreatedTime;
                     $order_date = $timestamp;
                     $ismultilegshipping = $xml->IsMultiLegShipping;
@@ -134,7 +136,7 @@ class EbayOrder extends Ebay
                     {
                         $country = 'USA';
                     }
-                    $shipping_amount = ecom::formatMoney((float)$xml->ShippingDetails->ShippingServiceOptions->ShippingServiceCost);
+                    $shipping_amount = Ecommerce::formatMoney((float)$xml->ShippingDetails->ShippingServiceOptions->ShippingServiceCost);
                     $total = $xml->Total;
 
                     $erlanger = [
@@ -146,8 +148,8 @@ class EbayOrder extends Ebay
 
                     $shipping = $ecommerce->shippingCode($total, $erlanger);
 
-                    $item_taxes = ecom::formatMoney((float)$xml->ShippingDetails->SalesTax->SalesTaxAmount);
-                    ecom::dd($item_taxes);
+                    $item_taxes = Ecommerce::formatMoney((float)$xml->ShippingDetails->SalesTax->SalesTaxAmount);
+                    Ecommerce::dd($item_taxes);
                     $trans_id = $xml->ShippingDetails->SellingManagerSalesRecordNumber;
 
                     //Get Info into DB
@@ -158,7 +160,9 @@ class EbayOrder extends Ebay
                     $zip_id = $ecommerce->zipSoi($zip, $state_id);
                     $city_id = $ecommerce->citySoi($city, $state_id);
                     $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
-                    $order_id = $ecommerce->save_order($EbayClient->getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $item_taxes, $fee, $trans_id);
+                    if (!LOCAL) {
+                        $order_id = $ecommerce->save_order($EbayClient->getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $item_taxes, $fee, $trans_id);
+                    }
 
                     $items = $this->getItems($xml->TransactionArray, $order_id, $ecommerce);
 
@@ -166,12 +170,14 @@ class EbayOrder extends Ebay
                     $sku = (string)$items->sku;
                     $itemXml = (string)$items->itemXml;
 
-                    $itemXml .= ecom::get_tax_item_xml($state, $poNumber, $item_taxes);
-                    $channel_name = 'Ebay';
-                    $channel_num = $ecommerce->get_channel_num($ibmdata, $channel_name, $sku);
-                    $orderXml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
-                    ecom::dd($orderXml);
-                    $ecommerce->saveXmlToFTP($order_num, $orderXml, $folder, 'Ebay');
+                    $itemXml .= Ecommerce::get_tax_item_xml($state, $poNumber, $item_taxes);
+                    $channelName = 'Ebay';
+                    $channel_num = $ecommerce->get_channel_num($ibmdata, $channelName, $sku);
+                    $orderXml = $ecommerce->create_xml($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
+                    Ecommerce::dd($orderXml);
+                    if (!LOCAL) {
+                        $ecommerce->saveXmlToFTP($order_num, $orderXml, $folder, $channelName);
+                    }
                 }
             }
         }

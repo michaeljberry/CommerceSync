@@ -2,7 +2,7 @@
 
 namespace rev;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
 class ReverbInventory extends Reverb
 {
@@ -33,7 +33,7 @@ class ReverbInventory extends Reverb
         return $response;
     }
 
-    public function get_reverb_products($e){
+    public function get_reverb_products(Ecommerce $e){
         for($page = 1; $page < 370; $page++) { //340
             $request = $this->get_reverb_listings($page);
             $listings = substr($request, strpos($request, '"listings":'), -1);

@@ -2,7 +2,7 @@
 
 namespace am;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 use \DateTime;
 use \DateTimeZone;
 
@@ -24,7 +24,7 @@ class AmazonOrder extends Amazon
                 ]
             ]
         ];
-        $amazonFeed = ecom::makeXML($xml);
+        $amazonFeed = Ecommerce::makeXML($xml);
         return $amazonFeed;
     }
 
@@ -45,7 +45,7 @@ class AmazonOrder extends Amazon
         $xml = [
             'MessageType' => 'OrderFulfillment',
         ];
-        $xml = ecom::makeXML($xml);
+        $xml = Ecommerce::makeXML($xml);
         $xml .= $xml1;
 
         $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
@@ -167,14 +167,14 @@ class AmazonOrder extends Amazon
             $itemPrice += (float)$giftWrapPrice;
 
             $totalWithoutTax += (float)$itemPrice;
-            $principle = ecom::formatMoney((float)$itemPrice / $quantity);
+            $principle = Ecommerce::formatMoney((float)$itemPrice / $quantity);
 
             $shippingPrice = (float)$item->ShippingPrice->Amount;
             $shippingDiscount = (float)$item->ShippingDiscount->Amount;
             $shippingPrice += (float)$shippingDiscount;
             $totalShipping += (float)$shippingPrice;
 
-            $itemTax = ecom::formatMoney((float)$item->ItemTax->Amount);
+            $itemTax = Ecommerce::formatMoney((float)$item->ItemTax->Amount);
             $totalTax += (float)$itemTax;
 
             $shippingTax = (float)$item->ShippingTax->Amount;
@@ -182,8 +182,8 @@ class AmazonOrder extends Amazon
 
             $giftWrapTax = (float)$item->GiftWrapTax->Amount;
             $totalTax += (float)$giftWrapTax;
-            $totalTax = ecom::formatMoney($totalTax);
-            ecom::dd("Total Tax: $totalTax");
+            $totalTax = Ecommerce::formatMoney($totalTax);
+            Ecommerce::dd("Total Tax: $totalTax");
 
             $skuId = $ecommerce->skuSoi($sku);
             if (!LOCAL) {
@@ -214,7 +214,7 @@ class AmazonOrder extends Amazon
 
             $orderNum = $order->AmazonOrderId;
 
-            $found = ecom::orderExists($orderNum);
+            $found = Ecommerce::orderExists($orderNum);
 
             if (!$found) {
 
@@ -268,9 +268,9 @@ class AmazonOrder extends Amazon
                 $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);
 
                 $poNumber = (string)$items->poNumber;
-                $totalTax = ecom::formatMoney((float)$items->totalTax);
+                $totalTax = Ecommerce::formatMoney((float)$items->totalTax);
                 $totalWithoutTax = (float)$items->totalWithoutTax;
-                $totalShipping = ecom::formatMoney((float)$items->totalShipping);
+                $totalShipping = Ecommerce::formatMoney((float)$items->totalShipping);
                 $sku = (string)$items->sku;
                 $itemXml = (string)$items->itemXml;
 
@@ -281,7 +281,7 @@ class AmazonOrder extends Amazon
                         // Need to calculate taxes and subtract from sales price of item(s)
                         $totalTax = $ecommerce->calculateTax($taxableStates[$shippingState], $totalWithoutTax, $totalShipping);
                     }
-                    $itemXml .= ecom::get_tax_item_xml(
+                    $itemXml .= Ecommerce::get_tax_item_xml(
                         $shippingState,
                         $poNumber,
                         $totalTax,
@@ -302,7 +302,7 @@ class AmazonOrder extends Amazon
 
         if (isset($xmlOrders->{$page}->NextToken)) {
             $nextToken = (string)$xmlOrders->{$page}->NextToken;
-            ecom::dd("Next Token:" . $nextToken);
+            Ecommerce::dd("Next Token:" . $nextToken);
         }
         if (isset($nextToken)) {
             $orders = $this->getMoreOrders($nextToken);

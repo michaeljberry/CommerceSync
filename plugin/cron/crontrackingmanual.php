@@ -9,7 +9,7 @@ require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 use models\channels\TrackingModel;
 
 //ob_start();
@@ -100,7 +100,7 @@ foreach($unshippedOrders as $o){
                 $shipped = true;
             }
         }
-        ecom::dd($response);
+        Ecommerce::dd($response);
         if($shipped){
             $success = $ecommerce->markAsShipped($order_num, $channel);
         }
@@ -111,7 +111,7 @@ foreach($unshippedOrders as $o){
 }
 
 if(!empty($amazonTrackingXML)){
-    ecom::dd($amazonTrackingXML);
+    Ecommerce::dd($amazonTrackingXML);
     $response = $amord->update_amazon_tracking($amazonTrackingXML);
     print_r($response);
     echo '<br>';

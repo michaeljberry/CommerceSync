@@ -2,7 +2,6 @@
 
 namespace am;
 
-use ecommerce\Ecommerce as ecom;
 use models\ModelDB as MDB;
 
 class Amazon

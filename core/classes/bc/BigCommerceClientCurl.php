@@ -2,7 +2,7 @@
 
 namespace bc;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
 trait BigCommerceClientCurl
 {
@@ -32,6 +32,6 @@ trait BigCommerceClientCurl
     public function bigcommerceCurl($url, $method, $post_string = null)
     {
         $request = $this->setCurlOptions($url, $method, $post_string);
-        return ecom::curlRequest($request);
+        return Ecommerce::curlRequest($request);
     }
 }

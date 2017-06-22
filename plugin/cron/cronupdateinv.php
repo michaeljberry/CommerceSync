@@ -1,7 +1,5 @@
 <?php
 
-use ecommerce\Ecommerce as ecom;
-
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';

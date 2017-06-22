@@ -3,6 +3,7 @@
 namespace bc;
 
 use ecommerce\Ecommerce;
+use models\ModelDB as MDB;
 
 class BigCommerce
 {
@@ -23,37 +24,18 @@ class BigCommerce
         ));
     }
     public function save_app_info($crypt, $store_id, $store_url, $store_username, $api_key){
-        $query = $this->db->prepare("INSERT INTO api_bigcommerce (store_id, store_url, username, api_key) VALUES (:store_id, :store_url, :username, :api_key)");
+        $sql = "INSERT INTO api_bigcommerce (store_id, store_url, username, api_key) VALUES (:store_id, :store_url, :username, :api_key)";
         $query_params = array(
             ":store_id" => $store_id,
             ":store_url" => $store_url,
             ":username" => $crypt->encrypt($store_username),
             ":api_key" => $crypt->encrypt($api_key)
         );
-        $query->execute($query_params);
-        return true;
-    }
-    public function save_bc_id($store_id, $name, $store_listing_id, $sku, $condition, $description, $width, $weight, $height, $depth, $meta_keywords, $meta_description, $page_title, $price){
-        try {
-            $this->db->beginTransaction();
+        return MDB::query($sql, $query_params);
 
-            $product_id = $this->add_product($name, $description, $meta_keywords, $meta_description, $page_title, $width, $weight, $height, $depth);
-            //Add product details to Product table
-            $this->add_product_availability($product_id, 3);
-            $sku_id = $this->add_sku($product_id, $sku);
-            $this->add_product_price($sku_id, $price, $store_id);
-            $stock_id = $this->add_sku_to_stock($sku_id, $condition, 1);
-            $listing_id = $this->add_stock_to_listing($store_id, $stock_id, $store_listing_id);
-
-            $this->db->commit();
-            return true;
-        } catch (Exception $e){
-            $this->db->rollback();
-            die($e->getMessage());
-        }
     }
     public function add_product($name, $description, $meta_keywords, $meta_description, $page_title, $width, $weight, $height, $depth){
-        $query = $this->db->prepare("INSERT INTO product (name, description, meta_keywords, meta_description, page_title, width, weight, height, depth) VALUES (:name, :description, :meta_keywords, :meta_description, :page_title, :width, :weight, :height, :depth)");
+        $sql = "INSERT INTO product (name, description, meta_keywords, meta_description, page_title, width, weight, height, depth) VALUES (:name, :description, :meta_keywords, :meta_description, :page_title, :width, :weight, :height, :depth)";
         $query_params = array(
             ":name" => $name,
             ":description" => $description,
@@ -65,21 +47,17 @@ class BigCommerce
             ":height" => $height,
             ":depth" => $depth
         );
-        $query->execute($query_params);
-        $product_id = $this->db->lastInsertId();
+        return MDB::query($sql, $query_params, 'id');
 
-        return $product_id;
     }
     public function add_sku($product_id, $sku){
-        //Add product_id and sku to Sku table
-        $query = $this->db->prepare("INSERT INTO sku (product_id, sku) VALUES (:product_id, :sku)");
+        $sql = "INSERT INTO sku (product_id, sku) VALUES (:product_id, :sku)";
         $query_params = array(
             ":product_id" => $product_id,
             ":sku" => $sku
         );
-        $query->execute($query_params);
-        $sku_id = $this->db->lastInsertId();
-        return $sku_id;
+        return MDB::query($sql, $query_params, 'id');
+
     }
     public function add_sku_to_stock($sku_id, $condition, $uofm = 1){
         //Add sku_id to Stock Table
@@ -90,61 +68,52 @@ class BigCommerce
         }elseif($condition == "Refurbished"){
             $condition_id = 5;
         }
-        $query = $this->db->prepare("INSERT INTO stock (sku_id, condition_id, uofm_id) VALUES (:sku_id, :condition_id, :uofm_id)");
+        $sql = "INSERT INTO stock (sku_id, condition_id, uofm_id) VALUES (:sku_id, :condition_id, :uofm_id)";
         $query_params = array(
             ":sku_id" => $sku_id,
             ":condition_id" => $condition_id,
             ":uofm_id" => 1
         );
-        $query->execute($query_params);
-        $stock_id = $this->db->lastInsertId();
-        return $stock_id;
+        return MDB::query($sql, $query_params, 'id');
     }
     public function add_stock_to_listing($store_id, $stock_id, $store_listing_id){
-        //Add stock_id to listing with additional info
-        $query = $this->db->prepare("INSERT INTO listing_bigcommerce (store_id, stock_id, store_listing_id) VALUES (:store_id, :stock_id, :store_listing_id)");
+        $sql = "INSERT INTO listing_bigcommerce (store_id, stock_id, store_listing_id) VALUES (:store_id, :stock_id, :store_listing_id)";
         $query_params = array(
             ":store_id" => $store_id,
             ":stock_id" => $stock_id,
             ":store_listing_id" => $store_listing_id
         );
-        $query->execute($query_params);
-        $listing_id = $this->db->lastInsertId();
-        return $listing_id;
+        return MDB::query($sql, $query_params, 'id');
     }
     public function add_product_availability($product_id, $store_id){
-        $query = $this->db->prepare("INSERT INTO product_availability (product_id, store_id, is_available) VALUES (:product_id, :store_id, 1)");
+        $sql = "INSERT INTO product_availability (product_id, store_id, is_available) VALUES (:product_id, :store_id, 1)";
         $query_params = array(
             ":product_id" => $product_id,
             ":store_id" => $store_id
         );
-        $query->execute($query_params);
-        return true;
+        MDB::query($sql, $query_params);
     }
     public function add_product_price($sku_id, $price, $store_id){
-        $query = $this->db->prepare("INSERT INTO product_price (sku_id, price, store_id) VALUES (:sku_id, :price, :store_id");
+        $sql = "INSERT INTO product_price (sku_id, price, store_id) VALUES (:sku_id, :price, :store_id";
         $query_params = array(
             ":sku_id" => $sku_id,
             ":price" => $price,
             ":store_id" => $store_id
         );
-        $query->execute($query_params);
-        return true;
+        MDB::query($sql, $query_params);
     }
     public function get_product_with_upc(){
-        $query = $this->db->prepare("SELECT p.id, p.upc, sk.sku, lb.store_listing_id FROM product p JOIN sku sk ON sk.product_id = p.id JOIN listing_bigcommerce lb ON lb.sku = sk.sku");
-        $query->execute();
-        return $query->fetchAll();
-
+        $sql = "SELECT p.id, p.upc, sk.sku, lb.store_listing_id FROM product p JOIN sku sk ON sk.product_id = p.id JOIN listing_bigcommerce lb ON lb.sku = sk.sku";
+        return MDB::query($sql, [], 'fetchAll');
     }
     public function update_upc($sku, $upc){
-        $query = $this->db->prepare("UPDATE listing_bigcommerce SET upc = :upc WHERE sku = :sku");
+        $sql = "UPDATE listing_bigcommerce SET upc = :upc WHERE sku = :sku";
         $query_params = [
             ':upc' => $upc,
             ':sku' => $sku
         ];
-        $query->execute($query_params);
-        return true;
+        MDB::query($sql, $query_params);
+
     }
     public function get_bc_product_info($product_id){
         $api_url = 'https://mymusiclife.com/api/v2/products/' . $product_id . '.json';

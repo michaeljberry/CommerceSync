@@ -2,7 +2,7 @@
 
 namespace rev;
 
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
 class ReverbOrder extends Reverb
 {
@@ -17,7 +17,7 @@ class ReverbOrder extends Reverb
         return $response;
     }
 
-    public function save_orders($request, $ecommerce, $ibmdata){
+    public function save_orders($request, Ecommerce $ecommerce, $ibmdata, $folder){
         $orders = substr($request, strpos($request, '"orders":'), -1);
         $orders = '{' . $orders . '}';
         $orders = json_decode($orders);
@@ -26,7 +26,7 @@ class ReverbOrder extends Reverb
             foreach ($orders as $o) {
                 foreach ($o as $order) {
                     $order_num = $order->order_number;
-                    $found = ecom::orderExists($order_num);
+                    $found = Ecommerce::orderExists($order_num);
                     if (!$found) {
                         $ship_to_name = $order->buyer_name;
                         $name = explode(' ', $ship_to_name);
@@ -54,8 +54,8 @@ class ReverbOrder extends Reverb
                         $principle = number_format($principle / $quantity, 2, '.', '');
                         $shipping_amount = $order->shipping->amount;
                         $ponumber = 1;
-                        $channel_name = 'Reverb';
-                        $channel_num = $ecommerce->get_channel_num($ibmdata, $channel_name, $sku);
+                        $channelName = 'Reverb';
+                        $channel_num = $ecommerce->get_channel_num($ibmdata, $channelName, $sku);
                         $tax = 0;
                         if (strcasecmp($state, 'ID') == 0) {
                             //Subtract 6% from sub-total, add as sales tax; adjust sub-total
@@ -81,11 +81,17 @@ class ReverbOrder extends Reverb
                         $zip_id = $ecommerce->zipSoi($zip, $state_id);
                         $city_id = $ecommerce->citySoi($city, $state_id);
                         $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
-                        $order_id = $ecommerce->save_order($this->reverb_store_id, $cust_id, $order_num, $shipping, $shipping_amount, $tax);
+                        if (!LOCAL) {
+                            $order_id = $ecommerce->save_order($this->reverb_store_id, $cust_id, $order_num, $shipping, $shipping_amount, $tax);
+                        }
                         $sku_id = $ecommerce->skuSoi($sku);
-                        $ecommerce->save_order_items($order_id, $sku_id, $total, $quantity);
-                        $xml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
-                        $ecommerce->save_xml_to_hd($order_num, $xml, 'Reverb');
+                        if (!LOCAL) {
+                            $ecommerce->save_order_items($order_id, $sku_id, $total, $quantity);
+                        }
+                        $xml = $ecommerce->create_xml($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+                        if (!LOCAL) {
+                            $ecommerce->saveXmlToFTP($order_num, $xml, $folder, $channelName);
+                        }
                     } else {
                         echo 'Order ' . $order_num . ' is already in the database.<br>';
                     }

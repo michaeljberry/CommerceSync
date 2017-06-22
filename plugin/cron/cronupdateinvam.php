@@ -3,6 +3,8 @@ error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 
+use ecommerce\Ecommerce;
+
 $start = startClock();
 $user_id = 838;
 require WEBPLUGIN . 'am/amvar.php';
@@ -62,10 +64,10 @@ foreach($updated as $u){
 //fwrite($fp, 'Inventory Upload File: ' . PHP_EOL . $amazon_xml. PHP_EOL . PHP_EOL);
 //fwrite($fp, 'Price Upload File: ' . PHP_EOL . $amazon_price_xml. PHP_EOL . PHP_EOL);
 //\ecommerceclass\ecommerceclass::dd($amazon_xml);
-\ecommerce\Ecommerce::dd($amazon_xml);
+Ecommerce::dd($amazon_xml);
 ////Push to Amazon
 $response = $aminv->updateAmazonInventory($amazon_xml);
-\ecommerce\Ecommerce::dd($response);
+Ecommerce::dd($response);
 //fwrite($fp, "Inventory Upload Response: " . PHP_EOL . $response . PHP_EOL . PHP_EOL);
 //$response = $aminv->update_amazon_inventory_price($amazon_price_xml);
 //print_r($response);

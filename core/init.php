@@ -16,9 +16,6 @@ spl_autoload_register(function ($class) {
 include_once 'classes/wm/wmclass.php';
 include_once 'classes/wm/wmordclass.php';
 include_once 'classes/wm/wminvclass.php';
-//Sellbrite Classes
-include_once 'classes/sb/sbclass.php';
-include_once 'classes/sb/sbinvclass.php';
 //EcomDash Classes
 include_once 'classes/ecd/ecdclass.php';
 include_once 'classes/ecd/ecdordclass.php';

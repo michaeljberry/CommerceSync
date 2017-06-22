@@ -18,9 +18,9 @@ class BigCommerce
 
     public function configure($BC){
         $BC->configure(array(
-            'store_url' => $this->bc_store_url,
-            'username' => $this->bc_username,
-            'api_key' => $this->bc_api_key
+            'store_url' => $this->BigCommerceClient->getStoreUrl(),
+            'username' => $this->BigCommerceClient->getUsername(),
+            'api_key' => $this->BigCommerceClient->getAPIKey()
         ));
     }
     public function save_app_info($crypt, $store_id, $store_url, $store_username, $api_key){

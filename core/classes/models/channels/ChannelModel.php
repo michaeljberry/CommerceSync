@@ -8,7 +8,7 @@ class ChannelModel
 {
     public static function getAppInfo($user_id, $table, $channel, $columns)
     {
-        $columnSelect = implode(',', $columns);
+        $columnSelect = $table . '.' . implode(",$table.", $columns);
         $query_params = [
             'user_id' => $user_id,
             'channel' => $channel

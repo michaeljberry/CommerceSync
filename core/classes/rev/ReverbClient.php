@@ -2,17 +2,17 @@
 
 namespace rev;
 
-use models\channels\ChannelModel;
 use ecommerce\EcommerceInterface;
+use models\channels\ChannelModel;
 
 class ReverbClient implements EcommerceInterface
 {
 
     use ReverbClientCurl;
 
-    protected $reverbAuth;
-    public $reverbStoreID;
     private $reverbInfo;
+    private $reverbAuth;
+    public $reverbStoreID;
 
     public function __construct($user_id)
     {

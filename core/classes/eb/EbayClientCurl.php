@@ -2,7 +2,7 @@
 
 namespace eb;
 
-use ecommerce\ecommerce as ecom;
+use ecommerce\Ecommerce as ecom;
 
 trait EbayClientCurl
 {

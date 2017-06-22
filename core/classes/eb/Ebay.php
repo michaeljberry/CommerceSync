@@ -8,7 +8,7 @@ use models\ModelDB as MDB;
 class Ebay
 {
 
-    protected $EbayClient;
+    public $EbayClient;
 
     public function __construct(EbayClient $ebayClient)
     {

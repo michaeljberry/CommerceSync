@@ -2,20 +2,20 @@
 
 namespace eb;
 
-use models\channels\ChannelModel;
 use ecommerce\EcommerceInterface;
+use models\channels\ChannelModel;
 
 class EbayClient implements EcommerceInterface
 {
 
     use EbayClientCurl;
 
-    protected $eBayDevID;
-    protected $eBayAppID;
-    protected $eBayCertID;
-    protected $eBayToken;
+    private $ebayInfo;
+    private $eBayDevID;
+    private $eBayAppID;
+    private $eBayCertID;
+    private $eBayToken;
     public $eBayStoreID;
-    private $ebinfo;
 
     public function __construct($user_id){
         $this->setInfo($user_id);
@@ -38,32 +38,32 @@ class EbayClient implements EcommerceInterface
             'token'
         ];
 
-        $this->ebinfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        $this->ebayInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setDevID()
     {
-        $this->eBayDevID = decrypt($this->ebinfo['devid']);
+        $this->eBayDevID = decrypt($this->ebayInfo['devid']);
     }
 
     private function setAppID()
     {
-        $this->eBayAppID = decrypt($this->ebinfo['appid']);
+        $this->eBayAppID = decrypt($this->ebayInfo['appid']);
     }
 
     private function setCertID()
     {
-        $this->eBayCertID = decrypt($this->ebinfo['certid']);
+        $this->eBayCertID = decrypt($this->ebayInfo['certid']);
     }
 
     private function setToken()
     {
-        $this->eBayToken = decrypt($this->ebinfo['token']);
+        $this->eBayToken = decrypt($this->ebayInfo['token']);
     }
 
     private function setStoreID()
     {
-        $this->eBayStoreID = $this->ebinfo['store_id'];
+        $this->eBayStoreID = $this->ebayInfo['store_id'];
     }
 
     public function getDevID()

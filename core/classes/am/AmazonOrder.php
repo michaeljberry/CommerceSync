@@ -71,7 +71,7 @@ class AmazonOrder extends Amazon
         $param['OrderStatus.Status.2'] = 'PartiallyShipped';
 //        $param['OrderStatus.Status.1'] = 'Shipped';
 //        $param['FulfillmentChannel.Channel.1'] = 'MFN';
-        $from = $this->get_order_dates($this->AmazonClient->am_store_id);
+        $from = $this->get_order_dates($this->AmazonClient->amazonStoreID);
         $from = $from['api_pullfrom'];
 //        $from = "-1";
         $from .= ' days';
@@ -262,7 +262,7 @@ class AmazonOrder extends Amazon
                 $cityId = $ecommerce->citySoi($shippingCity, $stateId);
                 $custId = $ecommerce->customer_soi($firstName,$lastName,ucwords(strtolower($shippingAddressLine1)),ucwords(strtolower($shippingAddressLine2)),$cityId,$stateId,$zipId);
                 if(!LOCAL) {
-                    $orderId = $ecommerce->save_order($this->AmazonClient->am_store_id, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
+                    $orderId = $ecommerce->save_order($this->AmazonClient->amazonStoreID, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
                 }
 
                 $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);

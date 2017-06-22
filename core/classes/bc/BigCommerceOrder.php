@@ -1,13 +1,13 @@
 <?php
 
-namespace bcord;
+namespace bc;
 
-use bc\bigcommerceclass;
 use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
-class bcordclass extends bigcommerceclass
+class BigCommerceOrder extends BigCommerce
 {
-    public function get_bc_orders($BC, $filter, $bc_store_id, $ecommerce, $ibmdata){
+    public function get_bc_orders($BC, $filter, $bc_store_id, Ecommerce $ecommerce, $ibmdata, $folder){
         $orders = $BC::getOrders($filter);
         if($orders) {
             foreach ($orders as $o) {
@@ -40,11 +40,17 @@ class bcordclass extends bigcommerceclass
                     }
                     $city_id = $ecommerce->citySoi($city, $state_id);
                     $cust_id = $ecommerce->customer_soi($first_name,$last_name,ucwords(strtolower($address)),ucwords(strtolower($address2)),$city_id,$state_id,$zip_id);
-                    $order_id = $ecommerce->save_order($bc_store_id, $cust_id, $order_num, $shipping, $shipping_amount, $total_tax);
-                    $info_array = $this->get_bc_order_items($order_num, $ecommerce, $state_code, $total_tax, $order_id);
+                    if(!LOCAL) {
+                        $order_id = $ecommerce->save_order($bc_store_id, $cust_id, $order_num, $shipping, $shipping_amount, $total_tax);
+                    }
+                    $response = $this->getOrderItems($order_num);
+                    $info_array = $this->parseItems($response, $ecommerce, $state_code, $total_tax, $order_id);
                     $item_xml = $info_array['item_xml'];
+                    $channelName = 'BigCommerce';
                     $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $ibmdata);
-                    $ecommerce->save_xml_to_hd($order_num, $xml, 'BigCommerce');
+                    if(!LOCAL) {
+                        $ecommerce->saveXmlToFTP($order_num, $xml, $folder, $channelName);
+                    }
                 }else{
                     echo 'Order ' . $order_num . ' is already in the database.';
                 }
@@ -149,22 +155,24 @@ class bcordclass extends bigcommerceclass
         $items = json_decode($response);
         return $items;
     }
-    public function get_bc_order_items($order_num, $ecommerce, $state_code, $total_tax, $order_id){
-        global $shipping;
+    public function getOrderItems($order_num){
         $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_num . '/products.json';
-        $response = $this->bigcommerceCurl($api_url, 'GET');
+        return $this->bigcommerceCurl($api_url, 'GET');
+    }
 
+    public function parseItems($response, $ecommerce, $state_code, $total_tax, $order_id)
+    {
         $items = json_decode($response);
         $item_xml = '';
         $ponumber = 1;
         foreach($items as $i){
             ecom::dd($i);
-            $product_id = $i->product_id;
-            $quantity = $i->quantity;
-            $title = $i->name;
+            $product_id = (string)$i->product_id;
+            $quantity = (integer)$i->quantity;
+            $title = (string)$i->name;
             $principle = (float)$i->total_ex_tax;
             $item_total = ecom::removeCommasInNumber($principle)/$quantity;
-            $sku = $i->sku;
+            $sku = (string)$i->sku;
             $upc = $this->get_bc_product_upc($product_id);
             $sku_id = $ecommerce->skuSoi($sku);
             $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);

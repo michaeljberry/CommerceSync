@@ -2,20 +2,21 @@
 
 namespace am;
 
-use models\channels\ChannelModel;
 use ecommerce\EcommerceInterface;
+use models\channels\ChannelModel;
 
 class AmazonClient implements EcommerceInterface
 {
 
     use AmazonClientCurl;
 
-    private $am_merchant_id;
-    private $am_marketplace_id;
-    private $am_aws_access_key;
-    private $am_secret_key;
-    public $am_store_id;
-    private $aminfo;
+    private $amazonInfo;
+    private $amazonMerchantID;
+    private $amazonMarketplaceID;
+    private $amazonAWSAccessKey;
+    private $amazonSecretKey;
+    public $amazonStoreID;
+
     public $apiFeedInfo = [
         'FulfillmentInventory' => [
             'versionDate' => '2010-10-01'
@@ -63,57 +64,57 @@ class AmazonClient implements EcommerceInterface
             'secret_key'
         ];
 
-        $this->aminfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        $this->amazonInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setMerchantID()
     {
-        $this->am_merchant_id = decrypt($this->aminfo['merchantid']);
+        $this->amazonMerchantID = decrypt($this->amazonInfo['merchantid']);
     }
 
     private function setMarketplaceID()
     {
-        $this->am_marketplace_id = decrypt($this->aminfo['marketplaceid']);
+        $this->amazonMarketplaceID = decrypt($this->amazonInfo['marketplaceid']);
     }
 
     private function setAWSAccessKey()
     {
-        $this->am_aws_access_key = decrypt($this->aminfo['aws_access_key']);
+        $this->amazonAWSAccessKey = decrypt($this->amazonInfo['aws_access_key']);
     }
 
     private function setSecretKey()
     {
-        $this->am_secret_key = decrypt($this->aminfo['secret_key']);
+        $this->amazonSecretKey = decrypt($this->amazonInfo['secret_key']);
     }
 
     private function setStoreID()
     {
-        $this->am_store_id = $this->aminfo['store_id'];
+        $this->amazonStoreID = $this->amazonInfo['store_id'];
     }
 
     public function getMerchantID()
     {
-        return $this->am_merchant_id;
+        return $this->amazonMerchantID;
     }
 
     public function getMarketplaceID()
     {
-        return $this->am_marketplace_id;
+        return $this->amazonMarketplaceID;
     }
 
     public function getAWSAccessKey()
     {
-        return $this->am_aws_access_key;
+        return $this->amazonAWSAccessKey;
     }
 
     public function getSecretKey()
     {
-        return $this->am_secret_key;
+        return $this->amazonSecretKey;
     }
 
     public function getStoreID()
     {
-        return $this->am_store_id;
+        return $this->amazonStoreID;
     }
 
 }

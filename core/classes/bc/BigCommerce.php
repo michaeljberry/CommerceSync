@@ -2,40 +2,25 @@
 
 namespace bc;
 
-use Crypt;
-use connect\DB;
-use ecommerce\Ecommerce as ecom;
+use ecommerce\Ecommerce;
 
-class bigcommerceclass
+class BigCommerce
 {
-    public $db;
-    protected $bc_store_url;
-    protected $bc_username;
-    protected $bc_api_key;
-    public $bc_store_id;
 
+    public $BigCommerceClient;
 
-    public function __construct($bcclient){
-        $this->db = $bcclient->getDBInstance();
-        $this->bc_store_url = $bcclient->getBCStoreUrl();
-        $this->bc_username = $bcclient->getBCUsername();
-        $this->bc_api_key = $bcclient->getBCAPIKey();
-        $this->bc_store_id = $bcclient->getBCStoreId();
+    public function __construct(BigCommerceClient $bigCommerceClient, $BC)
+    {
+        $this->BigCommerceClient = $bigCommerceClient;
+        $this->configure($BC);
     }
+
     public function configure($BC){
         $BC->configure(array(
             'store_url' => $this->bc_store_url,
             'username' => $this->bc_username,
             'api_key' => $this->bc_api_key
         ));
-    }
-    public function get_bc_app_info($user_id){
-        $query = $this->db->prepare("SELECT store_id, store_url, bc.username, api_key FROM api_bigcommerce AS bc INNER JOIN store ON bc.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'BigCommerce'");
-        $query_params = array(
-            ':user_id' => $user_id
-        );
-        $query->execute($query_params);
-        return $query->fetch();
     }
     public function save_app_info($crypt, $store_id, $store_url, $store_username, $api_key){
         $query = $this->db->prepare("INSERT INTO api_bigcommerce (store_id, store_url, username, api_key) VALUES (:store_id, :store_url, :username, :api_key)");
@@ -279,7 +264,7 @@ class bigcommerceclass
             echo "<br /><br />";
         }
     }
-    public function get_bc_products($BC, $store_id, $e){
+    public function get_bc_products($BC, $store_id, Ecommerce $e){
         $count = $BC::getProductsCount();
         $pages = $count/250;
         for($pn = 4; $pn < 101; $pn++){ //$pn = 36
@@ -422,28 +407,5 @@ class bigcommerceclass
         }
     }
 
-    protected function setCurlOptions($url, $method, $post_string)
-    {
-        $request = curl_init($url);
-        if($method === 'POST' || $method === 'PUT'){
-            curl_setopt($request, CURLOPT_HTTPHEADER, array('Content-type: application/json', 'Content-Length: ' . strlen($post_string)));
-        }elseif ($method === 'GET'){
-            curl_setopt($request, CURLOPT_HTTPHEADER, array('Accept: application/json', 'Content-Length: 0'));
-        }
 
-        if($post_string){
-            curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
-        }
-        curl_setopt($request, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($request, CURLOPT_USERPWD, $this->bc_username . ":" . $this->bc_api_key);
-        curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
-        return $request;
-    }
-
-    public function bigcommerceCurl($url, $method, $post_string = null)
-    {
-        $request = $this->setCurlOptions($url, $method, $post_string);
-        return ecom::curlRequest($request);
-    }
 }

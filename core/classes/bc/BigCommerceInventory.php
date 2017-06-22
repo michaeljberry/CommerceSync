@@ -1,11 +1,10 @@
 <?php
 
-namespace bcinv;
+namespace bc;
 
-use bc\bigcommerceclass;
 use ecommerce\Ecommerce as ecom;
 
-class bcinvclass extends bigcommerceclass
+class BigCommerceInventory extends BigCommerce
 {
     public function count_inventory_for_bc(){
         $query = $this->db->prepare("SELECT COUNT(Distinct l.stock_id) AS idcount FROM listing_bigcommerce l JOIN stock st ON st.id = l.stock_id JOIN store ON store.id = l.store_id JOIN product_availability pa ON pa.store_id = store.id WHERE store.id = '3' AND pa.is_available = '1'");

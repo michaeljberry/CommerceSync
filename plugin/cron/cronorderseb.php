@@ -7,9 +7,8 @@ require WEBPLUGIN . 'eb/ebvar.php';
 
 $start = startClock();
 $user_id = 838;
-$company_id = 1;
 
-$ebayDays = $ebord->get_order_days($EbayClient->getStoreID());
+$ebayDays = $ebord->get_order_days($ebord->ebayClient->getStoreID());
 
 $folder = '/home/chesbro_amazon/';
 

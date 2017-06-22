@@ -2,7 +2,7 @@
 
 namespace am;
 
-use ecommerce\ecommerce as ecom;
+use ecommerce\Ecommerce as ecom;
 
 trait AmazonClientCurl
 {
@@ -16,20 +16,20 @@ trait AmazonClientCurl
     public function setParams($action, $feedtype, $version, $paramAdditionalConfig = [])
     {
         $param = [];
-        $param['AWSAccessKeyId'] = $this->am_aws_access_key;
+        $param['AWSAccessKeyId'] = $this->amazonAWSAccessKey;
         $param['Action'] = $action;
 
         //Parse $paramAdditionalConfig Array
         if (in_array('Merchant', $paramAdditionalConfig))
-            $param['Merchant'] = $this->am_merchant_id;
+            $param['Merchant'] = $this->amazonMerchantID;
         if (in_array('MarketplaceId.Id.1', $paramAdditionalConfig))
-            $param['MarketplaceId.Id.1'] = $this->am_marketplace_id;
+            $param['MarketplaceId.Id.1'] = $this->amazonMarketplaceID;
         if (in_array('PurgeAndReplace', $paramAdditionalConfig))
             $param['PurgeAndReplace'] = 'false';
         if (in_array('MarketplaceId', $paramAdditionalConfig))
-            $param['MarketplaceId'] = $this->am_marketplace_id;
+            $param['MarketplaceId'] = $this->amazonMarketplaceID;
         if (in_array('SellerId', $paramAdditionalConfig))
-            $param['SellerId'] = $this->am_merchant_id;
+            $param['SellerId'] = $this->amazonMerchantID;
 
         if (!empty($feedtype)) {
             $param['FeedType'] = $feedtype;
@@ -116,7 +116,7 @@ trait AmazonClientCurl
      */
     protected function encodeSignature($sign)
     {
-        $signature = hash_hmac("sha256", $sign, $this->am_secret_key, true);
+        $signature = hash_hmac("sha256", $sign, $this->amazonSecretKey, true);
         $signature = urlencode(base64_encode($signature));
         return $signature;
     }
@@ -150,7 +150,7 @@ trait AmazonClientCurl
         $xml = [
             'Header' => [
                 'DocumentVersion' => '1.01',
-                'MerchantIdentifier' => $this->am_merchant_id
+                'MerchantIdentifier' => $this->amazonMerchantID
             ]
         ];
 

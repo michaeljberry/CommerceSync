@@ -3,7 +3,7 @@
 namespace eb;
 
 use ecommerce\Ecommerce as ecom;
-use models\ModelDB as EDB;
+use models\ModelDB as MDB;
 
 class Ebay
 {
@@ -46,7 +46,7 @@ class Ebay
             ':id' => $crypt->encrypt($id),
             ':store_id' => $store_id
         ];
-        EDB::query($sql, $query_params);
+        MDB::query($sql, $query_params);
     }
     public function get_ebay_app_id($user_id, $sand = null){
         if(empty($sand)) {
@@ -57,31 +57,31 @@ class Ebay
         $query_params = [
             ':user_id' => $user_id
         ];
-        return EDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $query_params, 'fetch');
     }
     public function get_listings($item_id = null){
         if(!$item_id) {
             $sql = "SELECT id, store_listing_id, price FROM listing_ebay";
-            return EDB::query($sql, [], 'fetchAll');
+            return MDB::query($sql, [], 'fetchAll');
         }else{
             $sql = "SELECT id FROM listing_ebay WHERE store_listing_id = :item_id";
             $query_params = [
                 'item_id' => $item_id
             ];
-            return EDB::query($sql, $query_params, 'fetchColumn');
+            return MDB::query($sql, $query_params, 'fetchColumn');
         }
     }
 
     public function get_recently_updated_listings()
     {
         $sql = "SELECT store_listing_id, description FROM listing_ebay WHERE DATE(last_edited) = CURRENT_DATE ";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
     public function get_listing_upc()
     {
         $sql = "SELECT le.id, le.store_listing_id, le.sku, p.upc FROM listing_ebay le LEFT JOIN sku sk ON le.sku = sk.sku LEFT JOIN product p ON p.id = sk.product_id";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
     public function get_listing_id($sku){
@@ -89,7 +89,7 @@ class Ebay
         $query_params = [
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     public function get_transaction_id($item_id){
@@ -215,7 +215,7 @@ class Ebay
         $query_params = [
             ':store_id' => $store_id
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
     public function set_order_days($store_id, $days)
     {
@@ -224,6 +224,6 @@ class Ebay
             ':store_id' => $store_id,
             ':api_days' => $days
         ];
-        EDB::query($sql, $query_params);
+        MDB::query($sql, $query_params);
     }
 }

@@ -4,14 +4,14 @@ namespace ecommerce;
 
 use PDO;
 use controllers\channels\ChannelHelperController as CHC;
-use models\ModelDB as EDB;
+use models\ModelDB as MDB;
 
 class Ecommerce
 {
     public function getCustomersCompanies()
     {
         $sql = "SELECT c.id as company FROM account a LEFT OUTER JOIN sync_userroles sur ON sur.UserID = a.id LEFT OUTER JOIN sync_rolepermissions srp ON srp.RoleID = sur.RoleID LEFT OUTER JOIN sync_permissions sp ON srp.PermissionID = sp.ID LEFT OUTER JOIN company c ON c.id = a.company_id WHERE sp.Title IN ('root', 'management') GROUP BY company";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
     public function completeOrderTracking($id)
@@ -20,7 +20,7 @@ class Ecommerce
         $query_params = [
             ':order_id' => $id
         ];
-        EDB::query($sql, $query_params);
+        MDB::query($sql, $query_params);
     }
 
     public function cancelOrder($id)
@@ -29,50 +29,55 @@ class Ecommerce
         $query_params = [
             ':order_num' => $id
         ];
-        EDB::query($sql, $query_params);
+        MDB::query($sql, $query_params);
     }
 
     //Get orders by supplied search field
-    public function getOrders($array, $channel){
+    public function getOrders($array, $channel)
+    {
         $result_array = CHC::parseConditions($array);
         $condition = $result_array[0];
         $query_params = $result_array[1];
         $query_params['channel'] = $channel;
         $sql = "SELECT o.id, o.order_num, o.date, c.first_name, c.last_name, t.tracking_num, t.carrier FROM sync.order o JOIN customer c ON o.cust_id = c.id LEFT JOIN tracking t ON o.id = t.order_id JOIN order_sync os ON o.order_num = os.order_id WHERE $condition AND os.type = :channel";
-        return EDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $query_params, 'fetchAll');
     }
 
     //Get specific order information
-    public function getOrder($order_id){
+    public function getOrder($order_id)
+    {
         $sql = "SELECT o.order_num, o.date, o.ship_method, o.shipping_amount, o.taxes, c.first_name, c.last_name, c.street_address, c.street_address2, city.name AS city, s.name, s.abbr as state_abbr, z.zip, t.tracking_num, t.carrier, os.processed as date_processed, os.success, os.type as channel, os.track_successful FROM sync.order o JOIN customer c ON o.cust_id = c.id LEFT JOIN tracking t ON o.id = t.order_id JOIN order_sync os ON o.order_num = os.order_id JOIN state s ON c.state_id = s.id JOIN city ON c.city_id = city.id JOIN zip z ON c.zip_id = z.id WHERE o.id = :order_id";
         $query_params = [
             ':order_id' => $order_id
         ];
-        return EDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $query_params, 'fetch');
     }
 
     //Get order items
-    public function getOrderItems($order_id){
+    public function getOrderItems($order_id)
+    {
         $sql = "SELECT s.sku, p.name, oi.price, oi.quantity FROM order_item oi JOIN sku s ON oi.sku_id = s.id JOIN product p ON s.product_id = p.id WHERE order_id = :order_id";
         $query_params = [
             ":order_id" => $order_id
         ];
-        return EDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $query_params, 'fetchAll');
     }
 
     //***************Tracking Number*********************//
     //To mark an order as "tracking_successful"
-    public function updateTrackingSuccessful($order_id){
+    public function updateTrackingSuccessful($order_id)
+    {
         $sql = "UPDATE order_sync SET track_successful = '1' WHERE order_id = :order_id";
         $query_params = [
             ':order_id' => $order_id
         ];
-        return EDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $query_params, 'id');
     }
 
-    public function markAsShipped($order_num, $channel){
+    public function markAsShipped($order_num, $channel)
+    {
         $response = $this->updateTrackingSuccessful($order_num);
-        if($response) {
+        if ($response) {
             echo "Tracking for $channel order $order_num was updated!";
             return true;
         }
@@ -80,35 +85,38 @@ class Ecommerce
     }
 
     //Update Tracking #'s for orders
-    public function updateTrackingNum($order_id, $tracking_num, $carrier){
+    public function updateTrackingNum($order_id, $tracking_num, $carrier)
+    {
         $sql = "SELECT id FROM tracking WHERE order_id = :order_id AND tracking_num = :tracking_num";
         $query_params = [
             ':order_id' => $order_id,
             ':tracking_num' => $tracking_num
         ];
-        $tracking_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($tracking_id)) {
+        $tracking_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($tracking_id)) {
             $sql = "INSERT INTO tracking (order_id, tracking_num, carrier) VALUES (:order_id, :tracking_num, :carrier)";
             $query_params = [
                 ':order_id' => $order_id,
                 ':tracking_num' => $tracking_num,
                 ':carrier' => $carrier
             ];
-            $tracking_id = EDB::query($sql, $query_params, 'id');
+            $tracking_id = MDB::query($sql, $query_params, 'id');
         }
         return $tracking_id;
     }
 
-    public function getOrderId($order_num){
+    public function getOrderId($order_num)
+    {
         $sql = "SELECT id FROM sync.order WHERE order_num = :order_num";
         $query_params = [
             ':order_num' => $order_num
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     //Save order stats for quicker compilation
-    public function saveOrderStats($channel, $date, $sales, $units_sold){
+    public function saveOrderStats($channel, $date, $sales, $units_sold)
+    {
         $sql = "INSERT INTO order_stats (channel, stats_date, sales, units_sold) VALUES (:channel, :date, :sales, :units_sold) ON DUPLICATE KEY UPDATE sales = :sales2, units_sold = :units_sold2";
         $query_params = [
             ':channel' => $channel,
@@ -118,33 +126,36 @@ class Ecommerce
             ':sales2' => $sales,
             ':units_sold2' => $units_sold
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Get order information for the day
-    public function getOrderStatsWeek(){
+    public function getOrderStatsWeek()
+    {
         $sql = "SELECT DATE(o.date) AS date, ROUND(SUM(oi.price), 2) AS sales, SUM(oi.quantity) AS units_sold, os.type AS channel FROM sync.order_item oi JOIN sync.order o ON o.id = oi.order_id JOIN order_sync os ON os.order_id = o.order_num WHERE o.date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 WEEK) AND NOW() GROUP BY DATE(o.date), os.type";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
-    public function getOrderStatsSum($channel = null, $period = 'THISMTD', $period2 = null, $period3 = null){
+    public function getOrderStatsSum($channel = null, $period = 'THISMTD', $period2 = null, $period3 = null)
+    {
         $interval = CHC::sanitize_time_period($period);
         $dateColumn = 'stats_date';
         $condition = CHC::determine_time_condition($dateColumn, $period, $period2, $period3);
 
-        if(empty($channel)) {
+        if (empty($channel)) {
             $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold FROM order_stats WHERE $condition GROUP BY channel";
             $query_params = [];
-        }else{
+        } else {
             $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold FROM order_stats WHERE $condition AND channel = :channel";
             $query_params = [
                 ':channel' => $channel
             ];
         }
-        return EDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $query_params, 'fetchAll');
     }
 
-    public function stats_table($channel = null, $period = 'THISMTD', $period2 = null, $period3 = null){
+    public function stats_table($channel = null, $period = 'THISMTD', $period2 = null, $period3 = null)
+    {
         $html = "<div>***Stats are only available after 9/08/2015***</div>
                 <table class='stattable'><thead>
                 <tr>
@@ -180,51 +191,51 @@ class Ecommerce
         $channel_array2 = [];
         //getOrderStatsSum($channel, $time, $period)
         $today = $this->getOrderStatsSum($channel, 'TODAY', $period2, $period3);
-        if(!empty($today[0]['channel'])) {
+        if (!empty($today[0]['channel'])) {
             $channel_array = $this->addStatsToArray($today, $channel_array, 'today');
         }
 
         $yesterday = $this->getOrderStatsSum($channel, 'YESTERDAY', $period2, $period3);
-        if(!empty($yesterday[0]['channel'])) {
+        if (!empty($yesterday[0]['channel'])) {
             $channel_array = $this->addStatsToArray($yesterday, $channel_array, 'yesterday');
         }
 
         $wtd = $this->getOrderStatsSum($channel, 'THISWTD', $period2, $period3);
-        if(!empty($wtd[0]['channel'])) {
+        if (!empty($wtd[0]['channel'])) {
             $channel_array = $this->addStatsToArray($wtd, $channel_array, 'wtd');
         }
 
         $mtd = $this->getOrderStatsSum($channel, 'THISMTD', $period2, $period3);
-        if(!empty($mtd[0]['channel'])) {
+        if (!empty($mtd[0]['channel'])) {
             $channel_array = $this->addStatsToArray($mtd, $channel_array, 'mtd');
         }
 
         $ytd = $this->getOrderStatsSum($channel, 'THISYTD', $period2, $period3);
-        if(!empty($ytd[0]['channel'])) {
+        if (!empty($ytd[0]['channel'])) {
             $channel_array = $this->addStatsToArray($ytd, $channel_array, 'ytd');
         }
 
         $mtdly = $this->getOrderStatsSum($channel, 'MTDLASTYEAR', $period2, $period3);
-        if(!empty($mtdly[0]['channel'])) {
+        if (!empty($mtdly[0]['channel'])) {
             $channel_array2 = $this->addStatsToArray($mtdly, $channel_array2, 'mtdly');
         }
 
         $mtotally = $this->getOrderStatsSum($channel, 'LASTYEARMONTH', $period2, $period3);
-        if(!empty($mtotally[0]['channel'])) {
+        if (!empty($mtotally[0]['channel'])) {
             $channel_array2 = $this->addStatsToArray($mtotally, $channel_array2, 'mtotally');
         }
 
         $ytdly = $this->getOrderStatsSum($channel, 'LASTYTD', $period2, $period3);
-        if(!empty($ytdly[0]['channel'])) {
+        if (!empty($ytdly[0]['channel'])) {
             $channel_array2 = $this->addStatsToArray($ytdly, $channel_array2, 'ytdly');
         }
 
         $ytotally = $this->getOrderStatsSum($channel, 'LASTYEAR', $period2, $period3);
-        if(!empty($ytotally[0]['channel'])) {
+        if (!empty($ytotally[0]['channel'])) {
             $channel_array2 = $this->addStatsToArray($ytotally, $channel_array2, 'ytotally');
         }
 
-        foreach($channel_array as $key => $value){
+        foreach ($channel_array as $key => $value) {
             $t_sales = self::formatMoney((!empty($value['today']['sales']) ? $value['today']['sales'] : "0.00"));
             $t_units = (!empty($value['today']['units_sold']) ? $value['today']['units_sold'] : "0");
             $yesterday_sales = self::formatMoney((!empty($value['yesterday']['sales']) ? $value['yesterday']['sales'] : "0.00"));
@@ -249,7 +260,7 @@ class Ecommerce
             $html .= "<td>$y_units</td>";
             $html .= "</tr>";
         }
-        if(!empty($ytdly[0]['channel'])) {
+        if (!empty($ytdly[0]['channel'])) {
             $html .= "<tr>";
             $html .= "<th colspan='11'>Last Year</th>";
             $html .= "</tr>";
@@ -264,11 +275,11 @@ class Ecommerce
             foreach ($channel_array2 as $key => $value) {
                 $m_sales = self::formatMoney((!empty($value['mtdly']['sales']) ? $value['mtdly']['sales'] : "0.00"));
                 $m_units = (!empty($value['mtdly']['units_sold']) ? $value['mtdly']['units_sold'] : "0");
-                $mtotal_sales = self::formatMoney( (!empty($value['mtotally']['sales']) ? $value['mtotally']['sales'] : "0.00"));
+                $mtotal_sales = self::formatMoney((!empty($value['mtotally']['sales']) ? $value['mtotally']['sales'] : "0.00"));
                 $mtotal_units = (!empty($value['mtotally']['units_sold']) ? $value['mtotally']['units_sold'] : "0");
                 $y_sales = self::formatMoney((!empty($value['ytdly']['sales']) ? $value['ytdly']['sales'] : "0.00"));
                 $y_units = (!empty($value['ytdly']['units_sold']) ? $value['ytdly']['units_sold'] : "0");
-                $ytotal_sales = self::formatMoney( (!empty($value['ytotally']['sales']) ? $value['ytotally']['sales'] : "0.00"));
+                $ytotal_sales = self::formatMoney((!empty($value['ytotally']['sales']) ? $value['ytotally']['sales'] : "0.00"));
                 $ytotal_units = (!empty($value['ytotally']['units_sold']) ? $value['ytotally']['units_sold'] : "0");
                 $html .= "<tr>";
                 $html .= "<td>$key</td>";
@@ -284,8 +295,9 @@ class Ecommerce
         echo $html;
     }
 
-    public function addStatsToArray($array, $channel_array, $period){
-        foreach($array as $t){
+    public function addStatsToArray($array, $channel_array, $period)
+    {
+        foreach ($array as $t) {
             $channel = $t['channel'];
             $t_sales = $t['sales'];
             $t_units_sold = $t['units_sold'];
@@ -315,26 +327,26 @@ class Ecommerce
         $datearray = [];
         $returnArray = [];
         $timeformat = '';
-        if($duration === 'daily'){
+        if ($duration === 'daily') {
             $timeformat = 'Y-m-d';
-        }elseif($duration === 'monthly'){
+        } elseif ($duration === 'monthly') {
             $timeformat = 'Y-m';
         }
 
-        foreach($statsArray as $r => $value){
+        foreach ($statsArray as $r => $value) {
             $date = self::createFormattedDate($value['stats_date'], $timeformat);
 
-            if(!preg_grep('/' . $date . '/', $datearray)){
+            if (!preg_grep('/' . $date . '/', $datearray)) {
                 $datearray[] = $date;
                 $key = array_search($date, $datearray);
             }
 
-            foreach($value as $k => $v){
-                if($k === 'channel'){
+            foreach ($value as $k => $v) {
+                if ($k === 'channel') {
                     $channel = $v;
-                }elseif($k === 'stats_date'){
+                } elseif ($k === 'stats_date') {
                     continue;
-                }else{
+                } else {
                     $var = $k;
                     $$var = $v;
                     $jsonarray[$channel . '-' . $var][$key] = $$var;
@@ -349,10 +361,10 @@ class Ecommerce
     public static function getMaxKey($array)
     {
         $maxkey = 0;
-        foreach($array as $json){
+        foreach ($array as $json) {
             $keys = array_keys($json);
             $numkey = end($keys);
-            if($numkey > $maxkey){
+            if ($numkey > $maxkey) {
                 $maxkey = $numkey;
             }
         }
@@ -361,9 +373,9 @@ class Ecommerce
 
     public static function sortAndFillInArray($jsonarray, $maxkey)
     {
-        foreach($jsonarray as $key => $json){
-            for($i = 0; $i <= $maxkey; $i++){
-                if(!array_key_exists($i, $json)){
+        foreach ($jsonarray as $key => $json) {
+            for ($i = 0; $i <= $maxkey; $i++) {
+                if (!array_key_exists($i, $json)) {
                     $json[$i] = '0';
                 }
             }
@@ -376,129 +388,139 @@ class Ecommerce
 
     //-----------Address-------------------//
     //Return ZIP_id from Select or Insert If Not Exists
-    public function zipSoi($zip, $state_id = ''){
-        $zip = substr($zip,0,5); //Constrain ZIP to first 5 characters
+    public function zipSoi($zip, $state_id = '')
+    {
+        $zip = substr($zip, 0, 5); //Constrain ZIP to first 5 characters
         $sql = "SELECT id FROM zip WHERE zip.zip = :zip";
         $query_params = [
             ':zip' => $zip
         ];
-        $zip_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($zip_id)){
+        $zip_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($zip_id)) {
             $sql = "INSERT INTO zip (state_id, zip) VALUES (:state_id, :zip) ";
             $query_params = [
                 ':state_id' => $state_id,
                 ':zip' => $zip
             ];
-            $zip_id = EDB::query($sql, $query_params, 'id');
+            $zip_id = MDB::query($sql, $query_params, 'id');
         }
         return $zip_id;
     }
 
     //Return State_id from Abbreviation
-    public function stateId($state_abbr){
+    public function stateId($state_abbr)
+    {
         $sql = "SELECT id FROM state WHERE state.abbr = :state";
         $query_params = [
             ':state' => $state_abbr
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
+
     //Return State Abbreviation from State name
-    public function stateToAbbr($state){
+    public function stateToAbbr($state)
+    {
         $sql = "SELECT abbr FROM state WHERE state.name = :state";
         $query_params = [
             ':state' => $state
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     //Return City_id from Select or Insert if not Exists
-    public function citySoi($city, $state_id){
+    public function citySoi($city, $state_id)
+    {
         $sql = "SELECT id FROM city WHERE city.name = :city AND state_id = :state_id";
         $query_params = [
             ':city' => ucwords(strtolower($city)),
             ':state_id' => $state_id
         ];
-        $city_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($city_id)){
+        $city_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($city_id)) {
             $sql = "INSERT INTO city (state_id, name) VALUES (:state_id, :city)";
             $query_params = [
                 ':city' => ucwords(strtolower($city)),
                 ':state_id' => $state_id
             ];
-            $city_id = EDB::query($sql, $query_params, 'id');
+            $city_id = MDB::query($sql, $query_params, 'id');
         }
         return $city_id;
     }
 
     //--------------Product Spec---------------//
     //Return sku_id from Select or Insert if not Exists
-    public function skuSoi($sku){
+    public function skuSoi($sku)
+    {
         $sql = "SELECT id FROM sku WHERE sku.sku = :sku";
         $query_params = [
             ':sku' => $sku
         ];
-        $sku_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($sku_id) && !empty($sku)){
+        $sku_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($sku_id) && !empty($sku)) {
             $sql = "INSERT INTO sku (sku) VALUES (:sku)";
             $query_params = [
                 ':sku' => $sku
             ];
-            $sku_id = EDB::query($sql, $query_params, 'id');
+            $sku_id = MDB::query($sql, $query_params, 'id');
         }
         return $sku_id;
     }
 
-    public function getSkuIdFromProductId($product_id){
+    public function getSkuIdFromProductId($product_id)
+    {
         $sql = "SELECT id FROM sku WHERE product_id = :product_id";
         $query_params = [
             ':product_id' => $product_id
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     //Normalize conditions
-    public function normalCondition($condition){
-        if($condition == "New"){
+    public function normalCondition($condition)
+    {
+        if ($condition == "New") {
             $condition = "New";
-        }elseif($condition == "Brand New"){
+        } elseif ($condition == "Brand New") {
             $condition = "Brand New";
-        }elseif($condition == "Like New" || $condition == "UsedLikeNew"){
+        } elseif ($condition == "Like New" || $condition == "UsedLikeNew") {
             $condition = "Used Like New";
-        }elseif($condition == "Very Good" || $condition == "UsedVeryGood"){
+        } elseif ($condition == "Very Good" || $condition == "UsedVeryGood") {
             $condition = "UsedVeryGood";
-        }elseif($condition == "Good" ||$condition == "UsedGood"){
+        } elseif ($condition == "Good" || $condition == "UsedGood") {
             $condition = "UsedGood";
-        }elseif($condition == "Acceptable" ||$condition == "UsedAcceptable"){
+        } elseif ($condition == "Acceptable" || $condition == "UsedAcceptable") {
             $condition = "UsedAcceptable";
-        }elseif($condition == "Used"){
+        } elseif ($condition == "Used") {
             $condition = "Used";
-        }elseif($condition == "Refurbished"){
+        } elseif ($condition == "Refurbished") {
             $condition = "Refurbished";
         }
         return $condition;
     }
 
     //Return condition_id from Select or Insert if not Exists
-    public function conditionSoi($condition){
+    public function conditionSoi($condition)
+    {
         $sql = "SELECT id FROM sync.condition WHERE condition.condition = :condition";
         $query_params = [
             ':condition' => $condition
         ];
-        $condition_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($condition_id)) {
+        $condition_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($condition_id)) {
             return $condition;
         }
         return $condition_id;
     }
 
     //Return stock_id from Select or Insert if not Exists
-    public function stockSoi($sku_id, $condition_id = null, $uofm = 1){
+    public function stockSoi($sku_id, $condition_id = null, $uofm = 1)
+    {
         $sql = "SELECT id FROM stock WHERE sku_id = :sku_id";
         $query_params = [
             ':sku_id' => $sku_id
         ];
-        $stock_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($stock_id)) {
+        $stock_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($stock_id)) {
             //Add sku_id to Stock Table
             $sql = "INSERT INTO stock (sku_id, condition_id, uofm_id) VALUES (:sku_id, :condition_id, :uofm_id)";
             $query_params = [
@@ -506,22 +528,23 @@ class Ecommerce
                 ":condition_id" => $condition_id,
                 ":uofm_id" => 1
             ];
-            $stock_id = EDB::query($sql, $query_params, 'id');
+            $stock_id = MDB::query($sql, $query_params, 'id');
         }
         return $stock_id;
     }
 
     //Return sku_id from Product Select or insert if not Exists
-    public function productSoiSku($sku, $name, $sub_title, $description, $upc, $weight, $status = ''){
+    public function productSoiSku($sku, $name, $sub_title, $description, $upc, $weight, $status = '')
+    {
         $sql = "SELECT product.id, product.upc, product.status FROM product JOIN sku ON sku.product_id = product.id WHERE sku.sku = :sku";
         $query_params = [
             ':sku' => $sku
         ];
-        $results = EDB::query($sql, $query_params, 'fetch');
+        $results = MDB::query($sql, $query_params, 'fetch');
         $product_id = $results['id'];
         $upc2 = $results['upc'];
         $active = $results['status'];
-        if(empty($product_id)){
+        if (empty($product_id)) {
             $sql = "INSERT INTO product (product.name, subtitle, description, upc, weight) VALUES (:name, :subtitle, :description, :upc, :weight)";
             $query_params = [
                 ':name' => $name,
@@ -530,58 +553,60 @@ class Ecommerce
                 ':upc' => $upc,
                 ':weight' => $weight
             ];
-            $product_id = EDB::query($sql, $query_params, 'id');
+            $product_id = MDB::query($sql, $query_params, 'id');
             $sql = "INSERT INTO sku (product_id, sku) VALUES (:product_id, :sku) ON DUPLICATE KEY UPDATE product_id = :product_id2";
             $query_params = [
                 ':product_id' => $product_id,
                 ':sku' => $sku,
                 ':product_id2' => $product_id
             ];
-            $sku_id = EDB::query($sql, $query_params, 'id');
-        }elseif(empty($upc2)){
+            $sku_id = MDB::query($sql, $query_params, 'id');
+        } elseif (empty($upc2)) {
             $sql = "UPDATE product SET upc = :upc WHERE id = :id";
             $query_params = [
                 ':upc' => $upc,
                 ':id' => $product_id
             ];
-            $sku_id = EDB::query($sql, $query_params, 'id');
+            $sku_id = MDB::query($sql, $query_params, 'id');
             echo "$sku's UPC was updated";
-        }elseif(empty($active)){
+        } elseif (empty($active)) {
             $sql = "UPDATE product SET status = :status WHERE id = :id";
             $query_params = [
                 ':status' => $status,
                 ':id' => $product_id
             ];
-            EDB::query($sql, $query_params, 'boolean');
+            MDB::query($sql, $query_params, 'boolean');
             $sku_id = $this->getSkuIdFromProductId($product_id);
-        }else{
+        } else {
             $sku_id = $this->skuSoi($sku);
         }
         return $sku_id;
     }
 
     //Return product_price_id from Product_Price Select or insert if not exists
-    public function priceSoi($sku_id, $store_id, $price = null){
+    public function priceSoi($sku_id, $store_id, $price = null)
+    {
         $sql = "SELECT id FROM product_price WHERE sku_id = :sku_id AND store_id = :store_id";
         $query_params = [
             ':sku_id' => $sku_id,
             ':store_id' => $store_id
         ];
-        $product_price_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($product_price_id)){
+        $product_price_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($product_price_id)) {
             $sql = "INSERT INTO product_price (sku_id, price, store_id) VALUES (:sku_id, :price, :store_id)";
             $query_params = [
                 ':sku_id' => $sku_id,
                 ':price' => $price,
                 ':store_id' => $store_id
             ];
-            $product_price_id = EDB::query($sql, $query_params, 'id');
+            $product_price_id = MDB::query($sql, $query_params, 'id');
         }
         return $product_price_id;
     }
 
     //Update costs based on sku
-    public function updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost){
+    public function updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost)
+    {
         $sql = "INSERT INTO product_cost (sku_id, msrp, pl10, map, pl1, cost) VALUES (:sku_id, :msrp, :pl10, :map, :pl1, :cost) ON DUPLICATE KEY UPDATE msrp = :msrp2, pl10 = :pl102, map = :map2, pl1 = :pl12, cost = :cost2";
         $query_params = [
             ':sku_id' => $sku_id,
@@ -596,16 +621,17 @@ class Ecommerce
             ':pl102' => self::toCents($pl10),
             ':cost2' => self::toCents($cost)
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
-    public function getSKUCosts($sku, $table){
+    public function getSKUCosts($sku, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT (pc.msrp/100)as msrp, (pc.pl10/100) as pl10, (pc.pl1/100) as pl1, (pc.cost/100) as cost, lt.override_price, lt.title, p.upc FROM product_cost pc JOIN sku sk ON sk.id = pc.sku_id JOIN product p ON p.id = sk.product_id JOIN $table lt ON lt.sku = sk.sku WHERE sk.sku = :sku";
         $query_params = [
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetch', PDO::FETCH_ASSOC);
+        return MDB::query($sql, $query_params, 'fetch', PDO::FETCH_ASSOC);
     }
 
     public function getSalesHistory($sku_id)
@@ -631,139 +657,154 @@ class Ecommerce
         $query_params = [
             ':sku_id' => $sku_id
         ];
-        return EDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_ASSOC);
+        return MDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_ASSOC);
     }
 
     public function formatChannelRecentSales($ebayRecentSales)
     {
         $items = $ebayRecentSales->searchResult;
-        foreach ($items->item as $item){
+        foreach ($items->item as $item) {
             static::dd($item);
             $soldDate = self::createFormattedDate($item->listingInfo->endTime, 'Y-m-d');
             $url = $item->viewItemURL;
         }
     }
 
-    public function getUpsideDownCost(){
+    public function getUpsideDownCost()
+    {
         $sql = "SELECT sk.sku, (pc.pl10/100) as pl10, (pc.pl1/100) as pl1, (pc.cost/100) as cost FROM sku sk LEFT JOIN product_cost pc ON sk.id = pc.sku_id WHERE pc.pl10 < pc.pl1";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
     //Update price based on sku
-    public function updateSKUPrice($sku, $price, $table){
+    public function updateSKUPrice($sku, $price, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "UPDATE $table SET price = :price WHERE sku = :sku";
         $query_params = [
             ':price' => $price,
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Update Override on price
-    public function updateSKUOverride($sku, $override, $table){
+    public function updateSKUOverride($sku, $override, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "UPDATE $table SET override_price = :override_price WHERE sku = :sku";
         $query_params = [
             ':override_price' => $override,
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Update photo_url
-    public function updateSKUPhoto($sku, $photo_url, $table){
+    public function updateSKUPhoto($sku, $photo_url, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "UPDATE $table SET photo_url = :photo_url WHERE sku = :sku";
         $query_params = [
             ':photo_url' => $photo_url,
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Append to Description
-    public function appendSKUDescription($sku, $description, $table){
+    public function appendSKUDescription($sku, $description, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "UPDATE $table SET description = CONCAT(description, ' ', :description) WHERE sku = :sku";
         $query_params = [
             ':description' => $description,
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Get Description
-    public function getSKUDescription($sku, $table){
+    public function getSKUDescription($sku, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT description FROM $table WHERE sku = :sku";
         $query_params = [
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public function getCategoryId($category_name, $table){
+    public function getCategoryId($category_name, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT id FROM $table WHERE category_name = :category_name";
         $query_params = [
             ':category_name' => $category_name
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public function getCategoryToMap($category_id = null){
-        if(empty($category_id)) {
+    public function getCategoryToMap($category_id = null)
+    {
+        if (empty($category_id)) {
             $sql = "SELECT cm.id as id, cm.categories_ebay_id, cm.categories_amazon_id, cm.categories_bigcommerce_id, ca.category_name AS am_cat_name, ce.category_name AS eb_cat_name, cb.category_name AS bc_cat_name FROM categories_mapped cm LEFT JOIN categories_amazon ca ON cm.categories_amazon_id = ca.category_id LEFT JOIN categories_ebay ce ON cm.categories_ebay_id = ce.category_id LEFT JOIN categories_bigcommerce cb ON cm.categories_bigcommerce_id = cb.category_id ORDER BY categories_ebay_id";
             $query_params = [];
-        }else{
+        } else {
             $sql = "SELECT categories_amazon_id AS id FROM categories_mapped WHERE categories_ebay_id = :cat";
             $query_params = [
                 ':cat' => $category_id
             ];
         }
-        return EDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $query_params, 'fetchAll');
     }
 
-    public function getParentCategories($table){
+    public function getParentCategories($table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT category_id, parent_category_id, category_name FROM $table WHERE category_id = parent_category_id ORDER BY parent_category_id ASC";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
-    public function getChildCategories($table){
+    public function getChildCategories($table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT category_id, parent_category_id, category_name FROM $table WHERE category_id != parent_category_id ORDER BY parent_category_id ASC";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
-    public function getCategory($cat_id){
+    public function getCategory($cat_id)
+    {
         $sql = "SELECT category_id, parent_category_id, category_name FROM categories_ebay WHERE category_id LIKE :cat_id ORDER BY parent_category_id ASC";
         $query_params = [
             ':cat_id' => "%" . $cat_id . "%"
         ];
-        return EDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $query_params, 'fetchAll');
     }
-    public function getCategoryFeeOfSKU($table, $table2, $sku){
+
+    public function getCategoryFeeOfSKU($table, $table2, $sku)
+    {
         $table = CHC::sanitize_table_name($table);
         $table2 = CHC::sanitize_table_name($table2);
         $sql = "SELECT category_fee FROM $table cat LEFT JOIN $table2 list ON cat.category_id = list.primary_category WHERE list.sku = :sku";
         $query_params = [
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public function get_all_sub_categories($parent_category, $table){
+    public function get_all_sub_categories($parent_category, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT category_id, parent_category_id, category_name FROM $table WHERE parent_category_id = :parent_category_id ORDER BY category_id ASC";
         $query_params = [
             ':parent_category' => $parent_category
         ];
-        return EDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $query_params, 'fetchAll');
     }
 
-    public function save_category($category_id, $category_name, $category_parent_id, $table){
+    public function save_category($category_id, $category_name, $category_parent_id, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "INSERT INTO $table (category_id, parent_category_id, category_name) VALUES (:category_id, :parent_category_id, :category_name) ON DUPLICATE KEY UPDATE category_name = :category_name2";
         $query_params = [
@@ -772,46 +813,50 @@ class Ecommerce
             ":category_name" => $category_name,
             ':category_name2' => $category_name
         ];
-        return EDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $query_params, 'id');
     }
 
-    public function get_category_fee($category_id){
+    public function get_category_fee($category_id)
+    {
         $sql = "SELECT category_fee FROM categories_ebay WHERE category_id = :category_id";
         $query_params = [
             ':category_id' => $category_id
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public function save_category_fee($category_id, $fee){
+    public function save_category_fee($category_id, $fee)
+    {
         $sql = "UPDATE categories_ebay SET category_fee = :fee WHERE category_id = :category_id";
         $query_params = [
             ':fee' => $fee,
             ':category_id' => $category_id
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Update mapped category
-    public function update_mapped_category($id, $category_id, $column){
+    public function update_mapped_category($id, $category_id, $column)
+    {
         $column = CHC::sanitize_table_name($column);
         $sql = "UPDATE categories_mapped SET $column = :category_id WHERE id = :id";
         $query_params = [
             ':category_id' => $category_id,
             ':id' => $id
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Update product category
-    public function update_category($sku, $category_id, $table){
+    public function update_category($sku, $category_id, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "UPDATE $table SET category_id = :category_id WHERE sku = :sku";
         $query_params = [
             ':category_id' => $category_id,
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Return product_id from Product Select or insert if not Exists
@@ -821,8 +866,8 @@ class Ecommerce
         $query_params = [
             ':sku' => $sku
         ];
-        $product_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($product_id)){
+        $product_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($product_id)) {
             $sql = "INSERT INTO product (product.name, subtitle, description, upc, weight) VALUES (:name, :subtitle, :description, :upc, :weight)";
             $query_params = [
                 ':name' => $name,
@@ -831,14 +876,14 @@ class Ecommerce
                 ':upc' => $upc,
                 ':weight' => $weight
             ];
-            $product_id = EDB::query($sql, $query_params, 'id');
+            $product_id = MDB::query($sql, $query_params, 'id');
             $sql = "INSERT INTO sku (product_id, sku) VALUES (:product_id, :sku) ON DUPLICATE KEY UPDATE product_id = :product_id2";
             $query_params = [
                 ':product_id' => $product_id,
                 ':product_id2' => $product_id,
                 ':sku' => $sku
             ];
-            EDB::query($sql, $query_params, 'boolean');
+            MDB::query($sql, $query_params, 'boolean');
         }
         return $product_id;
     }
@@ -851,14 +896,14 @@ class Ecommerce
             ':product_id' => $product_id,
             ':store_id' => $store_id
         ];
-        $availability_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($availability_id)) {
+        $availability_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($availability_id)) {
             $sql = "INSERT INTO product_availability (product_id, store_id, is_available) VALUES (:product_id, :store_id, 1)";
             $query_params = [
                 ":product_id" => $product_id,
                 ":store_id" => $store_id
             ];
-            $availability_id = EDB::query($sql, $query_params, 'id');
+            $availability_id = MDB::query($sql, $query_params, 'id');
         }
         return $availability_id;
     }
@@ -868,34 +913,34 @@ class Ecommerce
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT tb.sku, tb.inventory_level AS qty FROM $table tb WHERE tb.last_edited >= DATE_SUB(NOW(), INTERVAL 45 MINUTE)";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
     public static function get_inventory_prices($hours = null)
     {
         $sql = "SELECT sk.sku, (pc.msrp/100) as msrp, (pc.pl10/100) as pl10, (pc.map/100) as map, (pc.pl1/100) as pl1, (pc.cost/100) as cost FROM product_cost pc LEFT OUTER JOIN sku sk ON sk.id = pc.sku_id";
-        if($hours) {
+        if ($hours) {
             $sql .= " WHERE pc.last_edited >= DATE_SUB(NOW(), INTERVAL $hours HOUR)";
         }
-        return EDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
 
     public function get_inventory_for_update($table, $sku = null)
     {
         $table = CHC::sanitize_table_name($table);
-        if(empty($sku)) {
+        if (empty($sku)) {
             $sql = "SELECT st.id, st.sku_id, tb.inventory_level AS stock_qty";
-            if($table === 'listing_amazon'){
+            if ($table === 'listing_amazon') {
                 $sql .= ",tb.asin1";
             }
             $sql .= ", sk.sku FROM stock st JOIN $table tb ON tb.stock_id = st.id LEFT OUTER JOIN sku sk on sk.id = st.sku_id"; //WHERE tb.last_edited >= DATE_SUB(NOW(), INTERVAL 2 HOUR)
-            return EDB::query($sql, [], 'fetchAll');
-        }else{
+            return MDB::query($sql, [], 'fetchAll');
+        } else {
             $sql = "SELECT st.id, st.sku_id, tb.inventory_level AS stock_qty FROM stock st JOIN $table tb ON tb.stock_id = st.id WHERE tb.sku = :sku";
             $query_params = [
                 ':sku' => $sku
             ];
-            return EDB::query($sql, $query_params, 'fetch');
+            return MDB::query($sql, $query_params, 'fetch');
         }
     }
 
@@ -904,7 +949,7 @@ class Ecommerce
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT st.id, st.sku_id, tb.inventory_level AS stock_qty FROM stock st JOIN $table tb ON tb.stock_id = st.id";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
     public function get_inventory_price($sku, $table)
@@ -914,7 +959,7 @@ class Ecommerce
         $query_params = [
             'sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     public function get_sku($sku_id)
@@ -923,7 +968,7 @@ class Ecommerce
         $query_params = [
             'sku_id' => $sku_id
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     public function get_sku_id($sku)
@@ -932,7 +977,7 @@ class Ecommerce
         $query_params = [
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     public function find_product($sku)
@@ -941,72 +986,79 @@ class Ecommerce
         $query_params = [
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $query_params, 'fetch');
     }
 
     //--------------End of Product Spec---------------//
 
-    public function analyze_sales($sku){
-        if(empty($sku)){
+    public function analyze_sales($sku)
+    {
+        if (empty($sku)) {
             $sql = "SELECT sk.sku, c.name, o.date, oi.price, o.shipping_amount, oi.quantity, p.price AS current_price, o.id FROM order_item oi JOIN sync.order o ON o.id = oi.order_id JOIN store s ON s.id = o.store_id JOIN channel c ON c.id = s.channel_id JOIN sku sk ON sk.id = oi.sku_id JOIN (SELECT p.sku_id, p.price FROM product_price p GROUP BY p.sku_id) p ON p.sku_id = sk.id WHERE sk.sku <> '' AND c.name = 'Ebay' ORDER BY sk.sku, o.date ASC";
-            return EDB::query($sql, [], 'fetchAll');
+            return MDB::query($sql, [], 'fetchAll');
         }
     }
 
-    public function get_products_from_all_channels($sku = null){ //, $offset, $limit
-        if(empty($sku)){
+    public function get_products_from_all_channels($sku = null)
+    { //, $offset, $limit
+        if (empty($sku)) {
             $sql = "SELECT a.sku, a.asin1 AS am_list, b.store_listing_id AS bc_list, e.store_listing_id AS eb_list, r.store_listing_id AS rev_list FROM sync.listing_amazon a LEFT JOIN listing_bigcommerce b ON b.sku = a.sku LEFT JOIN listing_ebay e ON e.sku = a.sku LEFT JOIN listing_reverb r ON r.sku = a.sku ORDER BY sku ASC"; // LIMIT $offset, $limit
-            return EDB::query($sql, [], 'fetchAll');
+            return MDB::query($sql, [], 'fetchAll');
         }
     }
 
-    public function get_product_info_from_channel($sku, $table){
+    public function get_product_info_from_channel($sku, $table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT * FROM $table WHERE sku = :sku";
         $query_params = [
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $query_params, 'fetch');
     }
 
-    public function get_amazon_products($offset, $limit){
+    public function get_amazon_products($offset, $limit)
+    {
         $sql = "SELECT a.sku, a.asin1 AS am_list FROM sync.listing_amazon a ORDER BY sku ASC LIMIT $offset, $limit";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
     //Get listing ID by stock_id
-    public function get_listing_id($stock_id, $table){
+    public function get_listing_id($stock_id, $table)
+    {
         $table_col = CHC::sanitize_table_name($table);
         $sql = "SELECT store_listing_id FROM $table_col WHERE stock_id = :stock_id";
         $query_params = [
             ':stock_id' => $stock_id
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public function get_listing_id_by_sku($sku, $table){
+    public function get_listing_id_by_sku($sku, $table)
+    {
         $table_col = CHC::sanitize_table_name($table);
         $sql = "SELECT store_listing_id FROM $table_col WHERE stock_id = :stock_id";
         $query_params = [
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
 
     //Prepare channel listings into arrays for manipulation
-    public function prepare_arrays($channel_array){
+    public function prepare_arrays($channel_array)
+    {
         $columns = '';
         $values = '';
         $update_string = '';
         $prepared_array = [];
         $return_array = [];
-        foreach($channel_array as $key => $val){
+        foreach ($channel_array as $key => $val) {
             $columns .= $key;
             $values .= ":" . $key;
             $update_string .= $key . "=:" . $key . '2';
             end($channel_array);
-            if(key($channel_array) !== $key){
+            if (key($channel_array) !== $key) {
                 $columns .= ',';
                 $values .= ',';
                 $update_string .= ',';
@@ -1030,8 +1082,8 @@ class Ecommerce
             ':stock_id' => $stock_id,
             ':store_id' => $store_id
         ];
-        $listing_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if($update) {
+        $listing_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if ($update) {
             $return_array = $this->prepare_arrays($channel_array);
             $columns = $return_array[0];
             $values = $return_array[1];
@@ -1039,39 +1091,42 @@ class Ecommerce
             $query_params = $return_array[3];
 
             $sql = "INSERT INTO $table ($columns) VALUES ($values) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id),$update_string"; //
-            $listing_id = EDB::query($sql, $query_params, 'id');
+            $listing_id = MDB::query($sql, $query_params, 'id');
         }
         return $listing_id;
     }
 
-    public function update_shipping_amount($order, $shipping_amount){
+    public function update_shipping_amount($order, $shipping_amount)
+    {
         $sql = "UPDATE sync.order SET shipping_amount = :shipping_amount WHERE order_num = :order";
         $query_params = [
             ':shipping_amount' => $shipping_amount,
             ':order' => $order
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
-    public function update_item_qty($order, $sku, $quantity){
+    public function update_item_qty($order, $sku, $quantity)
+    {
         $sql = "UPDATE order_item oi JOIN sync.order o ON o.id = oi.order_id JOIN sku sk ON sk.id = oi.sku_id SET oi.quantity = :quantity WHERE o.order_num = :order AND sk.sku = :sku";
         $query_params = [
             ':quantity' => $quantity,
             ':order' => $order,
             ':sku' => $sku
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Save order from channels to DB
-    public function save_order($store_id, $cust_id, $order_num, $ship_method, $shipping_amount, $tax_amount = 0, $fee = 0, $trans_id = null){
+    public function save_order($store_id, $cust_id, $order_num, $ship_method, $shipping_amount, $tax_amount = 0, $fee = 0, $trans_id = null)
+    {
         $sql = "SELECT id FROM sync.order WHERE store_id = :store_id AND order_num = :order_num";
         $query_params = [
             ':store_id' => $store_id,
             ':order_num' => $order_num
         ];
-        $order_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($order_id)) {
+        $order_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($order_id)) {
             $sql = "INSERT INTO sync.order (store_id, cust_id, order_num, ship_method, shipping_amount, taxes, fee, channel_order_id) VALUES (:store_id, :cust_id, :order_num, :ship_method, :shipping_amount, :taxes, :fee, :trans_id)";
             $query_params = [
                 ":store_id" => $store_id,
@@ -1083,17 +1138,19 @@ class Ecommerce
                 ':fee' => $fee,
                 ':trans_id' => $trans_id
             ];
-            $order_id = EDB::query($sql, $query_params, 'id');
+            $order_id = MDB::query($sql, $query_params, 'id');
         }
         return $order_id;
     }
-    public function save_taxes($order_id, $taxes){
+
+    public function save_taxes($order_id, $taxes)
+    {
         $sql = "UPDATE sync.order SET taxes = :taxes WHERE id = :id";
         $query_params = [
             ":taxes" => $taxes,
             ":id" => $order_id
         ];
-        return EDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $query_params, 'id');
     }
 
     public function updateOrderShippingAndTaxes($order_id, $shipping, $taxes)
@@ -1104,10 +1161,12 @@ class Ecommerce
             ':taxes' => $taxes,
             ':id' => $order_id
         ];
-        return EDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $query_params, 'id');
     }
+
     //Save order items from channel orders to DB
-    public function save_order_items($order_id, $sku_id, $price, $quantity, $item_id = ''){
+    public function save_order_items($order_id, $sku_id, $price, $quantity, $item_id = '')
+    {
         $sql = "INSERT INTO order_item (order_id, sku_id, price, item_id, quantity) VALUES (:order_id, :sku_id, :price, :item_id, :quantity)";
         $query_params = [
             ':order_id' => $order_id,
@@ -1116,11 +1175,12 @@ class Ecommerce
             ':item_id' => $item_id,
             ':quantity' => $quantity
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
     //Return cust_id from Select or Insert if not Exists
-    public function customer_soi($first_name, $last_name, $street_address, $street_address2, $city_id, $state_id, $zip_id){
+    public function customer_soi($first_name, $last_name, $street_address, $street_address2, $city_id, $state_id, $zip_id)
+    {
         $sql = "SELECT id FROM customer WHERE first_name = :first_name AND last_name = :last_name AND street_address = :street_address AND zip_id = :zip_id";
         $query_params = [
             ':first_name' => $first_name,
@@ -1128,8 +1188,8 @@ class Ecommerce
             ':street_address' => $street_address,
             ':zip_id' => $zip_id
         ];
-        $cust_id = EDB::query($sql, $query_params, 'fetchColumn');
-        if(empty($cust_id)) {
+        $cust_id = MDB::query($sql, $query_params, 'fetchColumn');
+        if (empty($cust_id)) {
             $sql = "INSERT INTO customer (first_name, last_name, street_address, street_address2, city_id, state_id, zip_id) VALUES (:first_name, :last_name, :street_address, :street_address2, :city_id, :state_id, :zip_id)";
             $query_params = [
                 ":first_name" => $first_name,
@@ -1140,27 +1200,29 @@ class Ecommerce
                 ":state_id" => $state_id,
                 ":zip_id" => $zip_id
             ];
-            $cust_id = EDB::query($sql, $query_params, 'id');
+            $cust_id = MDB::query($sql, $query_params, 'id');
         }
         return $cust_id;
     }
 
-    public function get_current_inventory($table){
+    public function get_current_inventory($table)
+    {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT sku, inventory_level FROM $table";
-        return EDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
 
-    public function update_inventory($sku, $qty, $price, $table){
+    public function update_inventory($sku, $qty, $price, $table)
+    {
         $table = CHC::sanitize_table_name($table);
-        if(!empty($price)) {
+        if (!empty($price)) {
             $sql = "UPDATE $table tb SET tb.inventory_level = :qty, tb.price = :price WHERE tb.sku = :item";
             $query_params = [
                 ":qty" => $qty,
                 ":price" => $price,
                 ":item" => $sku
             ];
-        }else{
+        } else {
 //            $sql = "UPDATE stock st JOIN sku sk ON sk.id = st.sku_id JOIN $table tb ON st.id = tb.stock_id SET tb.inventory_level = :qty WHERE sk.sku = :item";
 //            UPDATE $table tb SET tb.inventory_level = :qty WHERE tb.sku = :item
 //            INSERT INTO $table tb (tb.sku, tb.inventory_level) VALUES(:sku, :qty) ON DUPLICATE KEY UPDATE tb.inventory_level = :qty2
@@ -1171,43 +1233,44 @@ class Ecommerce
                 ":qty2" => $qty
             ];
         }
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
 
-    public function sync_inventory_from($fromtable, $totable){
+    public function sync_inventory_from($fromtable, $totable)
+    {
         $fromtable = CHC::sanitize_table_name($fromtable);
         $totable = CHC::sanitize_table_name($totable);
         $sql = "SELECT la.title, la.description, p.upc, sk.sku, la.inventory_level AS quantity, la.price, la.category_id, p.weight FROM sync.product p JOIN sku sk ON sk.product_id = p.id JOIN $fromtable la ON la.sku = sk.sku LEFT OUTER JOIN $totable le ON le.sku = la.sku WHERE p.upc <> '' AND le.sku IS NULL";
-        return EDB::query($sql, [], 'fetchAll');
+        return MDB::query($sql, [], 'fetchAll');
     }
 
-    public function get_mapped_category($fromcolumn, $tocolumn, $category_id){
+    public function get_mapped_category($fromcolumn, $tocolumn, $category_id)
+    {
         $fromcolumn = CHC::sanitize_table_name($fromcolumn);
         $tocolumn = CHC::sanitize_table_name($tocolumn);
         $sql = "SELECT $tocolumn FROM categories_mapped WHERE $fromcolumn = :category_id";
         $query_params = [
             ':category_id' => $category_id
         ];
-        return EDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     //Find if order has been downloaded to VAI
-    public static function findDownloadedVaiOrder($order_id){
+    public static function findDownloadedVaiOrder($order_id)
+    {
         $sql = "SELECT * FROM order_sync WHERE order_id = :order_id AND success = 1";
         $query_params = [
             ':order_id' => $order_id
         ];
-        return EDB::query($sql, $query_params, 'rowCount');
+        return MDB::query($sql, $query_params, 'rowCount');
     }
 
     public static function orderExists($orderNum)
     {
-        if (!empty($orderNum))
-        {
+        if (!empty($orderNum)) {
             $number = self::findDownloadedVaiOrder($orderNum);
 
-            if ($number > 0)
-            {
+            if ($number > 0) {
                 static::dd("Found in database");
                 return true;
             }
@@ -1216,25 +1279,30 @@ class Ecommerce
     }
 
     //Create order for download to VAI to allow for XML creation
-    public function insertOrder($order_id, $success = 1, $type = 'Amazon'){
+    public function insertOrder($order_id, $success = 1, $type = 'Amazon')
+    {
         $sql = "INSERT INTO order_sync (order_id, success, type) VALUES (:order_id, :success, :type)";
         $query_params = [
             ":order_id" => $order_id,
             ":success" => $success,
             ":type" => $type
         ];
-        return EDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $query_params, 'boolean');
     }
+
     //Get Channel Account #'s
-    public function get_acct_num($channel){
+    public function get_acct_num($channel)
+    {
         $sql = "SELECT co_one_acct, co_two_acct FROM channel WHERE channel.name = :name";
         $query_params = [
             ':name' => $channel
         ];
-        return EDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $query_params, 'fetch');
     }
+
     //Create order XML for download to VAI
-    public function create_xml($channel_num, $channel_name, $order_id, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml){
+    public function create_xml($channel_num, $channel_name, $order_id, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml)
+    {
         $xml = <<<EOD
         <NAMM_PO version="2007.1">
             <Id>S2S{$channel_num}_PO$order_id</Id>
@@ -1294,8 +1362,10 @@ class Ecommerce
 EOD;
         return $xml;
     }
+
     //Create Order Item XML for inclusion in Order XML
-    public function create_item_xml($sku, $title, $ponumber, $quantity, $principle, $upc){
+    public function create_item_xml($sku, $title, $ponumber, $quantity, $principle, $upc)
+    {
         $item_xml = "<Item>
             <ItemId>$sku</ItemId>
             <ItemDesc><![CDATA[ $title ]]></ItemDesc>
@@ -1315,12 +1385,14 @@ EOD;
         </Item>";
         return $item_xml;
     }
+
     //Create Tax Item for inclusion in Order XML
-    public static function create_tax_item_xml($poNumber, $totalTax, $state, $stateTaxItemName = ''){
+    public static function create_tax_item_xml($poNumber, $totalTax, $state, $stateTaxItemName = '')
+    {
         $itemName = '';
-        if(!empty($stateTaxItemName)){
+        if (!empty($stateTaxItemName)) {
             $itemName = $stateTaxItemName;
-        }else {
+        } else {
             if ($state == 'ID') {
                 $itemName = "SALES TAX IDAHO @ 6%";
             } elseif ($state == 'CA') {
@@ -1348,8 +1420,10 @@ EOD;
                 </Item>";
         return $itemXml;
     }
+
     //Save created XML file to FTP folder to allow VAI to download
-    public function save_xml_to_hd($order_id, $xml, $type){
+    public function save_xml_to_hd($order_id, $xml, $type)
+    {
         $folder = '/home/chesbro_amazon/';
         $log_file_name = date('ymd') . '.txt';
         $filename = $order_id . '.xml';
@@ -1379,18 +1453,20 @@ EOD;
         chmod($folder . $filename, 0777);
         fclose($fp);
     }
-    public function substring_between($haystack,$start,$end)
+
+    public function substring_between($haystack, $start, $end)
     {
-        if (stripos($haystack,$start) === false || stripos($haystack,$end) === false) {
+        if (stripos($haystack, $start) === false || stripos($haystack, $end) === false) {
             return false;
-        }
-        else {
-            $start_position = stripos($haystack,$start)+strlen($start);
-            $end_position = stripos($haystack,$end,$start_position);
-            return substr($haystack,$start_position,$end_position-$start_position);
+        } else {
+            $start_position = stripos($haystack, $start) + strlen($start);
+            $end_position = stripos($haystack, $end, $start_position);
+            return substr($haystack, $start_position, $end_position - $start_position);
         }
     }
-    public function curl($url){
+
+    public function curl($url)
+    {
         $options = [
             CURLOPT_RETURNTRANSFER => TRUE,
             CURLOPT_FOLLOWLOCATION => TRUE,
@@ -1408,37 +1484,42 @@ EOD;
         curl_close($ch);
         return $data;
     }
-    public function clean_sku($sku){
-        if(strpos($sku, ';') > 0){
+
+    public function clean_sku($sku)
+    {
+        if (strpos($sku, ';') > 0) {
             $sku = substr($sku, 0, strpos($sku, ';'));
-        }else if(strpos($sku, ',') > 0){
+        } else if (strpos($sku, ',') > 0) {
             $sku = substr($sku, 0, strpos($sku, ','));
         }
         return $sku;
     }
 
     //Look for this in cronorderseb.php and other channels. Currently only in cronordersam.php
-    public function get_channel_num($ibmdata, $channel_name, $sku){
+    public function get_channel_num($ibmdata, $channel_name, $sku)
+    {
         $accounts = $this->get_acct_num($channel_name);
         $co_one_acct = $accounts['co_one_acct'];
         $co_two_acct = $accounts['co_two_acct'];
         $inventory = $ibmdata->find_inventory($sku, $channel_name);
         $co_one_qty = $inventory['CO_ONE'];
         $co_two_qty = $inventory['CO_TWO'];
-        if(!empty($co_one_qty)){
+        if (!empty($co_one_qty)) {
             $channel_num = $co_one_acct;
-        }elseif (!empty($co_two_qty)){
+        } elseif (!empty($co_two_qty)) {
             $channel_num = $co_two_acct;
-        }else{
+        } else {
             $channel_num = $co_one_acct;
         }
         return $channel_num;
     }
-    public static function get_tax_item_xml($state_code, $poNumber, $totalTax, $stateTaxItemName = ''){
+
+    public static function get_tax_item_xml($state_code, $poNumber, $totalTax, $stateTaxItemName = '')
+    {
         $itemXml = '';
-        if(!empty($stateTaxItemName)){
+        if (!empty($stateTaxItemName)) {
             $itemXml .= self::create_tax_item_xml($poNumber, $totalTax, '', $stateTaxItemName);
-        }else {
+        } else {
             if (strtolower($state_code) == 'id' || strtolower($state_code) == 'idaho') {
                 $itemXml .= self::create_tax_item_xml($poNumber, number_format($totalTax, 2), 'ID');
             } elseif (strtolower($state_code) == 'ca' || strtolower($state_code) == 'california') {
@@ -1456,14 +1537,14 @@ EOD;
         $query_params = [
             ':company_id' => $company_id
         ];
-        return EDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+        return MDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
 
     public function taxableState($stateArray, $state)
     {
         $taxable = false;
-        foreach($stateArray as $s => $value){
-            if($s == $state){
+        foreach ($stateArray as $s => $value) {
+            if ($s == $state) {
                 $taxable = true;
             }
         }
@@ -1472,9 +1553,9 @@ EOD;
 
     public function calculateTax($stateTaxArray, $totalWithoutTax, $totalShipping)
     {
-        $taxRate = $stateTaxArray['tax_rate']/100;
+        $taxRate = $stateTaxArray['tax_rate'] / 100;
         $totalTax = number_format($totalWithoutTax * $taxRate, 2);
-        if($stateTaxArray['shipping_taxed']){
+        if ($stateTaxArray['shipping_taxed']) {
             $totalTax += number_format($totalShipping * $taxRate, 2);
         }
         return $totalTax;
@@ -1495,11 +1576,11 @@ EOD;
     protected static function sendCurl($request)
     {
         $response = curl_exec($request);
-        if(curl_errno($request)){
-            curl_close ($request);
+        if (curl_errno($request)) {
+            curl_close($request);
             return 'Error: ' . curl_error($request);
         }
-        curl_close ($request);
+        curl_close($request);
         return $response;
     }
 
@@ -1512,7 +1593,7 @@ EOD;
     public static function openXMLParentTag($tagName, $param = null)
     {
         $parentTag = "<$tagName ";
-        if(!empty($param)){
+        if (!empty($param)) {
             $parentTag .= $param;
         }
         $parentTag .= ">";
@@ -1527,7 +1608,7 @@ EOD;
     public static function xmlTag($tagName, $tagContents, $parameters = null)
     {
         $tag = "<$tagName";
-        if($parameters){
+        if ($parameters) {
             $tag .= " ";
             $tag .= $parameters[0] . '="' . $parameters[1] . '"';
         }
@@ -1579,28 +1660,28 @@ EOD;
 //        ];
 
         $generatedXML = '';
-        foreach ($xml as $key => $value){
-            if(is_array($value)){
-                if(is_numeric($key)){
+        foreach ($xml as $key => $value) {
+            if (is_array($value)) {
+                if (is_numeric($key)) {
                     $generatedXML .= self::generateXML($value, $pkey, $key);
 //                    $generatedXML .= self::openXMLParentTag($pkey);
 //                    $generatedXML .= self::makeXML($value, $key);
 //                    $generatedXML .= self::closeXMLParentTag($pkey);
-                }else {
+                } else {
                     $pkey = $key;
-                    if(array_key_exists(0, $value)){
+                    if (array_key_exists(0, $value)) {
                         $generatedXML .= self::makeXML($value, $pkey);
-                    }else{
+                    } else {
                         $generatedXML .= self::generateXML($value, $key, $pkey);
 //                        $generatedXML .= self::openXMLParentTag($key);
 //                        $generatedXML .= self::makeXML($value, $pkey);
 //                        $generatedXML .= self::closeXMLParentTag($key);
                     }
                 }
-            }else{
+            } else {
                 $parameters = null;
                 $delimiter = '~';
-                if(strpos($key, $delimiter) !== false) {
+                if (strpos($key, $delimiter) !== false) {
                     $param = substr($key, strpos($key, $delimiter) + 1);
                     $attribute = strstr($param, '=', true);
                     $attributeValue = substr($param, strpos($param, '=') + 1);
@@ -1616,13 +1697,13 @@ EOD;
 
     protected static function determineErlanger($shipping, $address)
     {
-        if(isset($address['state'])){
-            if(
+        if (isset($address['state'])) {
+            if (
                 stripos($address['address2'], '1850 Airport') &&
                 stripos($address['city'], 'Erlanger') &&
                 stripos($address['state'], 'KY') &&
                 stripos($address['zip'], '41025')
-            ){
+            ) {
                 $shipping = 'UPIP';
             }
         }
@@ -1631,8 +1712,8 @@ EOD;
 
     protected static function determineShippingCode($shipping, $shipmentMethod)
     {
-        if($shipmentMethod){
-            switch(strtolower($shipmentMethod)) {
+        if ($shipmentMethod) {
+            switch (strtolower($shipmentMethod)) {
                 case 'standard':
                     $shipping = 'ZSTD';
                     break;
@@ -1657,7 +1738,7 @@ EOD;
     public function shippingCode($total, $address = [], $shipmentMethod = null)
     {
         $shipping = 'ZSTD';
-        if($total >= 250){
+        if ($total >= 250) {
             $shipping = 'URIP';
         }
         $shipping = self::determineErlanger($shipping, $address);
@@ -1678,11 +1759,10 @@ EOD;
         $filename = $orderNum . '.xml';
         echo $filename . '<br />';
         self::saveFileToDisk($folder, $filename, $orderXml);
-        if(file_exists($folder . $filename))
-        {
+        if (file_exists($folder . $filename)) {
             echo "Successfully uploaded $filename<br />";
-            $results = $this->insertOrder($orderNum,1,$channel);
-            if($results){
+            $results = $this->insertOrder($orderNum, 1, $channel);
+            if ($results) {
                 echo "$orderNum successfully updated in DB.";
             }
         }
@@ -1706,13 +1786,13 @@ EOD;
     protected static function cellFormat($value)
     {
         $format = '';
-        if(isset($value['format'])){
-            if($value['format'] !== 'aboveZero') {
+        if (isset($value['format'])) {
+            if ($value['format'] !== 'aboveZero') {
                 $format .= "class='{$value['format']}'";
-            }else{
-                if($value['value'] < 0){
+            } else {
+                if ($value['value'] < 0) {
                     $class = "loss";
-                }else{
+                } else {
                     $class = "gain";
                 }
                 $format .= "class=$class";
@@ -1724,12 +1804,12 @@ EOD;
     protected static function cellValue($value, $cellType)
     {
         $cell = '';
-        if($cellType == 'th'){
+        if ($cellType == 'th') {
             $cell .= ucfirst($value);
-        }else{
-            if(!is_array($value)) {
+        } else {
+            if (!is_array($value)) {
                 $cell .= $value;
-            }else{
+            } else {
                 $cell .= isset($value['url']) ? "<a href='{$value['url']}' target='_blank'>" : "";
                 $cell .= isset($value['display']) ? $value['display'] : $value['value'];
                 $cell .= isset($value['url']) ? "</a>" : "";
@@ -1741,7 +1821,7 @@ EOD;
     protected static function tableRow($array, $cellType = "td")
     {
         $row = "<tr>";
-        foreach($array as $key => $value){
+        foreach ($array as $key => $value) {
             $row .= self::cellOpeningTag($value, $cellType);
             $row .= self::cellValue($value, $cellType);
             $row .= self::cellClosingTag($cellType);
@@ -1764,7 +1844,7 @@ EOD;
     protected static function arrayToTableBody($array)
     {
         $body = "<tbody>";
-        foreach($array as $a) {
+        foreach ($array as $a) {
             $body .= self::tableRow($a);
         }
         $body .= "</tbody>";
@@ -1786,7 +1866,7 @@ EOD;
     public static function sortBy($sellers, $sortBy)
     {
         $priceArray = [];
-        foreach($sellers as $key => $row){
+        foreach ($sellers as $key => $row) {
             $priceArray[$key] = $row[$sortBy];
         }
         array_multisort($priceArray, SORT_ASC, $sellers);
@@ -1796,7 +1876,7 @@ EOD;
 
     public static function toDollars($cents)
     {
-        $dollars = $cents/100;
+        $dollars = $cents / 100;
         $dollars = self::formatMoney($dollars);
         return $dollars;
     }
@@ -1828,7 +1908,7 @@ EOD;
     public static function getChannelListingsFromDB($channel)
     {
         $sql = "SELECT sku, store_listing_id as id FROM listing_$channel";
-        return EDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP|PDO::FETCH_UNIQUE|PDO::FETCH_ASSOC);
+        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
 
     public static function createFormattedDate($date, $format = 'Y/m/d')
@@ -1862,16 +1942,16 @@ EOD;
         extract($oi);
         $date = self::createFormattedDate($oi['date'], 'm/d/Y');
         $tracking_url = '';
-        if($carrier == 'USPS'){
+        if ($carrier == 'USPS') {
             $tracking_url = 'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=' . $tracking_num;
-        }elseif($carrier == 'FedEx'){
+        } elseif ($carrier == 'FedEx') {
             $tracking_url = 'https://www.fedex.com/apps/fedextrack/?tracknumbers=' . $tracking_num . '&language=en&cntry_code=us';
-        }elseif($carrier == 'UPS'){
+        } elseif ($carrier == 'UPS') {
             $tracking_url = 'https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=' . $tracking_num . '&loc=en_us';
         }
         $date_processed = self::createFormattedDate($oi['date'], 'm/d/Y H:i:s');
         $status = 'Unshipped';
-        if($track_successful == '1'){
+        if ($track_successful == '1') {
             $status = 'Shipped';
         }
         $html = "<table class='popuptable'>
@@ -1901,8 +1981,8 @@ EOD;
                             </dt>
                             <dd>$first_name $last_name<br>
                             $street_address<br>";
-            $html .= (!empty($street_address2) ? $street_address2 . '<br>' : '');
-            $html .= "$city, $state_abbr $zip
+        $html .= (!empty($street_address2) ? $street_address2 . '<br>' : '');
+        $html .= "$city, $state_abbr $zip
                             </dd>
                         </dl>
                     </article>
@@ -1919,10 +1999,10 @@ EOD;
                                 <i class='fa fa-truck'></i>
                             </dt>
                             <dd>$carrier<br>";
-            $html .= (!empty($tracking_url) ? "<a class='product_link' href=" . $tracking_url . " target='_blank'>" : "");
-            $html .= "$tracking_num";
-            $html .= (!empty($tracking_url) ? "</a>" : "");
-            $html .= "</dd>
+        $html .= (!empty($tracking_url) ? "<a class='product_link' href=" . $tracking_url . " target='_blank'>" : "");
+        $html .= "$tracking_num";
+        $html .= (!empty($tracking_url) ? "</a>" : "");
+        $html .= "</dd>
                         </dl>
                     </article>
                     <article class='one-third'>
@@ -1933,7 +2013,7 @@ EOD;
                     </article>
                 </td>
             </tr>";
-            $html .= "</tbody>
+        $html .= "</tbody>
         </table>";
         return $html;
     }

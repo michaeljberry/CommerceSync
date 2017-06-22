@@ -2,7 +2,7 @@
 
 namespace eb;
 
-use controllers\channels\ChannelController;
+use models\channels\ChannelModel;
 use Crypt;
 use ecommerce\EcommerceInterface;
 use ecommerce\ecommerce as ecom;
@@ -37,7 +37,7 @@ class EbayClient implements EcommerceInterface
             'token'
         ];
 
-        $this->ebinfo = ChannelController::getAppInfo($user_id, $table, $channel, $columns);
+        $this->ebinfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setDevID()

@@ -1,11 +1,11 @@
 <?php
 
-namespace controllers\channels;
+namespace models\channels;
 
 use controllers\channels\ChannelHelperController as CHC;
-use models\ModelDB as EDB;
+use models\ModelDB as MDB;
 
-class OrderStatsController
+class OrderStatsModel
 {
     public static function getOrderStats($channel = null, $time = 2, $period = 'MONTH')
     {
@@ -18,12 +18,12 @@ class OrderStatsController
                 WHERE stats_date BETWEEN NOW() - INTERVAL :time_period $interval AND NOW()";
         $sql .= !empty($channel) ? "AND channel = :channel" : "";
         $sql .= " GROUP BY DATE(stats_date)";
-        if(empty($channel)){
+        if (empty($channel)) {
             $sql .= ", channel";
-        }else{
+        } else {
             $params[':channel'] = $channel;
         }
-        $results = EDB::query($sql, $params, 'fetchAll');
+        $results = MDB::query($sql, $params, 'fetchAll');
         return $results;
     }
 }

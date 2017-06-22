@@ -1,14 +1,14 @@
 <?php
 require __DIR__ . '/../../core/init.php';
 
-use controllers\channels\TrackingController;
+use models\channels\TrackingModel;
 
 $channel = '';
 if(isset($_GET['channel']) && !empty($_GET['channel'])){
     $channel = htmlentities($_GET['channel']);
 }
 
-$unshippedOrders = TrackingController::getUnshippedOrders($channel);
+$unshippedOrders = TrackingModel::getUnshippedOrders($channel);
 
 //print_r($orders_last_day);
 $x = 0;

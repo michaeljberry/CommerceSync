@@ -3,9 +3,8 @@
 namespace rev;
 
 use Crypt;
-use models\ModelDB as EDB;
+use models\ModelDB as MDB;
 use ecommerce\Ecommerce as ecom;
-use models\channels\channelModel;
 
 class Reverb
 {
@@ -19,7 +18,7 @@ class Reverb
         $query_params = array(
             ':user_id' => $user_id
         );
-        return EDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $query_params, 'fetch');
     }
     public function save_app_info($store_id, $reverb_auth_token){
         $sql = "INSERT INTO api_reverb (store_id, reverb_auth_token) VALUES (:store_id, :reverb_auth_token) ON DUPLICATE KEY UPDATE reverb_auth_token = :reverb_auth_token2";
@@ -28,7 +27,7 @@ class Reverb
             ":reverb_auth_token"  => Crypt::encrypt($reverb_auth_token),
             ":reverb_auth_token2"  => Crypt::encrypt($reverb_auth_token),
         );
-        EDB::query($sql, $query_params);
+        MDB::query($sql, $query_params);
     }
 
 }

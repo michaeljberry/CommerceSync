@@ -5,7 +5,8 @@ namespace controllers\channels;
 class ChannelHelperController
 {
     //To sanitize column names before inserted into query directly
-    public static function sanitize_table_name($tab){
+    public static function sanitize_table_name($tab)
+    {
         $table = '';
         $tableArray = [
             'listing_amazon',
@@ -22,13 +23,14 @@ class ChannelHelperController
             'categories_bigcommerce_id',
             'categories_reverb_id',
         ];
-        if(in_array($tab, $tableArray)){
+        if (in_array($tab, $tableArray)) {
             $table = $tab;
         }
         return $table;
     }
 
-    public static function sanitize_time_period($period){
+    public static function sanitize_time_period($period)
+    {
         $interval = '';
         $periodArray = [
             'MONTH',
@@ -36,15 +38,16 @@ class ChannelHelperController
             'YEAR',
             'DAY',
         ];
-        if(in_array($period, $periodArray)){
+        if (in_array($period, $periodArray)) {
             $interval = $period;
         }
         return $interval;
     }
 
-    public static function determine_time_condition($dateColumn, $period, $period2 = null, $period3 = null){
+    public static function determine_time_condition($dateColumn, $period, $period2 = null, $period3 = null)
+    {
         $condition = '';
-        if(empty($period2)) {
+        if (empty($period2)) {
             switch ($period) {
                 case $period === 'TODAY':
                     $condition = "YEAR($dateColumn) = YEAR(NOW()) AND MONTH($dateColumn) = MONTH(NOW()) AND DAY($dateColumn) = DAY(NOW())";
@@ -80,10 +83,10 @@ class ChannelHelperController
                     $condition = "YEAR($dateColumn) = YEAR(NOW() - INTERVAL 1 YEAR)";
                     break;
             }
-        }else{
-            if(empty($period3)){
+        } else {
+            if (empty($period3)) {
                 $period3 = date('Y-m-d');
-            }else{
+            } else {
                 $period3 = date_create($period3);
                 $period3 = $period3->format('Y-m-d');
             }
@@ -95,20 +98,21 @@ class ChannelHelperController
     }
 
     //Parse array for select statement
-    public static function parseConditions($array){
+    public static function parseConditions($array)
+    {
         $return_array = [];
         $select_parameters = '';
         $query_param = [];
         $count = count($array);
         $i = 0;
-        foreach($array as $key => $value){
-            if($key == 'date'){
+        foreach ($array as $key => $value) {
+            if ($key == 'date') {
                 $select_parameters .= "$key BETWEEN '$value 00:00:00' AND '$value 23:59:59'";
-            }else {
+            } else {
                 $select_parameters .= "$key LIKE :$key";
                 $query_param[$key] = "%" . $value . "%";
             }
-            if(++$i !== $count){
+            if (++$i !== $count) {
                 $select_parameters .= " AND ";
             }
 
@@ -120,16 +124,16 @@ class ChannelHelperController
 
     public static function addToArray($parentArray, $arrayToAdd)
     {
-        if(count($arrayToAdd) === count($arrayToAdd, COUNT_RECURSIVE)) {
+        if (count($arrayToAdd) === count($arrayToAdd, COUNT_RECURSIVE)) {
             $newArray = array_merge(
                 $parentArray,
                 [
                     $arrayToAdd
                 ]
             );
-        }else{
+        } else {
             $newArray = array_merge(
-                $parentArray,$arrayToAdd
+                $parentArray, $arrayToAdd
             );
         }
         return $newArray;

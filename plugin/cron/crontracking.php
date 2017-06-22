@@ -10,7 +10,7 @@ require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
 use ecommerce\Ecommerce as ecom;
-use controllers\channels\TrackingController;
+use models\channels\TrackingModel;
 
 //ob_start();
 
@@ -25,7 +25,7 @@ $tracking_log = $folder . 'log/tracking/' . $log_file_name;
 echo "Tracking Numbers" . PHP_EOL;
 echo "Channel -> Order Num : Tracking Number<br><br>" . PHP_EOL;
 
-$unshippedOrders = TrackingController::getUnshippedOrders();
+$unshippedOrders = TrackingModel::getUnshippedOrders();
 
 $amazonOrderCount = 1;
 $amazonTrackingXML = '';

@@ -1,16 +1,15 @@
 <?php
 
-namespace controllers\channels;
+namespace models\channels;
 
-use models\ModelDB as EDB;
+use models\ModelDB as MDB;
 
-class TrackingController
+class TrackingModel
 {
-    //Get orders that haven't been marked as "tracking_successful"
     public static function getUnshippedOrders($channel = null)
     {
         $params = [];
-        if(!empty($channel)){
+        if (!empty($channel)) {
             $params = [
                 ':channel' => $channel
             ];
@@ -23,6 +22,6 @@ class TrackingController
         $sql .= !empty($channel) ? " AND a.type = :channel" : "";
         $sql .= " AND b.cancelled IS NULL
                 ORDER BY a.processed";
-        return EDB::query($sql, $params, 'fetchAll');
+        return MDB::query($sql, $params, 'fetchAll');
     }
 }

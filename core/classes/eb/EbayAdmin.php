@@ -13,7 +13,7 @@ class EbayAdmin extends Ebay
             'ViewAllNodes' => 'false',
         ];
 
-        $response = $this->ebayCurl($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 }

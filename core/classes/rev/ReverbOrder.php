@@ -6,18 +6,20 @@ use ecommerce\Ecommerce;
 
 class ReverbOrder extends Reverb
 {
-    public function get_orders($order = null){
-        if(empty($order)) {
-            $url = 'https://api.reverb.com/api/my/orders/selling/awaiting_shipment/';
-        }else{
-            $url = 'https://reverb.com/api/my/orders/selling/' . $order;
-        }
-        $post_string = '';
-        $response = $this->ReverbClient->reverbCurl($url, 'GET', $post_string);
+    public function getOrders(){
+        $url = 'https://api.reverb.com/api/my/orders/selling/awaiting_shipment/';
+        $response = ReverbClient::reverbCurl($url, 'GET');
         return $response;
     }
 
-    public function save_orders($request, Ecommerce $ecommerce, $ibmdata, $folder){
+    public function getOrder($order)
+    {
+        $url = 'https://reverb.com/api/my/orders/selling/' . $order;
+        $response = ReverbClient::reverbCurl($url, 'GET');
+        return $response;
+    }
+
+    public function saveOrders($request, Ecommerce $ecommerce, $ibmdata, $folder){
         $orders = substr($request, strpos($request, '"orders":'), -1);
         $orders = '{' . $orders . '}';
         $orders = json_decode($orders);
@@ -82,7 +84,7 @@ class ReverbOrder extends Reverb
                         $city_id = $ecommerce->citySoi($city, $state_id);
                         $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                         if (!LOCAL) {
-                            $order_id = $ecommerce->save_order($this->reverb_store_id, $cust_id, $order_num, $shipping, $shipping_amount, $tax);
+                            $order_id = $ecommerce->save_order(ReverbClient::getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $tax);
                         }
                         $sku_id = $ecommerce->skuSoi($sku);
                         if (!LOCAL) {
@@ -107,7 +109,7 @@ class ReverbOrder extends Reverb
             'tracking_number' => $tracking_id,
             'send_notification' => $notification,
         ];
-        $response = $this->ReverbClient->reverbCurl(
+        $response = ReverbClient::reverbCurl(
             $url,
             'POST',
             json_encode($postString)

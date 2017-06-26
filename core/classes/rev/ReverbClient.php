@@ -10,15 +10,29 @@ class ReverbClient implements EcommerceInterface
 
     use ReverbClientCurl;
 
-    private $reverbInfo;
-    private $reverbAuth;
-    public $reverbStoreID;
+    private static $reverbInfo;
+    private static $reverbAuth;
+    private static $reverbStoreID;
+    protected static $instance = null;
 
-    public function __construct($user_id)
+    public static function __callStatic($method, $args)
     {
-        $this->setInfo($user_id);
-        $this->setAuthToken();
-        $this->setStoreID();
+        return call_user_func_array([self::instance(), $method], $args);
+    }
+
+    public static function instance($user_id)
+    {
+        if(self::$instance === null){
+            self::$instance = new ReverbClient($user_id);
+        }
+        return self::$instance;
+    }
+
+    protected function __construct($user_id)
+    {
+        self::setInfo($user_id);
+        self::setAuthToken();
+        self::setStoreID();
     }
 
     private function setInfo($user_id)
@@ -32,27 +46,27 @@ class ReverbClient implements EcommerceInterface
             'store_id'
         ];
 
-        $this->reverbInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$reverbInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setAuthToken()
     {
-        $this->reverbAuth = decrypt($this->reverbInfo['reverb_auth_token']);
+        self::$reverbAuth = decrypt(self::$reverbInfo['reverb_auth_token']);
     }
 
     private function setStoreID()
     {
-        $this->reverbStoreID = $this->reverbInfo['store_id'];
+        self::$reverbStoreID = self::$reverbInfo['store_id'];
     }
 
-    public function getAuthToken()
+    public static function getAuthToken()
     {
-        return $this->reverbAuth;
+        return self::$reverbAuth;
     }
 
-    public function getStoreID()
+    public static function getStoreID()
     {
-        return $this->reverbStoreID;
+        return self::$reverbStoreID;
     }
 
 }

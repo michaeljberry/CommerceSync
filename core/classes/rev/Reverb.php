@@ -7,11 +7,6 @@ use models\ModelDB as MDB;
 
 class Reverb
 {
-    protected $ReverbClient;
-
-    public function __construct(ReverbClient $reverbClient){
-        $this->ReverbClient = $reverbClient;
-    }
     public function get_reverb_app_id($user_id){
         $sql = "SELECT store_id, reverb_email, reverb_pass, reverb_auth_token FROM api_reverb INNER JOIN store ON api_reverb.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Reverb'";
         $query_params = array(

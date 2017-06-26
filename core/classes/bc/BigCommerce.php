@@ -259,7 +259,7 @@ class BigCommerce
         }
     }
 
-    public function get_bc_products($BC, $store_id, Ecommerce $e)
+    public function get_bc_products($BC, Ecommerce $e)
     {
         $count = $BC::getProductsCount();
         $pages = $count / 250;
@@ -327,11 +327,11 @@ class BigCommerce
                 //find-product-id
                 $product_id = $e->product_soi($sku, $name, '', $description, $upc, $weight);
                 //add-product-availability
-                $availability_id = $e->availability_soi($product_id, $store_id);
+                $availability_id = $e->availability_soi($product_id, BigCommerceClient::getStoreID());
                 //find sku
                 $sku_id = $e->sku_soi($sku);
                 //add price
-                $price_id = $e->price_soi($sku_id, $price, $store_id);
+                $price_id = $e->price_soi($sku_id, $price, BigCommerceClient::getStoreID());
                 //normalize condition
                 $condition = $e->normal_condition($product_condition);
                 //find condition id
@@ -339,7 +339,7 @@ class BigCommerce
                 //add stock to sku
                 $stock_id = $e->stock_soi($sku_id, $condition_id);
                 $channel_array = array(
-                    'store_id' => $store_id,
+                    'store_id' => BigCommerceClient::getStoreID(),
                     'stock_id' => $stock_id,
                     'store_listing_id' => $store_listing_id,
                     'url' => $url,
@@ -396,7 +396,7 @@ class BigCommerce
                     'photo_url' => $photo_url
                 );
                 //add stock to listing
-                $listing_id = $e->listing_soi('listing_bigcommerce', $store_id, $stock_id, $channel_array, 'true');
+                $listing_id = $e->listing_soi('listing_bigcommerce', BigCommerceClient::getStoreID(), $stock_id, $channel_array, 'true');
                 echo $listing_id . '<br>';
 //                return $listing_id;
             }

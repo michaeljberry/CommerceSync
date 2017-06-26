@@ -8,9 +8,9 @@ $user_id = 838;
 
 $folder = '/home/chesbro_amazon';
 
-$request = $revord->get_orders();
+$request = $revord->getOrders();
 //\ecommerceclass\ecommerceclass::dd($request);
 
-$revord->save_orders($request, $ecommerce, $ibmdata, $folder);
+$revord->saveOrders($request, $ecommerce, $ibmdata, $folder);
 
 endClock($start);

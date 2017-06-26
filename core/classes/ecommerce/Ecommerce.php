@@ -1421,39 +1421,6 @@ EOD;
         return $itemXml;
     }
 
-    //Save created XML file to FTP folder to allow VAI to download
-    public function save_xml_to_hd($order_id, $xml, $type)
-    {
-        $folder = '/home/chesbro_amazon/';
-        $log_file_name = date('ymd') . '.txt';
-        $filename = $order_id . '.xml';
-        $fp = fopen($folder . 'log/' . $log_file_name, 'a+');
-        fwrite($fp, "\r\nRunning Script ** ** " . date('m/d/y h:i:s'));
-        fwrite($fp, "\r\nOrder to process: " . count($order_id));
-        fwrite($fp, "\r\nOrder filename: " . print_r($filename, true));
-        fwrite($fp, "\r\nXML:\r\n " . preg_replace('/\s+/', '', $xml));
-        file_put_contents($folder . $filename, $xml);
-        chmod($folder . $filename, 0777);
-        file_put_contents($folder . 'backup/' . $filename, $xml);
-        chmod($folder . 'backup/' . $filename, 0777);
-        if (file_exists($folder . 'backup/' . $filename)) {
-            fwrite($fp, "\r\nBackup Order successfully written: " . print_r($filename, true));
-        } else {
-            fwrite($fp, "\r\n-----------------Backup Order NOT written: " . print_r($filename, true) . '-----------------');
-        }
-        if (file_exists($folder . $filename)) {
-            fwrite($fp, "\r\nOrder successfully written: " . print_r($filename, true));
-        } else {
-            fwrite($fp, "\r\n-----------------Order NOT written: " . print_r($filename, true) . '-----------------');
-        }
-        $results = $this->insertOrder($order_id, 1, $type);
-        fwrite($fp, "\r\nOrder Processed:" . print_r(1, true));
-        $filename = 'log/lastrun.log';
-        file_put_contents($folder . $filename, date('m/d/y h:i:s') . ' -- ' . $order_id);
-        chmod($folder . $filename, 0777);
-        fclose($fp);
-    }
-
     public function substring_between($haystack, $start, $end)
     {
         if (stripos($haystack, $start) === false || stripos($haystack, $end) === false) {

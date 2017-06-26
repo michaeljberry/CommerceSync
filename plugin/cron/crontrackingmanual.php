@@ -46,9 +46,9 @@ foreach($unshippedOrders as $o){
     }
 
     $carrier = 'USPS';
-    $tracking_id = trim($ibmdata->getManualTrackingNum($order_num));
+    $tracking_id = trim($ibmdata->getManualTrackingNum($order_num, $channelNumbers));
     if(empty($tracking_id)){
-        $tracking_id = trim($ibmdata->getSimilarTrackingNum($order_num));
+        $tracking_id = trim($ibmdata->getSimilarTrackingNum($order_num, $channelNumbers));
     }
     echo "$channel: $order_num -> $tracking_id";
 
@@ -61,7 +61,7 @@ foreach($unshippedOrders as $o){
         echo $result . '<br>';
         if (strtolower($channel) == 'bigcommerce') {
             //update BC
-            $response = $bcord->update_bc_tracking($order_num, $tracking_id, $carrier);
+//            $response = $bcord->update_bc_tracking($order_num, $tracking_id, $carrier);
             if($response){
                 $shipped = true;
             }

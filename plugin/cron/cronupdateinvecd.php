@@ -27,6 +27,9 @@ for($x = 1; $x <= count($updated); $x++){
         print_r($response);
         echo "Line: $x<br>";
         $qohArray = [];
+        if($x >= count($updated)){
+            continue;
+        }
     }
     $sku = trim($updated[$x]['sku']);
     $qoh1 = $updated[$x]['qty'];

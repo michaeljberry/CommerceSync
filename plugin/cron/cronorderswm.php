@@ -9,6 +9,7 @@ require WEBPLUGIN . 'wm/wmvar.php';
 
 $wmorder = $wmord->configure();
 
-$wmorder->getOrders($wmorder, $ecommerce, $wmord, $ibmdata);
+$folder = '/home/chesbro_amazon/';
+$wmord->getOrders($wmorder, $ecommerce, $wmord, $folder, $ibmdata);
 
 endClock($start);

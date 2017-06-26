@@ -7,19 +7,33 @@ use models\channels\ChannelModel;
 
 class WalmartClient implements EcommerceInterface
 {
-    private $walmartInfo;
-    private $walmartStoreID;
-    private $walmartConsumerKey;
-    private $walmartSecretKey;
-    private $walmartAPIHeader;
+    private static $walmartInfo;
+    private static $walmartStoreID;
+    private static $walmartConsumerKey;
+    private static $walmartSecretKey;
+    private static $walmartAPIHeader;
+    protected static $instance = null;
+
+    public static function __callStatic($method, $args)
+    {
+        return call_user_func_array([self::instance(), $method], $args);
+    }
+
+    public static function instance($user_id)
+    {
+        if (self::$instance === null) {
+            self::$instance = new WalmartClient($user_id);
+        }
+        return self::$instance;
+    }
 
     public function __construct($user_id)
     {
-        $this->setInfo($user_id);
-        $this->setConsumerKey();
-        $this->setSecretKey();
-        $this->setAPIHeader();
-        $this->setStoreID();
+        self::setInfo($user_id);
+        self::setConsumerKey();
+        self::setSecretKey();
+        self::setAPIHeader();
+        self::setStoreID();
     }
 
     private function setInfo($user_id)
@@ -33,55 +47,42 @@ class WalmartClient implements EcommerceInterface
             'api_header'
         ];
 
-        $this->walmartInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
-    }
-
-    public static function instance($user_id)
-    {
-        if (self::instance === null) {
-
-        }
-        return self::instance;
-    }
-
-    public static function __callStatic($method, $args)
-    {
-        return call_user_func_array([self::instance(), $method], $args);
+        self::$walmartInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setConsumerKey()
     {
-        $this->walmartConsumerKey = decrypt($this->walmartInfo['consumer_id']);
+        self::$walmartConsumerKey = decrypt(self::$walmartInfo['consumer_id']);
     }
 
     private function setSecretKey()
     {
-        $this->walmartSecretKey = decrypt($this->walmartInfo['secret_key']);
+        self::$walmartSecretKey = decrypt(self::$walmartInfo['secret_key']);
     }
 
     private function setAPIHeader()
     {
-        $this->walmartAPIHeader = $this->walmartInfo['api_header'];
+        self::$walmartAPIHeader = self::$walmartInfo['api_header'];
     }
 
     private function setStoreID()
     {
-        $this->walmartStoreID = $this->walmartInfo['store_id'];
+        self::$walmartStoreID = self::$walmartInfo['store_id'];
     }
 
-    public function getConsumerKey()
+    public static function getConsumerKey()
     {
-        return $this->walmartConsumerKey;
+        return self::$walmartConsumerKey;
     }
 
-    public function getSecretKey()
+    public static function getSecretKey()
     {
-        return $this->walmartSecretKey;
+        return self::$walmartSecretKey;
     }
 
-    public function getAPIHeader()
+    public static function getAPIHeader()
     {
-        return $this->walmartAPIHeader;
+        return self::$walmartAPIHeader;
     }
 
     public static function getStoreID()

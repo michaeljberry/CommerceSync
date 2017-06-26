@@ -5,24 +5,38 @@ namespace bc;
 use ecommerce\EcommerceInterface;
 use models\channels\ChannelModel;
 
-class BigCommerceClient //implements EcommerceInterface
+class BigCommerceClient implements EcommerceInterface
 {
 
     use BigCommerceClientCurl;
 
-    private $bigcommerceInfo;
-    private $bigcommerceStoreUrl;
-    private $bigcommerceUsername;
-    private $bigcommerceAPIKey;
-    public $bigcommerceStoreID;
+    private static $bigcommerceInfo;
+    private static $bigcommerceStoreUrl;
+    private static $bigcommerceUsername;
+    private static $bigcommerceAPIKey;
+    private static $bigcommerceStoreID;
+    protected static $instance = null;
 
+    public static function __callStatic($method, $args)
+    {
+        return call_user_func_array([self::instance(), $method], $args);
+    }
 
-    public function __construct($user_id){
-        $this->setInfo($user_id);
-        $this->setStoreUrl();
-        $this->setUsername();
-        $this->setAPIKey();
-        $this->setStoreID();
+    public static function instance($user_id)
+    {
+        if (self::$instance === null) {
+            self::$instance = new BigCommerceClient($user_id);
+        }
+        return self::$instance;
+    }
+
+    protected function __construct($user_id)
+    {
+        self::setInfo($user_id);
+        self::setStoreUrl();
+        self::setUsername();
+        self::setAPIKey();
+        self::setStoreID();
     }
 
     private function setInfo($user_id)
@@ -36,45 +50,46 @@ class BigCommerceClient //implements EcommerceInterface
             'api_key'
         ];
 
-        $this->bigcommerceInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$bigcommerceInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setStoreUrl()
     {
-        $this->bigcommerceStoreUrl = $this->bigcommerceInfo['store_url'];
+        self::$bigcommerceStoreUrl = self::$bigcommerceInfo['store_url'];
     }
 
     private function setUsername()
     {
-        $this->bigcommerceUsername = decrypt($this->bigcommerceInfo['username']);
+        self::$bigcommerceUsername = decrypt(self::$bigcommerceInfo['username']);
     }
 
     private function setAPIKey()
     {
-        $this->bigcommerceAPIKey = decrypt($this->bigcommerceInfo['api_key']);
+        self::$bigcommerceAPIKey = decrypt(self::$bigcommerceInfo['api_key']);
     }
 
     private function setStoreID()
     {
-        $this->bigcommerceStoreID = $this->bigcommerceInfo['store_id'];
-    }
-    public function getStoreUrl()
-    {
-        return $this->bigcommerceStoreUrl;
+        self::$bigcommerceStoreID = self::$bigcommerceInfo['store_id'];
     }
 
-    public function getUsername()
+    public static function getStoreUrl()
     {
-        return $this->bigcommerceUsername;
+        return self::$bigcommerceStoreUrl;
     }
 
-    public function getAPIKey()
+    public static function getUsername()
     {
-        return $this->bigcommerceAPIKey;
+        return self::$bigcommerceUsername;
     }
 
-    public function getStoreID()
+    public static function getAPIKey()
     {
-        return $this->bigcommerceStoreID;
+        return self::$bigcommerceAPIKey;
+    }
+
+    public static function getStoreID()
+    {
+        return self::$bigcommerceStoreID;
     }
 }

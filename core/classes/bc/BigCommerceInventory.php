@@ -2,34 +2,42 @@
 
 namespace bc;
 
+use ecommerce\Ecommerce;
 use models\ModelDB as MDB;
 
 class BigCommerceInventory extends BigCommerce
 {
-    public function count_inventory_for_bc(){
+    public function count_inventory_for_bc()
+    {
         $sql = "SELECT COUNT(Distinct l.stock_id) AS idcount FROM listing_bigcommerce l JOIN stock st ON st.id = l.stock_id JOIN store ON store.id = l.store_id JOIN product_availability pa ON pa.store_id = store.id WHERE store.id = '3' AND pa.is_available = '1'";
         return MDB::query($sql, [], 'fetchColumn');
     }
-    public function pull_inventory_for_bc_update($offset, $limit, $store_id){
+
+    public function pull_inventory_for_bc_update($offset, $limit, $store_id)
+    {
         $sql = "SELECT l.store_listing_id, pp.price, st.stock_qty FROM listing_bigcommerce l JOIN stock st ON st.id = l.stock_id JOIN store ON store.id = l.store_id JOIN product_availability pa ON pa.store_id = store.id JOIN product_price pp ON pp.sku_id = st.sku_id WHERE store.id = :store_id AND pa.is_available = '1' LIMIT $offset, $limit";
         $query_params = array(
             ':store_id' => $store_id
         );
         return MDB::query($sql, $query_params, 'fetchAll');
     }
-    public function update_bc_inventory($stock_id, $stock_qty, $price, $e){ //$BC
+
+    public function update_bc_inventory($stock_id, $stock_qty, $price, Ecommerce $e)
+    { //$BC
         $store_listing_id = $e->get_listing_id($stock_id, 'listing_bigcommerce');
-        echo 'Stock ID: ' .$stock_id . ', ID: ' . $store_listing_id . ', Price: ' . $price . ', Qty: ' . $stock_qty . '<br>';
+        echo 'Stock ID: ' . $stock_id . ', ID: ' . $store_listing_id . ', Price: ' . $price . ', Qty: ' . $stock_qty . '<br>';
         $filter = [
 //            "inventory_level" => $stock_qty
         ];
-        if(!empty($price)){
+        if (!empty($price)) {
             $filter['price'] = $price;
         }
         $results = $this->post_inventory_update($store_listing_id, $filter);
         return $results;
     }
-    public function updateInventory($id, $price){
+
+    public function updateInventory($id, $price)
+    {
         echo 'ID: ' . $id . ', Price: ' . $price . '<br>';
         $filter = [
             "price" => $price
@@ -37,7 +45,9 @@ class BigCommerceInventory extends BigCommerce
         $results = $this->post_inventory_update($id, $filter);
         return $results;
     }
-    public function update_bc_upc($store_listing_id, $upc){
+
+    public function update_bc_upc($store_listing_id, $upc)
+    {
         echo 'ID: ' . $store_listing_id . ', UPC: ' . $upc . '<br>';
         $filter = [
             "upc" => $upc
@@ -45,7 +55,9 @@ class BigCommerceInventory extends BigCommerce
         $results = $this->post_inventory_update($store_listing_id, $filter);
         return $results;
     }
-    public function add_item($title, $category, $price, $weight, $description, $sku,  $upc, $BC){
+
+    public function add_item($title, $category, $price, $weight, $description, $sku, $upc, $BC)
+    {
         $filter = [
             'name' => "$title",
             'type' => 'physical',
@@ -70,19 +82,21 @@ class BigCommerceInventory extends BigCommerce
 //        print_r($items
 //        return $product;
     }
-    public function get_product_id_by_sku($sku, $page){
-        $api_url = 'https://mymusiclife.com/api/v2/products.json?limit=250&page=' . $page; //
-        $response = $this->bigcommerceCurl($api_url, 'GET');
+
+    public function get_product_id_by_sku($sku, $page)
+    {
+        $api_url = 'https://mymusiclife.com/api/v2/products.json?limit=250&page=' . $page;
+        $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
 
         $product = json_decode($response);
 
         $present = 0;
         $p_id = '';
-        if(!is_array($product)){
+        if (!is_array($product)) {
             return false;
-        }else {
+        } else {
             foreach ($product as $p) {
-                if(!isset($p->sku)){
+                if (!isset($p->sku)) {
                     echo "SKU is not set on page: $page<br>";
                     print_r($p);
                 }
@@ -93,7 +107,7 @@ class BigCommerceInventory extends BigCommerce
                     break;
                 }
             }
-            if(empty($present)){
+            if (empty($present)) {
                 $page++;
                 $info2 = $this->get_product_id_by_sku($sku, $page);
                 $page = $info2['page'];
@@ -107,23 +121,25 @@ class BigCommerceInventory extends BigCommerce
         }
     }
 
-    public function add_product_image($store_listing_id, $image_url){
+    public function add_product_image($store_listing_id, $image_url)
+    {
         $filter = array(
             'image_file' => $image_url,
             'is_thumbnail' => true
         );
         $post_string = json_encode($filter);
         $api_url = 'https://mymusiclife.com/api/v2/products/' . $store_listing_id . '/images';
-        $response = $this->bigcommerceCurl($api_url, 'POST', $post_string);
+        $response = BigCommerceClient::bigcommerceCurl($api_url, 'POST', $post_string);
 
         $product = json_decode($response);
         return $product;
     }
 
-    public function post_inventory_update($store_listing_id, $filter){
+    public function post_inventory_update($store_listing_id, $filter)
+    {
         $post_string = json_encode($filter);
         $api_url = 'https://mymusiclife.com/api/v2/products/' . $store_listing_id;
-        $response = $this->bigcommerceCurl($api_url, 'PUT', $post_string);
+        $response = BigCommerceClient::bigcommerceCurl($api_url, 'PUT', $post_string);
 
         $product = json_decode($response);
         return $product;
@@ -134,9 +150,10 @@ class BigCommerceInventory extends BigCommerce
 
     }
 
-    public function get_product_images($product_id){
+    public function get_product_images($product_id)
+    {
         $api_url = 'https://mymusiclife.com/api/v2/products/' . $product_id . '/images'; //
-        $response = $this->bigcommerceCurl($api_url, 'GET');
+        $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
 
         $product_images = json_decode($response);
         return $product_images;

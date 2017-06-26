@@ -7,23 +7,22 @@ use models\ModelDB as MDB;
 
 class BigCommerce
 {
-
-    public $BigCommerceClient;
-
-    public function __construct(BigCommerceClient $bigCommerceClient, $BC)
+    public function __construct($BC)
     {
-        $this->BigCommerceClient = $bigCommerceClient;
         $this->configure($BC);
     }
 
-    public function configure($BC){
-        $BC->configure(array(
-            'store_url' => $this->BigCommerceClient->getStoreUrl(),
-            'username' => $this->BigCommerceClient->getUsername(),
-            'api_key' => $this->BigCommerceClient->getAPIKey()
-        ));
+    public function configure($BC)
+    {
+        $BC->configure([
+            'store_url' => BigCommerceClient::getStoreUrl(),
+            'username' => BigCommerceClient::getUsername(),
+            'api_key' => BigCommerceClient::getAPIKey()
+        ]);
     }
-    public function save_app_info($crypt, $store_id, $store_url, $store_username, $api_key){
+
+    public function save_app_info($crypt, $store_id, $store_url, $store_username, $api_key)
+    {
         $sql = "INSERT INTO api_bigcommerce (store_id, store_url, username, api_key) VALUES (:store_id, :store_url, :username, :api_key)";
         $query_params = array(
             ":store_id" => $store_id,
@@ -34,7 +33,9 @@ class BigCommerce
         return MDB::query($sql, $query_params);
 
     }
-    public function add_product($name, $description, $meta_keywords, $meta_description, $page_title, $width, $weight, $height, $depth){
+
+    public function add_product($name, $description, $meta_keywords, $meta_description, $page_title, $width, $weight, $height, $depth)
+    {
         $sql = "INSERT INTO product (name, description, meta_keywords, meta_description, page_title, width, weight, height, depth) VALUES (:name, :description, :meta_keywords, :meta_description, :page_title, :width, :weight, :height, :depth)";
         $query_params = array(
             ":name" => $name,
@@ -50,7 +51,9 @@ class BigCommerce
         return MDB::query($sql, $query_params, 'id');
 
     }
-    public function add_sku($product_id, $sku){
+
+    public function add_sku($product_id, $sku)
+    {
         $sql = "INSERT INTO sku (product_id, sku) VALUES (:product_id, :sku)";
         $query_params = array(
             ":product_id" => $product_id,
@@ -59,13 +62,15 @@ class BigCommerce
         return MDB::query($sql, $query_params, 'id');
 
     }
-    public function add_sku_to_stock($sku_id, $condition, $uofm = 1){
+
+    public function add_sku_to_stock($sku_id, $condition, $uofm = 1)
+    {
         //Add sku_id to Stock Table
-        if($condition == "New"){
+        if ($condition == "New") {
             $condition_id = 1;
-        }elseif($condition == "Used"){
+        } elseif ($condition == "Used") {
             $condition_id = 2;
-        }elseif($condition == "Refurbished"){
+        } elseif ($condition == "Refurbished") {
             $condition_id = 5;
         }
         $sql = "INSERT INTO stock (sku_id, condition_id, uofm_id) VALUES (:sku_id, :condition_id, :uofm_id)";
@@ -76,7 +81,9 @@ class BigCommerce
         );
         return MDB::query($sql, $query_params, 'id');
     }
-    public function add_stock_to_listing($store_id, $stock_id, $store_listing_id){
+
+    public function add_stock_to_listing($store_id, $stock_id, $store_listing_id)
+    {
         $sql = "INSERT INTO listing_bigcommerce (store_id, stock_id, store_listing_id) VALUES (:store_id, :stock_id, :store_listing_id)";
         $query_params = array(
             ":store_id" => $store_id,
@@ -85,7 +92,9 @@ class BigCommerce
         );
         return MDB::query($sql, $query_params, 'id');
     }
-    public function add_product_availability($product_id, $store_id){
+
+    public function add_product_availability($product_id, $store_id)
+    {
         $sql = "INSERT INTO product_availability (product_id, store_id, is_available) VALUES (:product_id, :store_id, 1)";
         $query_params = array(
             ":product_id" => $product_id,
@@ -93,7 +102,9 @@ class BigCommerce
         );
         MDB::query($sql, $query_params);
     }
-    public function add_product_price($sku_id, $price, $store_id){
+
+    public function add_product_price($sku_id, $price, $store_id)
+    {
         $sql = "INSERT INTO product_price (sku_id, price, store_id) VALUES (:sku_id, :price, :store_id";
         $query_params = array(
             ":sku_id" => $sku_id,
@@ -102,11 +113,15 @@ class BigCommerce
         );
         MDB::query($sql, $query_params);
     }
-    public function get_product_with_upc(){
+
+    public function get_product_with_upc()
+    {
         $sql = "SELECT p.id, p.upc, sk.sku, lb.store_listing_id FROM product p JOIN sku sk ON sk.product_id = p.id JOIN listing_bigcommerce lb ON lb.sku = sk.sku";
         return MDB::query($sql, [], 'fetchAll');
     }
-    public function update_upc($sku, $upc){
+
+    public function update_upc($sku, $upc)
+    {
         $sql = "UPDATE listing_bigcommerce SET upc = :upc WHERE sku = :sku";
         $query_params = [
             ':upc' => $upc,
@@ -115,39 +130,49 @@ class BigCommerce
         MDB::query($sql, $query_params);
 
     }
-    public function get_bc_product_info($product_id){
+
+    public function get_bc_product_info($product_id)
+    {
         $api_url = 'https://mymusiclife.com/api/v2/products/' . $product_id . '.json';
-        $response = $this->bigcommerceCurl($api_url, 'GET');
+        $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
 
         $items = json_decode($response);
         return $items;
     }
-    public function get_bc_product_upc($product_id){
+
+    public function get_bc_product_upc($product_id)
+    {
         $items = $this->get_bc_product_info($product_id);
         $upc = $items->upc;
         return $upc;
     }
-    public function get_category_count(){
+
+    public function get_category_count()
+    {
         $api_url = 'https://mymusiclife.com/api/v2/categories/count';
-        $response = $this->bigcommerceCurl($api_url, 'GET');
+        $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
 
         $items = json_decode($response);
         return $items;
     }
-    public function get_categories(){
+
+    public function get_categories()
+    {
         $fields = array(
             'limit' => 250
         );
         $post_string = json_encode($fields);
         $api_url = 'https://mymusiclife.com/api/v2/categories?limit=250&page=2';
-        $response = $this->bigcommerceCurl($api_url, 'GET', $post_string);
+        $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET', $post_string);
 
         $items = json_decode($response);
         return $items;
     }
-    public function get_bc_products_info($BC, $filter){
+
+    public function get_bc_products_info($BC, $filter)
+    {
         $products = $BC::getProducts($filter);
-        foreach($products as $p){
+        foreach ($products as $p) {
 //            print_r($p);
             echo 'Name: ' . $p->name . "  -  ";
             echo 'Price: ' . $p->price . "<br>";
@@ -233,10 +258,12 @@ class BigCommerce
             echo "<br /><br />";
         }
     }
-    public function get_bc_products($BC, $store_id, Ecommerce $e){
+
+    public function get_bc_products($BC, $store_id, Ecommerce $e)
+    {
         $count = $BC::getProductsCount();
-        $pages = $count/250;
-        for($pn = 4; $pn < 101; $pn++){ //$pn = 36
+        $pages = $count / 250;
+        for ($pn = 4; $pn < 101; $pn++) { //$pn = 36
             $filter = array(
                 "page" => $pn,
                 "limit" => 250 //250
@@ -310,7 +337,7 @@ class BigCommerce
                 //find condition id
                 $condition_id = $e->condition_soi($condition);
                 //add stock to sku
-                $stock_id = $e->stock_soi($sku_id,$condition_id);
+                $stock_id = $e->stock_soi($sku_id, $condition_id);
                 $channel_array = array(
                     'store_id' => $store_id,
                     'stock_id' => $stock_id,

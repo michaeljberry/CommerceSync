@@ -13,6 +13,6 @@ $filter = array(
     'min_date_created' => date('r', strtotime("-3 days")),
     'status_id' => 11
 );
-$bcord->get_bc_orders($BC,$filter, $bigcommerce->BigCommerceClient->getStoreID(), $ecommerce, $ibmdata, $folder);
+$bcord->get_bc_orders($BC, $filter, $ecommerce, $ibmdata, $folder);
 
 endClock($start);

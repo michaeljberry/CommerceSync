@@ -12,10 +12,6 @@ spl_autoload_register(function ($class) {
     }
 });
 
-//Walmart Classes
-include_once 'classes/wm/wmclass.php';
-include_once 'classes/wm/wmordclass.php';
-include_once 'classes/wm/wminvclass.php';
 //EcomDash Classes
 include_once 'classes/ecd/ecdclass.php';
 include_once 'classes/ecd/ecdordclass.php';
@@ -31,9 +27,9 @@ $users = new User();
 $general = new General();
 
 //Walmart Class Declarations
-$wm = new \wm\walmartclass();
-$wmord = new \wmord\wmordclass();
-$wminv = new \wminv\wminvclass();
+//$wm = new \wm\Walmart();
+//$wmord = new \wm\WalmartOrder();
+//$wminv = new \wm\WalmartInventory();
 
 //EcomDash Class Declarations
 $ecd = new \ecd\ecdclass();

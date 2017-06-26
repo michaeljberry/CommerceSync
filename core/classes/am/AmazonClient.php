@@ -10,14 +10,15 @@ class AmazonClient implements EcommerceInterface
 
     use AmazonClientCurl;
 
-    private $amazonInfo;
-    private $amazonMerchantID;
-    private $amazonMarketplaceID;
-    private $amazonAWSAccessKey;
-    private $amazonSecretKey;
-    public $amazonStoreID;
+    private static $amazonInfo;
+    private static $amazonMerchantID;
+    private static $amazonMarketplaceID;
+    private static $amazonAWSAccessKey;
+    private static $amazonSecretKey;
+    private static $amazonStoreID;
+    protected static $instance = null;
 
-    public $apiFeedInfo = [
+    private static $apiFeedInfo = [
         'FulfillmentInventory' => [
             'versionDate' => '2010-10-01'
         ],
@@ -35,18 +36,31 @@ class AmazonClient implements EcommerceInterface
         ]
     ];
 
+    public static function __callStatic($method, $args)
+    {
+        return call_user_func_array([self::instance(), $method], $args);
+    }
+
+    public static function instance($user_id)
+    {
+        if(self::$instance === null){
+            self::$instance = new AmazonClient($user_id);
+        }
+        return self::$instance;
+    }
+
     /**
      * AmazonClient constructor.
      * @param $user_id
      */
-    public function __construct($user_id)
+    protected function __construct($user_id)
     {
-        $this->setInfo($user_id);
-        $this->setMerchantID();
-        $this->setMarketplaceID();
-        $this->setAWSAccessKey();
-        $this->setSecretKey();
-        $this->setStoreID();
+        self::setInfo($user_id);
+        self::setMerchantID();
+        self::setMarketplaceID();
+        self::setAWSAccessKey();
+        self::setSecretKey();
+        self::setStoreID();
     }
 
     /**
@@ -64,57 +78,62 @@ class AmazonClient implements EcommerceInterface
             'secret_key'
         ];
 
-        $this->amazonInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$amazonInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setMerchantID()
     {
-        $this->amazonMerchantID = decrypt($this->amazonInfo['merchantid']);
+        self::$amazonMerchantID = decrypt(self::$amazonInfo['merchantid']);
     }
 
     private function setMarketplaceID()
     {
-        $this->amazonMarketplaceID = decrypt($this->amazonInfo['marketplaceid']);
+        self::$amazonMarketplaceID = decrypt(self::$amazonInfo['marketplaceid']);
     }
 
     private function setAWSAccessKey()
     {
-        $this->amazonAWSAccessKey = decrypt($this->amazonInfo['aws_access_key']);
+        self::$amazonAWSAccessKey = decrypt(self::$amazonInfo['aws_access_key']);
     }
 
     private function setSecretKey()
     {
-        $this->amazonSecretKey = decrypt($this->amazonInfo['secret_key']);
+        self::$amazonSecretKey = decrypt(self::$amazonInfo['secret_key']);
     }
 
     private function setStoreID()
     {
-        $this->amazonStoreID = $this->amazonInfo['store_id'];
+        self::$amazonStoreID = self::$amazonInfo['store_id'];
     }
 
-    public function getMerchantID()
+    public static function getAPIFeedInfo($feed)
     {
-        return $this->amazonMerchantID;
+        return self::$apiFeedInfo[$feed];
     }
 
-    public function getMarketplaceID()
+    public static function getMerchantID()
     {
-        return $this->amazonMarketplaceID;
+        return self::$amazonMerchantID;
     }
 
-    public function getAWSAccessKey()
+    public static function getMarketplaceID()
     {
-        return $this->amazonAWSAccessKey;
+        return self::$amazonMarketplaceID;
     }
 
-    public function getSecretKey()
+    public static function getAWSAccessKey()
     {
-        return $this->amazonSecretKey;
+        return self::$amazonAWSAccessKey;
     }
 
-    public function getStoreID()
+    public static function getSecretKey()
     {
-        return $this->amazonStoreID;
+        return self::$amazonSecretKey;
+    }
+
+    public static function getStoreID()
+    {
+        return static::$amazonStoreID;
     }
 
 }

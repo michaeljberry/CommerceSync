@@ -5,7 +5,7 @@ namespace bc;
 use ecommerce\EcommerceInterface;
 use models\channels\ChannelModel;
 
-class BigCommerceClient implements EcommerceInterface
+class BigCommerceClient //implements EcommerceInterface
 {
 
     use BigCommerceClientCurl;

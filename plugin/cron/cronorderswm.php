@@ -4,31 +4,32 @@ include __DIR__ . '/../../core/init.php';
 include WEBCORE . 'ibminit.php';
 
 use ecommerce\Ecommerce;
+use wm\WalmartOrder;
 
 $start = startClock();
 $user_id = 838;
 require WEBPLUGIN . 'wm/wmvar.php';
 
-$wmorder = $wmord->construct_auth($wm_consumer_key, $wm_secret_key, $wm_api_header);
+$wmorder = $wmord->configure();
 
-function parseOrder($o, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $wm_api_header, $wm_store_id, $ibmdata){
+function parseOrder($o, $ecommerce, WalmartOrder $wmord, $wm_store_id, $ibmdata){
 //    \ecommerceclass\ecommerceclass::dd($o);
     $order_num = $o['purchaseOrderId'];
     echo "Order: $order_num<br><br>";
     $found = Ecommerce::orderExists($order_num);
     if (!$found) {
-        $acknowledged = $wmord->acknowledge_order($wm_consumer_key, $wm_secret_key, $wm_api_header, $o);
+        $acknowledged = $wmord->acknowledge_order($o);
 //        echo 'Acknowledgement: <br><pre>';
 //        print_r($acknowledged);
 //        echo '</pre><br><br>';
         if ((array_key_exists('orderLineStatuses', $acknowledged['orderLines']['orderLine']) &&
             $acknowledged['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
          || $acknowledged['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged') {
-            $wmord->get_wm_order($wm_consumer_key, $wm_secret_key, $ecommerce, $wm_store_id, $ibmdata, $o);
+            $wmord->get_wm_order($ecommerce, $wm_store_id, $ibmdata, $o);
         }
     }
 }
-function getOrders($wmorder, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $wm_api_header, $wm_store_id, $ibmdata, $next = null)
+function getOrders($wmorder, $ecommerce, $wmord, $wm_store_id, $ibmdata, $next = null)
 {
     try {
         $fromDate = '-3 days';
@@ -54,11 +55,11 @@ function getOrders($wmorder, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_ke
 
         if (count($orders['elements']['order']) > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
             foreach ($orders['elements']['order'] as $o) {
-                parseOrder($o, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $wm_api_header, $wm_store_id, $ibmdata);
+                parseOrder($o, $ecommerce, $wmord, $wm_store_id, $ibmdata);
             }
         } else {
             foreach ($orders['elements'] as $o) {
-                parseOrder($o, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $wm_api_header, $wm_store_id, $ibmdata);
+                parseOrder($o, $ecommerce, $wmord, $wm_store_id, $ibmdata);
             }
         }
 //        if($totalCount > 10){ // && !empty($nextCursor)
@@ -69,6 +70,6 @@ function getOrders($wmorder, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_ke
     }
 }
 
-getOrders($wmorder, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $wm_api_header, $wm_store_id, $ibmdata);
+getOrders($wmorder, $ecommerce, $wmord, $wm_store_id, $ibmdata);
 
 endClock($start);

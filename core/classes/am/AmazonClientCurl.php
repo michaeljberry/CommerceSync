@@ -16,20 +16,20 @@ trait AmazonClientCurl
     public function setParams($action, $feedtype, $version, $paramAdditionalConfig = [])
     {
         $param = [];
-        $param['AWSAccessKeyId'] = $this->amazonAWSAccessKey;
+        $param['AWSAccessKeyId'] = AmazonClient::getAWSAccessKey();
         $param['Action'] = $action;
 
         //Parse $paramAdditionalConfig Array
         if (in_array('Merchant', $paramAdditionalConfig))
-            $param['Merchant'] = $this->amazonMerchantID;
+            $param['Merchant'] = AmazonClient::getMerchantID();
         if (in_array('MarketplaceId.Id.1', $paramAdditionalConfig))
-            $param['MarketplaceId.Id.1'] = $this->amazonMarketplaceID;
+            $param['MarketplaceId.Id.1'] = AmazonClient::getMarketplaceID();
         if (in_array('PurgeAndReplace', $paramAdditionalConfig))
             $param['PurgeAndReplace'] = 'false';
         if (in_array('MarketplaceId', $paramAdditionalConfig))
-            $param['MarketplaceId'] = $this->amazonMarketplaceID;
+            $param['MarketplaceId'] = AmazonClient::getMarketplaceID();
         if (in_array('SellerId', $paramAdditionalConfig))
-            $param['SellerId'] = $this->amazonMerchantID;
+            $param['SellerId'] = AmazonClient::getMerchantID();
 
         if (!empty($feedtype)) {
             $param['FeedType'] = $feedtype;
@@ -114,9 +114,9 @@ trait AmazonClientCurl
      * @param $sign
      * @return string
      */
-    protected function encodeSignature($sign)
+    protected static function encodeSignature($sign)
     {
-        $signature = hash_hmac("sha256", $sign, $this->amazonSecretKey, true);
+        $signature = hash_hmac("sha256", $sign, AmazonClient::getSecretKey(), true);
         $signature = urlencode(base64_encode($signature));
         return $signature;
     }
@@ -128,15 +128,15 @@ trait AmazonClientCurl
      * @param $whatToDo
      * @return string
      */
-    protected function createLink($feed, $version, $param, $whatToDo)
+    protected static function createLink($feed, $version, $param, $whatToDo)
     {
         $url = AmazonClient::createUrlArray($param);
-        usort($url, array($this, "cmp"));
+        usort($url, [get_called_class(), "cmp"]);
 
         $arr = implode('&', $url);
         $sign = AmazonClient::sign($arr, $whatToDo, $param['Version'], $feed);
 
-        $signature = $this->encodeSignature($sign);
+        $signature = AmazonClient::encodeSignature($sign);
 
         $link = "https://mws.amazonservices.com/$feed/$version?$arr&Signature=$signature";
         return $link;
@@ -145,12 +145,12 @@ trait AmazonClientCurl
     /**
      * @return string
      */
-    protected function xmlAmazonEnvelopeHeader()
+    protected static function xmlAmazonEnvelopeHeader()
     {
         $xml = [
             'Header' => [
                 'DocumentVersion' => '1.01',
-                'MerchantIdentifier' => $this->amazonMerchantID
+                'MerchantIdentifier' => AmazonClient::getMerchantID()
             ]
         ];
 
@@ -191,12 +191,12 @@ trait AmazonClientCurl
      * @param $xml
      * @return string
      */
-    protected function parseAmazonXML($xml)
+    protected static function parseAmazonXML($xml)
     {
         $amazonXML = '';
         if ($xml) {
             $amazonXML = Ecommerce::xmlOpenTag();
-            $amazonXML .= $this->xmlAmazonEnvelopeHeader();
+            $amazonXML .= AmazonClient::xmlAmazonEnvelopeHeader();
             $amazonXML .= AmazonClient::parseXML($xml);
             $amazonXML .= AmazonClient::xmlAmazonEnvelopeFooter();
         }
@@ -213,8 +213,8 @@ trait AmazonClientCurl
      */
     public function amazonCurl($xml, $feed, $version, $param, $whatToDo)
     {
-        $amazon_feed = $this->parseAmazonXML($xml);
-        $link = $this->createLink($feed, $version, $param, $whatToDo);
+        $amazon_feed = AmazonClient::parseAmazonXML($xml);
+        $link = AmazonClient::createLink($feed, $version, $param, $whatToDo);
         $httpHeader = AmazonClient::buildHeader($amazon_feed);
         $request = AmazonClient::setCurlOptions($link, $httpHeader, $amazon_feed);
         $response = Ecommerce::curlRequest($request);
@@ -226,7 +226,7 @@ trait AmazonClientCurl
      * @param $b
      * @return int
      */
-    private static function cmp($a, $b)
+    protected static function cmp($a, $b)
     {
         $a = substr($a, 0, strpos($a, "="));
         $b = substr($b, 0, strpos($b, "="));

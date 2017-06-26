@@ -1,37 +1,40 @@
 <?php
 
-namespace wmord;
+namespace wm;
 
-use \Walmart\Order as WalmartOrder;
-use wm\walmartclass;
+use ecommerce\Ecommerce;
+use \Walmart\Order;
+use wm\WalmartInventory;
 
-class wmordclass extends walmartclass
+class WalmartOrder extends Walmart
 {
     /**
-     * @param $wm_consumer_key
-     * @param $wm_secret_key
-     * @param $wm_api_header
      * @return WalmartOrder
+     * @internal param $wm_consumer_key
+     * @internal param $wm_secret_key
+     * @internal param $wm_api_header
      */
-    public function construct_auth($wm_consumer_key, $wm_secret_key, $wm_api_header){
-        $wmorder = new WalmartOrder([
-            'consumerId' => $wm_consumer_key,
-            'privateKey' => $wm_secret_key,
-            'wmConsumerChannelType' => $wm_api_header
+    public function configure()
+    {
+        $wmorder = new Order([
+            'consumerId' => $this->WalmartClient->getConsumerKey(),
+            'privateKey' => $this->WalmartClient->getSecretKey(),
+            'wmConsumerChannelType' => $this->WalmartClient->getAPIHeader()
         ]);
         return $wmorder;
     }
 
     /**
-     * @param $wm_consumer_key
-     * @param $wm_secret_key
-     * @param $wm_api_header
-     * @param $o
+     * @param $order
      * @return array
+     * @internal param $wm_consumer_key
+     * @internal param $wm_secret_key
+     * @internal param $wm_api_header
      */
-    public function acknowledge_order($wm_consumer_key, $wm_secret_key, $wm_api_header, $o){
-        $wmorder = $this->construct_auth($wm_consumer_key, $wm_secret_key, $wm_api_header);
-        $poId = $o['purchaseOrderId'];
+    public function acknowledge_order($order)
+    {
+        $wmorder = $this->configure();
+        $poId = $order['purchaseOrderId'];
         $orderAcknowledge = $wmorder->acknowledge([
             'purchaseOrderId' => $poId,
         ]);
@@ -46,7 +49,7 @@ class wmordclass extends walmartclass
      * @param $ibmdata
      * @param $order
      */
-    public function get_wm_order($wm_consumer_key, $wm_secret_key, $ecommerce, $wm_store_id, $ibmdata, $order)
+    public function get_wm_order(Ecommerce $ecommerce, $wm_store_id, $ibmdata, $order)
     {
         $order_num = $order['purchaseOrderId'];
         $state_code = $order['shippingInfo']['postalAddress']['state'];
@@ -76,11 +79,11 @@ class wmordclass extends walmartclass
         print_r($order);
         echo '</pre><br><br>';
 
-        if(array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
+        if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
             $this->process_orders($order['orderLines']['orderLine'], $total_tax, $shipping_amount, $total_order);
             $order_items = $order['orderLines'];
-        }else{
-            foreach($order['orderLines']['orderLine'] as $o){
+        } else {
+            foreach ($order['orderLines']['orderLine'] as $o) {
                 $this->process_orders($o, $total_tax, $shipping_amount, $total_order);
             }
             $order_items = $order['orderLines']['orderLine'];
@@ -91,9 +94,9 @@ class wmordclass extends walmartclass
         }
 
         $city_id = $ecommerce->citySoi($city, $state_id);
-        $cust_id = $ecommerce->customer_soi($first_name,$last_name,ucwords(strtolower($address)),ucwords(strtolower($address2)),$city_id,$state_id,$zip_id);
+        $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
         $order_id = $ecommerce->save_order($wm_store_id, $cust_id, $order_num, $shipping, $shipping_amount, $total_tax);
-        $info_array = $this->get_wm_order_items($wm_consumer_key, $wm_secret_key, $ecommerce, $order_num, $order_items, $state_code, $total_tax, $order_id);
+        $info_array = $this->get_wm_order_items($ecommerce, $order_num, $order_items, $state_code, $total_tax, $order_id);
         $item_xml = $info_array['item_xml'];
         $xml = $this->save_wm_order_to_xml($order, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state_code, $zip, $country, $shipping_amount, $ibmdata);
         $ecommerce->save_xml_to_hd($order_num, $xml, 'Walmart');
@@ -137,27 +140,28 @@ class wmordclass extends walmartclass
      * @param $order_id
      * @return array
      */
-    public function get_wm_order_items($wm_consumer_key, $wm_secret_key, $ecommerce, $order_num, $order_items, $state_code, $total_tax, $order_id){
-        $wminv = new \wminv\wminvclass();
+    public function get_wm_order_items($ecommerce, $order_num, $order_items, $state_code, $total_tax, $order_id)
+    {
+        $wminv = new WalmartInventory();
         $item_xml = '';
         $ponumber = 1;
 
-        foreach($order_items as $i){
+        foreach ($order_items as $i) {
 //            echo '<br><br><pre>';
 //            print_r($i);
 //            echo '</pre><br><br>';
             $quantity = $i['orderLineQuantity']['amount'];
             $title = $i['item']['productName'];
             $principle = 0;
-            foreach($i['charges'] as $p){
-                if($p['chargeType'] == 'PRODUCT'){
+            foreach ($i['charges'] as $p) {
+                if ($p['chargeType'] == 'PRODUCT') {
                     $principle += $p['chargeAmount']['amount'];
                 }
             }
-            $item_total = sprintf("%01.2f",number_format($principle, 2, '.', '')/$quantity);
+            $item_total = sprintf("%01.2f", number_format($principle, 2, '.', '') / $quantity);
             echo "Item Total: $item_total";
             $sku = $i['item']['sku'];
-            $item = $wminv->get_item($wm_consumer_key, $wm_secret_key, $sku);
+            $item = $wminv->get_item($sku);
             $upc = $item['MPItemView']['upc'];
             $sku_id = $ecommerce->skuSoi($sku);
             $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
@@ -196,7 +200,8 @@ class wmordclass extends walmartclass
      * @param $ibmdata
      * @return mixed
      */
-    public function save_wm_order_to_xml($order, $item_xml, $e, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $shipping_amount, $ibmdata){
+    public function save_wm_order_to_xml($order, $item_xml, $e, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $shipping_amount, $ibmdata)
+    {
         $sku = $order['orderLines']['orderLine']['item']['sku'];
         $channel_name = 'Walmart';
         $channel_num = $e->get_channel_num($ibmdata, $channel_name, $sku);
@@ -220,29 +225,30 @@ class wmordclass extends walmartclass
      * @param $carrier
      * @return array
      */
-    public function update_walmart_tracking($wm_consumer_key, $wm_secret_key, $wm_api_header, $order_num, $tracking_id, $carrier){
-        $wmorder = $this->construct_auth($wm_consumer_key, $wm_secret_key, $wm_api_header);
+    public function update_walmart_tracking($wm_consumer_key, $wm_secret_key, $wm_api_header, $order_num, $tracking_id, $carrier)
+    {
+        $wmorder = $this->configure();
         $order = $wmorder->get([
             'purchaseOrderId' => $order_num
         ]);
 //        print_r($order);
-        if(isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo', $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])){
+        if (isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo', $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])) {
             return $order;
         }
         echo '<br><br>';
-        $date = date("Y-m-d")."T".date("H:i:s")."Z";
+        $date = date("Y-m-d") . "T" . date("H:i:s") . "Z";
         echo "Date: $date<br><br>";
 //        $order_num = $order['purchaseOrderId'];
         $trackingURL = '';
-        if($carrier == 'USPS'){
+        if ($carrier == 'USPS') {
             $trackingURL = "https://tools.usps.com/go/TrackConfirmAction.action";
-        }elseif ($carrier == 'UPS'){
+        } elseif ($carrier == 'UPS') {
             $trackingURL = "http://wwwapps.ups.com/WebTracking/track";
         }
-        if(array_key_exists('lineNumber', $order['orderLines']['orderLine'])){
+        if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
             $tracking = $this->process_tracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id, $trackingURL, $wm_consumer_key, $wm_secret_key, $wm_api_header);
-        }else{
-            foreach($order['orderLines']['orderLine'] as $o){
+        } else {
+            foreach ($order['orderLines']['orderLine'] as $o) {
                 $tracking = $this->process_tracking($order['orderLines']['orderLine'], $order_num, $date, $carrier, $tracking_id, $trackingURL, $wm_consumer_key, $wm_secret_key, $wm_api_header);
             }
         }
@@ -265,23 +271,25 @@ class wmordclass extends walmartclass
 
     public function process_tracking($order, $order_num, $date, $carrier, $tracking_id, $trackingURL, $wm_consumer_key, $wm_secret_key, $wm_api_header)
     {
-        foreach ($order as $o){
+        foreach ($order as $o) {
             $lineNumber = $o['lineNumber'];
             $quantity = $o['orderLineQuantity']['amount'];
-            $wmorder = $this->construct_auth($wm_consumer_key, $wm_secret_key, $wm_api_header);
+            $wmorder = $this->configure();
             try {
                 $tracking = $wmorder->ship(
                     $order_num,
                     $this->create_tracking_array($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
                 );
-            }catch(Exception $e){
+            } catch (Exception $e) {
                 die("There was a problem requesting the data: " . $e->getMessage());
             }
 //            print_r($tracking);
         }
         return $tracking;
     }
-    public function create_tracking_array($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL){
+
+    public function create_tracking_array($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
+    {
         $tracking = [
             'orderShipment' => [
                 'orderLines' => [

@@ -10,23 +10,37 @@ class EbayClient implements EcommerceInterface
 
     use EbayClientCurl;
 
-    private $ebayInfo;
-    private $eBayDevID;
-    private $eBayAppID;
-    private $eBayCertID;
-    private $eBayToken;
-    public $eBayStoreID;
+    private static $ebayInfo;
+    private static $eBayDevID;
+    private static $eBayAppID;
+    private static $eBayCertID;
+    private static $eBayToken;
+    private static $eBayStoreID;
+    protected static $instance = null;
 
-    public function __construct($user_id){
-        $this->setInfo($user_id);
-        $this->setDevID();
-        $this->setAppID();
-        $this->setCertID();
-        $this->setToken();
-        $this->setStoreID();
+    public static function __callStatic($method, $args)
+    {
+        return call_user_func_array([self::instance(), $method], $args);
     }
 
-    private function setInfo($user_id)
+    public static function instance($user_id)
+    {
+        if(self::$instance === null){
+            self::$instance = new EbayClient($user_id);
+        }
+        return self::$instance;
+    }
+
+    protected function __construct($user_id){
+        self::setInfo($user_id);
+        self::setDevID();
+        self::setAppID();
+        self::setCertID();
+        self::setToken();
+        self::setStoreID();
+    }
+
+    private static function setInfo($user_id)
     {
         $table = 'api_ebay';
         $channel = 'Ebay';
@@ -38,57 +52,57 @@ class EbayClient implements EcommerceInterface
             'token'
         ];
 
-        $this->ebayInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$ebayInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
-    private function setDevID()
+    private static function setDevID()
     {
-        $this->eBayDevID = decrypt($this->ebayInfo['devid']);
+        self::$eBayDevID = decrypt(self::$ebayInfo['devid']);
     }
 
-    private function setAppID()
+    private static function setAppID()
     {
-        $this->eBayAppID = decrypt($this->ebayInfo['appid']);
+        self::$eBayAppID = decrypt(self::$ebayInfo['appid']);
     }
 
-    private function setCertID()
+    private static function setCertID()
     {
-        $this->eBayCertID = decrypt($this->ebayInfo['certid']);
+        self::$eBayCertID = decrypt(self::$ebayInfo['certid']);
     }
 
-    private function setToken()
+    private static function setToken()
     {
-        $this->eBayToken = decrypt($this->ebayInfo['token']);
+        self::$eBayToken = decrypt(self::$ebayInfo['token']);
     }
 
-    private function setStoreID()
+    private static function setStoreID()
     {
-        $this->eBayStoreID = $this->ebayInfo['store_id'];
+        self::$eBayStoreID = self::$ebayInfo['store_id'];
     }
 
-    public function getDevID()
+    public static function getDevID()
     {
-        return $this->eBayDevID;
+        return self::$eBayDevID;
     }
 
-    public function getAppID()
+    public static function getAppID()
     {
-        return $this->eBayAppID;
+        return self::$eBayAppID;
     }
 
-    public function getCertID()
+    public static function getCertID()
     {
-        return $this->eBayCertID;
+        return self::$eBayCertID;
     }
 
-    public function getToken()
+    public static function getToken()
     {
-        return $this->eBayToken;
+        return self::$eBayToken;
     }
 
-    public function getStoreID()
+    public static function getStoreID()
     {
-        return $this->eBayStoreID;
+        return static::$eBayStoreID;
     }
 
 }

@@ -33,7 +33,7 @@ class AmazonOrder extends Amazon
         $action = 'SubmitFeed';
         $feedtype = '_POST_ORDER_FULFILLMENT_DATA_';
         $feed = 'Feeds';
-        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
+        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $paramAdditionalConfig = [
@@ -58,7 +58,7 @@ class AmazonOrder extends Amazon
         $action = 'ListOrders';
         $feedtype = '';
         $feed = 'Orders';
-        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
+        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'MarketplaceId.Id.1',
@@ -71,7 +71,7 @@ class AmazonOrder extends Amazon
         $param['OrderStatus.Status.2'] = 'PartiallyShipped';
 //        $param['OrderStatus.Status.1'] = 'Shipped';
 //        $param['FulfillmentChannel.Channel.1'] = 'MFN';
-        $from = $this->get_order_dates($this->AmazonClient->amazonStoreID);
+        $from = $this->get_order_dates(AmazonClient::getStoreID());
         $from = $from['api_pullfrom'];
 //        $from = "-1";
         $from .= ' days';
@@ -91,7 +91,7 @@ class AmazonOrder extends Amazon
         $action = 'ListOrdersByNextToken';
         $feedtype = '';
         $feed = 'Orders';
-        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
+        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'MarketplaceId.Id.1',
@@ -114,7 +114,7 @@ class AmazonOrder extends Amazon
         $action = 'ListOrderItems';
         $feedtype = '';
         $feed = 'Orders';
-        $version = $this->AmazonClient->apiFeedInfo[$feed]['versionDate'];
+        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'SellerId'
@@ -262,7 +262,7 @@ class AmazonOrder extends Amazon
                 $cityId = $ecommerce->citySoi($shippingCity, $stateId);
                 $custId = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)), ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
                 if (!LOCAL) {
-                    $orderId = $ecommerce->save_order($this->AmazonClient->amazonStoreID, $custId, $orderNum, $shipping, $totalShipping, $totalTax);
+                    $orderId = $ecommerce->save_order(AmazonClient::getStoreID(), $custId, $orderNum, $shipping, $totalShipping, $totalTax);
                 }
 
                 $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);

@@ -6,15 +6,18 @@ use \Walmart\Item as WalmartItem;
 
 class WalmartInventory extends Walmart
 {
-    public function construct_auth(){
+    public function constructAuthorizationToken()
+    {
         $wmitem = new WalmartItem([
             'consumerId' => $this->WalmartClient->getConsumerKey(),
             'privateKey' => $this->WalmartClient->getSecretKey()
         ]);
         return $wmitem;
     }
-    public function get_item($sku){
-        $wmitem = $this->construct_auth();
+
+    public function getItem($sku)
+    {
+        $wmitem = $this->constructAuthorizationToken();
         $item = $wmitem->get([
             'sku' => $sku
         ]);

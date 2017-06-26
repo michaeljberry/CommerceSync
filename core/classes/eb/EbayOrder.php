@@ -81,13 +81,13 @@ class EbayOrder extends Ebay
         return (object)$itemObject;
     }
 
-    protected function getMoreOrders($requestName, $pagenumber, $ebayDays, $EbayClient){
+    protected function getMoreOrders($requestName, $pagenumber, $ebayDays){
         $xml = $this->getOrderXml($ebayDays, $pagenumber);
         $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 
-    protected function parseOrders($xml_orders, $folder, $ecommerce, $ibmdata, $EbayClient){
+    protected function parseOrders($xml_orders, $folder, $ecommerce, $ibmdata){
         foreach($xml_orders->OrderArray->Order as $xml)
         {
             $order_num = (string)$xml->ExternalTransaction->ExternalTransactionID;
@@ -161,7 +161,7 @@ class EbayOrder extends Ebay
                     $city_id = $ecommerce->citySoi($city, $state_id);
                     $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                     if (!LOCAL) {
-                        $order_id = $ecommerce->save_order($EbayClient->getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $item_taxes, $fee, $trans_id);
+                        $order_id = $ecommerce->save_order(EbayClient::getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $item_taxes, $fee, $trans_id);
                     }
 
                     $items = $this->getItems($xml->TransactionArray, $order_id, $ecommerce);
@@ -183,17 +183,17 @@ class EbayOrder extends Ebay
         }
     }
 
-    public function retrieveOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce, $EbayClient, $ibmdata){
-        $response = $this->getMoreOrders($requestName, $pagenumber, $ebayDays, $EbayClient);
+    public function getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce, $ibmdata){
+        $response = $this->getMoreOrders($requestName, $pagenumber, $ebayDays);
         if ($response)
         {
             $xml_orders = simplexml_load_string($response);
             $orderCount = count($xml_orders->OrderArray->Order);
             echo "Order Count: $orderCount<br>";
-            $this->parseOrders($xml_orders, $folder, $ecommerce, $ibmdata, $EbayClient);
+            $this->parseOrders($xml_orders, $folder, $ecommerce, $ibmdata);
             if($orderCount >= 100){
                 $pagenumber++;
-                $this->retrieveOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce, $EbayClient, $ibmdata);
+                $this->getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce, $ibmdata);
             }
         }
     }

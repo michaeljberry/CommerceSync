@@ -4,7 +4,6 @@ namespace wm;
 
 use ecommerce\Ecommerce;
 use \Walmart\Order;
-use wm\WalmartInventory;
 
 class WalmartOrder extends Walmart
 {
@@ -42,14 +41,14 @@ class WalmartOrder extends Walmart
     }
 
     /**
-     * @param $wm_consumer_key
-     * @param $wm_secret_key
-     * @param $ecommerce
+     * @param Ecommerce $ecommerce
      * @param $wm_store_id
      * @param $ibmdata
      * @param $order
+     * @internal param $wm_consumer_key
+     * @internal param $wm_secret_key
      */
-    public function get_wm_order(Ecommerce $ecommerce, $wm_store_id, $ibmdata, $order)
+    public function get_wm_order(Ecommerce $ecommerce, $ibmdata, $order)
     {
         $order_num = $order['purchaseOrderId'];
         $state_code = $order['shippingInfo']['postalAddress']['state'];
@@ -95,7 +94,7 @@ class WalmartOrder extends Walmart
 
         $city_id = $ecommerce->citySoi($city, $state_id);
         $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
-        $order_id = $ecommerce->save_order($wm_store_id, $cust_id, $order_num, $shipping, $shipping_amount, $total_tax);
+        $order_id = $ecommerce->save_order(WalmartClient::getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $total_tax);
         $info_array = $this->get_wm_order_items($ecommerce, $order_num, $order_items, $state_code, $total_tax, $order_id);
         $item_xml = $info_array['item_xml'];
         $xml = $this->save_wm_order_to_xml($order, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state_code, $zip, $country, $shipping_amount, $ibmdata);
@@ -161,7 +160,7 @@ class WalmartOrder extends Walmart
             $item_total = sprintf("%01.2f", number_format($principle, 2, '.', '') / $quantity);
             echo "Item Total: $item_total";
             $sku = $i['item']['sku'];
-            $item = $wminv->get_item($sku);
+            $item = $wminv->getItem($sku);
             $upc = $item['MPItemView']['upc'];
             $sku_id = $ecommerce->skuSoi($sku);
             $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
@@ -318,5 +317,64 @@ class WalmartOrder extends Walmart
             ]
         ];
         return $tracking;
+    }
+
+    protected function parseOrder($o, $ecommerce, WalmartOrder $wmord, $ibmdata){
+//    \ecommerceclass\ecommerceclass::dd($o);
+        $order_num = $o['purchaseOrderId'];
+        echo "Order: $order_num<br><br>";
+        $found = Ecommerce::orderExists($order_num);
+        if (!$found) {
+            $acknowledged = $wmord->acknowledge_order($o);
+//        echo 'Acknowledgement: <br><pre>';
+//        print_r($acknowledged);
+//        echo '</pre><br><br>';
+            if ((array_key_exists('orderLineStatuses', $acknowledged['orderLines']['orderLine']) &&
+                    $acknowledged['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
+                || $acknowledged['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged') {
+                $wmord->get_wm_order($ecommerce, $ibmdata, $o);
+            }
+        }
+    }
+
+    public function getOrders($wmorder, $ecommerce, $wmord, $ibmdata, $next = null)
+    {
+        try {
+            $fromDate = '-3 days';
+            if(!empty($next)){
+                $orders = $wmorder->list([
+                    'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
+                    'nextCursor' => $next
+                ]);
+            }else {
+                $orders = $wmorder->listAll([
+                    'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
+//                'limit' => 200
+                ]);
+            }
+
+            echo 'Orders: <br>';
+//        \ecommerceclass\ecommerceclass::dd($orders);
+            $totalCount = $orders['meta']['totalCount'];
+//        $nextCursor = $orders['meta']['nextCursor'];
+            echo 'Order Count: ' . count($orders['elements']) . '<br><br>';
+
+            Ecommerce::dd($orders['elements']['order']);
+
+            if (count($orders['elements']['order']) > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
+                foreach ($orders['elements']['order'] as $o) {
+                    $this->parseOrder($o, $ecommerce, $wmord, $ibmdata);
+                }
+            } else {
+                foreach ($orders['elements'] as $o) {
+                    $this->parseOrder($o, $ecommerce, $wmord, $ibmdata);
+                }
+            }
+//        if($totalCount > 10){ // && !empty($nextCursor)
+//            getOrders($wmorder, $db, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $wm_api_header, $wm_store_id, $ibmdata); //$nextCursor
+//        }
+        } catch (Exception $e) {
+            die("There was a problem requesting the data: " . $e->getMessage());
+        }
     }
 }

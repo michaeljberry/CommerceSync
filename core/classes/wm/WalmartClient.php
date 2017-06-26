@@ -38,7 +38,7 @@ class WalmartClient implements EcommerceInterface
 
     public static function instance($user_id)
     {
-        if(self::instance === null){
+        if (self::instance === null) {
 
         }
         return self::instance;

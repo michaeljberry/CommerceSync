@@ -22,7 +22,7 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['ResponseGroup'] = 'Basic';
 
@@ -36,7 +36,7 @@ class AmazonInventory extends Amazon
             $param['SellerSkus.member.1'] = $sku;
         }
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -59,9 +59,9 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -83,9 +83,9 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -105,11 +105,11 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['Query'] = $searchTerm;
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -129,11 +129,11 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['ASINList.ASIN.1'] = $asin;
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -153,11 +153,11 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['SellerSKUList.SellerSKU.1'] = $sku;
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -193,9 +193,9 @@ class AmazonInventory extends Amazon
             $xml['Message']['Product']['DescriptionData']['Bullet'][] = $b;
         }
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version);
+        $param = AmazonClient::setParams($action, $feedtype, $version);
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -208,12 +208,12 @@ class AmazonInventory extends Amazon
 
         $xml = '';
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version);
+        $param = AmazonClient::setParams($action, $feedtype, $version);
 
         $param['IdType'] = 'ASIN';
         $param['IdList.Id.1'] = $asin;
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -233,11 +233,11 @@ class AmazonInventory extends Amazon
             'PurgeAndReplace'
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['ReportType'] = $feedtype;
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -257,12 +257,12 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['ItemCondition'] = 'New';
         $param['SellerSKUList.SellerSKU.1'] = $sku;
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
 

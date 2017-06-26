@@ -6,11 +6,6 @@ use models\ModelDB as MDB;
 
 class Amazon
 {
-    protected $AmazonClient;
-
-    public function __construct(AmazonClient $AmazonClient){
-        $this->AmazonClient = $AmazonClient;
-    }
     public function sanitizeColumnName($col){
         switch($col){
             case $col == "merchantid":

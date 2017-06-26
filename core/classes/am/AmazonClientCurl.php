@@ -13,7 +13,7 @@ trait AmazonClientCurl
      * @param array $paramAdditionalConfig
      * @return array
      */
-    public function setParams($action, $feedtype, $version, $paramAdditionalConfig = [])
+    public static function setParams($action, $feedtype, $version, $paramAdditionalConfig = [])
     {
         $param = [];
         $param['AWSAccessKeyId'] = AmazonClient::getAWSAccessKey();
@@ -211,7 +211,7 @@ trait AmazonClientCurl
      * @param $whatToDo
      * @return mixed|string
      */
-    public function amazonCurl($xml, $feed, $version, $param, $whatToDo)
+    public static function amazonCurl($xml, $feed, $version, $param, $whatToDo)
     {
         $amazon_feed = AmazonClient::parseAmazonXML($xml);
         $link = AmazonClient::createLink($feed, $version, $param, $whatToDo);

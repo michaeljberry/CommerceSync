@@ -7,14 +7,6 @@ use models\ModelDB as MDB;
 
 class Ebay
 {
-
-    public $EbayClient;
-
-    public function __construct(EbayClient $ebayClient)
-    {
-        $this->EbayClient = $ebayClient;
-    }
-
     public function sanitize_column_name($col){
         switch($col){
             case $col == "token":

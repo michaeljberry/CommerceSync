@@ -40,7 +40,7 @@ class AmazonOrder extends Amazon
             'SellerId'
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $xml = [
             'MessageType' => 'OrderFulfillment',
@@ -48,7 +48,7 @@ class AmazonOrder extends Amazon
         $xml = Ecommerce::makeXML($xml);
         $xml .= $xml1;
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -65,7 +65,7 @@ class AmazonOrder extends Amazon
             'SellerId',
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['OrderStatus.Status.1'] = 'Unshipped';
         $param['OrderStatus.Status.2'] = 'PartiallyShipped';
@@ -81,7 +81,7 @@ class AmazonOrder extends Amazon
 
         $xml = '';
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -98,13 +98,13 @@ class AmazonOrder extends Amazon
             'SellerId',
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
         $param['NextToken'] = $nextToken;
 
         $xml = '';
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }
@@ -120,12 +120,12 @@ class AmazonOrder extends Amazon
             'SellerId'
         ];
 
-        $param = $this->AmazonClient->setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
         $param['AmazonOrderId'] = $orderNum;
 
         $xml = '';
 
-        $response = $this->AmazonClient->amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
         return $response;
     }

@@ -215,8 +215,9 @@ class BigCommerceOrder extends BigCommerce
     public function post_bc_tracking_info($order_id, $shipment_id, $filter)
     {
         $post_string = json_encode($filter);
-        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_id . '/shipments'; // . $shipment_id
+        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_id . '/shipments';
         $response = BigCommerceClient::bigcommerceCurl($api_url, 'POST', $post_string);
+//        Ecommerce::dd($response);
 
         $order = json_decode($response);
         return $order;
@@ -243,8 +244,10 @@ class BigCommerceOrder extends BigCommerce
     public function update_bc_tracking($order_id, $tracking_num, $carrier)
     {
         $shipment = $this->get_bc_order_ship_info($order_id);
+//        Ecommerce::dd($shipment);
         $shipment_id = $shipment[0]->id;
         $products = $this->get_bc_order_product($order_id);
+//        Ecommerce::dd($products);
         $filter = array(
             'order_address_id' => $shipment_id,
             'tracking_number' => $tracking_num,

@@ -31,7 +31,7 @@ trait BigCommerceClientCurl
 
     public static function bigcommerceCurl($url, $method, $post_string = null)
     {
-        $request = BigCommerceClientCurl::setCurlOptions($url, $method, $post_string);
+        $request = BigCommerceClient::setCurlOptions($url, $method, $post_string);
         return Ecommerce::curlRequest($request);
     }
 }

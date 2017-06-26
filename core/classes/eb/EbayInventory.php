@@ -128,7 +128,7 @@ class EbayInventory extends Ebay
             $xml['InventoryStatus']['StartPrice'] = $price;
         }
 
-        $response = $this->EbayClient->ebayCurl($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
     public function update_all_ebay_inventory($item_id, $price){ //$price
@@ -169,7 +169,7 @@ class EbayInventory extends Ebay
 //            ]
 //        ];
 
-        $response = $this->EbayClient->ebayCurl($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
     //<IncludeItemSpecifics>true</IncludeItemSpecifics>
@@ -181,7 +181,7 @@ class EbayInventory extends Ebay
             'ItemID' => $item_id
         ];
 
-        $response = $this->EbayClient->ebayCurl($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
     public function add_ebay_inventory($ebay_category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price){

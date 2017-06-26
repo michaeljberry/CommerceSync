@@ -41,7 +41,7 @@ class EbayOrder extends Ebay
             ]
         ];
 
-        $response = $this->EbayClient->ebayCurl($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
     protected function saveItems($item, $poNumber, $order_id, $ecommerce, $itemObject){
@@ -83,7 +83,7 @@ class EbayOrder extends Ebay
 
     protected function getMoreOrders($requestName, $pagenumber, $ebayDays, $EbayClient){
         $xml = $this->getOrderXml($ebayDays, $pagenumber);
-        $response = $this->EbayClient->ebayCurl($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 

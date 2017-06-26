@@ -153,7 +153,7 @@ trait EbayClientCurl
         return $request;
     }
 
-    public function ebayCurl($requestName, $xml, $callType = 'trading')
+    public static function ebayCurl($requestName, $xml, $callType = 'trading')
     {
         $post_string = EbayClient::curlPostString($requestName, $xml, $callType);
         $headers = EbayClient::createHeader($post_string, $requestName, $callType);

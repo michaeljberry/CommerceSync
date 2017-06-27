@@ -130,7 +130,7 @@ class AmazonOrder extends Amazon
         return $response;
     }
 
-    protected function ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce)
+    protected function ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, Ecommerce $ecommerce)
     {
         $orderItems = simplexml_load_string($this->getOrderItems($orderNum));
 
@@ -143,7 +143,7 @@ class AmazonOrder extends Amazon
         }
     }
 
-    protected function parseItems($items, $orderId, $totalTax, $totalShipping, $ecommerce)
+    protected function parseItems($items, $orderId, $totalTax, $totalShipping, Ecommerce $ecommerce)
     {
         $totalWithoutTax = 0.00;
         $poNumber = 1;
@@ -200,7 +200,7 @@ class AmazonOrder extends Amazon
         return (object)$itemObject;
     }
 
-    public function parseOrders($orders, $ecommerce, $folder, $companyId, $nextPage = null)
+    public function parseOrders($orders, Ecommerce $ecommerce, $folder, $companyId, $nextPage = null)
     {
         $taxableStates = $ecommerce->getCompanyTaxInfo($companyId);
 

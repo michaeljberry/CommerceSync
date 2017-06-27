@@ -6,7 +6,7 @@ use ecommerce\Ecommerce;
 
 class EbayInventory extends Ebay
 {
-    public function sync_ebay_products($store_id, $e)
+    public function sync_ebay_products($store_id, Ecommerce $ecommerce)
     {
         $requestName = 'GetMyeBaySelling';
         for ($x = 1; $x < 51; $x++) {   //123 pages  //200 Entries per page
@@ -25,13 +25,13 @@ class EbayInventory extends Ebay
             $xml_items = simplexml_load_string($response);
             foreach ($xml_items->ActiveList->ItemArray->Item as $xml) {
                 $item_id = $xml->ItemID;
-                $listing_id = $this->sync_inventory_items($item_id, $store_id, $e);
+                $listing_id = $this->sync_inventory_items($item_id, $store_id, $ecommerce);
                 echo $item_id . ' updated.<br>';
             }
         }
     }
 
-    public function sync_inventory_items($item_id, $store_id, $e)
+    public function sync_inventory_items($item_id, $store_id, Ecommerce $ecommerce)
     {
         $response = $this->getSingleItem($item_id);
         $xml = simplexml_load_string($response);
@@ -69,19 +69,19 @@ class EbayInventory extends Ebay
         }
 //
         //find-product-id
-        $product_id = $e->product_soi($sku, $title, '', $description, '', '');
+        $product_id = $ecommerce->product_soi($sku, $title, '', $description, '', '');
         //add-product-availability
-        $availability_id = $e->availability_soi($product_id, $store_id);
+        $availability_id = $ecommerce->availability_soi($product_id, $store_id);
         //find sku
-        $sku_id = $e->sku_soi($sku);
+        $sku_id = $ecommerce->sku_soi($sku);
         //add price
-        $price_id = $e->price_soi($sku_id, $price, $store_id);
+        $price_id = $ecommerce->price_soi($sku_id, $price, $store_id);
         //normalize condition
-        $condition = $e->normal_condition($product_condition);
+        $condition = $ecommerce->normal_condition($product_condition);
         //find condition id
-        $condition_id = $e->condition_soi($condition);
+        $condition_id = $ecommerce->condition_soi($condition);
         //add stock to sku
-        $stock_id = $e->stock_soi($sku_id, $condition_id);
+        $stock_id = $ecommerce->stock_soi($sku_id, $condition_id);
         $channel_array = array(
             'store_id' => $store_id,
             'stock_id' => $stock_id,
@@ -112,13 +112,13 @@ class EbayInventory extends Ebay
             'returns_accepted_option' => $returnsacceptedoption,
             'product_condition' => $product_condition
         );
-        $listing_id = $e->listing_soi('listing_ebay', $store_id, $stock_id, $channel_array, 'true');
+        $listing_id = $ecommerce->listing_soi('listing_ebay', $store_id, $stock_id, $channel_array, 'true');
         return $listing_id;
     }
 
-    public function update_ebay_inventory($stock_id, $quantity, $price, $e)
+    public function update_ebay_inventory($stock_id, $quantity, $price, Ecommerce $ecommerce)
     {
-        $item_id = $e->get_listing_id($stock_id, 'listing_ebay');
+        $item_id = $ecommerce->get_listing_id($stock_id, 'listing_ebay');
 
         $requestName = 'ReviseInventoryStatus';
         $xml = [

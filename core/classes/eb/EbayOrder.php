@@ -46,7 +46,7 @@ class EbayOrder extends Ebay
         return $response;
     }
 
-    protected function saveItems($item, $poNumber, $order_id, $ecommerce, $itemObject)
+    protected function saveItems($item, $poNumber, $order_id, Ecommerce $ecommerce, $itemObject)
     {
         $sku = $item->Item->SKU;
         $title = $item->Item->Title;
@@ -65,7 +65,7 @@ class EbayOrder extends Ebay
         return $itemObject;
     }
 
-    protected function getItems($items, $order_id, $ecommerce)
+    protected function getItems($items, $order_id, Ecommerce $ecommerce)
     {
         $poNumber = 1;
 

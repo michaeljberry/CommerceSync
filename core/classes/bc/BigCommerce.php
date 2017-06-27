@@ -259,7 +259,7 @@ class BigCommerce
         }
     }
 
-    public function get_bc_products($BC, Ecommerce $e)
+    public function get_bc_products($BC, Ecommerce $ecommerce)
     {
         $count = $BC::getProductsCount();
         $pages = $count / 250;
@@ -325,19 +325,19 @@ class BigCommerce
                 $photo_url = $b->primary_image->standard_url;
 
                 //find-product-id
-                $product_id = $e->product_soi($sku, $name, '', $description, $upc, $weight);
+                $product_id = $ecommerce->product_soi($sku, $name, '', $description, $upc, $weight);
                 //add-product-availability
-                $availability_id = $e->availability_soi($product_id, BigCommerceClient::getStoreID());
+                $availability_id = $ecommerce->availability_soi($product_id, BigCommerceClient::getStoreID());
                 //find sku
-                $sku_id = $e->sku_soi($sku);
+                $sku_id = $ecommerce->sku_soi($sku);
                 //add price
-                $price_id = $e->price_soi($sku_id, $price, BigCommerceClient::getStoreID());
+                $price_id = $ecommerce->price_soi($sku_id, $price, BigCommerceClient::getStoreID());
                 //normalize condition
-                $condition = $e->normal_condition($product_condition);
+                $condition = $ecommerce->normal_condition($product_condition);
                 //find condition id
-                $condition_id = $e->condition_soi($condition);
+                $condition_id = $ecommerce->condition_soi($condition);
                 //add stock to sku
-                $stock_id = $e->stock_soi($sku_id, $condition_id);
+                $stock_id = $ecommerce->stock_soi($sku_id, $condition_id);
                 $channel_array = array(
                     'store_id' => BigCommerceClient::getStoreID(),
                     'stock_id' => $stock_id,
@@ -396,7 +396,7 @@ class BigCommerce
                     'photo_url' => $photo_url
                 );
                 //add stock to listing
-                $listing_id = $e->listing_soi('listing_bigcommerce', BigCommerceClient::getStoreID(), $stock_id, $channel_array, 'true');
+                $listing_id = $ecommerce->listing_soi('listing_bigcommerce', BigCommerceClient::getStoreID(), $stock_id, $channel_array, 'true');
                 echo $listing_id . '<br>';
 //                return $listing_id;
             }

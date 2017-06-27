@@ -37,6 +37,7 @@ class BigCommerceClient implements EcommerceInterface
         self::setUsername();
         self::setAPIKey();
         self::setStoreID();
+
     }
 
     private function setInfo($user_id)

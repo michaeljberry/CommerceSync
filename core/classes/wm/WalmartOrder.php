@@ -192,7 +192,7 @@ class WalmartOrder extends Walmart
     /**
      * @param $order
      * @param $item_xml
-     * @param $e
+     * @param $ecommerce
      * @param $first_name
      * @param $last_name
      * @param $shipping
@@ -207,11 +207,11 @@ class WalmartOrder extends Walmart
      * @param $ibmdata
      * @return mixed
      */
-    public function save_wm_order_to_xml($order, $item_xml, Ecommerce $e, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $shipping_amount)
+    public function save_wm_order_to_xml($order, $item_xml, Ecommerce $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $shipping_amount)
     {
         $sku = $order['orderLines']['orderLine']['item']['sku'];
         $channel_name = 'Walmart';
-        $channel_num = $e->get_channel_num($channel_name, $sku);
+        $channel_num = $ecommerce->get_channel_num($channel_name, $sku);
         $order_num = $order['purchaseOrderId'];
         $timestamp = $order['orderDate'];
         $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));
@@ -219,7 +219,7 @@ class WalmartOrder extends Walmart
         $timestamp = $timestamp . '.000Z';
         $order_date = $timestamp;
         $ship_to_name = $first_name . ' ' . $last_name;
-        $xml = $e->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+        $xml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
         return $xml;
     }
 

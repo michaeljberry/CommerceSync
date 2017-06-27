@@ -3,25 +3,15 @@
 namespace wc;
 
 use Crypt;
-use connect\DB;
 use models\ModelDB as MDB;
 use ecommerce\Ecommerce;
 use Automattic\WooCommerce\Client;
 
-class woocommerceclass
+class WooCommerce
 {
-    protected $wc_consumer_key;
-    protected $wc_secret_key;
-    protected $wc_site;
-    public $wc_store_id;
-
-    public function __construct($user_id)
+    public function __construct()
     {
-        $wcinfo = $this->getAppId($user_id);
-        $this->wc_consumer_key = Crypt::decrypt($wcinfo['consumer_key']);
-        $this->wc_secret_key = Crypt::decrypt($wcinfo['consumer_secret']);
-        $this->wc_site = $wcinfo['site'];
-        $this->wc_store_id = $wcinfo['store_id'];
+        $this->configure();
     }
 
     public function configure()
@@ -34,9 +24,9 @@ class woocommerceclass
         ];
 
         $woocommerce = new Client(
-            $this->wc_site,
-            $this->wc_consumer_key, //ck_bfb1c02513b3c6ed5788d5ceb937b252d12f5c72
-            $this->wc_secret_key, //cs_d4ff45e502bcacb498c4eb8ac671a24f1569a39c
+            WooCommerceClient::getSite(),
+            WooCommerceClient::getConsumerKey(), //ck_bfb1c02513b3c6ed5788d5ceb937b252d12f5c72
+            WooCommerceClient::getSecretKey(), //cs_d4ff45e502bcacb498c4eb8ac671a24f1569a39c
             $options
         );
         return $woocommerce;
@@ -104,36 +94,4 @@ class woocommerceclass
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    protected function createHeader($method, $post_string)
-    {
-        $headers = [
-            'Content-Type: application/json'
-        ];
-        if ($method === 'POST' || $method === 'PUT') {
-            $headers[] = 'Content-Length: ' . strlen($post_string);
-        }
-        return $headers;
-    }
-
-    protected function setCurlOptions($url, $method, $post_string)
-    {
-        $request = curl_init($url);
-        $headers = $this->createHeader($method, $post_string);
-        curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($request, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($request, CURLOPT_USERPWD, $this->wc_consumer_key . ":" . $this->wc_secret_key);
-        curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
-        if ($post_string) {
-            curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
-        }
-        return $request;
-    }
-
-    public function woocommerceCurl($url, $method, $post_string = null)
-    {
-        $request = $this->setCurlOptions($url, $method, $post_string);
-        $response = Ecommerce::curlRequest($request);
-        return $response;
-    }
 }

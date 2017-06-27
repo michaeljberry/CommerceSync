@@ -28,7 +28,7 @@ class IBM
         $sql = $sql . " FROM " . $library . "/" . $file . " LEFT OUTER JOIN " . $library . "/" . $file2 . " ON IFITEM = " . $file2 . ".ICITEM" . " LEFT OUTER JOIN " . $library2 . "/" . $libfile . " ON " . $file . ".IFITEM = " . $libfile . ".CCITEM" . " WHERE IFCOMP = '" . $company . "' AND IFLOC = '" . $location . "' AND IFITEM NOT LIKE '+%' AND IFITEM NOT LIKE '*%' AND IFITEM NOT LIKE '#%' FETCH FIRST 50 ROWS ONLY";
         echo $sql;
         echo "<br>";
-        $result = $this->db->query($sql);
+        $result = MIBMDB::query($sql, [], 'fetch', PDO::FETCH_ASSOC);
         echo "<table><tr>";
         for ($x = 0; $x < $AryLength; $x++) {
             echo "<th> $fields[$x] </th>";
@@ -36,7 +36,7 @@ class IBM
         echo "</tr>";
 
         // Output Data of each row
-        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        foreach ($result as $row) {
             echo "<tr> ";
             for ($x = 0; $x < $AryLength; $x++) {
                 echo "<td>" . $row[$fields[$x]] . "</td>";
@@ -45,8 +45,7 @@ class IBM
         }
         echo "</table>";
         $sqlcount = "SELECT COUNT(" . $fields[0] . ") AS COUNT FROM " . $library . "/" . $file . " WHERE IFCOMP = '" . $company . "' AND IFLOC = '" . $location . "'";
-        $result = $this->db->query($sqlcount);
-        $count = $result->fetchColumn();
+        $count = MIBMDB::query($sqlcount, [], 'fetchColumn');
         echo $count . "<br />";
         $as400conn = null;
 //        $query = $this->db->prepare("SELECT * FROM R37MODSDTA/JFILE4 WHERE IFITEM = 125839");

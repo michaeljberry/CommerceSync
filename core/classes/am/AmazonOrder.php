@@ -200,7 +200,7 @@ class AmazonOrder extends Amazon
         return (object)$itemObject;
     }
 
-    public function parseOrders($orders, $ecommerce, $ibmdata, $folder, $companyId, $nextPage = null)
+    public function parseOrders($orders, $ecommerce, $folder, $companyId, $nextPage = null)
     {
         $taxableStates = $ecommerce->getCompanyTaxInfo($companyId);
 
@@ -291,7 +291,7 @@ class AmazonOrder extends Amazon
 
                 $orderId = $ecommerce->updateOrderShippingAndTaxes($orderId, $totalShipping, $totalTax);
                 $channelName = 'Amazon';
-                $channelNum = $ecommerce->get_channel_num($ibmdata, $channelName, $sku);
+                $channelNum = $ecommerce->get_channel_num($channelName, $sku);
 
                 $orderXml = $ecommerce->create_xml($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
                 if (!LOCAL) {
@@ -307,7 +307,7 @@ class AmazonOrder extends Amazon
         if (isset($nextToken)) {
             $orders = $this->getMoreOrders($nextToken);
 
-            $this->parseOrders($orders, $ecommerce, $ibmdata, $folder, $companyId, true);
+            $this->parseOrders($orders, $ecommerce, $folder, $companyId, true);
         }
     }
 }

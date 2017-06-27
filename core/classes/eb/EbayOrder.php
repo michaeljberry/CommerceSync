@@ -87,7 +87,7 @@ class EbayOrder extends Ebay
         return $response;
     }
 
-    protected function parseOrders($xml_orders, $folder, $ecommerce, $ibmdata){
+    protected function parseOrders($xml_orders, $folder,Ecommerce $ecommerce){
         foreach($xml_orders->OrderArray->Order as $xml)
         {
             $order_num = (string)$xml->ExternalTransaction->ExternalTransactionID;
@@ -172,7 +172,7 @@ class EbayOrder extends Ebay
 
                     $itemXml .= Ecommerce::get_tax_item_xml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
-                    $channel_num = $ecommerce->get_channel_num($ibmdata, $channelName, $sku);
+                    $channel_num = $ecommerce->get_channel_num($channelName, $sku);
                     $orderXml = $ecommerce->create_xml($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
@@ -183,17 +183,17 @@ class EbayOrder extends Ebay
         }
     }
 
-    public function getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce, $ibmdata){
+    public function getOrders($requestName, $pagenumber, $ebayDays, $folder, Ecommerce $ecommerce){
         $response = $this->getMoreOrders($requestName, $pagenumber, $ebayDays);
         if ($response)
         {
             $xml_orders = simplexml_load_string($response);
             $orderCount = count($xml_orders->OrderArray->Order);
             echo "Order Count: $orderCount<br>";
-            $this->parseOrders($xml_orders, $folder, $ecommerce, $ibmdata);
+            $this->parseOrders($xml_orders, $folder, $ecommerce);
             if($orderCount >= 100){
                 $pagenumber++;
-                $this->getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce, $ibmdata);
+                $this->getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce);
             }
         }
     }

@@ -11,7 +11,7 @@ $start = startClock();
 $user_id = 838;
 
 $table = 'listing_ecd';
-$vaidata = $ibmdata->get_ecom_inven();
+$vaidata = IBM::getBigCommerceInventory();
 
 //ecom::dd($vaidata);
 

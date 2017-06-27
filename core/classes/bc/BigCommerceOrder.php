@@ -6,7 +6,7 @@ use ecommerce\Ecommerce;
 
 class BigCommerceOrder extends BigCommerce
 {
-    public function get_bc_orders($BC, $filter, Ecommerce $ecommerce, $ibmdata, $folder)
+    public function get_bc_orders($BC, $filter, Ecommerce $ecommerce, $folder)
     {
         $orders = $BC::getOrders($filter);
         if ($orders) {
@@ -47,7 +47,7 @@ class BigCommerceOrder extends BigCommerce
                     $info_array = $this->parseItems($response, $ecommerce, $state_code, $total_tax, $order_id);
                     $item_xml = $info_array['item_xml'];
                     $channelName = 'BigCommerce';
-                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $ibmdata);
+                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country);
                     if (!LOCAL) {
                         $ecommerce->saveXmlToFTP($order_num, $xml, $folder, $channelName);
                     }
@@ -223,12 +223,12 @@ class BigCommerceOrder extends BigCommerce
         return $order;
     }
 
-    public function save_bc_order_to_xml($o, $item_xml, Ecommerce $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $ibmdata)
+    public function save_bc_order_to_xml($o, $item_xml, Ecommerce $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country)
     {
         $sku = $ecommerce->substring_between($item_xml, '<ItemId>', '</ItemId>');
         $channel_name = 'Store';
         $channel = "BigCommerce";
-        $channel_num = $ecommerce->get_channel_num($ibmdata, $channel, $sku);
+        $channel_num = $ecommerce->get_channel_num($channel, $sku);
         $order_num = $o->id;
         $timestamp = $o->date_created;
         $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));

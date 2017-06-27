@@ -11,6 +11,6 @@ $folder = '/home/chesbro_amazon';
 $request = $revord->getOrders();
 //\ecommerceclass\ecommerceclass::dd($request);
 
-$revord->saveOrders($request, $ecommerce, $ibmdata, $folder);
+$revord->saveOrders($request, $ecommerce, $folder);
 
 endClock($start);

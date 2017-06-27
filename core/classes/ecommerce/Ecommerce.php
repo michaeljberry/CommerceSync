@@ -5,6 +5,7 @@ namespace ecommerce;
 use PDO;
 use controllers\channels\ChannelHelperController as CHC;
 use models\ModelDB as MDB;
+use IBM;
 
 class Ecommerce
 {
@@ -1463,12 +1464,12 @@ EOD;
     }
 
     //Look for this in cronorderseb.php and other channels. Currently only in cronordersam.php
-    public function get_channel_num($ibmdata, $channel_name, $sku)
+    public function get_channel_num($channel_name, $sku)
     {
         $accounts = $this->get_acct_num($channel_name);
         $co_one_acct = $accounts['co_one_acct'];
         $co_two_acct = $accounts['co_two_acct'];
-        $inventory = $ibmdata->find_inventory($sku, $channel_name);
+        $inventory = IBM::findInventory($sku, $channel_name);
         $co_one_qty = $inventory['CO_ONE'];
         $co_two_qty = $inventory['CO_TWO'];
         if (!empty($co_one_qty)) {

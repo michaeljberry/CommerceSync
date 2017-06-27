@@ -17,6 +17,6 @@ $folder = '/home/chesbro_amazon/';
 $pagenumber = 1;
 $requestName = 'GetOrders';
 
-$ebord->getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce, $ibmdata);
+$ebord->getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce);
 
 endClock($start);

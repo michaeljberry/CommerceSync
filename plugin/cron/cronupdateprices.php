@@ -13,7 +13,7 @@ use ecommerce\Ecommerce;
 
 $start = startClock();
 
-$count = $ibmdata->get_count();
+$count = IBM::getCount();
 echo $count . '<br>';
 
 $updatedPrices = Ecommerce::get_inventory_prices(15);

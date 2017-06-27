@@ -8,7 +8,7 @@ $user_id = 838;
 require WEBPLUGIN . 'eb/ebvar.php';
 
 $table = 'listing_ebay';
-$vaidata = $ibmdata->get_ebay_inven();
+$vaidata = IBM::getEbayInventory();
 
 foreach($vaidata as $v){
     $sku = $v['ITEM'];

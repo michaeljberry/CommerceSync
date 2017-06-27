@@ -42,13 +42,14 @@ class WalmartOrder extends Walmart
 
     /**
      * @param Ecommerce $ecommerce
-     * @param $wm_store_id
-     * @param $ibmdata
+     * @param $folder
      * @param $order
+     * @internal param $wm_store_id
+     * @internal param $ibmdata
      * @internal param $wm_consumer_key
      * @internal param $wm_secret_key
      */
-    public function get_wm_order(Ecommerce $ecommerce, $folder, $ibmdata, $order)
+    public function get_wm_order(Ecommerce $ecommerce, $folder, $order)
     {
         $orderNum = $order['purchaseOrderId'];
         $stateCode = $order['shippingInfo']['postalAddress']['state'];
@@ -99,7 +100,7 @@ class WalmartOrder extends Walmart
         }
         $infoArray = $this->get_wm_order_items($ecommerce, $orderNum, $orderItems, $stateCode, $totalTax, $orderID);
         $itemXml = $infoArray['item_xml'];
-        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $ecommerce, $firstName, $lastName, $shippingMethod, $buyerPhone, $address, $address2, $city, $stateCode, $zip, $country, $shippingTotal, $ibmdata);
+        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $ecommerce, $firstName, $lastName, $shippingMethod, $buyerPhone, $address, $address2, $city, $stateCode, $zip, $country, $shippingTotal);
         $channelName = 'Walmart';
         if (!LOCAL) {
             $ecommerce->saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
@@ -206,11 +207,11 @@ class WalmartOrder extends Walmart
      * @param $ibmdata
      * @return mixed
      */
-    public function save_wm_order_to_xml($order, $item_xml, Ecommerce $e, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $shipping_amount, $ibmdata)
+    public function save_wm_order_to_xml($order, $item_xml, Ecommerce $e, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $shipping_amount)
     {
         $sku = $order['orderLines']['orderLine']['item']['sku'];
         $channel_name = 'Walmart';
-        $channel_num = $e->get_channel_num($ibmdata, $channel_name, $sku);
+        $channel_num = $e->get_channel_num($channel_name, $sku);
         $order_num = $order['purchaseOrderId'];
         $timestamp = $order['orderDate'];
         $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));
@@ -223,15 +224,15 @@ class WalmartOrder extends Walmart
     }
 
     /**
-     * @param $wm_consumer_key
-     * @param $wm_secret_key
-     * @param $wm_api_header
      * @param $order_num
      * @param $tracking_id
      * @param $carrier
      * @return array
+     * @internal param $wm_consumer_key
+     * @internal param $wm_secret_key
+     * @internal param $wm_api_header
      */
-    public function update_walmart_tracking($wm_consumer_key, $wm_secret_key, $wm_api_header, $order_num, $tracking_id, $carrier)
+    public function updateWalmartTracking($order_num, $tracking_id, $carrier)
     {
         $wmorder = $this->configure();
         $order = $wmorder->get([
@@ -252,10 +253,10 @@ class WalmartOrder extends Walmart
             $trackingURL = "http://wwwapps.ups.com/WebTracking/track";
         }
         if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
-            $tracking = $this->process_tracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id, $trackingURL, $wm_consumer_key, $wm_secret_key, $wm_api_header);
+            $tracking = $this->process_tracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
         } else {
             foreach ($order['orderLines']['orderLine'] as $o) {
-                $tracking = $this->process_tracking($order['orderLines']['orderLine'], $order_num, $date, $carrier, $tracking_id, $trackingURL, $wm_consumer_key, $wm_secret_key, $wm_api_header);
+                $tracking = $this->process_tracking($order['orderLines']['orderLine'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
             }
         }
 //        foreach ($order['orderLines'] as $o){
@@ -275,7 +276,7 @@ class WalmartOrder extends Walmart
         return $tracking;
     }
 
-    public function process_tracking($order, $order_num, $date, $carrier, $tracking_id, $trackingURL, $wm_consumer_key, $wm_secret_key, $wm_api_header)
+    public function process_tracking($order, $order_num, $date, $carrier, $tracking_id, $trackingURL)
     {
         foreach ($order as $o) {
             $lineNumber = $o['lineNumber'];
@@ -326,7 +327,7 @@ class WalmartOrder extends Walmart
         return $tracking;
     }
 
-    protected function parseOrder($order, $ecommerce, WalmartOrder $wmord, $folder, $ibmdata)
+    protected function parseOrder($order, $ecommerce, WalmartOrder $wmord, $folder)
     {
 //    \ecommerceclass\ecommerceclass::dd($o);
         $order_num = $order['purchaseOrderId'];
@@ -343,12 +344,12 @@ class WalmartOrder extends Walmart
                     $acknowledged['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
                 || $acknowledged['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
             ) {
-                $wmord->get_wm_order($ecommerce, $folder, $ibmdata, $order);
+                $wmord->get_wm_order($ecommerce, $folder, $order);
             }
         }
     }
 
-    public function getOrders($wmorder, $ecommerce, $wmord, $folder, $ibmdata, $next = null)
+    public function getOrders($wmorder, $ecommerce, $wmord, $folder, $next = null)
     {
         try {
             $fromDate = '-3 days';
@@ -372,15 +373,15 @@ class WalmartOrder extends Walmart
 
             if (count($orders['elements']['order']) > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
                 foreach ($orders['elements']['order'] as $order) {
-                    $this->parseOrder($order, $ecommerce, $wmord, $folder, $ibmdata);
+                    $this->parseOrder($order, $ecommerce, $wmord, $folder);
                 }
             } else {
                 foreach ($orders['elements'] as $order) {
-                    $this->parseOrder($order, $ecommerce, $wmord, $folder, $ibmdata);
+                    $this->parseOrder($order, $ecommerce, $wmord, $folder);
                 }
             }
 //        if($totalCount > 10){ // && !empty($nextCursor)
-//            getOrders($wmorder, $db, $ecommerce, $wmord, $wm_consumer_key, $wm_secret_key, $wm_api_header, $wm_store_id, $ibmdata); //$nextCursor
+//            getOrders($wmorder, $db, $ecommerce, $wmord, $folder, $nextCursor); //$nextCursor
 //        }
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());

@@ -27,7 +27,7 @@ require WEBPLUGIN . 'wc/wcvar.php';
 ////print_r($listings);
 
 $table = 'listing_wc';
-$vaidata = $ibmdata->get_wc_inven();
+$vaidata = IBM::getWooCommerceInventory();
 
 foreach($vaidata as $v){
     $sku = $v['ITEM'];

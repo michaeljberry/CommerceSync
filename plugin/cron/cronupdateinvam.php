@@ -10,7 +10,7 @@ $user_id = 838;
 require WEBPLUGIN . 'am/amvar.php';
 
 $table = 'listing_amazon';
-//$vaidata = $ibmdata->get_am_inven();
+//$vaidata = IBM::getAmazonInventory();
 //
 //foreach($vaidata as $v){
 //    $sku = $v['ITEM'];

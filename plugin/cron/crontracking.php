@@ -45,7 +45,7 @@ foreach($unshippedOrders as $o){
         $trans_id = $num_id[1];
     }
 
-    $trackingInfo = $ibmdata->getTrackingNum($order_num, $channelNumbers);
+    $trackingInfo = IBM::getTrackingNum($order_num, $channelNumbers);
     $tracking_id = '';
     $carrier = '';
     if(isset($trackingInfo['USPS'])){
@@ -96,7 +96,7 @@ foreach($unshippedOrders as $o){
             }
         } elseif (strtolower($channel) == 'walmart'){
             //Update Walmart
-            $response = $wmord->update_walmart_tracking($wm_consumer_key, $wm_secret_key, $wm_api_header, $order_num, $tracking_id, $carrier);
+            $response = $wmord->updateWalmartTracking($order_num, $tracking_id, $carrier);
             if(array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
                 if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
                     $shipped = true;

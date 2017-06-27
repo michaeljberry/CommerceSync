@@ -6,14 +6,14 @@ use ecommerce\Ecommerce;
 
 $start = startClock();
 
-$count = $ibmdata->get_count();
+$count = IBM::getCount();
 echo $count . '<br>';
 
 $currentPrices = Ecommerce::get_inventory_prices();
 
 for ($low = 0; $low < $count; $low += 500) {
     $high = $low + 500;
-    $vaidata = $ibmdata->sync_vai_price($low, $high);
+    $vaidata = IBM::syncVAIPrice($low, $high);
     foreach ($vaidata as $v) {
         $sku = trim($v['J6ITEM']);
         $msrp = Ecommerce::removeCommasInNumber($v['J6LPRC']);

@@ -19,7 +19,7 @@ class ReverbOrder extends Reverb
         return $response;
     }
 
-    public function saveOrders($request, Ecommerce $ecommerce, $ibmdata, $folder){
+    public function saveOrders($request, Ecommerce $ecommerce, $folder){
         $orders = substr($request, strpos($request, '"orders":'), -1);
         $orders = '{' . $orders . '}';
         $orders = json_decode($orders);
@@ -57,7 +57,7 @@ class ReverbOrder extends Reverb
                         $shipping_amount = $order->shipping->amount;
                         $ponumber = 1;
                         $channelName = 'Reverb';
-                        $channel_num = $ecommerce->get_channel_num($ibmdata, $channelName, $sku);
+                        $channel_num = $ecommerce->get_channel_num($channelName, $sku);
                         $tax = 0;
                         if (strcasecmp($state, 'ID') == 0) {
                             //Subtract 6% from sub-total, add as sales tax; adjust sub-total

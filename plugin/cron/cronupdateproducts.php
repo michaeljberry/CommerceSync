@@ -6,11 +6,11 @@ $start = startClock();
 $debug = false;
 $sku_test = 'z11102-95-p-blk-7str';
 if(!$debug) {
-    $count = $ibmdata->get_count();
+    $count = IBM::getCount();
     echo $count . '<br>';
     for ($low = 0; $low < $count; $low += 500) {
         $high = $low + 500;
-        $vaidata = $ibmdata->sync_vai($low, $high);
+        $vaidata = IBM::syncVAI($low, $high);
         foreach ($vaidata as $v) {
             $sku = trim($v['ICITEM']);
             $name = trim($v['ICTITL']);
@@ -25,14 +25,14 @@ if(!$debug) {
             $sku_id = $ecommerce->productSoiSku($sku, $name, $sub_title, $description, $upc, $weight, $status);
 
             $sku = str_replace("'", "''", $sku);
-            $money = $ibmdata->sync_vai_prices($sku, '1');
+            $money = IBM::syncVAIPrices($sku, '1');
             if (isset($money[0])) {
                 $msrp = number_format($money[0]['J6LPRC'], 2);
                 $pl1 = number_format($money[0]['J6PL01'], 2);
                 $pl10 = number_format($money[0]['J6PL10'], 2);
                 $cost = number_format($money[0]['FIFOCOST'], 2);
             } else {
-                $money = $ibmdata->sync_vai_prices($sku, '2');
+                $money = IBM::syncVAIPrices($sku, '2');
                 $msrp = number_format($money[0]['J6LPRC'], 2);
                 $pl1 = number_format($money[0]['J6PL01'], 2);
                 $pl10 = number_format($money[0]['J6PL10'], 2);
@@ -49,7 +49,7 @@ if(!$debug) {
         }
     }
 }else{
-    $vaidata = $ibmdata->sync_vai('', '', strtoupper($sku_test));
+    $vaidata = IBM::syncVAI('', '', strtoupper($sku_test));
     print_r($vaidata);
     $sku = trim($vaidata[0]['ICITEM']);
     $name = trim($vaidata[0]['ICTITL']);
@@ -64,14 +64,14 @@ if(!$debug) {
     $sku_id = $ecommerce->product_soi_sku($sku, $name, $sub_title, $description, $upc, $weight, $status);
 
     $sku = str_replace("'", "''", $sku);
-    $money = $ibmdata->sync_vai_prices($sku, '1');
+    $money = IBM::syncVAIPrices($sku, '1');
     if (isset($money[0])) {
         $msrp = number_format($money[0]['J6LPRC'], 2);
         $pl1 = number_format($money[0]['J6PL01'], 2);
         $pl10 = number_format($money[0]['J6PL10'], 2);
         $cost = number_format($money[0]['FIFOCOST'], 2);
     } else {
-        $money = $ibmdata->sync_vai_prices($sku, '2');
+        $money = IBM::syncVAIPrices($sku, '2');
         $msrp = number_format($money[0]['J6LPRC'], 2);
         $pl1 = number_format($money[0]['J6PL01'], 2);
         $pl10 = number_format($money[0]['J6PL10'], 2);

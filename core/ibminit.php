@@ -1,8 +1,8 @@
 <?php
 
-include_once WEBCLASSES . 'connect/ibmdatabase.php';
-include_once WEBCLASSES . 'ibmclass.php';
+include_once WEBCLASSES . 'connect/IBMDB.php';
+include_once WEBCLASSES . 'IBM.php';
 
-$ibmdata = new GeneralIBM($ibmdb);
+//$ibmdata = new IBM($ibmdb);
 
 $errors = array();

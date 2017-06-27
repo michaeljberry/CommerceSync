@@ -4,7 +4,7 @@ require WEBCORE . 'ibminit.php';
 $user_id = 838;
 require WEBPLUGIN . 'eb/ebvar.php';
 
-$results = $ibmdata->get_sku_to_delete();
+$results = IBM::getSKUToDelete();
 //$x = 0;
 foreach($results as $r){
 //    if($x > 5){

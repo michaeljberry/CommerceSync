@@ -45,7 +45,7 @@ foreach($eligible_products as $p){
     $category_id = $ecommerce->get_mapped_category($from_array['category_column'], $to_array['category_column'], $category_id);
     echo $category_id . '<br>';
     //Need to check if item is non-stock in VAI before listing
-    $result = $ibmdata->find_nonstock_item($sku);
+    $result = IBM::findNonstockItem($sku);
     if(!empty($result)) {
         if(strpos($to_array['table'], 'ebay') !== false){
             $response = $ebinv->add_ebay_inventory($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price);

@@ -62,9 +62,9 @@ include_once 'core/ibminit.php';
 //}
 //echo "</table>";
 //$as400conn = null;
-$ibmdata->get_work_orders();
+//IBM::get_work_orders();
 
-//$rows = $ibmdata->get_work_orders();
+//$rows = IBM::get_work_orders();
 //print_r($rows);
 //$i = 0;
 //$fieldCount = odbc_num_fields($rows);

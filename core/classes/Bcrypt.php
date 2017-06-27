@@ -1,11 +1,13 @@
 <?php
 
-class Bcrypt {
+class Bcrypt
+{
 
     private $rounds;
 
-    public function __construct($rounds = 12){
-        if(CRYPT_BLOWFISH != 1){
+    public function __construct($rounds = 12)
+    {
+        if (CRYPT_BLOWFISH != 1) {
             throw new Exception("Bcrypt is not supported on this server, please see the following to learn more: http://php.net/crypt");
         }
         $this->rounds = $rounds;
@@ -27,15 +29,18 @@ class Bcrypt {
 //            return false;
 //        }
 //    }
-    public static function hashPass($password){
+    public static function hashPass($password)
+    {
         $hash = password_hash($password, PASSWORD_DEFAULT);
         return $hash;
     }
-    public static function verifyPass($password){
+
+    public static function verifyPass($password)
+    {
         $hash = password_hash($password, PASSWORD_DEFAULT);;
-        if(password_verify($password, $hash)){
+        if (password_verify($password, $hash)) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

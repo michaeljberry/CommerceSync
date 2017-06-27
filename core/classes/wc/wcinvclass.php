@@ -11,7 +11,9 @@ class wcinvclass extends woocommerceclass
         $response = $woocommerce->get('products/' . $product_id);
         return $response;
     }
-    public function getWCListings($woocommerce, $page = 1){
+
+    public function getWCListings($woocommerce, $page = 1)
+    {
         $filter = [
             'page' => $page,
             'per_page' => 25
@@ -19,9 +21,11 @@ class wcinvclass extends woocommerceclass
         $response = $woocommerce->get('products', $filter);
         return $response;
     }
-    public function updateListing($woocommerce, $product_id, $listing, $filter){
-        foreach($filter as $key => $value){
-            if(array_key_exists($key, $listing['product'])){
+
+    public function updateListing($woocommerce, $product_id, $listing, $filter)
+    {
+        foreach ($filter as $key => $value) {
+            if (array_key_exists($key, $listing['product'])) {
                 echo "$key => $value\n";
                 $listing['product'][$key] = $value;
             }
@@ -40,27 +44,31 @@ class wcinvclass extends woocommerceclass
     {
         $url = 'https://chesbroretail.com/wp-json/wc/v1/products/' . $product_id;
         $response = $this->woocommerceCurl($url, 'GET');
-        return($response);
+        return ($response);
     }
 
-    public function getListings($page = 1){
+    public function getListings($page = 1)
+    {
         $url = 'https://chesbroretail.com/wp-json/wc/v1/products/?page=' . $page . '&per_page=25';
         $response = $this->woocommerceCurl($url, 'GET');
-        return($response);
+        return ($response);
     }
-    public function get_wc_products($e){
-        for($page = 11; $page < 20; $page++) {
+
+    public function get_wc_products($e)
+    {
+        for ($page = 11; $page < 20; $page++) {
             $request = $this->getListings($page);
             $listings = json_decode($request);
             $this->saveWCListing($listings, $e);
         }
     }
 
-    public function saveWCListing($listings, $e, $variation = null){
-        foreach($listings as $l){
-            if(!empty($l->variations)){
+    public function saveWCListing($listings, $e, $variation = null)
+    {
+        foreach ($listings as $l) {
+            if (!empty($l->variations)) {
                 $this->saveWCListing($l->variations, $e, true);
-            }else{
+            } else {
                 $id = $l->id;
                 $request = $this->getListing($id);
                 $listing = json_decode($request);
@@ -78,7 +86,7 @@ class wcinvclass extends woocommerceclass
                 $length = $listing->dimensions->length;
                 $width = $listing->dimensions->width;
                 $height = $listing->dimensions->height;
-                $photo_url  = $listing->images[0]->src;
+                $photo_url = $listing->images[0]->src;
                 $product_condition = 'New';
 
                 //find-product-id
@@ -94,9 +102,9 @@ class wcinvclass extends woocommerceclass
                 //find condition id
                 $condition_id = $e->condition_soi($condition);
                 //add stock to sku
-                $stock_id = $e->stock_soi($sku_id,$condition_id);
+                $stock_id = $e->stock_soi($sku_id, $condition_id);
 
-                if($variation){
+                if ($variation) {
                     $variation = 1;
                 }
 
@@ -121,7 +129,8 @@ class wcinvclass extends woocommerceclass
         }
     }
 
-    public function updateInventory($stock_id, $stock_qty, $price, $e, $woocommerce, $sku){
+    public function updateInventory($stock_id, $stock_qty, $price, $e, $woocommerce, $sku)
+    {
         $store_listing_id = $e->get_listing_id($stock_id, 'listing_wc');
         $listing = $this->getWCListing($woocommerce, $store_listing_id);
 //        $variation = $this->is_variation($sku);
@@ -148,7 +157,8 @@ class wcinvclass extends woocommerceclass
         return $results;
     }
 
-    public function post_inventory_update($store_listing_id, $filter){
+    public function post_inventory_update($store_listing_id, $filter)
+    {
         $post_string = json_encode($filter);
         $url = 'https://chesbroretail.com/wp-json/wc/v1/products/' . $store_listing_id;
 
@@ -158,7 +168,8 @@ class wcinvclass extends woocommerceclass
         return $product;
     }
 
-    public function create_listing(){
+    public function create_listing()
+    {
         $filter = [
             'name' => 'test product',
             'regular_price' => '2.99'

@@ -16,13 +16,13 @@ echo '<br><br>';
 $x = 1;
 $amazon_xml = '';
 $amazon_price_xml = '';
-foreach($updated as $u){
+foreach ($updated as $u) {
     $stock_id = $u['id'];
     $sku_id = $u['sku_id'];
     $stock_qty = $u['stock_qty'];
     $sku = $ecommerce->get_sku($sku_id);
     $price = $ecommerce->get_inventory_price($sku, $table);
-    if(!empty($price)){
+    if (!empty($price)) {
         $amazon_price_xml .= $aminv->create_inventory_price_update_item_xml($sku, $price, $x);
     }
     //Create XML for Amazon

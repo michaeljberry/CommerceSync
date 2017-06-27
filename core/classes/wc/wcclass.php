@@ -8,13 +8,15 @@ use models\ModelDB as MDB;
 use ecommerce\Ecommerce;
 use Automattic\WooCommerce\Client;
 
-class woocommerceclass{
+class woocommerceclass
+{
     protected $wc_consumer_key;
     protected $wc_secret_key;
     protected $wc_site;
     public $wc_store_id;
 
-    public function __construct($user_id){
+    public function __construct($user_id)
+    {
         $wcinfo = $this->getAppId($user_id);
         $this->wc_consumer_key = Crypt::decrypt($wcinfo['consumer_key']);
         $this->wc_secret_key = Crypt::decrypt($wcinfo['consumer_secret']);
@@ -26,9 +28,9 @@ class woocommerceclass{
     {
         $options = [
             'wp_json' => true,
-        //    'version' => 'wc/v1',
-        //    'version' => 'v3',
-        //    'query_string_auth' => true
+            //    'version' => 'wc/v1',
+            //    'version' => 'v3',
+            //    'query_string_auth' => true
         ];
 
         $woocommerce = new Client(
@@ -39,8 +41,10 @@ class woocommerceclass{
         );
         return $woocommerce;
     }
-    public function sanitize_column_name($col){
-        switch($col){
+
+    public function sanitize_column_name($col)
+    {
+        switch ($col) {
             case $col == "consumer_key":
                 $column = 'consumer_key';
                 break;
@@ -50,21 +54,27 @@ class woocommerceclass{
         }
         return $column;
     }
-    public function get_all_apps($user_id){
+
+    public function get_all_apps($user_id)
+    {
         $sql = "SELECT store.id, store.name FROM store INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'WooCommerce'";
         $query_params = array(
             ':user_id' => $user_id
         );
         return MDB::query($sql, $query_params, 'fetchAll');
     }
-    public function getAppId($user_id){
+
+    public function getAppId($user_id)
+    {
         $sql = "SELECT store_id, consumer_key, consumer_secret, site FROM api_wc INNER JOIN store ON api_wc.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'WooCommerce'";
         $query_params = array(
             ':user_id' => $user_id
         );
         return MDB::query($sql, $query_params, 'fetch');
     }
-    public function saveAppInfo($crypt, $store_id, $consumer_key, $consumer_secret){
+
+    public function saveAppInfo($crypt, $store_id, $consumer_key, $consumer_secret)
+    {
         $sql = "INSERT INTO api_wc (store_id, consumer_key, consumer_secret) VALUES (:store_id, :consumer_key, :consumer_secret)";
         $query_params = array(
             ":store_id" => $store_id,
@@ -73,7 +83,9 @@ class woocommerceclass{
         );
         MDB::query($sql, $query_params);
     }
-    public function updateAppInfo($crypt, $store_id, $column, $id){
+
+    public function updateAppInfo($crypt, $store_id, $column, $id)
+    {
         $column = $this->sanitize_column_name($column);
         $sql = "UPDATE api_wc SET $column = :id WHERE store_id = :store_id";
         $query_params = array(
@@ -82,7 +94,9 @@ class woocommerceclass{
         );
         MDB::query($sql, $query_params);
     }
-    public function isVariation($sku){
+
+    public function isVariation($sku)
+    {
         $sql = "SELECT variations FROM listing_wc WHERE sku = :sku";
         $query_params = [
             ':sku' => $sku
@@ -95,7 +109,7 @@ class woocommerceclass{
         $headers = [
             'Content-Type: application/json'
         ];
-        if($method === 'POST' || $method === 'PUT'){
+        if ($method === 'POST' || $method === 'PUT') {
             $headers[] = 'Content-Length: ' . strlen($post_string);
         }
         return $headers;
@@ -110,7 +124,7 @@ class woocommerceclass{
         curl_setopt($request, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($request, CURLOPT_USERPWD, $this->wc_consumer_key . ":" . $this->wc_secret_key);
         curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
-        if($post_string) {
+        if ($post_string) {
             curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
         }
         return $request;

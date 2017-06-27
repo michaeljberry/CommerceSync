@@ -4,7 +4,8 @@ namespace eb;
 
 class EbayAdmin extends Ebay
 {
-    public function get_ebay_categories(){
+    public function get_ebay_categories()
+    {
         $requestName = 'GetCategories';
 
         $xml = [

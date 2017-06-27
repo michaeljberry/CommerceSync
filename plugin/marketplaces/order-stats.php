@@ -5,7 +5,7 @@ use models\channels\OrderStatsModel;
 use ecommerce\Ecommerce;
 
 $channel = '';
-if(isset($_GET['channel']) && !empty($_GET['channel'])){
+if (isset($_GET['channel']) && !empty($_GET['channel'])) {
     $channel = htmlentities($_GET['channel']);
 }
 $results = OrderStatsModel::getOrderStats($channel);

@@ -5,4 +5,3 @@ include_once WEBPLUGIN . 'eb/ebvar.php';
 $ebay_page = true;
 $channel_page = 'ebay';
 include '../marketplaces/marketplace-menu.php';
-?>

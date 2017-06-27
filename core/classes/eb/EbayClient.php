@@ -25,13 +25,14 @@ class EbayClient implements EcommerceInterface
 
     public static function instance($user_id)
     {
-        if(self::$instance === null){
+        if (self::$instance === null) {
             self::$instance = new EbayClient($user_id);
         }
         return self::$instance;
     }
 
-    protected function __construct($user_id){
+    protected function __construct($user_id)
+    {
         self::setInfo($user_id);
         self::setDevID();
         self::setAppID();

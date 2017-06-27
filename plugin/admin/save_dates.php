@@ -4,7 +4,7 @@ require '../../core/init.php';
 require WEBPLUGIN . 'am/amvar.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 
-if(isset($_POST['store']) && $_POST['store'] == 'amazon') {
+if (isset($_POST['store']) && $_POST['store'] == 'amazon') {
     if (isset($_POST['fromDate']) && isset($_POST['toDate'])) {
         $fromDate = htmlentities($_POST['fromDate']);
         $toDate = htmlentities($_POST['toDate']);
@@ -14,11 +14,11 @@ if(isset($_POST['store']) && $_POST['store'] == 'amazon') {
             echo 'Days saved successfully.';
         }
     }
-}elseif(isset($_POST['store']) && $_POST['store'] == 'ebay'){
-    if(isset($_POST['days'])){
+} elseif (isset($_POST['store']) && $_POST['store'] == 'ebay') {
+    if (isset($_POST['days'])) {
         $days = htmlentities($_POST['days']);
         $result = $ebay->set_order_days($ebay->eb_store_id, $days);
-        if($result)
+        if ($result)
             echo 'Days saved successfully.';
     }
 }

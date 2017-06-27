@@ -16,12 +16,12 @@ $report = true;
 
 echo 'Now: ' . date('m/d/y h:i:s') . '<br />';
 
-include_once ('/var/www/html/portal/plugin/am/MarketplaceWebService/Samples/.config.inc.php');
+include_once('/var/www/html/portal/plugin/am/MarketplaceWebService/Samples/.config.inc.php');
 
-include_once ('functions.php');
+include_once('functions.php');
 
 $serviceUrl = "https://mws.amazonservices.com";
-$config = array (
+$config = array(
     'ServiceURL' => $serviceUrl,
     'ProxyHost' => null,
     'ProxyPort' => -1,
@@ -35,7 +35,7 @@ $service = new MarketplaceWebService_Client(
     APPLICATION_VERSION);
 
 echo '<br />';
-$parameters = array (
+$parameters = array(
     'Marketplace' => MARKETPLACE_ID,
     'Merchant' => MERCHANT_ID,
     'ReportType' => '_GET_FLAT_FILE_OPEN_LISTINGS_DATA_',

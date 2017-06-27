@@ -17,7 +17,7 @@ if ($_POST['price_sku']) {
     $minimumProfitPercent = htmlentities($_POST['price_margin']);
     $minimumNetProfitPercent = htmlentities($_POST['price_net_profit']);
     $increment = htmlentities($_POST['price_increment']);
-    $shippingIncludedInPrice = htmlentities(isset($_POST['price-include-shipping']) ? $_POST['price-include-shipping'] : 0 );
+    $shippingIncludedInPrice = htmlentities(isset($_POST['price-include-shipping']) ? $_POST['price-include-shipping'] : 0);
     $shippingCharged = htmlentities($_POST['price_shipping']);
 
     $sku_id = $ecommerce->skuSoi($sku);
@@ -77,7 +77,7 @@ if ($_POST['price_sku']) {
     $label = 'Current Listings on eBay for same SKU';
     $tableArray = [];
 
-    foreach($ebaySellers as $s) {
+    foreach ($ebaySellers as $s) {
         $tableArray[] = [
             'title' => [
                 'value' => $s['title'],
@@ -105,7 +105,7 @@ if ($_POST['price_sku']) {
     $label = 'Current Listings on Amazon for same SKU';
     $tableArray = [];
 
-    foreach($amazonListings as $a) {
+    foreach ($amazonListings as $a) {
         $tableArray[] = [
             'numOfListingsAtThisPrice' => $a['numOfListingsAtThisPrice'],
             'sellerRating' => $a['sellerRating'],

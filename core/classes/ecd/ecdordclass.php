@@ -7,7 +7,8 @@ use ecd\ecdclass;
 
 class ecdordclass extends ecdclass
 {
-    public function get_orders($ecd_ocp_key, $ecd_sub_key){
+    public function get_orders($ecd_ocp_key, $ecd_sub_key)
+    {
         $url = "https://ecomdash.azure-api.net/api/orders/getOrders";
         $parameters = [
             'Status' => 'InProcess',
@@ -23,7 +24,9 @@ class ecdordclass extends ecdclass
         $response = $this->curl_post($ecd_ocp_key, $ecd_sub_key, $url, $parameters);
         return $response;
     }
-    public function create_shipment($ecd_ocp_key, $ecd_sub_key, $orderId){
+
+    public function create_shipment($ecd_ocp_key, $ecd_sub_key, $orderId)
+    {
         $url = "https://ecomdash.azure-api.net/api/Shipments/Create";
         $parameters = [
             'OrderId' => $orderId
@@ -31,12 +34,14 @@ class ecdordclass extends ecdclass
         $response = $this->curl_post($ecd_ocp_key, $ecd_sub_key, $url, $parameters);
         return $response;
     }
-    public function update_tracking_num($ecd_ocp_key, $ecd_sub_key, $lineItemId, $shipmentId, $carrier, $trackingNumber){
+
+    public function update_tracking_num($ecd_ocp_key, $ecd_sub_key, $lineItemId, $shipmentId, $carrier, $trackingNumber)
+    {
         $url = "https://ecomdash.azure-api.net/api/Shipments/submitTrackingInfo";
         $carrierId = '';
-        if($carrier == 'UPS'){
+        if ($carrier == 'UPS') {
             $carrierId = '42222';
-        }elseif($carrier == 'USPS'){
+        } elseif ($carrier == 'USPS') {
             $carrierId = '42226';
         }
         $parameters = [

@@ -5,7 +5,7 @@ $start = startClock();
 
 $debug = false;
 $sku_test = 'z11102-95-p-blk-7str';
-if(!$debug) {
+if (!$debug) {
     $count = IBM::getCount();
     echo $count . '<br>';
     for ($low = 0; $low < $count; $low += 500) {
@@ -48,7 +48,7 @@ if(!$debug) {
             }
         }
     }
-}else{
+} else {
     $vaidata = IBM::syncVAI('', '', strtoupper($sku_test));
     print_r($vaidata);
     $sku = trim($vaidata[0]['ICITEM']);

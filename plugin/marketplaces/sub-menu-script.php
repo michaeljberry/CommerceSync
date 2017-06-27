@@ -1,6 +1,6 @@
 <script>
-    $(document).ready(function(){
-        jQuery.validator.addMethod("amazonOrder", function(value, element){
+    $(document).ready(function () {
+        jQuery.validator.addMethod("amazonOrder", function (value, element) {
             return this.optional(element) || /\d{3}-\d{7}-\d{7}/.test(value);
         }, "Please verify your Amazon Order number");
         var validator = $('#price-calculator-form').validate({
@@ -56,7 +56,7 @@
                     number: "Enter a valid number (Decimal/Integer)"
                 }
             },
-            submitHandler: function(form){
+            submitHandler: function (form) {
                 var data = $(form).serialize();
                 $.ajax({
                     type: 'POST',
@@ -79,22 +79,22 @@
                 });
             }
         });
-        $('.sub-menu').on('click', function(e){
+        $('.sub-menu').on('click', function (e) {
             e.preventDefault();
             $(this).closest('ul').find('li').removeClass('sub-active');
             var menu = $(this).attr('id');
             menu = menu.substring(0, menu.length - 4);
             menu = '#' + menu + 'form';
             $(menu).toggle();
-            if($(menu).is(':visible')){
+            if ($(menu).is(':visible')) {
                 $(this).parent().addClass('sub-active');
             }
             $(menu).find(':input').first().focus();
-            $('.sub-menu').each(function(){
+            $('.sub-menu').each(function () {
                 var menuId = $(this).attr('id');
                 menuId = menuId.substring(0, menuId.length - 4);
                 menuId = '#' + menuId + 'form';
-                if(menuId != menu){
+                if (menuId != menu) {
                     $(menuId).toggle(false);
                     validator.resetForm();
                 }

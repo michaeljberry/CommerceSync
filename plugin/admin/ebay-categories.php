@@ -28,13 +28,13 @@ $fees = [
     'Memory Card & USB Adapters' => '.06'
 ];
 
-foreach($parents as $key => $p){
+foreach ($parents as $key => $p) {
     $p_cat_id = $p['category_id'];
     $p_cat_name = $p['category_name'];
-    if(array_key_exists($p_cat_name, $fees)){
+    if (array_key_exists($p_cat_name, $fees)) {
         $fee = $fees[$p_cat_name];
 
-    }else{
+    } else {
         $fee = '.09';
     }
     $p_fee = $fee;
@@ -49,7 +49,8 @@ foreach($parents as $key => $p){
     unset($parents[$key]);
 }
 
-function find_children($p_cat_id, $p_cat_name, $list_name, $p_fee, $g_p_fee){
+function find_children($p_cat_id, $p_cat_name, $list_name, $p_fee, $g_p_fee)
+{
     global $children;
     global $fees;
     global $ecommerce;
@@ -62,25 +63,25 @@ function find_children($p_cat_id, $p_cat_name, $list_name, $p_fee, $g_p_fee){
 //        181491, 119023, 181255, 181260, 119027, 181202, 181203, 181210,
 //        ];
     $child_html = '<ul>';
-    foreach($children as $key => $c){
+    foreach ($children as $key => $c) {
         $c_cat_id = $c['category_id'];
         $c_cat_name = $c['category_name'];
         $c_p_cat_id = $c['parent_category_id'];
-        if(array_key_exists($c_cat_name, $fees)){
+        if (array_key_exists($c_cat_name, $fees)) {
             $fee = $fees[$c_cat_name];
             $p_fee = $fee;
-        }elseif(array_key_exists($p_cat_name, $fees)){
+        } elseif (array_key_exists($p_cat_name, $fees)) {
             $fee = $fees[$p_cat_name];
             $p_fee = $fee;
-        }elseif($p_fee != '.09'){
+        } elseif ($p_fee != '.09') {
             $fee = $g_p_fee;
             $p_fee = $g_p_fee;
-        }else{
+        } else {
             $fee = '.09';
             $p_fee = $fee;
         }
         $cat_name = "$list_name > $c_cat_id: $c_cat_name";
-        if($c_p_cat_id == $p_cat_id){
+        if ($c_p_cat_id == $p_cat_id) {
             $child_html .= "<li data-fees='$fee'>";
             $child_html .= "$cat_name"; //- $fee
 //            if(in_array($c_p_cat_id, $parentArray) && $x < 600) { //$current_fee != $fee && $x < 250

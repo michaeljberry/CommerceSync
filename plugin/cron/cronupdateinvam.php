@@ -36,8 +36,8 @@ $x = 1;
 $y = 1;
 $amazon_xml = '';
 $amazon_price_xml = '';
-foreach($updated as $u){
-    if($x > 1){
+foreach ($updated as $u) {
+    if ($x > 1) {
         break;
     }
     $stock_id = $u['id'];

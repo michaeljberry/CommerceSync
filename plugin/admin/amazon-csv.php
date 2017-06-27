@@ -4,7 +4,7 @@ ini_set("memory_limit", '2048M');
 error_reporting(E_ALL & ~E_NOTICE);
 $upload = basename($_FILES["csvToUpload"]["name"]);
 $type = substr($upload, strrpos($upload, ".") + 1);
-$size = $_FILES["csvToUpload"]["size"]/1024;
+$size = $_FILES["csvToUpload"]["size"] / 1024;
 
 $response = "";
 $folder = WEBPLUGIN . "admin/amazontaxes/";
@@ -286,25 +286,25 @@ $citiesThatCollectTaxes = [
 $taxTree = [];
 $taxTreeList = "";
 
-if($_FILES["csvToUpload"]["error"] > 0){
+if ($_FILES["csvToUpload"]["error"] > 0) {
     $response = "Error: " . $_FILES["csvToUpload"]["error"] . "<br>";
-}else{
-    $response =  "<br> Upload: $upload <br>";
+} else {
+    $response = "<br> Upload: $upload <br>";
     $response .= "Type: $type <br>";
     $response .= "Size: $size <br>";
     $tmpName = $_FILES["csvToUpload"]["tmp_name"];
     $taxesCsv = [];
 
-    if(file_exists($folder . $_FILES["csvToUpload"]["name"])){
+    if (file_exists($folder . $_FILES["csvToUpload"]["name"])) {
         $response .= $_FILES["csvToUpload"]["name"] . " already exists";
-    }else{
+    } else {
         $storagename = "amazon-taxes.csv";
         $taxTreeName = "amazon-taxes-tree.csv";
         $csvAsArray = array_map("str_getcsv", file($tmpName));
 
         $state = '';
         $cityTaxable = false;
-        foreach($csvAsArray as $key => $value){
+        foreach ($csvAsArray as $key => $value) {
             $keyMinusOne = $key - 1;
             $keyPlusOne = $key + 1;
 
@@ -337,13 +337,13 @@ if($_FILES["csvToUpload"]["error"] > 0){
             //[62] - Column BK in CSV - Taxable_Amount
             $taxableAmount = 62;
 
-            if($key == 0){
+            if ($key == 0) {
                 $taxesCsv[] = $value;
                 $taxesCsv[0][$taxMarker] = "Tax Marker";
-            }else{
+            } else {
 //                foreach($statesToCollectTaxes as $state) {
 //                    $taxTree["state"][] = $state;
-                if($value[$jurisdictionLevel] == 'State'){
+                if ($value[$jurisdictionLevel] == 'State') {
                     $state = $value[$jurisdictionName];
                 }
 
@@ -357,30 +357,30 @@ if($_FILES["csvToUpload"]["error"] > 0){
                     //If the column AR in row does not match $state && column AS in the row above == 'X' && column A in row == ''
                     $taxesCsv[$key] = $value;
                     $taxesCsv[$key][$taxMarker] = "X";
-                    if($value[$jurisdictionLevel] == "City"){
+                    if ($value[$jurisdictionLevel] == "City") {
                         //In Amazon Tax file, county always comes after city, so go to next row to get county name
                         $county = $csvAsArray[$keyPlusOne][$jurisdictionName];
                         $lowerCounty = strtolower($county);
                         $city = $value[$jurisdictionName];
-                        if(in_array($state, $citiesThatCollectTaxes["state"]) && in_array_r(strtolower($city), $citiesThatCollectTaxes["state"][$state]["county"])){
+                        if (in_array($state, $citiesThatCollectTaxes["state"]) && in_array_r(strtolower($city), $citiesThatCollectTaxes["state"][$state]["county"])) {
                             $cityTaxable = true;
                             $tax = $csvAsArray[$keyPlusOne][$taxableAmount];
 //                            print_r($csvAsArray[$keyPlusOne]);
 //                            echo "$county, $city - KeyPlusOne - $tax; ValueTaxable $value[$taxableAmount]<br><br><br>";
                             $taxTree["state"][$state]["county"][$county]["city"][$city]["city_taxable_amount"] += $tax;
-                        }else{
+                        } else {
                             $taxTree["state"][$state]["county"][$county]["county_taxable_amount"] += $value[$taxableAmount];
                         }
 //                        $taxTree["state"][$state]["county"][$county]["city"][$city]["city_tax"] += $value[$taxAmount];
 //                        $taxTree["state"][$state]["total_tax_collected_in_state"] += $value[$taxAmount];
 
-                    }elseif($value[$jurisdictionLevel] == "County"){
-                        if(!$cityTaxable) {
+                    } elseif ($value[$jurisdictionLevel] == "County") {
+                        if (!$cityTaxable) {
                             $county = $value[$jurisdictionName];
 //                        $taxTree["state"][$state]["county"][$county]["county_tax"] += $value[$taxAmount];
 //                        $taxTree["state"][$state]["total_tax_collected_in_state"] += $value[$taxAmount];
                             $taxTree["state"][$state]["county"][$county]["county_taxable_amount"] += $value[$taxableAmount];
-                        }else{
+                        } else {
                             $cityTaxable = false;
                         }
                     }
@@ -400,7 +400,7 @@ if($_FILES["csvToUpload"]["error"] > 0){
         }
         $taxCSVResult = makeCSV($folder, $storagename, $taxesCsv);
 
-        if($taxCSVResult) {
+        if ($taxCSVResult) {
             $response .= "<a href='" . $downloadFolder . $storagename . "'>Download the Amazon Tax Raw CSV</a>";
         }
 
@@ -410,12 +410,13 @@ if($_FILES["csvToUpload"]["error"] > 0){
 }
 echo $response;
 
-function printTree($tree, $html){
+function printTree($tree, $html)
+{
     $html .= "<ul>";
-    foreach($tree as $key => $state){
+    foreach ($tree as $key => $state) {
 //        print_r($state);
         $html .= "<li><u>States</u>";
-        foreach($state as $key2 => $value) {
+        foreach ($state as $key2 => $value) {
 //            $stateTax = $value["state_tax"];
             $stateTaxableAmount = $value["state_taxable_amount"];
 //            $totalTaxCollectedInState = $value["total_tax_collected_in_state"];
@@ -426,13 +427,13 @@ function printTree($tree, $html){
 
             ksort($value['county']);
 
-            foreach($value["county"] as $key3 => $county){
+            foreach ($value["county"] as $key3 => $county) {
 //                $countyTax = $county["county_tax"];
                 $countyTaxableAmount = $county["county_taxable_amount"];
                 $html .= "<li>$key3 County, $key2";
                 $html .= "<ul>";
                 $html .= "<li>County Taxes - Total Taxable Amount: $countyTaxableAmount</li>"; //Tax Collected: $countyTax;
-                if($county["city"]) {
+                if ($county["city"]) {
                     $html .= "<li><u>Cities</u><ul>";
                     foreach ($county["city"] as $key4 => $city) {
 //                    $cityTax = $city["city_tax"];
@@ -473,18 +474,20 @@ function printTree($tree, $html){
     return $html;
 }
 
-function makeCSV($folder, $filename, $array){
+function makeCSV($folder, $filename, $array)
+{
     $fp = fopen($folder . $filename, 'w');
-    foreach($array as $fields){
+    foreach ($array as $fields) {
         fputcsv($fp, $fields);
     }
     fclose($fp);
     return true;
 }
 
-function in_array_r($needle, $haystack, $strict = false){
-    foreach($haystack as $item){
-        if(($strict ? $item === $needle : $item == $needle) || (is_array($item) && in_array_r($needle, $item, $strict))){
+function in_array_r($needle, $haystack, $strict = false)
+{
+    foreach ($haystack as $item) {
+        if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && in_array_r($needle, $item, $strict))) {
             return true;
         }
     }

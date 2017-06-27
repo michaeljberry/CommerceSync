@@ -6,7 +6,8 @@ use ecommerce\Ecommerce;
 
 class AmazonInventory extends Amazon
 {
-    public function getFbaInventory($sku){
+    public function getFbaInventory($sku)
+    {
         $action = 'ListInventorySupply';
         $feedtype = '';
         $feed = 'FulfillmentInventory';
@@ -26,13 +27,13 @@ class AmazonInventory extends Amazon
 
         $param['ResponseGroup'] = 'Basic';
 
-        if(is_array($sku)){
-            for($i = 0; $i < count($sku); $i++){
+        if (is_array($sku)) {
+            for ($i = 0; $i < count($sku); $i++) {
                 $n_sku = $sku[$i];
-                $item = $i+1;
+                $item = $i + 1;
                 $param["SellerSkus.member.$item"] = trim($n_sku);
             }
-        }else {
+        } else {
             $param['SellerSkus.member.1'] = $sku;
         }
 
@@ -40,7 +41,9 @@ class AmazonInventory extends Amazon
 
         return $response;
     }
-    public function updateAmazonInventory($xml1){
+
+    public function updateAmazonInventory($xml1)
+    {
         $action = 'SubmitFeed';
         $feedtype = '_POST_PRODUCT_DATA_';
         $feed = 'Feeds';
@@ -65,7 +68,9 @@ class AmazonInventory extends Amazon
 
         return $response;
     }
-    public function updateAmazonInventoryPrice($xml1){
+
+    public function updateAmazonInventoryPrice($xml1)
+    {
         $action = 'SubmitFeed';
         $feedtype = '_POST_PRODUCT_PRICING_DATA_';
         $feed = 'Feeds';
@@ -89,7 +94,9 @@ class AmazonInventory extends Amazon
 
         return $response;
     }
-    public function listMatchingProducts($searchTerm){
+
+    public function listMatchingProducts($searchTerm)
+    {
         $action = ucfirst(__FUNCTION__);
         $feedtype = '';
         $feed = 'Products';
@@ -113,7 +120,9 @@ class AmazonInventory extends Amazon
 
         return $response;
     }
-    public function getMatchingProduct($asin){
+
+    public function getMatchingProduct($asin)
+    {
         $action = ucfirst(__FUNCTION__);
         $feedtype = '';
         $feed = 'Products';
@@ -137,7 +146,9 @@ class AmazonInventory extends Amazon
 
         return $response;
     }
-    public function GetMyPriceForSKU($sku){
+
+    public function GetMyPriceForSKU($sku)
+    {
         $action = ucfirst(__FUNCTION__);
         $feedtype = '';
         $feed = 'Products';
@@ -161,7 +172,9 @@ class AmazonInventory extends Amazon
 
         return $response;
     }
-    public function listNewProduct($sku){
+
+    public function listNewProduct($sku)
+    {
         $action = 'SubmitFeed';
         $feedtype = '_POST_PRODUCT_DATA_';
         $feed = 'Feeds';
@@ -189,7 +202,7 @@ class AmazonInventory extends Amazon
             ]
         ];
 
-        foreach($bullets as $b){
+        foreach ($bullets as $b) {
             $xml['Message']['Product']['DescriptionData']['Bullet'][] = $b;
         }
 
@@ -199,7 +212,9 @@ class AmazonInventory extends Amazon
 
         return $response;
     }
-    public function getProductInfo($asin){
+
+    public function getProductInfo($asin)
+    {
         $action = 'GetMatchingProductForId';
         $feedtype = '';
         $feed = 'Products';
@@ -218,7 +233,8 @@ class AmazonInventory extends Amazon
         return $response;
     }
 
-    public function getFlatFile(){
+    public function getFlatFile()
+    {
         $action = 'RequestReport';
         $feedtype = '_GET_FLAT_FILE_OPEN_LISTINGS_DATA_';
         $feed = 'doc';
@@ -268,7 +284,8 @@ class AmazonInventory extends Amazon
 
     }
 
-    public function create_inventory_update_item_xml($sku, $quantity, $num){
+    public function create_inventory_update_item_xml($sku, $quantity, $num)
+    {
         $xml = [
             'Message' => [
                 'MessageID' => $num,
@@ -282,7 +299,9 @@ class AmazonInventory extends Amazon
 
         return $amazon_feed;
     }
-    public function create_inventory_price_update_item_xml($sku, $price, $num){
+
+    public function create_inventory_price_update_item_xml($sku, $price, $num)
+    {
         $xml = [
             'Message' => [
                 'MessageID' => $num,
@@ -336,10 +355,10 @@ class AmazonInventory extends Amazon
 
     public function sortAmazonSearchResults($response)
     {
-        foreach($response->GetLowestOfferListingsForSKUResult->Product->LowestOfferListings->LowestOfferListing as $product){
-            $price = ((float)$product->Price->ListingPrice->Amount*100)/100;
-            $shipping = ((float)$product->Price->Shipping->Amount*100)/100;
-            $total = ((float)$product->Price->LandedPrice->Amount*100)/100;
+        foreach ($response->GetLowestOfferListingsForSKUResult->Product->LowestOfferListings->LowestOfferListing as $product) {
+            $price = ((float)$product->Price->ListingPrice->Amount * 100) / 100;
+            $shipping = ((float)$product->Price->Shipping->Amount * 100) / 100;
+            $total = ((float)$product->Price->LandedPrice->Amount * 100) / 100;
             $numOfListingsAtThisPrice = (string)$product->NumberOfOfferListingsConsidered;
             $sellerRating = (string)$product->Qualifiers->SellerPositiveFeedbackRating;
             $shippingTime = (string)$product->Qualifiers->ShippingTime->Max;

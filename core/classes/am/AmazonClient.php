@@ -43,7 +43,7 @@ class AmazonClient implements EcommerceInterface
 
     public static function instance($user_id)
     {
-        if(self::$instance === null){
+        if (self::$instance === null) {
             self::$instance = new AmazonClient($user_id);
         }
         return self::$instance;

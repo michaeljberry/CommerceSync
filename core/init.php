@@ -26,11 +26,6 @@ $template = new Template();
 $users = new User();
 $general = new General();
 
-//Walmart Class Declarations
-//$wm = new \wm\Walmart();
-//$wmord = new \wm\WalmartOrder();
-//$wminv = new \wm\WalmartInventory();
-
 //EcomDash Class Declarations
 $ecd = new \ecd\ecdclass();
 $ecdord = new \ecdord\ecdordclass();
@@ -39,9 +34,10 @@ $ecdinv = new \ecdinv\ecdinvclass();
 $ecommerce = new \ecommerce\Ecommerce();
 
 use PhpRbac\Rbac;
+
 $rbac = new Rbac();
 
-if($general->logged_in() === true){
+if ($general->logged_in() === true) {
     $user_id = $_SESSION['id'];
     $user = $users->userdata($user_id);
     $firstname = $user['first_name'];
@@ -54,7 +50,7 @@ if($general->logged_in() === true){
 
     //EcomDash Variables
 //    require WEBPLUGIN . 'ecd/ecdvar.php';
-}else{
+} else {
 
 }
 $errors = array();

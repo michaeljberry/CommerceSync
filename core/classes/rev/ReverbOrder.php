@@ -6,7 +6,8 @@ use ecommerce\Ecommerce;
 
 class ReverbOrder extends Reverb
 {
-    public function getOrders(){
+    public function getOrders()
+    {
         $url = 'https://api.reverb.com/api/my/orders/selling/awaiting_shipment/';
         $response = ReverbClient::reverbCurl($url, 'GET');
         return $response;
@@ -19,12 +20,13 @@ class ReverbOrder extends Reverb
         return $response;
     }
 
-    public function saveOrders($request, Ecommerce $ecommerce, $folder){
+    public function saveOrders($request, Ecommerce $ecommerce, $folder)
+    {
         $orders = substr($request, strpos($request, '"orders":'), -1);
         $orders = '{' . $orders . '}';
         $orders = json_decode($orders);
 
-        if(!empty($orders)) {
+        if (!empty($orders)) {
             foreach ($orders as $o) {
                 foreach ($o as $order) {
                     $order_num = $order->order_number;
@@ -101,7 +103,9 @@ class ReverbOrder extends Reverb
             }
         }
     }
-    public function update_reverb_tracking($order_num, $tracking_id, $carrier, $notification = true){
+
+    public function update_reverb_tracking($order_num, $tracking_id, $carrier, $notification = true)
+    {
         $url = 'https://reverb.com/api/my/orders/selling/' . $order_num . '/ship';
         $postString = [
             'id' => $order_num,

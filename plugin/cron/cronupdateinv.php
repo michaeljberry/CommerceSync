@@ -24,14 +24,14 @@ $current_quantities = $ecommerce->get_current_inventory($table);
 
 //ecom::dd($current_quantities);
 
-foreach($vaidata as $v){
+foreach ($vaidata as $v) {
     $sku = trim($v['ITITEM']);
     $qty = (int)$v['QTY'];
 
-    if(array_key_exists($sku, $current_quantities)){
-        if((int)$current_quantities[$sku]['inventory_level'] !== $qty){
+    if (array_key_exists($sku, $current_quantities)) {
+        if ((int)$current_quantities[$sku]['inventory_level'] !== $qty) {
             $result = $ecommerce->update_inventory($sku, $qty, '', $table);
-            if($result){
+            if ($result) {
                 echo $sku . ' is updated.<br />';
             }
             echo "SKU: $sku; Old Level: {$current_quantities[$sku]['inventory_level']}; New Level: $qty<br>";

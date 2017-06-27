@@ -10,7 +10,7 @@ require WEBPLUGIN . 'eb/ebvar.php';
 $results = $ebay->get_listings();
 //print_r($results);
 //$x = 1;
-foreach($results as $r){
+foreach ($results as $r) {
 //    if($x > 2){
 //        continue;
 //    }

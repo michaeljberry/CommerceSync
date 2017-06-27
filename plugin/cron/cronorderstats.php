@@ -6,14 +6,14 @@ $start = startClock();
 
 $results = $ecommerce->getOrderStatsWeek();
 print_r($results);
-foreach($results as $r){
+foreach ($results as $r) {
     $date = $r['date'];
     $sales = $r['sales'];
     $units_sold = $r['units_sold'];
     $channel = $r['channel'];
 
     $stat_id = $ecommerce->saveOrderStats($channel, $date, $sales, $units_sold);
-    if(!empty($stat_id)){
+    if (!empty($stat_id)) {
         echo "Date: $date; Channel: $channel; Sales: $sales, Units Sold: $units_sold<br>";
     }
 }

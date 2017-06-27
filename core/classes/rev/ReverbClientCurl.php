@@ -6,7 +6,8 @@ use ecommerce\Ecommerce;
 
 trait ReverbClientCurl
 {
-    public function getAuthorizationToken($email, $password){
+    public function getAuthorizationToken($email, $password)
+    {
         $url = 'https://reverb.com/api/auth/email';
         $post_string = '{"email":"' . $email . '","password":"' . $password . '"}';
         $response = ReverbClientCurl::reverbCurl($url, 'POST', $post_string);
@@ -24,13 +25,14 @@ trait ReverbClientCurl
         return $headers;
     }
 
-    public static function setCurlOptions($url, $method, $headers, $post_string = null){
+    public static function setCurlOptions($url, $method, $headers, $post_string = null)
+    {
         $request = curl_init($url);
         curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($request, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($request, CURLOPT_HEADER, false);
-        if($post_string) {
+        if ($post_string) {
             curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
         }
         curl_setopt($request, CURLOPT_CUSTOMREQUEST, $method);

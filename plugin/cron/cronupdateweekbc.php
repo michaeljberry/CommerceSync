@@ -12,13 +12,13 @@ $updated = $ecommerce->get_inventory_weekly($table);
 print_r($updated);
 echo '<br><br>';
 
-foreach($updated as $u){
+foreach ($updated as $u) {
     $stock_id = $u['id'];
     $sku_id = $u['sku_id'];
     $stock_qty = $u['stock_qty'];
     $sku = $ecommerce->get_sku($sku_id);
     $price = $ecommerce->get_inventory_price($sku, $table);
-    if(empty($price)){
+    if (empty($price)) {
         $price = '';
     }
 

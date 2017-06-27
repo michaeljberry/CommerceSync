@@ -12,7 +12,7 @@ $ecd_warehouses = $ecd->get_warehouse_ids($ecd_id);
 //print_r($ecd_warehouses);
 
 $warehouseId = [];
-foreach ($ecd_warehouses as $w){
+foreach ($ecd_warehouses as $w) {
     $warehouseId[$w['id']] = [
         'warehouse_id' => $w['warehouse_id'],
         'warehouse_name' => $w['warehouse_name']

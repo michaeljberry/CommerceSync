@@ -4,7 +4,7 @@ require __DIR__ . '/../../core/init.php';
 use models\channels\TrackingModel;
 
 $channel = '';
-if(isset($_GET['channel']) && !empty($_GET['channel'])){
+if (isset($_GET['channel']) && !empty($_GET['channel'])) {
     $channel = htmlentities($_GET['channel']);
 }
 
@@ -14,7 +14,7 @@ $unshippedOrders = TrackingModel::getUnshippedOrders($channel);
 $x = 0;
 $table = "<table id='unshipped-table'>
         <thead><th>Date</th><th>Order Number</th><th>Channel</th><th>Complete?</th><th>Cancel?</th></thead>";
-foreach($unshippedOrders as $o){
+foreach ($unshippedOrders as $o) {
     $date = $o['processed'];
     $order_id = $o['order_id'];
     $channel = $o['type'];
@@ -48,12 +48,12 @@ $script = "<script type='text/javascript'>
             var data = 'id=' + id + '&status=' + status;
             $.ajax({
                 type: 'POST',
-                url: '".RELPLUGIN."marketplaces/change-order.php',
+                url: '" . RELPLUGIN . "marketplaces/change-order.php',
                 data: data,
                 success: function(response, status){
-                    $('#subcontainer').load('".RELPLUGIN."marketplaces/unshipped-orders.php?channel=";
-                    $script .= (!empty($channel) ? $channel : "");
-                    $script .= "');
+                    $('#subcontainer').load('" . RELPLUGIN . "marketplaces/unshipped-orders.php?channel=";
+$script .= (!empty($channel) ? $channel : "");
+$script .= "');
                 },
                 errors: function(){
 

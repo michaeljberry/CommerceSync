@@ -4,4 +4,3 @@ require '../../core/init.php';
 $bc_page = true;
 $channel_page = 'bigcommerce';
 include '../marketplaces/marketplace-menu.php';
-?>

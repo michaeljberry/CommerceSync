@@ -24,7 +24,8 @@ class EbayOrder extends Ebay
         return $xml;
     }
 
-    public function update_ebay_tracking($tracking_id, $carrier, $item_id, $trans_id){
+    public function update_ebay_tracking($tracking_id, $carrier, $item_id, $trans_id)
+    {
         $requestName = 'CompleteSale';
 
         $xml = [
@@ -32,19 +33,21 @@ class EbayOrder extends Ebay
             'TransactionID' => $trans_id,
             'Shipped' => 'true',
             'Shipment' =>
-            [
-                'ShipmentTrackingDetails' =>
                 [
-                    'ShipmentTrackingNumber' => $tracking_id,
-                    'ShippingCarrierUsed' => $carrier
+                    'ShipmentTrackingDetails' =>
+                        [
+                            'ShipmentTrackingNumber' => $tracking_id,
+                            'ShippingCarrierUsed' => $carrier
+                        ]
                 ]
-            ]
         ];
 
         $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
-    protected function saveItems($item, $poNumber, $order_id, $ecommerce, $itemObject){
+
+    protected function saveItems($item, $poNumber, $order_id, $ecommerce, $itemObject)
+    {
         $sku = $item->Item->SKU;
         $title = $item->Item->Title;
         $quantity = $item->QuantityPurchased;
@@ -62,41 +65,42 @@ class EbayOrder extends Ebay
         return $itemObject;
     }
 
-    protected function getItems($items, $order_id, $ecommerce) {
+    protected function getItems($items, $order_id, $ecommerce)
+    {
         $poNumber = 1;
 
         $itemObject = [];
         $itemObject['itemXml'] = '';
 
-        if(count($items->Transaction) > 1){
-            foreach($items->Transaction as $item){
+        if (count($items->Transaction) > 1) {
+            foreach ($items->Transaction as $item) {
                 $itemObject = $this->saveItems($item, $poNumber, $order_id, $ecommerce, $itemObject);
                 $poNumber = $itemObject['poNumber'];
                 $poNumber++;
             }
-        }else{
+        } else {
             $itemObject = $this->saveItems($items->Transaction, $poNumber, $order_id, $ecommerce, $itemObject);
         }
 
         return (object)$itemObject;
     }
 
-    protected function getMoreOrders($requestName, $pagenumber, $ebayDays){
+    protected function getMoreOrders($requestName, $pagenumber, $ebayDays)
+    {
         $xml = $this->getOrderXml($ebayDays, $pagenumber);
         $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 
-    protected function parseOrders($xml_orders, $folder,Ecommerce $ecommerce){
-        foreach($xml_orders->OrderArray->Order as $xml)
-        {
+    protected function parseOrders($xml_orders, $folder, Ecommerce $ecommerce)
+    {
+        foreach ($xml_orders->OrderArray->Order as $xml) {
             $order_num = (string)$xml->ExternalTransaction->ExternalTransactionID;
             $fee = Ecommerce::formatMoney((float)$xml->ExternalTransaction->FeeOrCreditAmount);
 
             $order_status = trim($xml->OrderStatus);
 
-            if ($order_status !== 'Cancelled')
-            {
+            if ($order_status !== 'Cancelled') {
 
                 echo "Order: $order_num -> Status: $order_status<br>";
                 echo $xml->OrderID . '<br>';
@@ -107,22 +111,16 @@ class EbayOrder extends Ebay
                     $timestamp = $xml->CreatedTime;
                     $order_date = $timestamp;
                     $ismultilegshipping = $xml->IsMultiLegShipping;
-                    if (strcasecmp($ismultilegshipping, 'true') == 0)
-                    {
+                    if (strcasecmp($ismultilegshipping, 'true') == 0) {
                         $shippinginfo = $xml->MultiLegShippingDetails->SellerShipmentToLogisticsProvider->ShipToAddress;
                         $address = strtoupper($shippinginfo->ReferenceID);
                         $address2 = strtoupper($shippinginfo->Street1);
-                    }
-                    else
-                    {
+                    } else {
                         $shippinginfo = $xml->ShippingAddress;
                         $address = strtoupper($shippinginfo->Street1);
-                        if(is_object($shippinginfo->Street2))
-                        {
+                        if (is_object($shippinginfo->Street2)) {
                             $address2 = '';
-                        }
-                        else
-                        {
+                        } else {
                             $address2 = strtoupper($shippinginfo->Street2);
                         }
                     }
@@ -132,8 +130,7 @@ class EbayOrder extends Ebay
                     $state = $shippinginfo->StateOrProvince;
                     $zip = $shippinginfo->PostalCode;
                     $country = $shippinginfo->Country;
-                    if ($country == 'US')
-                    {
+                    if ($country == 'US') {
                         $country = 'USA';
                     }
                     $shipping_amount = Ecommerce::formatMoney((float)$xml->ShippingDetails->ShippingServiceOptions->ShippingServiceCost);
@@ -183,15 +180,15 @@ class EbayOrder extends Ebay
         }
     }
 
-    public function getOrders($requestName, $pagenumber, $ebayDays, $folder, Ecommerce $ecommerce){
+    public function getOrders($requestName, $pagenumber, $ebayDays, $folder, Ecommerce $ecommerce)
+    {
         $response = $this->getMoreOrders($requestName, $pagenumber, $ebayDays);
-        if ($response)
-        {
+        if ($response) {
             $xml_orders = simplexml_load_string($response);
             $orderCount = count($xml_orders->OrderArray->Order);
             echo "Order Count: $orderCount<br>";
             $this->parseOrders($xml_orders, $folder, $ecommerce);
-            if($orderCount >= 100){
+            if ($orderCount >= 100) {
                 $pagenumber++;
                 $this->getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce);
             }

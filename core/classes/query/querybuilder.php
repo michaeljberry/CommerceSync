@@ -12,36 +12,36 @@ class querybuilder
         $tableAbbreviationArray = [];
         $query = '';
         $response = [];
-        if(array_key_exists('SELECT', $sqlArray)){
+        if (array_key_exists('SELECT', $sqlArray)) {
             $response = self::selectQuery($sqlArray['SELECT'], $tableAbbreviationArray, $tableAbbreviation);
             $tableAbbreviationArray = $response['tableAbbreviationArray'];
             $tableAbbreviation = $response['tableAbbreviation'];
             $query .= $response['query'];
 
-            if(array_key_exists('JOIN', $sqlArray)){
+            if (array_key_exists('JOIN', $sqlArray)) {
                 $response = self::joinQuery($sqlArray['JOIN'], $tableAbbreviationArray, $tableAbbreviation, $query);
                 $tableAbbreviationArray = $response['tableAbbreviationArray'];
                 $tableAbbreviation = $response['tableAbbreviation'];
                 $query = $response['query'];
             }
 
-            if(array_key_exists('WHERE', $sqlArray)){
+            if (array_key_exists('WHERE', $sqlArray)) {
                 $query .= self::whereQuery($sqlArray['WHERE'], $tableAbbreviationArray);
             }
 
-            if(array_key_exists('GROUP BY', $sqlArray)){
+            if (array_key_exists('GROUP BY', $sqlArray)) {
                 $query .= self::groupByQuery($sqlArray['GROUP BY'], $tableAbbreviationArray);
             }
 
-            if(array_key_exists('ORDER BY', $sqlArray)){
+            if (array_key_exists('ORDER BY', $sqlArray)) {
                 $query .= self::orderByQuery($sqlArray['ORDER BY'], $tableAbbreviationArray);
             }
 
-        }elseif (array_key_exists('INSERT', $sqlArray)){
+        } elseif (array_key_exists('INSERT', $sqlArray)) {
             $response = self::insertQuery($sqlArray['INSERT']);
-        }elseif (array_key_exists('UPDATE', $sqlArray)){
+        } elseif (array_key_exists('UPDATE', $sqlArray)) {
             $response = self::updateQuery($sqlArray['UPDATE']);
-        }elseif (array_key_exists('DELETE', $sqlArray)){
+        } elseif (array_key_exists('DELETE', $sqlArray)) {
             $response = self::deleteQuery($sqlArray['DELETE']);
         }
 
@@ -50,7 +50,7 @@ class querybuilder
 
     protected static function whereQuery($whereArray, $tableAbbreviationArray = [], &$where = 'WHERE ', &$i = 0)
     {
-        if(is_array(reset($whereArray))) {
+        if (is_array(reset($whereArray))) {
             foreach ($whereArray as $key => $value) {
                 if (is_array($value) && is_array(reset($value))) {
                     $where .= "(";
@@ -75,7 +75,7 @@ class querybuilder
                     $i++;
                 }
             }
-        }else {
+        } else {
             $where .= "(";
 
             $whereTable = $whereArray['whereTable'] ?? $whereArray[0];
@@ -94,9 +94,9 @@ class querybuilder
     {
         $where = "";
 
-        if($whereTable === "**SUB**"){
+        if ($whereTable === "**SUB**") {
             $tableAbbreviation = self::findTableAbbreviation($whereTable, $tableAbbreviationArray, 'whereTable');
-        }else {
+        } else {
             $tableAbbreviation = self::findTableAbbreviation($whereTable, $tableAbbreviationArray, 'whereTable');
         }
 
@@ -107,7 +107,7 @@ class querybuilder
         $where .= $whereTableColumnName;
         $where .= " ";
         $where .= $whereOperator;
-        if(!empty($whereValue)) {
+        if (!empty($whereValue)) {
             $where .= " ";
             $where .= $addQuotesAroundValue ? "'" . $whereValue . "'" : $whereValue;
         }
@@ -115,21 +115,23 @@ class querybuilder
         return $where;
     }
 
-    protected static function includeQuotes($whereOperator, $whereValue){
+    protected static function includeQuotes($whereOperator, $whereValue)
+    {
         if (
             (
                 !is_numeric($whereValue) &&
                 !self::regexPresent('/(NOT| IN )/', $whereOperator)
             ) &&
             !self::regexPresent('/(:|\?)/', $whereValue)
-        ){
+        ) {
             return true;
         }
         return false;
     }
 
-    protected static function regexPresent($regex, $whereString){
-        if(preg_match($regex, $whereString)){
+    protected static function regexPresent($regex, $whereString)
+    {
+        if (preg_match($regex, $whereString)) {
             return true;
         }
         return false;
@@ -139,9 +141,9 @@ class querybuilder
     {
         $i = 0;
         $groupBy = " GROUP BY ";
-        if(isset($groupByArray[0]) && is_array($groupByArray[0])){
+        if (isset($groupByArray[0]) && is_array($groupByArray[0])) {
             $last = end($groupByArray);
-            foreach($groupByArray as $key => $value){
+            foreach ($groupByArray as $key => $value) {
                 $groupByTable = $groupByArray[$i]['groupByTable'] ?? $groupByArray[$i][0];
                 $groupByColumn = $groupByArray[$i]['groupByColumn'] ?? $groupByArray[$i][1];
                 $groupByOrder = $groupByArray[$i]['groupByOrder'] ?? $groupByArray[$i][2] ?? '';
@@ -154,7 +156,7 @@ class querybuilder
                 $groupBy .= self::commaInQuery($i, $groupByArray, $value, $last);
                 $i++;
             }
-        }else{
+        } else {
             $groupByTable = $groupByArray['groupByTable'] ?? $groupByArray[0];
             $groupByColumn = $groupByArray['groupByColumn'] ?? $groupByArray[1];
             $groupByOrder = $groupByArray['groupByOrder'] ?? $groupByArray[2] ?? '';
@@ -173,7 +175,7 @@ class querybuilder
 
         $group .= self::nestTableNameInFunction($groupByColumn, $groupByTableAbbreviation);
 
-        if(!empty($groupByOrder)){
+        if (!empty($groupByOrder)) {
             $group .= " ";
             $group .= $groupByOrder;
         }
@@ -185,9 +187,9 @@ class querybuilder
     {
         $i = 0;
         $orderBy = " ORDER BY ";
-        if(isset($orderByArray[0]) && is_array($orderByArray[0])){
+        if (isset($orderByArray[0]) && is_array($orderByArray[0])) {
             $last = end($orderByArray);
-            foreach($orderByArray as $key => $value){
+            foreach ($orderByArray as $key => $value) {
                 $orderByTable = $orderByArray[$i]['orderByTable'] ?? $orderByArray[$i][0];
                 $orderByColumn = $orderByArray[$i]['orderByColumn'] ?? $orderByArray[$i][1];
                 $orderByOrder = $orderByArray[$i]['sortOrder'] ?? $orderByArray[$i][2] ?? '';
@@ -200,7 +202,7 @@ class querybuilder
                 $orderBy .= self::commaInQuery($i, $orderByArray, $value, $last);
                 $i++;
             }
-        }else{
+        } else {
             $orderByTable = $orderByArray['orderByTable'] ?? $orderByArray[0];
             $orderByColumn = $orderByArray['orderByColumn'] ?? $orderByArray[1];
             $orderByOrder = $orderByArray['sortOrder'] ?? $orderByArray[2] ?? '';
@@ -221,7 +223,7 @@ class querybuilder
         $order .= ".";
         $order .= $orderByColumn;
 
-        if(!empty($orderByOrder)){
+        if (!empty($orderByOrder)) {
             $order .= " ";
             $order .= $orderByOrder;
         }
@@ -248,10 +250,10 @@ class querybuilder
     protected static function selectMainQuery($selectArray, $tableAbbreviation)
     {
         $selectTable = $selectArray['selectTable'] ?? $selectArray[1];
-        if(is_array($selectTable)){
+        if (is_array($selectTable)) {
             $tableAbbreviation = 'sub';
             $tableAbbreviationArray[$tableAbbreviation] = '**SUB**';
-        }else {
+        } else {
             $tableAbbreviationArray[$tableAbbreviation] = $selectTable;
         }
         $select = "SELECT ";
@@ -275,21 +277,22 @@ class querybuilder
     {
         $selectColumn = '';
         $selectColumn .= self::nestTableNameInFunction($column, $tableAbbreviation);
-        if($as){
+        if ($as) {
             $selectColumn .= " AS ";
             $selectColumn .= $value;
         }
         return $selectColumn;
     }
+
     protected static function selectTableQuery($tableAbbreviation, $table)
     {
         $selectTable = "";
         $selectTable .= " FROM ";
-        if(is_array($table)){
+        if (is_array($table)) {
             $selectTable .= "(";
             $selectTable .= self::arrayToQuery($table[0]);
             $selectTable .= ")";
-        }else {
+        } else {
             $selectTable .= "`";
             $selectTable .= $table;
             $selectTable .= "`";
@@ -304,7 +307,7 @@ class querybuilder
     {
         $i = 0;
         $select = "";
-        if(is_array($columnArray)) {
+        if (is_array($columnArray)) {
             $last = end($columnArray);
             $count = count($columnArray);
             foreach ($columnArray as $key => $value) {
@@ -313,16 +316,16 @@ class querybuilder
                         $select .= self::selectColumnQuery($tableAbbreviation, $column, true, $as);
                     }
                 } else {
-                    if(is_numeric($key)){
+                    if (is_numeric($key)) {
                         $select .= self::selectColumnQuery($tableAbbreviation, $value);
-                    }else {
+                    } else {
                         $select .= self::selectColumnQuery($tableAbbreviation, $key, true, $value);
                     }
                 }
                 $select .= self::commaInQuery($i, $columnArray, $value, $last, $count);
                 $i++;
             }
-        }else{
+        } else {
             $select .= self::selectColumnQuery($tableAbbreviation, $columnArray);
         }
         return $select;
@@ -349,8 +352,8 @@ class querybuilder
         $i = 0;
         $join = '';
         $joinColumns = '';
-        if (isset($joinArray[0]) && is_array($joinArray[0])){
-            $lastKey = count($joinArray)-1;
+        if (isset($joinArray[0]) && is_array($joinArray[0])) {
+            $lastKey = count($joinArray) - 1;
             foreach ($joinArray as $key => $array) {
                 $joinType = $joinArray[$i]['joinType'] ?? $joinArray[$i][0];
                 $joinTable = $joinArray[$i]['joinTable'] ?? $joinArray[$i][1];
@@ -366,7 +369,7 @@ class querybuilder
 
                 $tableAbbreviations = self::findTableAbbreviation($joinToTable, $tableAbbreviationArray, 'joinToTable');
                 $joinToTableAbbreviation = $tableAbbreviations[0];
-                if($columnArray) {
+                if ($columnArray) {
                     $joinColumns .= self::joinColumnArrayQuery($columnArray, $joinTableAbbreviation, $key, $lastKey);
                 }
 
@@ -375,7 +378,7 @@ class querybuilder
                 $tableAbbreviation++;
                 $i++;
             }
-        }else{
+        } else {
             $joinType = $joinArray['joinType'] ?? $joinArray[0];
             $joinTable = $joinArray['joinTable'] ?? $joinArray[1];
             $joinTableColumnName = $joinArray['joinTableColumnName'] ?? $joinArray[2];
@@ -391,7 +394,7 @@ class querybuilder
             $tableAbbreviations = self::findTableAbbreviation($joinToTable, $tableAbbreviationArray, 'joinToTable');
             $joinToTableAbbreviation = $tableAbbreviations[0];
 
-            if($columnArray) {
+            if ($columnArray) {
                 $joinColumns .= self::joinColumnArrayQuery($columnArray, $joinTableAbbreviation);
             }
 
@@ -402,7 +405,7 @@ class querybuilder
         $querySelect = explode(" FROM", $query);
 
         $query = $querySelect[0];
-        if($joinColumns) {
+        if ($joinColumns) {
             $query .= "," . $joinColumns . " FROM" . $querySelect[1] . $join;
         }
         $queryArray = [
@@ -417,7 +420,7 @@ class querybuilder
     {
         $j = 0;
         $joinColumns = "";
-        if(is_array($columnArray)) {
+        if (is_array($columnArray)) {
             $last = end($columnArray);
             $count = count($columnArray);
             foreach ($columnArray as $key => $value) {
@@ -431,10 +434,10 @@ class querybuilder
                 $joinColumns .= self::commaInQuery($j, $columnArray, $value, $last, $count);
                 $j++;
             }
-        }else{
+        } else {
             $joinColumns .= self::joinColumnsQuery($joinTableAbbreviation, $columnArray);
         }
-        if($currentParentKey !== $lastParentKey){
+        if ($currentParentKey !== $lastParentKey) {
             $joinColumns .= ",";
         }
         return $joinColumns;
@@ -446,7 +449,7 @@ class querybuilder
         $columns .= self::nestTableNameInFunction($column, $joinTableAbbreviation);
 //        $columns .= $joinTableAbbreviation . ".";
 //        $columns .= $column;
-        if($as) {
+        if ($as) {
             $columns .= " AS ";
             $columns .= $value;
         }
@@ -480,7 +483,7 @@ class querybuilder
         $operator = "";
         $operator .= $joinOperator;
         $operator .= " ";
-        return $operator ;
+        return $operator;
     }
 
     protected static function joinToTableColumnQuery($joinToTableAbbreviation, $joinToTableColumnName)
@@ -555,11 +558,11 @@ class querybuilder
     {
         $query = '';
 
-        if($value){
+        if ($value) {
             if ((count($array) > 1) && $value !== $lastValue) {
                 $query .= ",";
             }
-        }else {
+        } else {
             if (($j == 0 && count($array) > 1)) {
                 $query .= ",";
             }
@@ -568,14 +571,15 @@ class querybuilder
         return $query;
     }
 
-    protected static function nestTableNameInFunction($tableColumn, $tableAbbreviation){
+    protected static function nestTableNameInFunction($tableColumn, $tableAbbreviation)
+    {
         $column = '';
-        if(strpos($tableColumn, '(') !== false){
+        if (strpos($tableColumn, '(') !== false) {
             $columns = explode('(', strrev($tableColumn), 2);
             $firstColumn = strrev($columns[0]);
             $secondColumn = strrev($columns[1]);
             $column .= $secondColumn . "(" . $tableAbbreviation . "." . $firstColumn;
-        }else {
+        } else {
             $column .= $tableAbbreviation;
             $column .= ".";
             $column .= $tableColumn;

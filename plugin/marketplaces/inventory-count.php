@@ -1,6 +1,6 @@
 <?php
 require '../../core/init.php';
-if($_POST['sku_list']){
+if ($_POST['sku_list']) {
     $sku_list = trim(htmlentities($_POST['sku_list']));
 //    echo $sku_list;
 //    echo "<br><br>";
@@ -20,7 +20,7 @@ if($_POST['sku_list']){
 //    echo count($skus->member);
 //    print_r($member);
     $table = "<table class='invtable'><thead><th>SKU</th><th>In Stock QTY</th><th>Total QTY</th></thead><tbody>";
-    foreach($skus->member as $key => $s){
+    foreach ($skus->member as $key => $s) {
 //        echo '<br><br>';
 //        print_r($key);
 //        echo '<br><br>';

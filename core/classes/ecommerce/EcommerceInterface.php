@@ -2,7 +2,8 @@
 
 namespace ecommerce;
 
-interface EcommerceInterface {
+interface EcommerceInterface
+{
 
     static function getStoreID();
 

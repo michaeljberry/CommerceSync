@@ -10,7 +10,7 @@ require WEBPLUGIN . 'bc/bcvar.php';
 $table = 'listing_bigcommerce';
 $vaidata = IBM::getBigCommerceInventory();
 
-foreach($vaidata as $v){
+foreach ($vaidata as $v) {
     $sku = $v['ITEM'];
     $qty = $v['QTY'];
     $price = $v['PRICE'];

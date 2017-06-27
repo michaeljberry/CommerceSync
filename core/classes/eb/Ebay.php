@@ -7,8 +7,9 @@ use models\ModelDB as MDB;
 
 class Ebay
 {
-    public function sanitize_column_name($col){
-        switch($col){
+    public function sanitize_column_name($col)
+    {
+        switch ($col) {
             case $col == "token":
                 $column = 'token';
                 break;
@@ -31,7 +32,8 @@ class Ebay
         return $column;
     }
 
-    public function update_app_info($crypt, $store_id, $column, $id){
+    public function update_app_info($crypt, $store_id, $column, $id)
+    {
         $column = $this->sanitize_column_name($column);
         $sql = "UPDATE api_ebay SET $column = :id WHERE store_id = :store_id";
         $query_params = [
@@ -40,10 +42,12 @@ class Ebay
         ];
         MDB::query($sql, $query_params);
     }
-    public function get_ebay_app_id($user_id, $sand = null){
-        if(empty($sand)) {
+
+    public function get_ebay_app_id($user_id, $sand = null)
+    {
+        if (empty($sand)) {
             $sql = "SELECT store_id, devid, appid, certid, token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'";
-        }else{
+        } else {
             $sql = "SELECT store_id, sandbox_devid AS devid, sandbox_appid AS appid, sandbox_certid AS certid, sandbox_token AS token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'";
         }
         $query_params = [
@@ -51,11 +55,13 @@ class Ebay
         ];
         return MDB::query($sql, $query_params, 'fetch');
     }
-    public function get_listings($item_id = null){
-        if(!$item_id) {
+
+    public function get_listings($item_id = null)
+    {
+        if (!$item_id) {
             $sql = "SELECT id, store_listing_id, price FROM listing_ebay";
             return MDB::query($sql, [], 'fetchAll');
-        }else{
+        } else {
             $sql = "SELECT id FROM listing_ebay WHERE store_listing_id = :item_id";
             $query_params = [
                 'item_id' => $item_id
@@ -76,7 +82,8 @@ class Ebay
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public function get_listing_id($sku){
+    public function get_listing_id($sku)
+    {
         $sql = "SELECT store_listing_id FROM listing_ebay WHERE sku = :sku";
         $query_params = [
             ':sku' => $sku
@@ -84,7 +91,8 @@ class Ebay
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public function get_transaction_id($item_id){
+    public function get_transaction_id($item_id)
+    {
         $requestName = 'GetItemTransactions';
 
         $xml = [
@@ -95,7 +103,8 @@ class Ebay
         return $response;
     }
 
-    public function ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, $propose = null, $increaseBy = 0){
+    public function ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, $propose = null, $increaseBy = 0)
+    {
 
         $ebayFeeMax = 250;
 
@@ -106,14 +115,14 @@ class Ebay
 
         $costOfQty = $cost * $quantity;
 
-        if(empty($propose)) {
+        if (empty($propose)) {
             $totalPrice = $pl10 * $quantity;
-        }elseif(empty($increaseBy)){
-            $totalPrice = Ecommerce::roundMoney($costOfQty/(1-($minimumProfitPercent/100)));
-            $pl10 = Ecommerce::formatMoney($totalPrice/$quantity);
-        }else{
+        } elseif (empty($increaseBy)) {
+            $totalPrice = Ecommerce::roundMoney($costOfQty / (1 - ($minimumProfitPercent / 100)));
+            $pl10 = Ecommerce::formatMoney($totalPrice / $quantity);
+        } else {
             $totalPrice = Ecommerce::formatMoney($increaseBy);
-            $pl10 = Ecommerce::formatMoney($totalPrice/$quantity);
+            $pl10 = Ecommerce::formatMoney($totalPrice / $quantity);
         }
 
         $shippingCost = 3.99; //Amount we paid to ship the product
@@ -136,16 +145,16 @@ class Ebay
         $netProfit = Ecommerce::formatMoney($grossProfit - $ebayTotalFee - $paypalTotalFee - $shippingCost);
         $netProfitPercent = Ecommerce::formatMoney($netProfit / $totalPrice, 4) * 100;
 
-        if(!empty($propose) && ($grossProfitPercent < $minimumProfitPercent || $netProfitPercent < $minimumNetProfitPercent)){
+        if (!empty($propose) && ($grossProfitPercent < $minimumProfitPercent || $netProfitPercent < $minimumNetProfitPercent)) {
             $totalPrice = $totalPrice + $increment;
             $totalPrice = Ecommerce::formatMoney($totalPrice);
             $priceArray = $this->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, 1, $totalPrice);
-        }else {
+        } else {
             $priceArray = compact(
-                'sku','quantity','msrp','pl10','pl1','cost','totalPrice',
-                'totalCost','shippingCollected','shippingCost','ebayFeePercent',
-                'ebayFeeMax','ebayTotalFee','paypalFeePercent','paypalFeeFlat','paypalTotalFee',
-                'minimumProfitPercent','totalFees','grossProfit','grossProfitPercent','netProfit',
+                'sku', 'quantity', 'msrp', 'pl10', 'pl1', 'cost', 'totalPrice',
+                'totalCost', 'shippingCollected', 'shippingCost', 'ebayFeePercent',
+                'ebayFeeMax', 'ebayTotalFee', 'paypalFeePercent', 'paypalFeeFlat', 'paypalTotalFee',
+                'minimumProfitPercent', 'totalFees', 'grossProfit', 'grossProfitPercent', 'netProfit',
                 'netProfitPercent'
             );
         }
@@ -209,6 +218,7 @@ class Ebay
         ];
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
+
     public function set_order_days($store_id, $days)
     {
         $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";

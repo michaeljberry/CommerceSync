@@ -6,7 +6,8 @@ use ecommerce\Ecommerce;
 
 class ReverbInventory extends Reverb
 {
-    public static function getReverbListings($page){
+    public static function getReverbListings($page)
+    {
         $url = 'https://reverb.com/api/my/listings.json?page=' . $page;
         $response = ReverbClient::reverbCurl(
             $url,
@@ -31,8 +32,9 @@ class ReverbInventory extends Reverb
         return $response;
     }
 
-    public function get_reverb_products(Ecommerce $e){
-        for($page = 1; $page < 370; $page++) { //340
+    public function get_reverb_products(Ecommerce $e)
+    {
+        for ($page = 1; $page < 370; $page++) { //340
             $request = ReverbInventory::getReverbListings($page);
             $listings = substr($request, strpos($request, '"listings":'), -1);
             $listings = '{' . $listings . '}';
@@ -69,7 +71,7 @@ class ReverbInventory extends Reverb
                     //find condition id
                     $condition_id = $e->condition_soi($condition);
                     //add stock to sku
-                    $stock_id = $e->stock_soi($sku_id,$condition_id);
+                    $stock_id = $e->stock_soi($sku_id, $condition_id);
                     $channel_array = [
                         'store_id' => ReverbClient::getStoreID(),
                         'stock_id' => $stock_id,

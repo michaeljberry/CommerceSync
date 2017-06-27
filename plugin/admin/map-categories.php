@@ -10,7 +10,7 @@ $html = "<table><thead><tr>
     <th>Amazon Category ID</th>
     <th>BigCommerce</th>
     </tr></thead><tbody>";
-foreach($results as $r){
+foreach ($results as $r) {
     $id = $r['id'];
     $amazon_id = $r['categories_amazon_id'];
     $amazon_name = $r['am_cat_name'];
@@ -28,9 +28,9 @@ foreach($results as $r){
 $html .= '</tbody></table>';
 echo $html;
 ?>
-<div id="subcontainer">
+    <div id="subcontainer">
 
-</div>
+    </div>
 <?php
 include 'footer-admin.php';
 ?>

@@ -17,16 +17,16 @@ $report = true;
 
 echo 'Now: ' . date('m/d/y h:i:s') . '<br />';
 
-include_once ('/var/www/html/portal/plugin/am/MarketplaceWebService/Samples/.config.inc.php');
+include_once('/var/www/html/portal/plugin/am/MarketplaceWebService/Samples/.config.inc.php');
 
-include_once ('functions.php');
+include_once('functions.php');
 
 $serviceUrl = "https://mws.amazonservices.com";
-$config = array (
-	'ServiceURL' => $serviceUrl,
-	'ProxyHost' => null,
-	'ProxyPort' => -1,
-	'MaxErrorRetry' => 3,
+$config = array(
+    'ServiceURL' => $serviceUrl,
+    'ProxyHost' => null,
+    'ProxyPort' => -1,
+    'MaxErrorRetry' => 3,
 );
 $service = new MarketplaceWebService_Client(
     AWS_ACCESS_KEY_ID,
@@ -37,21 +37,21 @@ $service = new MarketplaceWebService_Client(
 
 $report_request_id = '100818016919';
 
-if(!$report) {
+if (!$report) {
     echo '<br />';
-	$parameters = array (
-		'Marketplace' => MARKETPLACE_ID,
-		'Merchant' => MERCHANT_ID,
-		'ReportType' => '_GET_MERCHANT_LISTINGS_DATA_',
-	);
+    $parameters = array(
+        'Marketplace' => MARKETPLACE_ID,
+        'Merchant' => MERCHANT_ID,
+        'ReportType' => '_GET_MERCHANT_LISTINGS_DATA_',
+    );
     echo '<br /><br/>Request Report Request:<br><br>';
-	$request = new MarketplaceWebService_Model_RequestReportRequest($parameters);
+    $request = new MarketplaceWebService_Model_RequestReportRequest($parameters);
     print_r($request);
     invokeRequestReport($service, $request);
-	echo '<br /><br/>';
-}else{
+    echo '<br /><br/>';
+} else {
     echo '<br />';
-    $parameters = array (
+    $parameters = array(
         'Marketplace' => MARKETPLACE_ID,
         'Merchant' => MERCHANT_ID,
         'ReportRequestList' => $report_request_id,
@@ -61,7 +61,7 @@ if(!$report) {
     $request = new MarketplaceWebService_Model_GetReportRequestListRequest($parameters);
     print_r($request);
     invokeGetReportRequestList($service, $request);
-    $parameters = array (
+    $parameters = array(
         'Marketplace' => MARKETPLACE_ID,
         'Merchant' => MERCHANT_ID,
         'AvailableToDate' => new DateTime('now'),
@@ -72,8 +72,8 @@ if(!$report) {
     $request = new MarketplaceWebService_Model_GetReportListRequest($parameters);
     echo '<br /><br/>';
     $report_id = invokeGetReportList($service, $request, true);
-    echo 'Report ID: ' . $report_id .'<br><br>';
-    $parameters = array (
+    echo 'Report ID: ' . $report_id . '<br><br>';
+    $parameters = array(
         'Marketplace' => MARKETPLACE_ID,
         'Merchant' => MERCHANT_ID,
         'Report' => @fopen('php://memory', 'rw+'),
@@ -88,15 +88,15 @@ if(!$report) {
     $x = 0;
     $y = count($am_products);
     echo 'Num of products' . $y . '<br><br>';
-    foreach($am_products as $p){
-        if($x < $y) {
-            if($x == 0){
+    foreach ($am_products as $p) {
+        if ($x < $y) {
+            if ($x == 0) {
                 $x++;
                 continue;
             }
             $p_col = preg_split("/[\t]/", $p);
             $item_name = $p_col[0];
-            $name = substr($item_name, 0, strpos($item_name, '[')-1);
+            $name = substr($item_name, 0, strpos($item_name, '[') - 1);
             $description = $p_col[1];
             $store_listing_id = $p_col[2];
 //            $id = $amazon->find_amazon_listing($store_listing_id);
@@ -128,7 +128,7 @@ if(!$report) {
             $add_delete = $p_col[24];
             $pending_quantity = $p_col[25];
             $fulfillment_channel = $p_col[26];
-            if($fulfillment_channel == 'DEFAULT'){
+            if ($fulfillment_channel == 'DEFAULT') {
                 $fulfillment_channel = 'SELLER';
             }
 
@@ -145,7 +145,7 @@ if(!$report) {
             //find condition id
             $condition_id = $ecommerce->conditionSoi($condition);
             //add stock to sku
-            $stock_id = $ecommerce->stockSoi($sku_id,$condition_id);
+            $stock_id = $ecommerce->stockSoi($sku_id, $condition_id);
             $channel_array = array(
                 'store_id' => $am_store_id,
                 'stock_id' => $stock_id,
@@ -182,13 +182,13 @@ if(!$report) {
             $listing_id = $ecommerce->listing_soi('listing_amazon', $am_store_id, $stock_id, $channel_array, 'true');
             echo $listing_id . '<br>';
             $x++;
-        }else{
+        } else {
             return;
         }
     }
 }
 $end_time = microtime(true);
-$execution_time = ($end_time - $start_time)/60;
+$execution_time = ($end_time - $start_time) / 60;
 echo "Execution time: $execution_time mins";
 
 ?>

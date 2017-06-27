@@ -23,14 +23,14 @@ $eligible_products = $ecommerce->sync_inventory_from($from_array['table'], $to_a
 $x = 0;
 $page = 34;
 $bc_array = [];
-foreach($eligible_products as $p){
+foreach ($eligible_products as $p) {
 //    if($x > 4){
 //        continue;
 //    }
     $title = $p['title'];
     $title = html_entity_decode($title);
     $description = $p['description'];
-    if(strlen(trim($description)) == 0 || empty($description)){
+    if (strlen(trim($description)) == 0 || empty($description)) {
         $description = $title;
     }
     $description = htmlentities($description);
@@ -46,8 +46,8 @@ foreach($eligible_products as $p){
     echo $category_id . '<br>';
     //Need to check if item is non-stock in VAI before listing
     $result = IBM::findNonstockItem($sku);
-    if(!empty($result)) {
-        if(strpos($to_array['table'], 'ebay') !== false){
+    if (!empty($result)) {
+        if (strpos($to_array['table'], 'ebay') !== false) {
             $response = $ebinv->add_ebay_inventory($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price);
             echo '<br><br>';
 //            print_r($response);
@@ -61,12 +61,12 @@ foreach($eligible_products as $p){
                 echo "$sku: UPC - $upc; ListingID - $listing_id<img src='$photo_url' width='200' height='200'><br>";
 //                echo "$sku: UPC - $upc; ListingID - $item_id<img src='$photo_url' width='200' height='200'><br>";
             }
-        }elseif(strpos($to_array['table'], 'bigcommerce') !== false){
+        } elseif (strpos($to_array['table'], 'bigcommerce') !== false) {
             //Add product
             $cat_array = [$category_id];
             $photo_sku = $sku;
-            if(strpos($photo_sku, '#') >= 0){
-                $photo_sku = str_replace('#','',$photo_sku);
+            if (strpos($photo_sku, '#') >= 0) {
+                $photo_sku = str_replace('#', '', $photo_sku);
             }
             $photo_url = "$photo_sku.jpg";
             $add_result = [$title, 'P', 'Y', 'by product', $cat_array, $price, $weight, $description, $sku, $upc, $photo_url];
@@ -105,7 +105,7 @@ foreach($eligible_products as $p){
 //                break;
 //            }
         }
-    }else{
+    } else {
         echo "Sku: $sku is an inactive sku";
     }
     echo '<br><br><br><br>';
@@ -119,9 +119,9 @@ $file = '/home/marketing/BCItems.csv';
 //header("Expires: 0");
 
 $fp = fopen($file, 'w');
-foreach($bc_array as $fields){
+foreach ($bc_array as $fields) {
     $result = [];
-    array_walk_recursive($fields, function($item) use (&$result){
+    array_walk_recursive($fields, function ($item) use (&$result) {
         $result[] = $item;
     });
     fputcsv($fp, $result);

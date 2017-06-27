@@ -28,8 +28,6 @@ $woocommerce = $wc->configure();
 //print_r($response);
 
 
-
-
 //try {
 //    print_r($woocommerce->get('products'));
 //}catch (HttpClientException $e){

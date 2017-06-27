@@ -10,10 +10,10 @@ class IBMDB
 
     public static function instance()
     {
-        if(self::$instance === null){
-            if(file_exists(ROOT . '.local')){
+        if (self::$instance === null) {
+            if (file_exists(ROOT . '.local')) {
                 self::$instance = new PDO('odbc:DRIVER={iSeries Access ODBC Driver};SYSTEM=' . IBM_HOST . ';DATABASE=' . IBM_NAME . ';UID=' . IBM_USER . ';PWD=' . IBM_PASS . ';NAMING=1');
-            }else {
+            } else {
                 self::$instance = new PDO('odbc:DEV');
             }
             self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

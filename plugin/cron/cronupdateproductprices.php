@@ -32,7 +32,7 @@ for ($low = 0; $low < $count; $low += 500) {
             ) {
                 $sku_id = $ecommerce->skuSoi($sku);
                 $result = $ecommerce->updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost);
-                if($result){
+                if ($result) {
                     echo "<br>$sku is updated<br>";
                     echo "<br><br><br>";
                 }

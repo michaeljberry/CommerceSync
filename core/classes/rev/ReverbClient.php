@@ -22,7 +22,7 @@ class ReverbClient implements EcommerceInterface
 
     public static function instance($user_id)
     {
-        if(self::$instance === null){
+        if (self::$instance === null) {
             self::$instance = new ReverbClient($user_id);
         }
         return self::$instance;

@@ -6,7 +6,7 @@ require WEBPLUGIN . 'eb/ebvar.php';
 
 $results = IBM::getSKUToDelete();
 //$x = 0;
-foreach($results as $r){
+foreach ($results as $r) {
 //    if($x > 5){
 //        continue;
 //    }

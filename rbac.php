@@ -76,9 +76,9 @@ $user_id = '842';
 //$rbac->Users->unassign($oldrole, $user_id); //Me Dummy
 echo $newrole . ' ' . $user_id;
 $rbac->Users->assign($newrole, $user_id); //Me Dummy
-if($rbac->check('management', $user_id)){
-	echo 'true';
-}else{
-	echo 'false';
+if ($rbac->check('management', $user_id)) {
+    echo 'true';
+} else {
+    echo 'false';
 }
 ?>

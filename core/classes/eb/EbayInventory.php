@@ -6,9 +6,10 @@ use ecommerce\Ecommerce;
 
 class EbayInventory extends Ebay
 {
-    public function sync_ebay_products($store_id, $e){
+    public function sync_ebay_products($store_id, $e)
+    {
         $requestName = 'GetMyeBaySelling';
-        for($x = 1; $x < 51; $x++){   //123 pages  //200 Entries per page
+        for ($x = 1; $x < 51; $x++) {   //123 pages  //200 Entries per page
 
             $xml = [
                 'ActiveList' => [
@@ -22,7 +23,7 @@ class EbayInventory extends Ebay
             $response = $this->EbayClient($requestName, $xml);
 
             $xml_items = simplexml_load_string($response);
-            foreach ($xml_items->ActiveList->ItemArray->Item as $xml){
+            foreach ($xml_items->ActiveList->ItemArray->Item as $xml) {
                 $item_id = $xml->ItemID;
                 $listing_id = $this->sync_inventory_items($item_id, $store_id, $e);
                 echo $item_id . ' updated.<br>';
@@ -30,7 +31,8 @@ class EbayInventory extends Ebay
         }
     }
 
-    public function sync_inventory_items($item_id, $store_id, $e){
+    public function sync_inventory_items($item_id, $store_id, $e)
+    {
         $response = $this->getSingleItem($item_id);
         $xml = simplexml_load_string($response);
 
@@ -60,9 +62,9 @@ class EbayInventory extends Ebay
         $product_condition = $xml->Item->ConditionDisplayName;
         $listing_status = $xml->Item->SellingStatus->ListingStatus;
         $active = 0;
-        if($listing_status == 'Ended'){
+        if ($listing_status == 'Ended') {
             $active = 0;
-        }elseif($listing_status == 'Active'){
+        } elseif ($listing_status == 'Active') {
             $active = 1;
         }
 //
@@ -79,7 +81,7 @@ class EbayInventory extends Ebay
         //find condition id
         $condition_id = $e->condition_soi($condition);
         //add stock to sku
-        $stock_id = $e->stock_soi($sku_id,$condition_id);
+        $stock_id = $e->stock_soi($sku_id, $condition_id);
         $channel_array = array(
             'store_id' => $store_id,
             'stock_id' => $stock_id,
@@ -114,7 +116,8 @@ class EbayInventory extends Ebay
         return $listing_id;
     }
 
-    public function update_ebay_inventory($stock_id, $quantity, $price, $e){
+    public function update_ebay_inventory($stock_id, $quantity, $price, $e)
+    {
         $item_id = $e->get_listing_id($stock_id, 'listing_ebay');
 
         $requestName = 'ReviseInventoryStatus';
@@ -124,14 +127,16 @@ class EbayInventory extends Ebay
                 'Quantity' => $quantity
             ]
         ];
-        if(!empty($price)){
+        if (!empty($price)) {
             $xml['InventoryStatus']['StartPrice'] = $price;
         }
 
         $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
-    public function update_all_ebay_inventory($item_id, $price){ //$price
+
+    public function update_all_ebay_inventory($item_id, $price)
+    { //$price
         $requestName = 'ReviseItem';
 
         //Use Tax Table
@@ -172,8 +177,10 @@ class EbayInventory extends Ebay
         $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
+
     //<IncludeItemSpecifics>true</IncludeItemSpecifics>
-    public function getSingleItem($item_id){
+    public function getSingleItem($item_id)
+    {
         $requestName = 'GetItem';
 
         $xml = [
@@ -184,7 +191,9 @@ class EbayInventory extends Ebay
         $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
-    public function add_ebay_inventory($ebay_category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price){
+
+    public function add_ebay_inventory($ebay_category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price)
+    {
         $requestName = 'AddItem';
 
         $xml = [
@@ -262,12 +271,12 @@ class EbayInventory extends Ebay
             ]
         ];
 
-        if(strlen($upc) > 12) {
+        if (strlen($upc) > 12) {
             $xml['Item']['ProductListingDetails'] = [
                 'EAN' => $upc,
                 'UPC' => 'Does not apply',
             ];
-        }else{
+        } else {
             $xml['Item']['ProductListingDetails'] = [
                 'UPC' => $upc,
                 'EAN' => 'Does not apply',
@@ -278,7 +287,8 @@ class EbayInventory extends Ebay
         return $response;
     }
 
-    public function edit_gtin($item_id, $upc, $sku){
+    public function edit_gtin($item_id, $upc, $sku)
+    {
         $requestName = 'ReviseItem';
 
         $xml = [
@@ -302,10 +312,10 @@ class EbayInventory extends Ebay
             ]
         ];
 
-        if(strlen($upc) > 12) {
+        if (strlen($upc) > 12) {
             $xml['Item']['ProductListingDetails'][] = ['EAN' => $upc];
             $xml['Item']['ProductListingDetails'][] = ['UPC' => 'Does not apply'];
-        }else{
+        } else {
             $xml['Item']['ProductListingDetails'][] = ['UPC' => $upc];
             $xml['Item']['ProductListingDetails'][] = ['EAN' => 'Does not apply'];
         }
@@ -313,7 +323,9 @@ class EbayInventory extends Ebay
         $response = $this->EbayClient($requestName, $xml);
         return $response;
     }
-    public function deleteItem($item_id){
+
+    public function deleteItem($item_id)
+    {
         $requestName = 'EndItem';
 
         $xml = [
@@ -373,16 +385,16 @@ class EbayInventory extends Ebay
                 'SKU' => $sku
             ],
             'Pagination' =>
-            [
-                'EntriesPerPage' => 50,
-                'PageNumber' => 1
-            ],
+                [
+                    'EntriesPerPage' => 50,
+                    'PageNumber' => 1
+                ],
             'GranularityLevel' => 'Coarse',
 //            'OutputSelector' => 'Item.BuyItNowPrice',
 //            'OutputSelector' => 'Item.ShippingDetails.ShippingServiceOptions.ShippingServiceCost',
 //            'OutputSelector' => 'Seller.UserID',
 //            'OutputSelector' => 'Seller.SellerInfo.TopRatedSeller',
-            'EndTimeFrom' => date('Y-m-d',strtotime('-120 days')),
+            'EndTimeFrom' => date('Y-m-d', strtotime('-120 days')),
             'EndTimeTo' => date('Y-m-d')
         ];
 
@@ -392,15 +404,15 @@ class EbayInventory extends Ebay
 
     public function sorteBaySearchResults($response)
     {
-        foreach($response->searchResult->item as $item){
+        foreach ($response->searchResult->item as $item) {
             $title = (string)$item->title;
             $url = (string)$item->viewItemURL;
             $seller = (string)$item->sellerInfo->sellerUserName;
             $sellerFeedback = (string)$item->sellerInfo->positiveFeedbackPercent;
             $sellerScore = (string)$item->sellerInfo->feedbackScore;
-            $price = ((float)$item->sellingStatus->currentPrice*100)/100;
-            $shippingCollected = ((float)$item->shippingInfo->shippingServiceCost*100)/100;
-            $total = $price+$shippingCollected;
+            $price = ((float)$item->sellingStatus->currentPrice * 100) / 100;
+            $shippingCollected = ((float)$item->shippingInfo->shippingServiceCost * 100) / 100;
+            $total = $price + $shippingCollected;
             $condition = (string)$item->condition->conditionDisplayName;
 
             $sellers[] = compact(
@@ -417,12 +429,12 @@ class EbayInventory extends Ebay
     public function removeExtraSellerInfo($ebaySellers)
     {
         $x = 0;
-        foreach($ebaySellers as $key => $seller){
-            if($x > 6){
+        foreach ($ebaySellers as $key => $seller) {
+            if ($x > 6) {
                 unset($ebaySellers[$key]);
             }
             $sellerName = $seller['seller'];
-            if($sellerName === 'mymusiclife-id' || $x > 0){
+            if ($sellerName === 'mymusiclife-id' || $x > 0) {
                 $x++;
             }
         }

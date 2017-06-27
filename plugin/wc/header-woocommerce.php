@@ -5,4 +5,3 @@ include_once WEBPLUGIN . 'wc/wcvar.php';
 $wc_page = true;
 $channel_page = 'woocommerce';
 include '../marketplaces/marketplace-menu.php';
-?>

@@ -10,7 +10,7 @@ $user_id = 838;
 $results = $ebay->get_listing_upc();
 //print_r($results);
 //$x = 1;
-foreach($results as $r){
+foreach ($results as $r) {
 //    if($x > 2){
 //        continue;
 //    }

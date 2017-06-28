@@ -2,9 +2,11 @@
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 
+use models\channels\OrderStats;
+
 $start = startClock();
 
-$results = $ecommerce->getOrderStatsWeek();
+$results = OrderStats::getWeek();
 print_r($results);
 foreach ($results as $r) {
     $date = $r['date'];
@@ -12,7 +14,7 @@ foreach ($results as $r) {
     $units_sold = $r['units_sold'];
     $channel = $r['channel'];
 
-    $stat_id = $ecommerce->saveOrderStats($channel, $date, $sales, $units_sold);
+    $stat_id = OrderStats::save($channel, $date, $sales, $units_sold);
     if (!empty($stat_id)) {
         echo "Date: $date; Channel: $channel; Sales: $sales, Units Sold: $units_sold<br>";
     }

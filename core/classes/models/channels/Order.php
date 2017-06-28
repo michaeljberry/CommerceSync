@@ -4,7 +4,7 @@ namespace models\channels;
 
 use models\ModelDB as MDB;
 
-class OrderModel
+class Order
 {
     public static function cancel($id)
     {
@@ -13,6 +13,17 @@ class OrderModel
             ':order_num' => $id
         ];
         MDB::query($sql, $query_params);
+    }
+
+    public static function getID($order_num)
+    {
+        $sql = "SELECT id 
+                FROM sync.order 
+                WHERE order_num = :order_num";
+        $query_params = [
+            ':order_num' => $order_num
+        ];
+        return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
     public static function getBySearch($array, $channel)
@@ -45,5 +56,15 @@ class OrderModel
             ':order_id' => $order_id
         ];
         return MDB::query($sql, $query_params, 'fetch');
+    }
+
+    public static function markAsShipped($order_num, $channel)
+    {
+        $response = Tracking::updateTrackingSuccessful($order_num);
+        if ($response) {
+            echo "Tracking for $channel order $order_num was updated!";
+            return true;
+        }
+        return false;
     }
 }

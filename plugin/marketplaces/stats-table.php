@@ -4,4 +4,4 @@ $channel = '';
 if (isset($_GET['channel']) && !empty($_GET['channel'])) {
     $channel = htmlentities($_GET['channel']);
 }
-$results = $ecommerce->stats_table($channel);
+$results = \controllers\channels\OrderStatsController::stats_table($channel);

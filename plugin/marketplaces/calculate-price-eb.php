@@ -1,6 +1,7 @@
 <?php
 
 use ecommerce\Ecommerce;
+use models\channels\SKU;
 
 require '../../core/init.php';
 
@@ -20,7 +21,7 @@ if ($_POST['price_sku']) {
     $shippingIncludedInPrice = htmlentities(isset($_POST['price-include-shipping']) ? $_POST['price-include-shipping'] : 0);
     $shippingCharged = htmlentities($_POST['price_shipping']);
 
-    $sku_id = $ecommerce->skuSoi($sku);
+    $sku_id = SKU::skuSoi($sku);
     $prices = $ecommerce->getSKUCosts($sku, 'listing_ebay');
     extract($prices);
 

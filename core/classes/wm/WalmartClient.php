@@ -3,7 +3,7 @@
 namespace wm;
 
 use ecommerce\EcommerceInterface;
-use models\channels\ChannelModel;
+use models\channels\Channel;
 
 class WalmartClient implements EcommerceInterface
 {
@@ -47,7 +47,7 @@ class WalmartClient implements EcommerceInterface
             'api_header'
         ];
 
-        self::$walmartInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$walmartInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setConsumerKey()

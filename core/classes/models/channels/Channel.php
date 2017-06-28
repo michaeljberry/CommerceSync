@@ -4,7 +4,7 @@ namespace models\channels;
 
 use models\ModelDB as MDB;
 
-class ChannelModel
+class Channel
 {
     public static function getAppInfo($user_id, $table, $channel, $columns)
     {

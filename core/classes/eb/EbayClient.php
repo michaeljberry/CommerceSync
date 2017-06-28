@@ -3,7 +3,7 @@
 namespace eb;
 
 use ecommerce\EcommerceInterface;
-use models\channels\ChannelModel;
+use models\channels\Channel;
 
 class EbayClient implements EcommerceInterface
 {
@@ -53,7 +53,7 @@ class EbayClient implements EcommerceInterface
             'token'
         ];
 
-        self::$ebayInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$ebayInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private static function setDevID()

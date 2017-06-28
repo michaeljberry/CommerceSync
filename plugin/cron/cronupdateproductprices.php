@@ -3,6 +3,7 @@ require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 
 use ecommerce\Ecommerce;
+use models\channels\SKU;
 
 $start = startClock();
 
@@ -30,7 +31,7 @@ for ($low = 0; $low < $count; $low += 500) {
                 Ecommerce::removeCommasInNumber($currentPrices[$sku]['pl10']) !== $pl10 ||
                 Ecommerce::removeCommasInNumber($currentPrices[$sku]['cost']) !== $cost
             ) {
-                $sku_id = $ecommerce->skuSoi($sku);
+                $sku_id = SKU::skuSoi($sku);
                 $result = $ecommerce->updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost);
                 if ($result) {
                     echo "<br>$sku is updated<br>";

@@ -5,6 +5,8 @@ namespace am;
 use ecommerce\Ecommerce;
 use \DateTime;
 use \DateTimeZone;
+use models\channels\Address;
+use models\channels\SKU;
 
 class AmazonOrder extends Amazon
 {
@@ -185,7 +187,7 @@ class AmazonOrder extends Amazon
             $totalTax = Ecommerce::formatMoney($totalTax);
             Ecommerce::dd("Total Tax: $totalTax");
 
-            $skuId = $ecommerce->skuSoi($sku);
+            $skuId = SKU::skuSoi($sku);
             if (!LOCAL) {
                 $ecommerce->save_order_items($orderId, $skuId, $itemPrice, $quantity);
             }
@@ -243,7 +245,7 @@ class AmazonOrder extends Amazon
                 $shippingCity = (string)$order->ShippingAddress->City;
                 $shippingState = strtolower((string)$order->ShippingAddress->StateOrRegion);
                 if (strlen($shippingState) > 2) {
-                    $shippingState = $ecommerce->stateToAbbr(ucfirst($shippingState));
+                    $shippingState = Address::stateToAbbr(ucfirst($shippingState));
                 }
                 $shippingState = strtoupper($shippingState);
                 $shippingPostalCode = (string)$order->ShippingAddress->PostalCode;
@@ -257,9 +259,9 @@ class AmazonOrder extends Amazon
                 $totalTax = 0.00;
                 $totalShipping = 0.00;
 
-                $stateId = $ecommerce->stateId(strtoupper($shippingState));
-                $zipId = $ecommerce->zipSoi($shippingPostalCode, $stateId);
-                $cityId = $ecommerce->citySoi($shippingCity, $stateId);
+                $stateId = Address::stateId(strtoupper($shippingState));
+                $zipId = Address::zipSoi($shippingPostalCode, $stateId);
+                $cityId = Address::citySoi($shippingCity, $stateId);
                 $custId = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)), ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
                 if (!LOCAL) {
                     $orderId = $ecommerce->save_order(AmazonClient::getStoreID(), $custId, $orderNum, $shipping, $totalShipping, $totalTax);

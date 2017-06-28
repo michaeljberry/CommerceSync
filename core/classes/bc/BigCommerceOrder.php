@@ -3,6 +3,8 @@
 namespace bc;
 
 use ecommerce\Ecommerce;
+use models\channels\Address;
+use models\channels\SKU;
 
 class BigCommerceOrder extends BigCommerce
 {
@@ -29,16 +31,16 @@ class BigCommerceOrder extends BigCommerce
                     $address2 = ucwords(strtolower($ship_info[0]->street_2));
                     $city = ucwords(strtolower($ship_info[0]->city));
                     $state = ucwords(strtolower($ship_info[0]->state));
-                    $state = $ecommerce->stateToAbbr($state);
-                    $state_id = $ecommerce->stateId($state);
+                    $state = Address::stateToAbbr($state);
+                    $state_id = Address::stateId($state);
                     $zip = $ship_info[0]->zip;
-                    $zip_id = $ecommerce->zipSoi($zip, $state_id);
+                    $zip_id = Address::zipSoi($zip, $state_id);
                     $country = $ship_info[0]->country;
                     $shipping_amount = number_format($o->shipping_cost_inc_tax, 2);
                     if ($country == "United States") {
                         $country = 'USA';
                     }
-                    $city_id = $ecommerce->citySoi($city, $state_id);
+                    $city_id = Address::citySoi($city, $state_id);
                     $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                     if (!LOCAL) {
                         $order_id = $ecommerce->save_order(BigCommerceClient::getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $total_tax);
@@ -180,7 +182,7 @@ class BigCommerceOrder extends BigCommerce
             $item_total = Ecommerce::removeCommasInNumber($principle) / $quantity;
             $sku = (string)$i->sku;
             $upc = $this->get_bc_product_upc($product_id);
-            $sku_id = $ecommerce->skuSoi($sku);
+            $sku_id = SKU::skuSoi($sku);
             if (!LOCAL) {
                 $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
             }

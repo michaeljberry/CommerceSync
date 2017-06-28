@@ -3,7 +3,7 @@
 namespace am;
 
 use ecommerce\EcommerceInterface;
-use models\channels\ChannelModel;
+use models\channels\Channel;
 
 class AmazonClient implements EcommerceInterface
 {
@@ -78,7 +78,7 @@ class AmazonClient implements EcommerceInterface
             'secret_key'
         ];
 
-        self::$amazonInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$amazonInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setMerchantID()

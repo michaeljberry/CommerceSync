@@ -5,8 +5,8 @@ use ecommerce\Ecommerce;
 
 if (isset($_POST['id']) && !empty($_POST['id'])) {
     $id = htmlentities($_POST['id']);
-    $oi = \models\channels\OrderModel::getByID($id);
-    $items = \models\channels\OrderItemModel::getOrderItemsByOrderId($id);
+    $oi = \models\channels\Order::getByID($id);
+    $items = \models\channels\OrderItem::getOrderItemsByOrderId($id);
 
     $total = Ecommerce::formatMoney($oi['taxes']);
     $item_html = "";

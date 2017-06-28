@@ -1,15 +1,14 @@
 <?php
 require '../../core/init.php';
 
-use models\channels\OrderStatsModel;
-use ecommerce\Ecommerce;
+use models\channels\OrderStats;
 
 $channel = '';
 if (isset($_GET['channel']) && !empty($_GET['channel'])) {
     $channel = htmlentities($_GET['channel']);
 }
-$results = OrderStatsModel::getOrderStats($channel);
+$results = OrderStats::get($channel);
 
-$jsonarray2 = Ecommerce::prepareStatJson($results, 'daily');
+$jsonarray2 = \controllers\channels\OrderStatsController::prepareStatJson($results, 'daily');
 //\ecommerceclass\ecommerceclass::dd(json_encode($jsonarray2));
 echo json_encode($jsonarray2);

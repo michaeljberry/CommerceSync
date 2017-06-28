@@ -10,7 +10,8 @@ require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
 use ecommerce\Ecommerce;
-use models\channels\TrackingModel;
+use models\channels\Tracking;
+use models\channels\Order;
 
 //ob_start();
 
@@ -25,7 +26,7 @@ $tracking_log = $folder . 'log/tracking/' . $log_file_name;
 echo "Tracking Numbers" . PHP_EOL;
 echo "Channel -> Order Num : Tracking Number<br><br>" . PHP_EOL;
 
-$unshippedOrders = TrackingModel::getUnshippedOrders();
+$unshippedOrders = Tracking::getUnshippedOrders();
 
 $amazonOrderCount = 1;
 $amazonTrackingXML = '';
@@ -33,7 +34,7 @@ $amazonOrdersThatHaveShipped = [];
 
 foreach ($unshippedOrders as $o) {
     $order_num = $o['order_num'];
-    $order_id = $ecommerce->getOrderId($order_num);
+    $order_id = Order::getID($order_num);
     $channel = $o['type'];
     $channelNumbers = $ecommerce->getChannelNumbers($channel);
     $item_id = $o['item_id'];
@@ -57,7 +58,7 @@ foreach ($unshippedOrders as $o) {
         $shipped = false;
         $success = false;
         echo $order_id . ': ' . $tracking_id . '; Channel: ' . $channel . '<br>';
-        $result = $ecommerce->updateTrackingNum($order_id, $tracking_id, $carrier);
+        $result = Tracking::updateTrackingNum($order_id, $tracking_id, $carrier);
         echo $result . '<br>';
         if (strtolower($channel) == 'bigcommerce') {
             //update BC
@@ -102,7 +103,7 @@ foreach ($unshippedOrders as $o) {
         }
         Ecommerce::dd($response);
         if ($shipped) {
-            $success = Ecommerce::markAsShipped($order_num, $channel);
+            $success = Order::markAsShipped($order_num, $channel);
         }
         if ($success) {
             echo $channel . '-> ' . $order_num . ': ' . $tracking_id . PHP_EOL . '<br>';
@@ -118,7 +119,7 @@ if (!empty($amazonTrackingXML)) {
     $successMessage = 'SUBMITTED';
     if (strpos($response, $successMessage)) {
         foreach ($amazonOrdersThatHaveShipped as $order_num) {
-            $success = Ecommerce::markAsShipped($order_num, $channel);
+            $success = Order::markAsShipped($order_num, $channel);
         }
     } elseif (strpos($response, 'throttle') || strpos($response, 'QuotaExceeded')) {
         $amazon_throttle = true;

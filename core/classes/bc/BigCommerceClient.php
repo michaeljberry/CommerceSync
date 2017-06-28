@@ -3,7 +3,7 @@
 namespace bc;
 
 use ecommerce\EcommerceInterface;
-use models\channels\ChannelModel;
+use models\channels\Channel;
 
 class BigCommerceClient implements EcommerceInterface
 {
@@ -51,7 +51,7 @@ class BigCommerceClient implements EcommerceInterface
             'api_key'
         ];
 
-        self::$bigcommerceInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$bigcommerceInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setStoreUrl()

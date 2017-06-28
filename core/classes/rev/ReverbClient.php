@@ -3,7 +3,7 @@
 namespace rev;
 
 use ecommerce\EcommerceInterface;
-use models\channels\ChannelModel;
+use models\channels\Channel;
 
 class ReverbClient implements EcommerceInterface
 {
@@ -46,7 +46,7 @@ class ReverbClient implements EcommerceInterface
             'store_id'
         ];
 
-        self::$reverbInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$reverbInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setAuthToken()

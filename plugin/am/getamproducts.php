@@ -137,7 +137,7 @@ if (!$report) {
             //add-product-availability
             $availability_id = $ecommerce->availability_soi($product_id, $am_store_id);
             //find sku
-            $sku_id = $ecommerce->skuSoi($sku);
+            $sku_id = Ecommerce::skuSoi($sku);
             //add price
             $price_id = $ecommerce->priceSoi($sku_id, $price, $am_store_id);
             //normalize condition

@@ -3,7 +3,7 @@
 namespace wc;
 
 use ecommerce\EcommerceInterface;
-use models\channels\ChannelModel;
+use models\channels\Channel;
 
 class WooCommerceClient implements EcommerceInterface
 {
@@ -49,7 +49,7 @@ class WooCommerceClient implements EcommerceInterface
             'site'
         ];
 
-        self::$woocommerceInfo = ChannelModel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$woocommerceInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
     }
 
     private function setConsumerKey()

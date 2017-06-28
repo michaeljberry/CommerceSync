@@ -3,6 +3,8 @@
 namespace rev;
 
 use ecommerce\Ecommerce;
+use models\channels\Address;
+use models\channels\SKU;
 
 class ReverbOrder extends Reverb
 {
@@ -81,14 +83,14 @@ class ReverbOrder extends Reverb
                         if ($total >= 250) {
                             $shipping = 'URIP';
                         }
-                        $state_id = $ecommerce->stateId($state);
-                        $zip_id = $ecommerce->zipSoi($zip, $state_id);
-                        $city_id = $ecommerce->citySoi($city, $state_id);
+                        $state_id = Address::stateId($state);
+                        $zip_id = Address::zipSoi($zip, $state_id);
+                        $city_id = Address::citySoi($city, $state_id);
                         $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                         if (!LOCAL) {
                             $order_id = $ecommerce->save_order(ReverbClient::getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $tax);
                         }
-                        $sku_id = $ecommerce->skuSoi($sku);
+                        $sku_id = SKU::skuSoi($sku);
                         if (!LOCAL) {
                             $ecommerce->save_order_items($order_id, $sku_id, $total, $quantity);
                         }

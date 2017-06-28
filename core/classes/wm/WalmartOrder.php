@@ -3,6 +3,8 @@
 namespace wm;
 
 use ecommerce\Ecommerce;
+use models\channels\Address;
+use models\channels\SKU;
 use \Walmart\Order;
 
 class WalmartOrder extends Walmart
@@ -70,9 +72,9 @@ class WalmartOrder extends Walmart
             $address2 = $order['shippingInfo']['postalAddress']['address2'];
         }
         $city = $order['shippingInfo']['postalAddress']['city'];
-        $stateID = $ecommerce->stateId($stateCode);
+        $stateID = Address::stateId($stateCode);
         $zip = $order['shippingInfo']['postalAddress']['postalCode'];
-        $zipID = $ecommerce->zipSoi($zip, $stateID);
+        $zipID = Address::zipSoi($zip, $stateID);
         $country = $order['shippingInfo']['postalAddress']['country'];
 
         echo "<br><br>Order: $orderNum<br><pre>";
@@ -93,7 +95,7 @@ class WalmartOrder extends Walmart
             $shippingMethod = 'URIP';
         }
 
-        $cityID = $ecommerce->citySoi($city, $stateID);
+        $cityID = Address::citySoi($city, $stateID);
         $custumerID = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($address)), ucwords(strtolower($address2)), $cityID, $stateID, $zipID);
         if (!LOCAL) {
             $orderID = $ecommerce->save_order(WalmartClient::getStoreID(), $custumerID, $orderNum, $shippingMethod, $shippingTotal, $totalTax);
@@ -145,7 +147,7 @@ class WalmartOrder extends Walmart
      * @param $order_id
      * @return array
      */
-    public function get_wm_order_items($ecommerce, $order_num, $order_items, $state_code, $total_tax, $order_id)
+    public function get_wm_order_items(Ecommerce $ecommerce, $order_num, $order_items, $state_code, $total_tax, $order_id)
     {
         $wminv = new WalmartInventory();
         $item_xml = '';
@@ -168,7 +170,7 @@ class WalmartOrder extends Walmart
             $sku = $i['item']['sku'];
             $item = $wminv->getItem($sku);
             $upc = $item['MPItemView']['upc'];
-            $sku_id = $ecommerce->skuSoi($sku);
+            $sku_id = SKU::skuSoi($sku);
             if (!LOCAL) {
                 $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
             }

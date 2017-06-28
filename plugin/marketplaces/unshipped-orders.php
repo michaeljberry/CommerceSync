@@ -16,11 +16,11 @@ $table = "<table id='unshipped-table'>
         <thead><th>Date</th><th>Order Number</th><th>Channel</th><th>Complete?</th><th>Cancel?</th></thead>";
 foreach ($unshippedOrders as $o) {
     $date = $o['processed'];
-    $order_id = $o['order_id'];
+    $order_num = $o['order_num'];
     $channel = $o['type'];
-    $table .= "<tr id='$order_id'>";
+    $table .= "<tr id='$order_num'>";
     $table .= "<td>$date</td>";
-    $table .= "<td>$order_id</td>";
+    $table .= "<td>$order_num</td>";
     $table .= "<td>$channel</td>";
     $table .= "<td><input type='radio' name='orderstatus$x' id='complete$x' value='complete$x' class='order-complete''/><label for='complete$x'><span></span></label></td>";
     $table .= "<td><input type='radio' name='orderstatus$x' id='cancel$x' value='cancel$x' class='order-cancel''/><label for='cancel$x'><span></span></label></td>";

@@ -25,15 +25,6 @@ class TrackingModel
         return MDB::query($sql, $params, 'fetchAll');
     }
 
-    public static function completeOrderTracking($order_num)
-    {
-        $sql = "UPDATE order_sync SET track_successful = 1 WHERE order_num = :order_num";
-        $query_params = [
-            ':order_num' => $order_num
-        ];
-        MDB::query($sql, $query_params);
-    }
-
     public static function updateTrackingSuccessful($order_num)
     {
         $sql = "UPDATE order_sync SET track_successful = '1' WHERE order_num = :order_num";

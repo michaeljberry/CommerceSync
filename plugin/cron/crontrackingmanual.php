@@ -32,7 +32,7 @@ $amazonTrackingXML = '';
 $amazonOrdersThatHaveShipped = [];
 
 foreach ($unshippedOrders as $o) {
-    $order_num = $o['order_id'];
+    $order_num = $o['order_num'];
     $order_id = $ecommerce->getOrderId($order_num);
     $channel = $o['type'];
     $channelNumbers = $ecommerce->getChannelNumbers($channel);

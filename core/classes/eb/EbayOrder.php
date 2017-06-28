@@ -61,6 +61,7 @@ class EbayOrder extends Ebay
         $itemXml = $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
         $itemObject['sku'] = $sku;
         $itemObject['itemXml'] .= $itemXml;
+        $poNumber++;
         $itemObject['poNumber'] = $poNumber;
         return $itemObject;
     }
@@ -76,7 +77,6 @@ class EbayOrder extends Ebay
             foreach ($items->Transaction as $item) {
                 $itemObject = $this->saveItems($item, $poNumber, $order_id, $ecommerce, $itemObject);
                 $poNumber = $itemObject['poNumber'];
-                $poNumber++;
             }
         } else {
             $itemObject = $this->saveItems($items->Transaction, $poNumber, $order_id, $ecommerce, $itemObject);

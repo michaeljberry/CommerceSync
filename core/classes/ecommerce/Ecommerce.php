@@ -1252,15 +1252,15 @@ class Ecommerce
     }
 
     //Create order XML for download to VAI
-    public function create_xml($channel_num, $channel_name, $order_id, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml)
+    public function create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml)
     {
         $xml = <<<EOD
         <NAMM_PO version="2007.1">
-            <Id>S2S{$channel_num}_PO$order_id</Id>
+            <Id>S2S{$channel_num}_PO$order_num</Id>
             <Timestamp>$timestamp</Timestamp>
             <BuyerId>$channel_num</BuyerId>
             <BuyerIdDesc>My Music Life $channel_name</BuyerIdDesc>
-            <PO>$order_id</PO>
+            <PO>$order_num</PO>
             <Backorder>Y</Backorder>
             <SupplierId>33076</SupplierId>
             <SupplierName>Chesbro Music Co.</SupplierName>

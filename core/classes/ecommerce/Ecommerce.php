@@ -2,6 +2,7 @@
 
 namespace ecommerce;
 
+use models\channels\TrackingModel;
 use PDO;
 use controllers\channels\ChannelHelperController as CHC;
 use models\ModelDB as MDB;
@@ -15,69 +16,13 @@ class Ecommerce
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public function completeOrderTracking($id)
-    {
-        $sql = "UPDATE order_sync SET track_successful = 1 WHERE order_id = :order_id";
-        $query_params = [
-            ':order_id' => $id
-        ];
-        MDB::query($sql, $query_params);
-    }
-
-    public function cancelOrder($id)
-    {
-        $sql = "UPDATE sync.order SET cancelled = 1 WHERE order_num = :order_num";
-        $query_params = [
-            ':order_num' => $id
-        ];
-        MDB::query($sql, $query_params);
-    }
-
-    //Get orders by supplied search field
-    public function getOrders($array, $channel)
-    {
-        $result_array = CHC::parseConditions($array);
-        $condition = $result_array[0];
-        $query_params = $result_array[1];
-        $query_params['channel'] = $channel;
-        $sql = "SELECT o.id, o.order_num, o.date, c.first_name, c.last_name, t.tracking_num, t.carrier FROM sync.order o JOIN customer c ON o.cust_id = c.id LEFT JOIN tracking t ON o.id = t.order_id JOIN order_sync os ON o.order_num = os.order_id WHERE $condition AND os.type = :channel";
-        return MDB::query($sql, $query_params, 'fetchAll');
-    }
-
-    //Get specific order information
-    public function getOrder($order_id)
-    {
-        $sql = "SELECT o.order_num, o.date, o.ship_method, o.shipping_amount, o.taxes, c.first_name, c.last_name, c.street_address, c.street_address2, city.name AS city, s.name, s.abbr as state_abbr, z.zip, t.tracking_num, t.carrier, os.processed as date_processed, os.success, os.type as channel, os.track_successful FROM sync.order o JOIN customer c ON o.cust_id = c.id LEFT JOIN tracking t ON o.id = t.order_id JOIN order_sync os ON o.order_num = os.order_id JOIN state s ON c.state_id = s.id JOIN city ON c.city_id = city.id JOIN zip z ON c.zip_id = z.id WHERE o.id = :order_id";
-        $query_params = [
-            ':order_id' => $order_id
-        ];
-        return MDB::query($sql, $query_params, 'fetch');
-    }
-
-    //Get order items
-    public function getOrderItems($order_id)
-    {
-        $sql = "SELECT s.sku, p.name, oi.price, oi.quantity FROM order_item oi JOIN sku s ON oi.sku_id = s.id JOIN product p ON s.product_id = p.id WHERE order_id = :order_id";
-        $query_params = [
-            ":order_id" => $order_id
-        ];
-        return MDB::query($sql, $query_params, 'fetchAll');
-    }
-
     //***************Tracking Number*********************//
     //To mark an order as "tracking_successful"
-    public function updateTrackingSuccessful($order_id)
-    {
-        $sql = "UPDATE order_sync SET track_successful = '1' WHERE order_id = :order_id";
-        $query_params = [
-            ':order_id' => $order_id
-        ];
-        return MDB::query($sql, $query_params, 'id');
-    }
 
-    public function markAsShipped($order_num, $channel)
+
+    public static function markAsShipped($order_num, $channel)
     {
-        $response = $this->updateTrackingSuccessful($order_num);
+        $response = TrackingModel::updateTrackingSuccessful($order_num);
         if ($response) {
             echo "Tracking for $channel order $order_num was updated!";
             return true;
@@ -133,7 +78,12 @@ class Ecommerce
     //Get order information for the day
     public function getOrderStatsWeek()
     {
-        $sql = "SELECT DATE(o.date) AS date, ROUND(SUM(oi.price), 2) AS sales, SUM(oi.quantity) AS units_sold, os.type AS channel FROM sync.order_item oi JOIN sync.order o ON o.id = oi.order_id JOIN order_sync os ON os.order_id = o.order_num WHERE o.date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 WEEK) AND NOW() GROUP BY DATE(o.date), os.type";
+        $sql = "SELECT DATE(o.date) AS date, ROUND(SUM(oi.price), 2) AS sales, SUM(oi.quantity) AS units_sold, os.type AS channel 
+                FROM sync.order_item oi 
+                JOIN sync.order o ON o.id = oi.order_id 
+                JOIN order_sync os ON os.order_num = o.order_num 
+                WHERE o.date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 WEEK) AND NOW() 
+                GROUP BY DATE(o.date), os.type";
         return MDB::query($sql, [], 'fetchAll');
     }
 
@@ -650,7 +600,7 @@ class Ecommerce
           DATE_FORMAT(date, '%Y-%m') as date
         FROM order_item oi
           LEFT OUTER JOIN `order` o ON o.id = oi.order_id
-          LEFT OUTER JOIN order_sync os ON os.order_id = o.order_num
+          LEFT OUTER JOIN order_sync os ON os.order_num = o.order_num
         WHERE oi.sku_id = :sku_id
         GROUP BY channel, DATE_FORMAT(date, '%Y-%m')
         ORDER BY date DESC
@@ -1257,11 +1207,11 @@ class Ecommerce
     }
 
     //Find if order has been downloaded to VAI
-    public static function findDownloadedVaiOrder($order_id)
+    public static function findDownloadedVaiOrder($order_num)
     {
-        $sql = "SELECT * FROM order_sync WHERE order_id = :order_id AND success = 1";
+        $sql = "SELECT * FROM order_sync WHERE order_num = :order_num AND success = 1";
         $query_params = [
-            ':order_id' => $order_id
+            ':order_num' => $order_num
         ];
         return MDB::query($sql, $query_params, 'rowCount');
     }
@@ -1280,11 +1230,11 @@ class Ecommerce
     }
 
     //Create order for download to VAI to allow for XML creation
-    public function insertOrder($order_id, $success = 1, $type = 'Amazon')
+    public function insertOrder($order_num, $success = 1, $type = 'Amazon')
     {
-        $sql = "INSERT INTO order_sync (order_id, success, type) VALUES (:order_id, :success, :type)";
+        $sql = "INSERT INTO order_sync (order_num, success, type) VALUES (:order_num, :success, :type)";
         $query_params = [
-            ":order_id" => $order_id,
+            ":order_num" => $order_num,
             ":success" => $success,
             ":type" => $type
         ];

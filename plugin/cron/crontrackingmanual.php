@@ -102,7 +102,7 @@ foreach ($unshippedOrders as $o) {
         }
         Ecommerce::dd($response);
         if ($shipped) {
-            $success = $ecommerce->markAsShipped($order_num, $channel);
+            $success = Ecommerce::markAsShipped($order_num, $channel);
         }
         if ($success) {
             echo $channel . '-> ' . $order_num . ': ' . $tracking_id . PHP_EOL . '<br>';
@@ -118,7 +118,7 @@ if (!empty($amazonTrackingXML)) {
     $successMessage = 'SUBMITTED';
     if (strpos($response, $successMessage)) {
         foreach ($amazonOrdersThatHaveShipped as $order_num) {
-            $success = $ecommerce->markAsShipped($order_num, $channel);
+            $success = Ecommerce::markAsShipped($order_num, $channel);
         }
     } elseif (strpos($response, 'throttle') || strpos($response, 'QuotaExceeded')) {
         $amazon_throttle = true;

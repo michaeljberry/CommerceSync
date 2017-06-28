@@ -20,7 +20,7 @@ class EbayInventory extends Ebay
                     'Sort' => 'ItemID'
                 ]
             ];
-            $response = $this->EbayClient($requestName, $xml);
+            $response = EbayClient::ebayCurl($requestName, $xml);
 
             $xml_items = simplexml_load_string($response);
             foreach ($xml_items->ActiveList->ItemArray->Item as $xml) {
@@ -283,7 +283,7 @@ class EbayInventory extends Ebay
             ];
         }
 
-        $response = $this->EbayClient($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 
@@ -320,7 +320,7 @@ class EbayInventory extends Ebay
             $xml['Item']['ProductListingDetails'][] = ['EAN' => 'Does not apply'];
         }
 
-        $response = $this->EbayClient($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 
@@ -333,7 +333,7 @@ class EbayInventory extends Ebay
             'EndingReason' => 'NotAvailable'
         ];
 
-        $response = $this->EbayClient($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 
@@ -347,7 +347,7 @@ class EbayInventory extends Ebay
             'IncludeItemSpecifics' => 'true'
         ];
 
-        $response = $this->EbayClient($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 
@@ -360,7 +360,7 @@ class EbayInventory extends Ebay
             'outputSelector' => 'SellerInfo'
         ];
 
-        $response = $this->EbayClient($requestName, $xml, 'finding');
+        $response = EbayClient::ebayCurl($requestName, $xml, 'finding');
         return $response;
     }
 
@@ -372,7 +372,7 @@ class EbayInventory extends Ebay
             'outputSelector' => 'SellerInfo',
             'outputSelector' => 'ListingInfo'
         ];
-        $response = $this->EbayClient($requestName, $xml, 'finding');
+        $response = EbayClient::ebayCurl($requestName, $xml, 'finding');
         return $response;
     }
 
@@ -398,12 +398,13 @@ class EbayInventory extends Ebay
             'EndTimeTo' => date('Y-m-d')
         ];
 
-        $response = $this->EbayClient($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 
     public function sorteBaySearchResults($response)
     {
+        $sellers = [];
         foreach ($response->searchResult->item as $item) {
             $title = (string)$item->title;
             $url = (string)$item->viewItemURL;

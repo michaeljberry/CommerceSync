@@ -92,7 +92,7 @@ $sql = [
         [
             'JOIN',
             'order_sync',
-            'order_id',
+            'order_num',
             '=',
             'order',
             'order_num',
@@ -116,7 +116,7 @@ $sql = [
     ]
 //    'SELECT' => [
 //        [
-//            'order_id',
+//            'order_num',
 //            'type',
 //            'item_id',
 //            'processed'
@@ -130,7 +130,7 @@ $sql = [
 //            'order_num',
 //            '=',
 //            'order_sync',
-//            'order_id',
+//            'order_num',
 //            'processed'
 //        ],
 //        [

@@ -28,7 +28,7 @@ if (!empty($_POST['channel'])) {
     if (!empty($_POST['date'])) {
         $search_array['date'] = $ecommerce->createFormattedDate(htmlentities($_POST['date']));
     }
-    $results = $ecommerce->getOrders($search_array, $channel);
+    $results = \models\channels\OrderModel::getBySearch($search_array, $channel);
     $html = '';
     $scripts = '';
     $table = "<table><tr><td>Date</td><td>Order #</td><td>Name</td><td>Tracking #</td><td>Carrier</td></tr>";

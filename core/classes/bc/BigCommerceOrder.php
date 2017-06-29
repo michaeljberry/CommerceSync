@@ -182,7 +182,7 @@ class BigCommerceOrder extends BigCommerce
             $item_total = Ecommerce::removeCommasInNumber($principle) / $quantity;
             $sku = (string)$i->sku;
             $upc = $this->get_bc_product_upc($product_id);
-            $sku_id = SKU::skuSoi($sku);
+            $sku_id = SKU::searchOrInsert($sku);
             if (!LOCAL) {
                 $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
             }

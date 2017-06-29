@@ -2,16 +2,17 @@
 set_time_limit(3600);
 error_reporting(-1);
 include __DIR__ . '/../../core/init.php';
-include_once WEBPLUGIN . 'am/amvar.php';
+require WEBPLUGIN . 'am/amvar.php';
+
+use controllers\channels\ConditionController;
+use ecommerce\Ecommerce;
+use models\channels\Condition;
+use models\channels\ProductPrice;
+use models\channels\SKU;
+use models\channels\Stock;
 
 $start_time = microtime(true);
 $user_id = 838;
-require WEBPLUGIN . 'am/amvar.php';
-
-//define('AWS_ACCESS_KEY_ID', $aminv->am_aws_access_key);
-//define('AWS_SECRET_ACCESS_KEY', $aminv->am_secret_key);
-//define('MERCHANT_ID', $aminv->am_merchant_id);
-//define('MARKETPLACE_ID', $aminv->am_marketplace_id);
 
 $report = true;
 
@@ -137,15 +138,15 @@ if (!$report) {
             //add-product-availability
             $availability_id = $ecommerce->availability_soi($product_id, $am_store_id);
             //find sku
-            $sku_id = Ecommerce::skuSoi($sku);
+            $sku_id = SKU::searchOrInsert($sku);
             //add price
-            $price_id = $ecommerce->priceSoi($sku_id, $price, $am_store_id);
+            $price_id = ProductPrice::searchOrInsert($sku_id, $price, $am_store_id);
             //normalize condition
-            $condition = $ecommerce->normalCondition($product_condition);
+            $condition = ConditionController::normalCondition($product_condition);
             //find condition id
-            $condition_id = $ecommerce->conditionSoi($condition);
+            $condition_id = Condition::searchOrInsert($condition);
             //add stock to sku
-            $stock_id = $ecommerce->stockSoi($sku_id, $condition_id);
+            $stock_id = Stock::searchOrInsert($sku_id, $condition_id);
             $channel_array = array(
                 'store_id' => $am_store_id,
                 'stock_id' => $stock_id,

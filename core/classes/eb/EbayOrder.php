@@ -56,7 +56,7 @@ class EbayOrder extends Ebay
         $upc = '';
         $principle = Ecommerce::removeCommasInNumber((float)$item->TransactionPrice);
         $item_id = $item->Item->ItemID . '-' . $item->TransactionID;
-        $sku_id = SKU::skuSoi($sku);
+        $sku_id = SKU::searchOrInsert($sku);
         if (!LOCAL) {
             $ecommerce->save_order_items($order_id, $sku_id, $principle, $quantity, $item_id);
         }

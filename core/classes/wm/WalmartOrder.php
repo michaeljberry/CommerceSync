@@ -170,7 +170,7 @@ class WalmartOrder extends Walmart
             $sku = $i['item']['sku'];
             $item = $wminv->getItem($sku);
             $upc = $item['MPItemView']['upc'];
-            $sku_id = SKU::skuSoi($sku);
+            $sku_id = SKU::searchOrInsert($sku);
             if (!LOCAL) {
                 $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
             }

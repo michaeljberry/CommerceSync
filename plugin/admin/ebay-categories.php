@@ -1,9 +1,11 @@
 <?php
+use models\channels\Category;
+
 include 'header-admin.php';
 
 set_time_limit(3600);
-$parents = $ecommerce->getParentCategories('categories_ebay');
-$children = $ecommerce->getChildCategories('categories_ebay');
+$parents = Category::getParents('categories_ebay');
+$children = Category::getChildren('categories_ebay');
 
 $html = '<ul>';
 
@@ -39,7 +41,7 @@ foreach ($parents as $key => $p) {
     }
     $p_fee = $fee;
     $g_p_fee = $p_fee;
-//    $ecommerce->save_category_fee($p_cat_id, $fee);
+//    Fee::save_category_fee($p_cat_id, $fee);
 //    $x = 0;
     $html .= "<li data-fees='$fee'>";
     $html .= "$p_cat_id: $p_cat_name";

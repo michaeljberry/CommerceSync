@@ -187,7 +187,7 @@ class AmazonOrder extends Amazon
             $totalTax = Ecommerce::formatMoney($totalTax);
             Ecommerce::dd("Total Tax: $totalTax");
 
-            $skuId = SKU::skuSoi($sku);
+            $skuId = SKU::searchOrInsert($sku);
             if (!LOCAL) {
                 $ecommerce->save_order_items($orderId, $skuId, $itemPrice, $quantity);
             }

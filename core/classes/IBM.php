@@ -161,7 +161,9 @@ class IBM
             $qty1 = 'ITWAQTY1';
             $qty2 = 'ITWAQTY2';
         }
-        $sql = "SELECT $qty1 AS CO_ONE, $qty2 AS CO_TWO FROM R37MODSDTA/VIOSELLERC WHERE $itemcol = :item";
+        $sql = "SELECT $qty1 AS CO_ONE, $qty2 AS CO_TWO 
+                FROM R37MODSDTA/VIOSELLERC 
+                WHERE $itemcol = :item";
         $query_params = array(
             ':item' => $item
         );
@@ -193,7 +195,7 @@ class IBM
 
     public static function syncVAIPrices($sku, $company)
     {
-        $sql = "SELECT J6DEL, J6ITEM, J6LPRC, J6PL01, J6PL10, FIFOCOST FROM R37FILES/VINPMAT LEFT JOIN MELQRY/FIFOCOST ON J6ITEM = U8ITEM WHERE J6CMP = $company AND J6LOC != '1VRM' AND J6ITEM = '$sku'";
+        $sql = "SELECT J6DEL, J6ITEM, J6LPRC, J6PL01, J6PL09, J6PL10, FIFOCOST FROM R37FILES/VINPMAT LEFT JOIN MELQRY/FIFOCOST ON J6ITEM = U8ITEM WHERE J6CMP = $company AND J6LOC != '1VRM' AND J6ITEM = '$sku'";
         return MIBMDB::query($sql, [], 'fetchAll', PDO::FETCH_ASSOC);
     }
 

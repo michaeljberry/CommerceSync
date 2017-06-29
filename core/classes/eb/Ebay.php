@@ -3,6 +3,7 @@
 namespace eb;
 
 use ecommerce\Ecommerce;
+use models\channels\Fee;
 use models\ModelDB as MDB;
 
 class Ebay
@@ -103,7 +104,7 @@ class Ebay
         return $response;
     }
 
-    public function ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, $propose = null, $increaseBy = 0)
+    public function ebay_pricing(Ecommerce $ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, $propose = null, $increaseBy = 0)
     {
 
         $ebayFeeMax = 250;
@@ -127,7 +128,7 @@ class Ebay
 
         $shippingCost = 3.99; //Amount we paid to ship the product
 
-        $ebayFeePercent = $ecommerce->getCategoryFeeOfSKU('categories_ebay', 'listing_ebay', $sku);
+        $ebayFeePercent = Fee::getCategoryFeeOfSKU('categories_ebay', 'listing_ebay', $sku);
 
         $shippingCollected = Ecommerce::formatMoney($shippingIncludedInPrice ? $shippingCharged : 0);
 

@@ -1,11 +1,13 @@
 <?php
+use models\channels\Category;
+
 require '../../core/init.php';
 
 if (!isset($_REQUEST['term'])) {
     exit;
 }
 $category_id = htmlentities($_REQUEST['term']);
-$results = $ecommerce->getCategory($category_id);
+$results = Category::getEbay($category_id);
 $data = array();
 if ($results && count($results)) {
     foreach ($results as $rows) {

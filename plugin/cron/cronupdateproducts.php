@@ -1,6 +1,11 @@
 <?php
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
+
+use ecommerce\Ecommerce;
+use models\channels\Product;
+use models\channels\ProductPrice;
+
 $start = startClock();
 
 $debug = false;
@@ -22,23 +27,25 @@ if (!$debug) {
             if ($status) {
                 $status = 1;
             }
-            $sku_id = $ecommerce->productSoiSku($sku, $name, $sub_title, $description, $upc, $weight, $status);
+            $sku_id = Product::searchOrInsertFromSKU($sku, $name, $sub_title, $description, $upc, $weight, $status);
 
             $sku = str_replace("'", "''", $sku);
             $money = IBM::syncVAIPrices($sku, '1');
             if (isset($money[0])) {
-                $msrp = number_format($money[0]['J6LPRC'], 2);
-                $pl1 = number_format($money[0]['J6PL01'], 2);
-                $pl10 = number_format($money[0]['J6PL10'], 2);
-                $cost = number_format($money[0]['FIFOCOST'], 2);
+                $msrp = Ecommerce::removeCommasInNumber($money[0]['J6LPRC']);
+                $pl1 = Ecommerce::removeCommasInNumber($money[0]['J6PL01']);
+                $map = Ecommerce::removeCommasInNumber($money[0]['J6PL09']);
+                $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
+                $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
             } else {
                 $money = IBM::syncVAIPrices($sku, '2');
-                $msrp = number_format($money[0]['J6LPRC'], 2);
-                $pl1 = number_format($money[0]['J6PL01'], 2);
-                $pl10 = number_format($money[0]['J6PL10'], 2);
-                $cost = number_format($money[0]['FIFOCOST'], 2);
+                $msrp = Ecommerce::removeCommasInNumber($money[0]['J6LPRC']);
+                $pl1 = Ecommerce::removeCommasInNumber($money[0]['J6PL01']);
+                $map = Ecommerce::removeCommasInNumber($money[0]['J6PL09']);
+                $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
+                $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
             }
-            $result = $ecommerce->updatePrices($sku_id, $msrp, $pl1, $pl10, $cost);
+            $result = ProductPrice::updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost);
 
             if ($sku_id) {
 //            echo $sku . ': Title: ' . $name . '; Subtitle: ' . $sub_title . '; Description: ' . $description . '; UPC: ' . $upc . '; Weight: ' . $weight . '<br>';
@@ -66,18 +73,20 @@ if (!$debug) {
     $sku = str_replace("'", "''", $sku);
     $money = IBM::syncVAIPrices($sku, '1');
     if (isset($money[0])) {
-        $msrp = number_format($money[0]['J6LPRC'], 2);
-        $pl1 = number_format($money[0]['J6PL01'], 2);
-        $pl10 = number_format($money[0]['J6PL10'], 2);
-        $cost = number_format($money[0]['FIFOCOST'], 2);
+        $msrp = Ecommerce::removeCommasInNumber($money[0]['J6LPRC']);
+        $pl1 = Ecommerce::removeCommasInNumber($money[0]['J6PL01']);
+        $map = Ecommerce::removeCommasInNumber($money[0]['J6PL09']);
+        $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
+        $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
     } else {
         $money = IBM::syncVAIPrices($sku, '2');
-        $msrp = number_format($money[0]['J6LPRC'], 2);
-        $pl1 = number_format($money[0]['J6PL01'], 2);
-        $pl10 = number_format($money[0]['J6PL10'], 2);
-        $cost = number_format($money[0]['FIFOCOST'], 2);
+        $msrp = Ecommerce::removeCommasInNumber($money[0]['J6LPRC']);
+        $pl1 = Ecommerce::removeCommasInNumber($money[0]['J6PL01']);
+        $map = Ecommerce::removeCommasInNumber($money[0]['J6PL09']);
+        $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
+        $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
     }
-    $result = $ecommerce->updatePrices($sku_id, $msrp, $pl1, $pl10, $cost);
+    $result = ProductPrice::updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost);
 
     if ($sku_id) {
 //        echo $sku . ': Title: ' . $name . '; Subtitle: ' . $sub_title . '; Description: ' . $description . '; UPC: ' . $upc . '; Weight: ' . $weight . '<br>';

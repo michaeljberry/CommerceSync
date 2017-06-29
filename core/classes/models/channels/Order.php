@@ -8,7 +8,9 @@ class Order
 {
     public static function cancel($id)
     {
-        $sql = "UPDATE sync.order SET cancelled = 1 WHERE order_num = :order_num";
+        $sql = "UPDATE sync.order 
+                SET cancelled = 1 
+                WHERE order_num = :order_num";
         $query_params = [
             ':order_num' => $id
         ];
@@ -37,7 +39,8 @@ class Order
                 JOIN customer c ON o.cust_id = c.id 
                 LEFT JOIN tracking t ON o.id = t.order_id 
                 JOIN order_sync os ON o.order_num = os.order_num 
-                WHERE $condition AND os.type = :channel";
+                WHERE $condition 
+                AND os.type = :channel";
         return MDB::query($sql, $query_params, 'fetchAll');
     }
 

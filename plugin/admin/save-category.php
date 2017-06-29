@@ -1,4 +1,6 @@
 <?php
+use models\channels\Category;
+
 require '../../core/init.php';
 
 if (!empty($_POST['id'])) {
@@ -7,6 +9,6 @@ if (!empty($_POST['id'])) {
     if (empty($cat)) {
         $cat = NULL;
     }
-    $result = $ecommerce->update_mapped_category($id, $cat, 'categories_ebay_id');
+    $result = Category::updateMap($id, $cat, 'categories_ebay_id');
     return true;
 }

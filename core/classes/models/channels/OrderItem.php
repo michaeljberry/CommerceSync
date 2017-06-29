@@ -6,7 +6,7 @@ use models\ModelDB as MDB;
 
 class OrderItem
 {
-    public static function getOrderItemsByOrderId($id)
+    public static function getByOrderId($id)
     {
         $sql = "SELECT s.sku, p.name, oi.price, oi.quantity 
                 FROM order_item oi 

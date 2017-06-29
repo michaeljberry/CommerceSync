@@ -1,7 +1,9 @@
 <?php
+use models\channels\Category;
+
 include 'header-admin.php';
 
-$results = $ecommerce->getCategoryToMap();
+$results = Category::getMappable();
 //print_r($results);
 
 $html = "<table><thead><tr>

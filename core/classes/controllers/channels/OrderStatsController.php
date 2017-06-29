@@ -238,4 +238,13 @@ class OrderStatsController
         $html .= "</table>";
         echo $html;
     }
+
+    public static function formatChannelRecentSales($ebayRecentSales)
+    {
+        $items = $ebayRecentSales->searchResult;
+        foreach ($items->item as $item) {
+            $soldDate = Ecommerce::createFormattedDate($item->listingInfo->endTime, 'Y-m-d');
+            $url = $item->viewItemURL;
+        }
+    }
 }

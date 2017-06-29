@@ -11,383 +11,8 @@ use IBM;
 
 class Ecommerce
 {
-    public function getCustomersCompanies()
-    {
-        $sql = "SELECT c.id as company FROM account a LEFT OUTER JOIN sync_userroles sur ON sur.UserID = a.id LEFT OUTER JOIN sync_rolepermissions srp ON srp.RoleID = sur.RoleID LEFT OUTER JOIN sync_permissions sp ON srp.PermissionID = sp.ID LEFT OUTER JOIN company c ON c.id = a.company_id WHERE sp.Title IN ('root', 'management') GROUP BY company";
-        return MDB::query($sql, [], 'fetchAll');
-    }
-
-    //Normalize conditions
-    public function normalCondition($condition)
-    {
-        if ($condition == "New") {
-            $condition = "New";
-        } elseif ($condition == "Brand New") {
-            $condition = "Brand New";
-        } elseif ($condition == "Like New" || $condition == "UsedLikeNew") {
-            $condition = "Used Like New";
-        } elseif ($condition == "Very Good" || $condition == "UsedVeryGood") {
-            $condition = "UsedVeryGood";
-        } elseif ($condition == "Good" || $condition == "UsedGood") {
-            $condition = "UsedGood";
-        } elseif ($condition == "Acceptable" || $condition == "UsedAcceptable") {
-            $condition = "UsedAcceptable";
-        } elseif ($condition == "Used") {
-            $condition = "Used";
-        } elseif ($condition == "Refurbished") {
-            $condition = "Refurbished";
-        }
-        return $condition;
-    }
-
-    //Return condition_id from Select or Insert if not Exists
-    public function conditionSoi($condition)
-    {
-        $sql = "SELECT id FROM sync.condition WHERE condition.condition = :condition";
-        $query_params = [
-            ':condition' => $condition
-        ];
-        $condition_id = MDB::query($sql, $query_params, 'fetchColumn');
-        if (empty($condition_id)) {
-            return $condition;
-        }
-        return $condition_id;
-    }
-
-    //Return stock_id from Select or Insert if not Exists
-    public function stockSoi($sku_id, $condition_id = null, $uofm = 1)
-    {
-        $sql = "SELECT id FROM stock WHERE sku_id = :sku_id";
-        $query_params = [
-            ':sku_id' => $sku_id
-        ];
-        $stock_id = MDB::query($sql, $query_params, 'fetchColumn');
-        if (empty($stock_id)) {
-            //Add sku_id to Stock Table
-            $sql = "INSERT INTO stock (sku_id, condition_id, uofm_id) VALUES (:sku_id, :condition_id, :uofm_id)";
-            $query_params = [
-                ":sku_id" => $sku_id,
-                ":condition_id" => $condition_id,
-                ":uofm_id" => 1
-            ];
-            $stock_id = MDB::query($sql, $query_params, 'id');
-        }
-        return $stock_id;
-    }
-
-    //Return sku_id from Product Select or insert if not Exists
-    public function productSoiSku($sku, $name, $sub_title, $description, $upc, $weight, $status = '')
-    {
-        $sql = "SELECT product.id, product.upc, product.status FROM product JOIN sku ON sku.product_id = product.id WHERE sku.sku = :sku";
-        $query_params = [
-            ':sku' => $sku
-        ];
-        $results = MDB::query($sql, $query_params, 'fetch');
-        $product_id = $results['id'];
-        $upc2 = $results['upc'];
-        $active = $results['status'];
-        if (empty($product_id)) {
-            $sql = "INSERT INTO product (product.name, subtitle, description, upc, weight) VALUES (:name, :subtitle, :description, :upc, :weight)";
-            $query_params = [
-                ':name' => $name,
-                ':subtitle' => $sub_title,
-                ':description' => $description,
-                ':upc' => $upc,
-                ':weight' => $weight
-            ];
-            $product_id = MDB::query($sql, $query_params, 'id');
-            $sql = "INSERT INTO sku (product_id, sku) VALUES (:product_id, :sku) ON DUPLICATE KEY UPDATE product_id = :product_id2";
-            $query_params = [
-                ':product_id' => $product_id,
-                ':sku' => $sku,
-                ':product_id2' => $product_id
-            ];
-            $sku_id = MDB::query($sql, $query_params, 'id');
-        } elseif (empty($upc2)) {
-            $sql = "UPDATE product SET upc = :upc WHERE id = :id";
-            $query_params = [
-                ':upc' => $upc,
-                ':id' => $product_id
-            ];
-            $sku_id = MDB::query($sql, $query_params, 'id');
-            echo "$sku's UPC was updated";
-        } elseif (empty($active)) {
-            $sql = "UPDATE product SET status = :status WHERE id = :id";
-            $query_params = [
-                ':status' => $status,
-                ':id' => $product_id
-            ];
-            MDB::query($sql, $query_params, 'boolean');
-            $sku_id = SKU::getSkuIdFromProductId($product_id);
-        } else {
-            $sku_id = SKU::skuSoi($sku);
-        }
-        return $sku_id;
-    }
-
-    //Return product_price_id from Product_Price Select or insert if not exists
-    public function priceSoi($sku_id, $store_id, $price = null)
-    {
-        $sql = "SELECT id FROM product_price WHERE sku_id = :sku_id AND store_id = :store_id";
-        $query_params = [
-            ':sku_id' => $sku_id,
-            ':store_id' => $store_id
-        ];
-        $product_price_id = MDB::query($sql, $query_params, 'fetchColumn');
-        if (empty($product_price_id)) {
-            $sql = "INSERT INTO product_price (sku_id, price, store_id) VALUES (:sku_id, :price, :store_id)";
-            $query_params = [
-                ':sku_id' => $sku_id,
-                ':price' => $price,
-                ':store_id' => $store_id
-            ];
-            $product_price_id = MDB::query($sql, $query_params, 'id');
-        }
-        return $product_price_id;
-    }
-
-    //Update costs based on sku
-    public function updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost)
-    {
-        $sql = "INSERT INTO product_cost (sku_id, msrp, pl10, map, pl1, cost) VALUES (:sku_id, :msrp, :pl10, :map, :pl1, :cost) ON DUPLICATE KEY UPDATE msrp = :msrp2, pl10 = :pl102, map = :map2, pl1 = :pl12, cost = :cost2";
-        $query_params = [
-            ':sku_id' => $sku_id,
-            ':msrp' => self::toCents($msrp),
-            ':pl1' => self::toCents($pl1),
-            ':map' => self::toCents($map),
-            ':pl10' => self::toCents($pl10),
-            ':cost' => self::toCents($cost),
-            ':msrp2' => self::toCents($msrp),
-            ':pl12' => self::toCents($pl1),
-            ':map2' => self::toCents($map),
-            ':pl102' => self::toCents($pl10),
-            ':cost2' => self::toCents($cost)
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
-
-    public function getSKUCosts($sku, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT (pc.msrp/100)as msrp, (pc.pl10/100) as pl10, (pc.pl1/100) as pl1, (pc.cost/100) as cost, lt.override_price, lt.title, p.upc FROM product_cost pc JOIN sku sk ON sk.id = pc.sku_id JOIN product p ON p.id = sk.product_id JOIN $table lt ON lt.sku = sk.sku WHERE sk.sku = :sku";
-        $query_params = [
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'fetch', PDO::FETCH_ASSOC);
-    }
-
-    public function getSalesHistory($sku_id)
-    {
-        /*
-         *
-         *  COUNT(o.order_num) as orders,
-         *  ROUND(SUM(o.shipping_amount), 2) as shipping,
-         *  ROUND(SUM(o.taxes), 2) as taxes
-         */
-        $sql = "SELECT
-          os.type AS channel,
-          (ROUND(SUM(quantity * price), 2) + ROUND(SUM(o.shipping_amount), 2)) as sales,
-          SUM(oi.quantity) as unitsSold,
-          DATE_FORMAT(date, '%Y-%m') as date
-        FROM order_item oi
-          LEFT OUTER JOIN `order` o ON o.id = oi.order_id
-          LEFT OUTER JOIN order_sync os ON os.order_num = o.order_num
-        WHERE oi.sku_id = :sku_id
-        GROUP BY channel, DATE_FORMAT(date, '%Y-%m')
-        ORDER BY date DESC
-        ";
-        $query_params = [
-            ':sku_id' => $sku_id
-        ];
-        return MDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_ASSOC);
-    }
-
-    public function formatChannelRecentSales($ebayRecentSales)
-    {
-        $items = $ebayRecentSales->searchResult;
-        foreach ($items->item as $item) {
-            static::dd($item);
-            $soldDate = self::createFormattedDate($item->listingInfo->endTime, 'Y-m-d');
-            $url = $item->viewItemURL;
-        }
-    }
-
-    public function getUpsideDownCost()
-    {
-        $sql = "SELECT sk.sku, (pc.pl10/100) as pl10, (pc.pl1/100) as pl1, (pc.cost/100) as cost FROM sku sk LEFT JOIN product_cost pc ON sk.id = pc.sku_id WHERE pc.pl10 < pc.pl1";
-        return MDB::query($sql, [], 'fetchAll');
-    }
-
-    //Update price based on sku
-    public function updateSKUPrice($sku, $price, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "UPDATE $table SET price = :price WHERE sku = :sku";
-        $query_params = [
-            ':price' => $price,
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
-
-    //Update Override on price
-    public function updateSKUOverride($sku, $override, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "UPDATE $table SET override_price = :override_price WHERE sku = :sku";
-        $query_params = [
-            ':override_price' => $override,
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
-
-    //Update photo_url
-    public function updateSKUPhoto($sku, $photo_url, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "UPDATE $table SET photo_url = :photo_url WHERE sku = :sku";
-        $query_params = [
-            ':photo_url' => $photo_url,
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
-
-    //Append to Description
-    public function appendSKUDescription($sku, $description, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "UPDATE $table SET description = CONCAT(description, ' ', :description) WHERE sku = :sku";
-        $query_params = [
-            ':description' => $description,
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
-
-    //Get Description
-    public function getSKUDescription($sku, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT description FROM $table WHERE sku = :sku";
-        $query_params = [
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-    public function getCategoryId($category_name, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT id FROM $table WHERE category_name = :category_name";
-        $query_params = [
-            ':category_name' => $category_name
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-    public function getCategoryToMap($category_id = null)
-    {
-        if (empty($category_id)) {
-            $sql = "SELECT cm.id as id, cm.categories_ebay_id, cm.categories_amazon_id, cm.categories_bigcommerce_id, ca.category_name AS am_cat_name, ce.category_name AS eb_cat_name, cb.category_name AS bc_cat_name FROM categories_mapped cm LEFT JOIN categories_amazon ca ON cm.categories_amazon_id = ca.category_id LEFT JOIN categories_ebay ce ON cm.categories_ebay_id = ce.category_id LEFT JOIN categories_bigcommerce cb ON cm.categories_bigcommerce_id = cb.category_id ORDER BY categories_ebay_id";
-            $query_params = [];
-        } else {
-            $sql = "SELECT categories_amazon_id AS id FROM categories_mapped WHERE categories_ebay_id = :cat";
-            $query_params = [
-                ':cat' => $category_id
-            ];
-        }
-        return MDB::query($sql, $query_params, 'fetchAll');
-    }
-
-    public function getParentCategories($table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT category_id, parent_category_id, category_name FROM $table WHERE category_id = parent_category_id ORDER BY parent_category_id ASC";
-        return MDB::query($sql, [], 'fetchAll');
-    }
-
-    public function getChildCategories($table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT category_id, parent_category_id, category_name FROM $table WHERE category_id != parent_category_id ORDER BY parent_category_id ASC";
-        return MDB::query($sql, [], 'fetchAll');
-    }
-
-    public function getCategory($cat_id)
-    {
-        $sql = "SELECT category_id, parent_category_id, category_name FROM categories_ebay WHERE category_id LIKE :cat_id ORDER BY parent_category_id ASC";
-        $query_params = [
-            ':cat_id' => "%" . $cat_id . "%"
-        ];
-        return MDB::query($sql, $query_params, 'fetchAll');
-    }
-
-    public function getCategoryFeeOfSKU($table, $table2, $sku)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $table2 = CHC::sanitize_table_name($table2);
-        $sql = "SELECT category_fee FROM $table cat LEFT JOIN $table2 list ON cat.category_id = list.primary_category WHERE list.sku = :sku";
-        $query_params = [
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-    public function get_all_sub_categories($parent_category, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT category_id, parent_category_id, category_name FROM $table WHERE parent_category_id = :parent_category_id ORDER BY category_id ASC";
-        $query_params = [
-            ':parent_category' => $parent_category
-        ];
-        return MDB::query($sql, $query_params, 'fetchAll');
-    }
-
-    public function save_category($category_id, $category_name, $category_parent_id, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "INSERT INTO $table (category_id, parent_category_id, category_name) VALUES (:category_id, :parent_category_id, :category_name) ON DUPLICATE KEY UPDATE category_name = :category_name2";
-        $query_params = [
-            ":category_id" => $category_id,
-            ":parent_category_id" => $category_parent_id,
-            ":category_name" => $category_name,
-            ':category_name2' => $category_name
-        ];
-        return MDB::query($sql, $query_params, 'id');
-    }
-
-    public function get_category_fee($category_id)
-    {
-        $sql = "SELECT category_fee FROM categories_ebay WHERE category_id = :category_id";
-        $query_params = [
-            ':category_id' => $category_id
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-    public function save_category_fee($category_id, $fee)
-    {
-        $sql = "UPDATE categories_ebay SET category_fee = :fee WHERE category_id = :category_id";
-        $query_params = [
-            ':fee' => $fee,
-            ':category_id' => $category_id
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
 
     //Update mapped category
-    public function update_mapped_category($id, $category_id, $column)
-    {
-        $column = CHC::sanitize_table_name($column);
-        $sql = "UPDATE categories_mapped SET $column = :category_id WHERE id = :id";
-        $query_params = [
-            ':category_id' => $category_id,
-            ':id' => $id
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
 
     //Update product category
     public function update_category($sku, $category_id, $table)
@@ -660,8 +285,16 @@ class Ecommerce
     }
 
     //Save order from channels to DB
-    public function save_order($store_id, $cust_id, $order_num, $ship_method, $shipping_amount, $tax_amount = 0, $fee = 0, $trans_id = null)
-    {
+    public function save_order(
+        $store_id,
+        $cust_id,
+        $order_num,
+        $ship_method,
+        $shipping_amount,
+        $tax_amount = 0,
+        $fee = 0,
+        $trans_id = null
+    ) {
         $sql = "SELECT id FROM sync.order WHERE store_id = :store_id AND order_num = :order_num";
         $query_params = [
             ':store_id' => $store_id,
@@ -721,8 +354,15 @@ class Ecommerce
     }
 
     //Return cust_id from Select or Insert if not Exists
-    public function customer_soi($first_name, $last_name, $street_address, $street_address2, $city_id, $state_id, $zip_id)
-    {
+    public function customer_soi(
+        $first_name,
+        $last_name,
+        $street_address,
+        $street_address2,
+        $city_id,
+        $state_id,
+        $zip_id
+    ) {
         $sql = "SELECT id FROM customer WHERE first_name = :first_name AND last_name = :last_name AND street_address = :street_address AND zip_id = :zip_id";
         $query_params = [
             ':first_name' => $first_name,
@@ -843,8 +483,24 @@ class Ecommerce
     }
 
     //Create order XML for download to VAI
-    public function create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml)
-    {
+    public function create_xml(
+        $channel_num,
+        $channel_name,
+        $order_num,
+        $timestamp,
+        $shipping_amount,
+        $shipping,
+        $order_date,
+        $buyer_phone,
+        $ship_to_name,
+        $address,
+        $address2,
+        $city,
+        $state,
+        $zip,
+        $country,
+        $item_xml
+    ) {
         $xml = <<<EOD
         <NAMM_PO version="2007.1">
             <Id>S2S{$channel_num}_PO$order_num</Id>
@@ -977,15 +633,15 @@ EOD;
     public function curl($url)
     {
         $options = [
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_FOLLOWLOCATION => TRUE,
-            CURLOPT_AUTOREFERER => TRUE,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_AUTOREFERER => true,
             CURLOPT_CONNECTTIMEOUT => 120,
             CURLOPT_TIMEOUT => 120,
             CURLOPT_MAXREDIRS => 10,
             CURLOPT_USERAGENT => "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)",
             CURLOPT_URL => $url,
-            CURLOPT_SSL_VERIFYPEER => FALSE
+            CURLOPT_SSL_VERIFYPEER => false
         ];
         $ch = curl_init();
         curl_setopt_array($ch, $options);
@@ -998,8 +654,10 @@ EOD;
     {
         if (strpos($sku, ';') > 0) {
             $sku = substr($sku, 0, strpos($sku, ';'));
-        } else if (strpos($sku, ',') > 0) {
-            $sku = substr($sku, 0, strpos($sku, ','));
+        } else {
+            if (strpos($sku, ',') > 0) {
+                $sku = substr($sku, 0, strpos($sku, ','));
+            }
         }
         return $sku;
     }

@@ -1,7 +1,9 @@
 <?php
 
 use ecommerce\Ecommerce;
+use models\channels\OrderStats;
 use models\channels\SKU;
+use models\channels\Stock;
 
 require '../../core/init.php';
 
@@ -21,8 +23,8 @@ if ($_POST['price_sku']) {
     $shippingIncludedInPrice = htmlentities(isset($_POST['price-include-shipping']) ? $_POST['price-include-shipping'] : 0);
     $shippingCharged = htmlentities($_POST['price_shipping']);
 
-    $sku_id = SKU::skuSoi($sku);
-    $prices = $ecommerce->getSKUCosts($sku, 'listing_ebay');
+    $sku_id = SKU::getId($sku);
+    $prices = SKU::getSKUCosts($sku, 'listing_ebay');
     extract($prices);
 
     $priceVariables = compact(
@@ -33,7 +35,7 @@ if ($_POST['price_sku']) {
     $currentEbayListings = simplexml_load_string($ebinv->findItemsAdvanced($upc));
     $currentAmazonListings = simplexml_load_string($aminv->getLowestOfferListingsForSKU($sku));
     $ourAmazonPrice = simplexml_load_string($aminv->GetMyPriceForSKU($sku));
-    $ourSalesHistory = $ecommerce->getSalesHistory($sku_id);
+    $ourSalesHistory = OrderStats::getSalesHistory($sku_id);
 //    $ebayRecentSales = simplexml_load_string($ebinv->findCompletedItems($upc));
 
     echo "$title: $upc-> $sku: <br>";
@@ -51,7 +53,7 @@ if ($_POST['price_sku']) {
     echo "<br><br>";
 
     if (!empty($override)) {
-        $stock_id = $ecommerce->stockSoi($sku_id);
+        $stock_id = Stock::searchOrInsert($sku_id);
         $listing_id = $ecommerce->get_listing_id($stock_id, 'listing_ebay');
         $response = simplexml_load_string($ebinv->getSingleItem(listing_id));
         $pl10 = $response->Item->StartPrice;

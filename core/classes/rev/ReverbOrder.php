@@ -90,7 +90,7 @@ class ReverbOrder extends Reverb
                         if (!LOCAL) {
                             $order_id = $ecommerce->save_order(ReverbClient::getStoreID(), $cust_id, $order_num, $shipping, $shipping_amount, $tax);
                         }
-                        $sku_id = SKU::skuSoi($sku);
+                        $sku_id = SKU::searchOrInsert($sku);
                         if (!LOCAL) {
                             $ecommerce->save_order_items($order_id, $sku_id, $total, $quantity);
                         }

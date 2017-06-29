@@ -1,9 +1,11 @@
 <?php
+use models\channels\Category;
+
 include 'header-admin.php';
 
 set_time_limit(3600);
-$parents = $ecommerce->getParentCategories('categories_bigcommerce');
-$children = $ecommerce->getChildCategories('categories_bigcommerce');
+$parents = Category::getParents('categories_bigcommerce');
+$children = Category::getChildren('categories_bigcommerce');
 
 $html = '<ul>';
 

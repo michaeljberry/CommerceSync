@@ -4,6 +4,7 @@ namespace models\channels;
 
 use controllers\channels\ChannelHelperController as CHC;
 use models\ModelDB as MDB;
+use PDO;
 
 class OrderStats
 {
@@ -61,15 +62,40 @@ class OrderStats
         $condition = CHC::determine_time_condition($dateColumn, $period, $period2, $period3);
 
         if (empty($channel)) {
-            $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold FROM order_stats WHERE $condition GROUP BY channel";
+            $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold 
+                    FROM order_stats 
+                    WHERE $condition 
+                    GROUP BY channel";
             $query_params = [];
         } else {
-            $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold FROM order_stats WHERE $condition AND channel = :channel";
+            $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold 
+                    FROM order_stats 
+                    WHERE $condition 
+                    AND channel = :channel";
             $query_params = [
                 ':channel' => $channel
             ];
         }
         return MDB::query($sql, $query_params, 'fetchAll');
+    }
+
+    public static function getSalesHistory($sku_id)
+    {
+        $sql = "SELECT
+                os.type AS channel,
+                (ROUND(SUM(quantity * price), 2) + ROUND(SUM(o.shipping_amount), 2)) as sales,
+                SUM(oi.quantity) as unitsSold,
+                DATE_FORMAT(date, '%Y-%m') as date
+                FROM order_item oi
+                LEFT OUTER JOIN `order` o ON o.id = oi.order_id
+                LEFT OUTER JOIN order_sync os ON os.order_num = o.order_num
+                WHERE oi.sku_id = :sku_id
+                GROUP BY channel, DATE_FORMAT(date, '%Y-%m')
+                ORDER BY date DESC";
+        $query_params = [
+            ':sku_id' => $sku_id
+        ];
+        return MDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_ASSOC);
     }
 
 

@@ -2,6 +2,8 @@
 
 namespace models\channels;
 
+use controllers\channels\ChannelHelperController as CHC;
+use ecommerce\Ecommerce;
 use models\ModelDB as MDB;
 
 class Order

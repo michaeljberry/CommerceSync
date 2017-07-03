@@ -109,7 +109,11 @@ class ChannelHelperController
             if ($key == 'date') {
                 $select_parameters .= "$key BETWEEN '$value 00:00:00' AND '$value 23:59:59'";
             } else {
-                $select_parameters .= "$key LIKE :$key";
+                $column = $key;
+                if(strpos($key, '.') !== false){
+                    $key = substr(strstr($key, '.'),1);
+                }
+                $select_parameters .= "$column LIKE :$key";
                 $query_param[$key] = "%" . $value . "%";
             }
             if (++$i !== $count) {

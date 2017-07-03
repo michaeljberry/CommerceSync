@@ -14,7 +14,7 @@ if (!empty($_POST['channel'])) {
         $channel = htmlentities($_POST['channel']);
     }
     if (!empty($_POST['order_num'])) {
-        $search_array['order_num'] = htmlentities($_POST['order_num']);
+        $search_array['o.order_num'] = htmlentities($_POST['order_num']);
     }
     if (!empty($_POST['tracking_num'])) {
         $search_array['tracking_num'] = htmlentities($_POST['tracking_num']);

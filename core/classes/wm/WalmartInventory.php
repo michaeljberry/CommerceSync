@@ -9,8 +9,8 @@ class WalmartInventory extends Walmart
     public function constructAuthorizationToken()
     {
         $wmitem = new WalmartItem([
-            'consumerId' => $this->WalmartClient->getConsumerKey(),
-            'privateKey' => $this->WalmartClient->getSecretKey()
+            'consumerId' => WalmartClient::getConsumerKey(),
+            'privateKey' => WalmartClient::getSecretKey()
         ]);
         return $wmitem;
     }

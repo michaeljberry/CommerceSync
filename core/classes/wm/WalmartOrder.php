@@ -32,10 +32,10 @@ class WalmartOrder extends Walmart
      * @internal param $wm_secret_key
      * @internal param $wm_api_header
      */
-    public function acknowledge_order($order)
+    public function acknowledge_order($order_num)
     {
         $wmorder = $this->configure();
-        $poId = $order['purchaseOrderId'];
+        $poId = $order_num;
         $orderAcknowledge = $wmorder->acknowledge([
             'purchaseOrderId' => $poId,
         ]);
@@ -331,13 +331,13 @@ class WalmartOrder extends Walmart
 
     protected function parseOrder($order, $ecommerce, WalmartOrder $wmord, $folder)
     {
-//    \ecommerceclass\ecommerceclass::dd($o);
+        Ecommerce::dd($order);
         $order_num = $order['purchaseOrderId'];
         echo "Order: $order_num<br><br>";
         $found = Ecommerce::orderExists($order_num);
         if (!$found) {
             if (!LOCAL) {
-                $acknowledged = $wmord->acknowledge_order($order);
+                $acknowledged = $wmord->acknowledge_order($order_num);
             }
 //        echo 'Acknowledgement: <br><pre>';
 //        print_r($acknowledged);
@@ -367,17 +367,20 @@ class WalmartOrder extends Walmart
 //                'limit' => 200
                 ]);
             }
+            Ecommerce::dd($orders);
 
             echo 'Orders: <br>';
             $totalCount = $orders['meta']['totalCount'];
-            echo 'Order Count: ' . count($orders['elements']) . '<br><br>';
+            echo "Order Count: $totalCount<br><br>";
 
 
-            if (count($orders['elements']['order']) > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
+            if ($totalCount > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
+                echo "Multiple Orders<br>";
                 foreach ($orders['elements']['order'] as $order) {
                     $this->parseOrder($order, $ecommerce, $wmord, $folder);
                 }
             } else {
+                echo "Single Order:<br>";
                 foreach ($orders['elements'] as $order) {
                     $this->parseOrder($order, $ecommerce, $wmord, $folder);
                 }

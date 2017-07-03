@@ -6,7 +6,7 @@ require WEBPLUGIN . 'rev/revvar.php';
 $start = startClock();
 $user_id = 838;
 
-$folder = '/home/chesbro_amazon';
+$folder = '/home/chesbro_amazon/';
 
 $request = $revord->getOrders();
 //\ecommerceclass\ecommerceclass::dd($request);

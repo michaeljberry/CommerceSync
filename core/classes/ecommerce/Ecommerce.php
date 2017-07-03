@@ -449,13 +449,12 @@ class Ecommerce
 
     public static function orderExists($orderNum)
     {
-        if (!empty($orderNum)) {
-            $number = self::findDownloadedVaiOrder($orderNum);
+        $number = Ecommerce::findDownloadedVaiOrder($orderNum);
+        Ecommerce::dd($number);
 
-            if ($number > 0) {
-                static::dd("Found in database");
-                return true;
-            }
+        if ($number > 0) {
+            Ecommerce::dd("Found in database");
+            return true;
         }
         return false;
     }

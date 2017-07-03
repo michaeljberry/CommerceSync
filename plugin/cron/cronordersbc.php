@@ -7,7 +7,7 @@ require WEBPLUGIN . 'bc/bcvar.php';
 $start = startClock();
 $user_id = 838;
 
-$folder = '/home/chesbro_amazon';
+$folder = '/home/chesbro_amazon/';
 
 $filter = array(
     'min_date_created' => date('r', strtotime("-3 days")),

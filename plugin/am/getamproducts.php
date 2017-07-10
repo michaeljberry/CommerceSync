@@ -7,6 +7,7 @@ require WEBPLUGIN . 'am/amvar.php';
 use controllers\channels\ConditionController;
 use ecommerce\Ecommerce;
 use models\channels\Condition;
+use models\channels\Product;
 use models\channels\ProductPrice;
 use models\channels\SKU;
 use models\channels\Stock;
@@ -134,9 +135,9 @@ if (!$report) {
             }
 
             //find-product-id
-            $product_id = $ecommerce->product_soi($sku, $name, '', $description, '', '');
+            $product_id = Product::searchOrInsertFromSKUGetId($sku, $name, '', $description, '', '');
             //add-product-availability
-            $availability_id = $ecommerce->availability_soi($product_id, $am_store_id);
+            $availability_id = Product::searchOrInsertAvailability($product_id, $am_store_id);
             //find sku
             $sku_id = SKU::searchOrInsert($sku);
             //add price

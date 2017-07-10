@@ -1,4 +1,7 @@
 <?php
+use ecommerce\Ecommerce;
+use models\channels\Inventory;
+
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
@@ -29,7 +32,7 @@ $fp = fopen($inventory_log, 'a+');
 fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
 fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-$updated = $ecommerce->get_inventory_for_update($table);
+$updated = Inventory::getUpdatedListing($table);
 print_r($updated);
 echo '<br><br>';
 

@@ -11,13 +11,13 @@ class SKU
 
     public static function save($sku, $productId = null)
     {
-        if(!$productId) {
+        if (!$productId) {
             $sql = "INSERT INTO sku (sku) 
                     VALUES (:sku)";
             $query_params = [
                 ':sku' => $sku
             ];
-        }else{
+        } else {
             $sql = "INSERT INTO sku (product_id, sku) 
                     VALUES (:product_id, :sku) 
                     ON DUPLICATE KEY UPDATE product_id = :product_id2";

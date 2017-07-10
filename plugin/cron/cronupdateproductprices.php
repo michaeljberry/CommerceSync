@@ -11,7 +11,7 @@ $start = startClock();
 $count = IBM::getCount();
 echo $count . '<br>';
 
-$currentPrices = Ecommerce::get_inventory_prices();
+$currentPrices = ProductPrice::get();
 
 for ($low = 0; $low < $count; $low += 500) {
     $high = $low + 500;

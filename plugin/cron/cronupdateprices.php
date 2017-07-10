@@ -10,13 +10,14 @@ require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
 use ecommerce\Ecommerce;
+use models\channels\ProductPrice;
 
 $start = startClock();
 
 $count = IBM::getCount();
 echo $count . '<br>';
 
-$updatedPrices = Ecommerce::get_inventory_prices(15);
+$updatedPrices = ProductPrice::getUpdated(15);
 
 $reverbListings = Ecommerce::getChannelListingsFromDB('reverb');
 $ebayListings = Ecommerce::getChannelListingsFromDB('ebay');

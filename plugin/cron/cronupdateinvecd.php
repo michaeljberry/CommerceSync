@@ -1,4 +1,6 @@
 <?php
+use models\channels\Inventory;
+
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
@@ -19,7 +21,7 @@ $log_file_name = date('ymd-H-i') . ' - ECD Inventory.txt';
 $inventory_log = $folder . 'log/inventory/' . $log_file_name;
 echo "Updated SKU's: Stock_QTY" . PHP_EOL;
 
-$updated = $ecommerce->get_updated_inventory($table);
+$updated = Inventory::getUpdated($table);
 $qohArray = [];
 for ($x = 1; $x <= count($updated); $x++) {
     if ($x % 25 == 0 || $x >= count($updated)) {

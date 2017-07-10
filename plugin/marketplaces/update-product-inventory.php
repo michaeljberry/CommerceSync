@@ -1,4 +1,7 @@
 <?php
+use ecommerce\Ecommerce;
+use models\channels\Inventory;
+
 require '../../core/init.php';
 $start_time = microtime(true);
 if ($_POST['inventory-sku']) {
@@ -27,7 +30,7 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = $ecommerce->get_inventory_for_update($table, $sku);
+        $updated = Ecommerce::getUpdatedBySKU($table, $sku);
         if (!empty($updated)) {
 //        print_r($updated);cd /var/www/html/portal/amazon
             /* Update Amazon Quantity per SKU */
@@ -87,7 +90,7 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = $ecommerce->get_inventory_for_update($table, $sku);
+        $updated = Inventory::getUpdatedBySKU($table, $sku);
         if (!empty($updated)) {
             $stock_id = $updated['id'];
             $sku_id = $updated['sku_id'];
@@ -130,7 +133,7 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = $ecommerce->get_inventory_for_update($table, $sku);
+        $updated = Inventory::getUpdatedBySKU($table, $sku);
         if (!empty($updated)) {
             print_r($updated);
             $stock_id = $updated['id'];

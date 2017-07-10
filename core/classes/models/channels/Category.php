@@ -110,4 +110,15 @@ class Category
         ];
         return MDB::query($sql, $query_params, 'boolean');
     }
+
+    public static function update($sku, $category_id, $table)
+    {
+        $table = CHC::sanitize_table_name($table);
+        $sql = "UPDATE $table SET category_id = :category_id WHERE sku = :sku";
+        $query_params = [
+            ':category_id' => $category_id,
+            ':sku' => $sku
+        ];
+        return MDB::query($sql, $query_params, 'boolean');
+    }
 }

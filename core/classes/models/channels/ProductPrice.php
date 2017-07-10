@@ -4,6 +4,7 @@ namespace models\channels;
 
 use ecommerce\Ecommerce;
 use models\ModelDB as MDB;
+use PDO;
 
 class ProductPrice
 {
@@ -70,5 +71,22 @@ class ProductPrice
                 LEFT JOIN product_cost pc ON sk.id = pc.sku_id 
                 WHERE pc.pl10 < pc.pl1";
         return MDB::query($sql, [], 'fetchAll');
+    }
+
+    public static function get()
+    {
+        $sql = "SELECT sk.sku, (pc.msrp/100) as msrp, (pc.pl10/100) as pl10, (pc.map/100) as map, (pc.pl1/100) as pl1, (pc.cost/100) as cost 
+                FROM product_cost pc 
+                LEFT OUTER JOIN sku sk ON sk.id = pc.sku_id";
+        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
+    }
+
+    public static function getUpdated($hours)
+    {
+        $sql = "SELECT sk.sku, (pc.msrp/100) as msrp, (pc.pl10/100) as pl10, (pc.map/100) as map, (pc.pl1/100) as pl1, (pc.cost/100) as cost 
+                FROM product_cost pc 
+                LEFT OUTER JOIN sku sk ON sk.id = pc.sku_id 
+                WHERE pc.last_edited >= DATE_SUB(NOW(), INTERVAL $hours HOUR)";
+        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
 }

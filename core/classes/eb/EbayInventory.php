@@ -3,6 +3,7 @@
 namespace eb;
 
 use ecommerce\Ecommerce;
+use models\channels\Product;
 
 class EbayInventory extends Ebay
 {
@@ -69,9 +70,9 @@ class EbayInventory extends Ebay
         }
 //
         //find-product-id
-        $product_id = $ecommerce->product_soi($sku, $title, '', $description, '', '');
+        $product_id = Product::searchOrInsertFromSKUGetId($sku, $title, '', $description, '', '');
         //add-product-availability
-        $availability_id = $ecommerce->availability_soi($product_id, $store_id);
+        $availability_id = Product::searchOrInsertAvailability($product_id, $store_id);
         //find sku
         $sku_id = $ecommerce->sku_soi($sku);
         //add price

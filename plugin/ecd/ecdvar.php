@@ -18,5 +18,5 @@ foreach ($ecd_warehouses as $w) {
         'warehouse_name' => $w['warehouse_name']
     ];
 }
-//echo '<br><br>';
-//print_r($warehouseId);
+echo '<br><br>';
+print_r($warehouseId);

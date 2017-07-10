@@ -3,6 +3,7 @@
 namespace bc;
 
 use ecommerce\Ecommerce;
+use models\channels\Product;
 use models\ModelDB as MDB;
 
 class BigCommerce
@@ -325,9 +326,9 @@ class BigCommerce
                 $photo_url = $b->primary_image->standard_url;
 
                 //find-product-id
-                $product_id = $ecommerce->product_soi($sku, $name, '', $description, $upc, $weight);
+                $product_id = Product::searchOrInsertFromSKUGetId($sku, $name, '', $description, $upc, $weight);
                 //add-product-availability
-                $availability_id = $ecommerce->availability_soi($product_id, BigCommerceClient::getStoreID());
+                $availability_id = MDB::availability_soi($product_id, BigCommerceClient::getStoreID());
                 //find sku
                 $sku_id = $ecommerce->sku_soi($sku);
                 //add price

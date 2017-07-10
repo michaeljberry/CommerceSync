@@ -68,6 +68,7 @@ foreach ($unshippedOrders as $o) {
         if (strtolower($channel) == 'bigcommerce') {
             //Update BC
 //            $response = $bcord->update_bc_tracking($order_num, $tracking_id, $carrier);
+//            Ecommerce::dd($response);
             if ($response) {
                 $shipped = true;
             }

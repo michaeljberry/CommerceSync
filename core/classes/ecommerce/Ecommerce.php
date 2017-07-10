@@ -12,157 +12,35 @@ use IBM;
 class Ecommerce
 {
 
-    //Get Inventory for bi-monthly dump
-    public function get_inventory_weekly($table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT st.id, st.sku_id, tb.inventory_level AS stock_qty FROM stock st JOIN $table tb ON tb.stock_id = st.id";
-        return MDB::query($sql, [], 'fetchAll');
-    }
-
-    public function get_inventory_price($sku, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT price FROM $table WHERE sku = :sku AND override_price = 0";
-        $query_params = [
-            'sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-    public function get_sku($sku_id)
-    {
-        $sql = "SELECT sku.sku FROM sku WHERE id = :sku_id";
-        $query_params = [
-            'sku_id' => $sku_id
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-    public function get_sku_id($sku)
-    {
-        $sql = "SELECT id FROM sku WHERE sku.sku = :sku";
-        $query_params = [
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-    public function find_product($sku)
-    {
-        $sql = "SELECT * FROM product p JOIN sku sk ON p.id = sk.product_id JOIN stock st ON st.sku_id = sk.id WHERE sk.sku = :sku";
-        $query_params = [
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'fetch');
-    }
-
-    //--------------End of Product Spec---------------//
-
-    public function analyze_sales($sku)
-    {
-        if (empty($sku)) {
-            $sql = "SELECT sk.sku, c.name, o.date, oi.price, o.shipping_amount, oi.quantity, p.price AS current_price, o.id FROM order_item oi JOIN sync.order o ON o.id = oi.order_id JOIN store s ON s.id = o.store_id JOIN channel c ON c.id = s.channel_id JOIN sku sk ON sk.id = oi.sku_id JOIN (SELECT p.sku_id, p.price FROM product_price p GROUP BY p.sku_id) p ON p.sku_id = sk.id WHERE sk.sku <> '' AND c.name = 'Ebay' ORDER BY sk.sku, o.date ASC";
-            return MDB::query($sql, [], 'fetchAll');
-        }
-    }
-
-    public function get_products_from_all_channels($sku = null)
-    { //, $offset, $limit
-        if (empty($sku)) {
-            $sql = "SELECT a.sku, a.asin1 AS am_list, b.store_listing_id AS bc_list, e.store_listing_id AS eb_list, r.store_listing_id AS rev_list FROM sync.listing_amazon a LEFT JOIN listing_bigcommerce b ON b.sku = a.sku LEFT JOIN listing_ebay e ON e.sku = a.sku LEFT JOIN listing_reverb r ON r.sku = a.sku ORDER BY sku ASC"; // LIMIT $offset, $limit
-            return MDB::query($sql, [], 'fetchAll');
-        }
-    }
-
-    public function get_product_info_from_channel($sku, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT * FROM $table WHERE sku = :sku";
-        $query_params = [
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'fetch');
-    }
-
-    public function get_amazon_products($offset, $limit)
-    {
-        $sql = "SELECT a.sku, a.asin1 AS am_list FROM sync.listing_amazon a ORDER BY sku ASC LIMIT $offset, $limit";
-        return MDB::query($sql, [], 'fetchAll');
-    }
-
-    //Get listing ID by stock_id
-    public function get_listing_id($stock_id, $table)
-    {
-        $table_col = CHC::sanitize_table_name($table);
-        $sql = "SELECT store_listing_id FROM $table_col WHERE stock_id = :stock_id";
-        $query_params = [
-            ':stock_id' => $stock_id
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-    public function get_listing_id_by_sku($sku, $table)
-    {
-        $table_col = CHC::sanitize_table_name($table);
-        $sql = "SELECT store_listing_id FROM $table_col WHERE stock_id = :stock_id";
-        $query_params = [
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
-    }
-
-
     //Prepare channel listings into arrays for manipulation
-    public function prepare_arrays($channel_array)
+    public static function prepare_arrays($channelArray)
     {
         $columns = '';
         $values = '';
-        $update_string = '';
-        $prepared_array = [];
-        $return_array = [];
-        foreach ($channel_array as $key => $val) {
+        $updateString = '';
+        $preparedArray = [];
+        $returnArray = [];
+        foreach ($channelArray as $key => $val) {
             $columns .= $key;
             $values .= ":" . $key;
-            $update_string .= $key . "=:" . $key . '2';
-            end($channel_array);
-            if (key($channel_array) !== $key) {
+            $updateString .= $key . "=:" . $key . '2';
+            end($channelArray);
+            if (key($channelArray) !== $key) {
                 $columns .= ',';
                 $values .= ',';
-                $update_string .= ',';
+                $updateString .= ',';
             }
-            $prepared_array[':' . $key] = $val;
-            $prepared_array[':' . $key . '2'] = $val;
+            $preparedArray[':' . $key] = $val;
+            $preparedArray[':' . $key . '2'] = $val;
         }
-        $return_array[0] = $columns;
-        $return_array[1] = $values;
-        $return_array[2] = $update_string;
-        $return_array[3] = $prepared_array;
-        return $return_array;
+        $returnArray[0] = $columns;
+        $returnArray[1] = $values;
+        $returnArray[2] = $updateString;
+        $returnArray[3] = $preparedArray;
+        return $returnArray;
     }
 
     //Return listing_id from Select or Insert if not Exists, Update if it does
-    public function listing_soi($table, $store_id, $stock_id, $channel_array, $update = false)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT id FROM $table WHERE stock_id = :stock_id AND store_id = :store_id";
-        $query_params = [
-            ':stock_id' => $stock_id,
-            ':store_id' => $store_id
-        ];
-        $listing_id = MDB::query($sql, $query_params, 'fetchColumn');
-        if ($update) {
-            $return_array = $this->prepare_arrays($channel_array);
-            $columns = $return_array[0];
-            $values = $return_array[1];
-            $update_string = $return_array[2];
-            $query_params = $return_array[3];
-
-            $sql = "INSERT INTO $table ($columns) VALUES ($values) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id),$update_string"; //
-            $listing_id = MDB::query($sql, $query_params, 'id');
-        }
-        return $listing_id;
-    }
 
     public function update_shipping_amount($order, $shipping_amount)
     {

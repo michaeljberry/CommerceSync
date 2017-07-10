@@ -134,4 +134,18 @@ class Product
         }
         return $id;
     }
+
+    public static function getAllInfo($sku)
+    {
+        $sql = "SELECT * 
+                FROM product p 
+                JOIN sku sk ON p.id = sk.product_id 
+                JOIN stock st ON st.sku_id = sk.id 
+                WHERE sk.sku = :sku";
+        $query_params = [
+            ':sku' => $sku
+        ];
+        return MDB::query($sql, $query_params, 'fetch');
+    }
+
 }

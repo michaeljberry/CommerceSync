@@ -3,6 +3,7 @@
 namespace rev;
 
 use ecommerce\Ecommerce;
+use models\channels\Listing;
 use models\channels\Product;
 
 class ReverbInventory extends Reverb
@@ -93,7 +94,8 @@ class ReverbInventory extends Reverb
                         'shipping_cost' => $shipping_cost
                     ];
 //                    print_r($channel_array);
-                    $listing_id = $ecommerce->listing_soi('listing_reverb', ReverbClient::getStoreID(), $stock_id, $channel_array, 'true');
+                    $listing_id = Listing::searchOrInsert('listing_reverb', ReverbClient::getStoreID(), $stock_id,
+                        $channel_array, 'true');
                     echo $listing_id . '<br><br>';
                 }
             }

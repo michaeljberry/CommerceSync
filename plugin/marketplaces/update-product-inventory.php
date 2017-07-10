@@ -1,6 +1,8 @@
 <?php
 use ecommerce\Ecommerce;
 use models\channels\Inventory;
+use models\channels\Listing;
+use models\channels\SKU;
 
 require '../../core/init.php';
 $start_time = microtime(true);
@@ -30,7 +32,7 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = Ecommerce::getUpdatedBySKU($table, $sku);
+        $updated = Listing::getUpdatedBySKU($table, $sku);
         if (!empty($updated)) {
 //        print_r($updated);cd /var/www/html/portal/amazon
             /* Update Amazon Quantity per SKU */
@@ -41,9 +43,9 @@ if ($_POST['inventory-sku']) {
             $stock_id = $updated['id'];
             $sku_id = $updated['sku_id'];
             $stock_qty = $updated['stock_qty'];
-            $sku = $ecommerce->get_sku($sku_id);
+            $sku = SKU::getById($sku_id);
             fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-            $price = $ecommerce->get_inventory_price($sku, $table);
+            $price = Listing::getPriceBySKU($sku, $table);
             if (!empty($price)) {
                 $amazon_price_xml .= $aminv->create_inventory_price_update_item_xml($sku, $price, $y);
             } else {
@@ -90,14 +92,14 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = Inventory::getUpdatedBySKU($table, $sku);
+        $updated = Listing::getUpdatedBySKU($table, $sku);
         if (!empty($updated)) {
             $stock_id = $updated['id'];
             $sku_id = $updated['sku_id'];
             $stock_qty = $updated['stock_qty'];
-            $sku = $ecommerce->get_sku($sku_id);
+            $sku = SKU::getById($sku_id);
             fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-            $price = $ecommerce->get_inventory_price($sku, $table);
+            $price = Listing::getPriceBySKU($sku, $table);
             if (empty($price)) {
                 $price = '';
                 echo 'There was either no price, or the price was overrode<br>';
@@ -133,15 +135,15 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = Inventory::getUpdatedBySKU($table, $sku);
+        $updated = Listing::getUpdatedBySKU($table, $sku);
         if (!empty($updated)) {
             print_r($updated);
             $stock_id = $updated['id'];
             $sku_id = $updated['sku_id'];
             $stock_qty = $updated['stock_qty'];
-            $sku = $ecommerce->get_sku($sku_id);
+            $sku = SKU::getById($sku_id);
             fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-            $price = $ecommerce->get_inventory_price($sku, $table);
+            $price = Listing::getPriceBySKU($sku, $table);
             if (empty($price)) {
                 $price = '';
                 echo 'There was either no price, or the price was overrode<br>';

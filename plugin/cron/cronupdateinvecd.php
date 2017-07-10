@@ -1,5 +1,6 @@
 <?php
 use models\channels\Inventory;
+use models\channels\Listing;
 
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
@@ -21,7 +22,7 @@ $log_file_name = date('ymd-H-i') . ' - ECD Inventory.txt';
 $inventory_log = $folder . 'log/inventory/' . $log_file_name;
 echo "Updated SKU's: Stock_QTY" . PHP_EOL;
 
-$updated = Inventory::getUpdated($table);
+$updated = Listing::getUpdated($table);
 $qohArray = [];
 for ($x = 1; $x <= count($updated); $x++) {
     if ($x % 25 == 0 || $x >= count($updated)) {

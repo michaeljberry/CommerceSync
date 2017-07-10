@@ -98,5 +98,27 @@ class OrderStats
         return MDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_ASSOC);
     }
 
+    public static function analyzeSales($sku)
+    {
+        if (empty($sku)) {
+            $sql = "SELECT sk.sku, c.name, o.date, oi.price, o.shipping_amount, oi.quantity, p.price AS current_price, o.id 
+                    FROM order_item oi 
+                    JOIN sync.order o ON o.id = oi.order_id 
+                    JOIN store s ON s.id = o.store_id 
+                    JOIN channel c ON c.id = s.channel_id 
+                    JOIN sku sk ON sk.id = oi.sku_id 
+                    JOIN (
+                      SELECT p.sku_id, p.price 
+                      FROM product_price p 
+                      GROUP BY p.sku_id
+                      ) p 
+                    ON p.sku_id = sk.id 
+                    WHERE sk.sku <> '' 
+                    AND c.name = 'Ebay' 
+                    ORDER BY sk.sku, o.date ASC";
+            return MDB::query($sql, [], 'fetchAll');
+        }
+    }
+
 
 }

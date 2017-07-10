@@ -1,4 +1,9 @@
 <?php
+use ecommerce\Ecommerce;
+use models\channels\Inventory;
+use models\channels\Listing;
+use models\channels\SKU;
+
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 
@@ -8,7 +13,7 @@ require WEBPLUGIN . 'bc/bcvar.php';
 
 $table = 'listing_bigcommerce';
 
-$updated = $ecommerce->get_inventory_weekly($table);
+$updated = Listing::getAll($table);
 print_r($updated);
 echo '<br><br>';
 
@@ -16,8 +21,8 @@ foreach ($updated as $u) {
     $stock_id = $u['id'];
     $sku_id = $u['sku_id'];
     $stock_qty = $u['stock_qty'];
-    $sku = $ecommerce->get_sku($sku_id);
-    $price = $ecommerce->get_inventory_price($sku, $table);
+    $sku = SKU::getById($sku_id);
+    $price = Listing::getPriceBySKU($sku, $table);
     if (empty($price)) {
         $price = '';
     }

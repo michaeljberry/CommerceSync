@@ -3,6 +3,7 @@
 namespace bc;
 
 use ecommerce\Ecommerce;
+use models\channels\Listing;
 use models\ModelDB as MDB;
 
 class BigCommerceInventory extends BigCommerce
@@ -24,7 +25,7 @@ class BigCommerceInventory extends BigCommerce
 
     public function update_bc_inventory($stock_id, $stock_qty, $price, Ecommerce $ecommerce)
     { //$BC
-        $store_listing_id = $ecommerce->get_listing_id($stock_id, 'listing_bigcommerce');
+        $store_listing_id = Listing::getStoreIdByStockId($stock_id, 'listing_bigcommerce');
         echo 'Stock ID: ' . $stock_id . ', ID: ' . $store_listing_id . ', Price: ' . $price . ', Qty: ' . $stock_qty . '<br>';
         $filter = [
 //            "inventory_level" => $stock_qty

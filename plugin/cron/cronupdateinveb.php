@@ -1,6 +1,8 @@
 <?php
 use ecommerce\Ecommerce;
 use models\channels\Inventory;
+use models\channels\Listing;
+use models\channels\SKU;
 
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
@@ -32,7 +34,7 @@ $fp = fopen($inventory_log, 'a+');
 fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
 fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-$updated = Inventory::getUpdatedListing($table);
+$updated = Listing::getAll($table);
 print_r($updated);
 echo '<br><br>';
 
@@ -40,14 +42,14 @@ foreach ($updated as $u) {
     $stock_id = $u['id'];
     $sku_id = $u['sku_id'];
     $stock_qty = $u['stock_qty'];
-    $sku = $ecommerce->get_sku($sku_id);
+    $sku = $u['sku'];
     fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-    $price = $ecommerce->get_inventory_price($sku, $table);
+    $price = Listing::getPriceBySKU($sku, $table);
     if (empty($price)) {
         $price = '';
     }
 
-    $response = $ebinv->update_ebay_inventory($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $stock_id, $stock_qty, $price, $ecommerce);
+    $response = $ebinv->update_ebay_inventory($stock_id, $stock_qty, $price, $ecommerce);
     print_r($response);
 
     fwrite($fp, "Inventory Upload Response: " . PHP_EOL . $response . PHP_EOL . PHP_EOL);

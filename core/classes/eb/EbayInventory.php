@@ -3,6 +3,7 @@
 namespace eb;
 
 use ecommerce\Ecommerce;
+use models\channels\Listing;
 use models\channels\Product;
 
 class EbayInventory extends Ebay
@@ -113,13 +114,13 @@ class EbayInventory extends Ebay
             'returns_accepted_option' => $returnsacceptedoption,
             'product_condition' => $product_condition
         );
-        $listing_id = $ecommerce->listing_soi('listing_ebay', $store_id, $stock_id, $channel_array, 'true');
+        $listing_id = Listing::searchOrInsert('listing_ebay', $store_id, $stock_id, $channel_array, 'true');
         return $listing_id;
     }
 
     public function update_ebay_inventory($stock_id, $quantity, $price, Ecommerce $ecommerce)
     {
-        $item_id = $ecommerce->get_listing_id($stock_id, 'listing_ebay');
+        $item_id = Listing::getStoreIdByStockId($stock_id, 'listing_ebay');
 
         $requestName = 'ReviseInventoryStatus';
         $xml = [

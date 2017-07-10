@@ -254,6 +254,7 @@ class WalmartOrder extends Walmart
         } elseif ($carrier == 'UPS') {
             $trackingURL = "http://wwwapps.ups.com/WebTracking/track";
         }
+        Ecommerce::dd($order);
         if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
             $tracking = $this->process_tracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
         } else {

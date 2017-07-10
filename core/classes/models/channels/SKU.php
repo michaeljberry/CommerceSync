@@ -31,6 +31,17 @@ class SKU
         return MDB::query($sql, $query_params, 'id');
     }
 
+    public static function getById($sku_id)
+    {
+        $sql = "SELECT sku.sku 
+                FROM sku 
+                WHERE id = :sku_id";
+        $query_params = [
+            'sku_id' => $sku_id
+        ];
+        return MDB::query($sql, $query_params, 'fetchColumn');
+    }
+
     public static function getId($sku)
     {
         $sql = "SELECT id 
@@ -76,4 +87,6 @@ class SKU
         ];
         return MDB::query($sql, $query_params, 'fetch', PDO::FETCH_ASSOC);
     }
+
+
 }

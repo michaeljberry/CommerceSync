@@ -3,6 +3,7 @@
 namespace bc;
 
 use ecommerce\Ecommerce;
+use models\channels\Listing;
 use models\channels\Product;
 use models\ModelDB as MDB;
 
@@ -397,7 +398,8 @@ class BigCommerce
                     'photo_url' => $photo_url
                 );
                 //add stock to listing
-                $listing_id = $ecommerce->listing_soi('listing_bigcommerce', BigCommerceClient::getStoreID(), $stock_id, $channel_array, 'true');
+                $listing_id = Listing::searchOrInsert('listing_bigcommerce', BigCommerceClient::getStoreID(), $stock_id,
+                    $channel_array, 'true');
                 echo $listing_id . '<br>';
 //                return $listing_id;
             }

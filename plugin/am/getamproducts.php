@@ -7,6 +7,7 @@ require WEBPLUGIN . 'am/amvar.php';
 use controllers\channels\ConditionController;
 use ecommerce\Ecommerce;
 use models\channels\Condition;
+use models\channels\Listing;
 use models\channels\Product;
 use models\channels\ProductPrice;
 use models\channels\SKU;
@@ -181,7 +182,7 @@ if (!$report) {
                 'fulfillment_channel' => $fulfillment_channel
             );
 
-            $listing_id = $ecommerce->listing_soi('listing_amazon', $am_store_id, $stock_id, $channel_array, 'true');
+            $listing_id = Listing::searchOrInsert('listing_amazon', $am_store_id, $stock_id, $channel_array, 'true');
             echo $listing_id . '<br>';
             $x++;
         } else {

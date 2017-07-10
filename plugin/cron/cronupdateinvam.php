@@ -5,6 +5,7 @@ require WEBCORE . 'ibminit.php';
 
 use ecommerce\Ecommerce;
 use models\channels\Inventory;
+use models\channels\Listing;
 
 $start = startClock();
 $user_id = 838;
@@ -31,7 +32,7 @@ $table = 'listing_amazon';
 //fwrite($fp, "------------------" . date("Y/m/d H:i:s").substr((string)$start_time,1,6) . "------------------" . PHP_EOL);
 //fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-$updated = Inventory::getUpdatedListing($table);
+$updated = Listing::getAll($table);
 //print_r($updated);
 $x = 1;
 $y = 1;

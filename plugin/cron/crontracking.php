@@ -98,16 +98,15 @@ foreach ($unshippedOrders as $o) {
             }
         } elseif (strtolower($channel) == 'walmart') {
             //Update Walmart
-            $response = $wmord->updateWalmartTracking($order_num, $tracking_id, $carrier);
-            if (array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
-                if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
-                    $shipped = true;
-                }
-            } elseif (array_key_exists('trackingNumber', $response['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
-                $shipped = true;
-            }
+//            $response = $wmord->updateWalmartTracking($order_num, $tracking_id, $carrier);
+//            if (array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
+//                if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
+//                    $shipped = true;
+//                }
+//            } elseif (array_key_exists('trackingNumber', $response['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
+//                $shipped = true;
+//            }
         }
-        Ecommerce::dd($response);
         if ($shipped) {
             $success = Order::markAsShipped($order_num, $channel);
         }

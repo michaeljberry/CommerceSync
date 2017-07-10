@@ -4,7 +4,10 @@ namespace eb;
 
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\Buyer;
 use models\channels\Order;
+use models\channels\OrderItem;
+use models\channels\OrderXML;
 use models\channels\SKU;
 
 class EbayOrder extends Ebay
@@ -59,7 +62,7 @@ class EbayOrder extends Ebay
         $item_id = $item->Item->ItemID . '-' . $item->TransactionID;
         $sku_id = SKU::searchOrInsert($sku);
         if (!LOCAL) {
-            $ecommerce->save_order_items($order_id, $sku_id, $principle, $quantity, $item_id);
+            OrderItem::save($order_id, $sku_id, $principle, $quantity, $item_id);
         }
         $itemXml = $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
         $itemObject['sku'] = $sku;
@@ -107,7 +110,7 @@ class EbayOrder extends Ebay
 
                 echo "Order: $order_num -> Status: $order_status<br>";
                 echo $xml->OrderID . '<br>';
-                $found = Ecommerce::orderExists($order_num);
+                $found = Order::get($order_num);
 
                 if (!$found) {
                     Ecommerce::dd($xml);
@@ -159,7 +162,8 @@ class EbayOrder extends Ebay
                     $state_id = Address::stateId($state);
                     $zip_id = Address::zipSoi($zip, $state_id);
                     $city_id = Address::citySoi($city, $state_id);
-                    $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
+                    $cust_id = Buyer::customer_soi($first_name, $last_name, ucwords(strtolower($address)),
+                        ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                     if (!LOCAL) {
                         $order_id = Order::save(EbayClient::getStoreID(), $cust_id, $order_num, $shipping,
                             $shipping_amount, $item_taxes, $fee, $trans_id);
@@ -174,7 +178,9 @@ class EbayOrder extends Ebay
                     $itemXml .= Ecommerce::get_tax_item_xml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
                     $channel_num = $ecommerce->get_channel_num($channelName, $sku);
-                    $orderXml = $ecommerce->create_xml($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
+                    $orderXml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp,
+                        $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2,
+                        $city, $state, $zip, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
                         $ecommerce->saveXmlToFTP($order_num, $orderXml, $folder, $channelName);

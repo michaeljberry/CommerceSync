@@ -34,4 +34,18 @@ class OrderItem
         ];
         return MDB::query($sql, $queryParams, 'boolean');
     }
+
+    public static function save($orderID, $skuID, $price, $quantity, $itemID = '')
+    {
+        $sql = "INSERT INTO order_item (order_id, sku_id, price, item_id, quantity) 
+                VALUES (:order_id, :sku_id, :price, :item_id, :quantity)";
+        $queryParams = [
+            ':order_id' => $orderID,
+            ':sku_id' => $skuID,
+            ':price' => $price,
+            ':item_id' => $itemID,
+            ':quantity' => $quantity
+        ];
+        return MDB::query($sql, $queryParams, 'boolean');
+    }
 }

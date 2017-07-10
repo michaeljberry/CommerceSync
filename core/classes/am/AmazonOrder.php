@@ -6,7 +6,10 @@ use ecommerce\Ecommerce;
 use \DateTime;
 use \DateTimeZone;
 use models\channels\Address;
+use models\channels\Buyer;
 use models\channels\Order;
+use models\channels\OrderItem;
+use models\channels\OrderXML;
 use models\channels\SKU;
 
 class AmazonOrder extends Amazon
@@ -190,7 +193,7 @@ class AmazonOrder extends Amazon
 
             $skuId = SKU::searchOrInsert($sku);
             if (!LOCAL) {
-                $ecommerce->save_order_items($orderId, $skuId, $itemPrice, $quantity);
+                OrderItem::save($orderId, $skuId, $itemPrice, $quantity);
             }
             $itemXml .= $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
             $poNumber++;
@@ -217,7 +220,7 @@ class AmazonOrder extends Amazon
 
             $orderNum = $order->AmazonOrderId;
 
-            $found = Ecommerce::orderExists($orderNum);
+            $found = Order::get($orderNum);
 
             if (!$found) {
 
@@ -263,7 +266,8 @@ class AmazonOrder extends Amazon
                 $stateId = Address::stateId(strtoupper($shippingState));
                 $zipId = Address::zipSoi($shippingPostalCode, $stateId);
                 $cityId = Address::citySoi($shippingCity, $stateId);
-                $custId = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)), ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
+                $custId = Buyer::customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)),
+                    ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
                 if (!LOCAL) {
                     $orderId = Order::save(AmazonClient::getStoreID(), $custId, $orderNum, $shipping,
                         $totalShipping, $totalTax);
@@ -293,11 +297,13 @@ class AmazonOrder extends Amazon
                     );
                 }
 
-                $orderId = $ecommerce->updateOrderShippingAndTaxes($orderId, $totalShipping, $totalTax);
+                $orderId = Order::updateShippingAndTaxes($orderId, $totalShipping, $totalTax);
                 $channelName = 'Amazon';
                 $channelNum = $ecommerce->get_channel_num($channelName, $sku);
 
-                $orderXml = $ecommerce->create_xml($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
+                $orderXml = OrderXML::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping,
+                    $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2,
+                    $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
                 if (!LOCAL) {
                     $ecommerce->saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
                 }

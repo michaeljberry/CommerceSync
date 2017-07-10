@@ -25,7 +25,8 @@ class BigCommerce
 
     public function save_app_info($crypt, $store_id, $store_url, $store_username, $api_key)
     {
-        $sql = "INSERT INTO api_bigcommerce (store_id, store_url, username, api_key) VALUES (:store_id, :store_url, :username, :api_key)";
+        $sql = "INSERT INTO api_bigcommerce (store_id, store_url, username, api_key) 
+                VALUES (:store_id, :store_url, :username, :api_key)";
         $query_params = array(
             ":store_id" => $store_id,
             ":store_url" => $store_url,
@@ -38,7 +39,8 @@ class BigCommerce
 
     public function add_product($name, $description, $meta_keywords, $meta_description, $page_title, $width, $weight, $height, $depth)
     {
-        $sql = "INSERT INTO product (name, description, meta_keywords, meta_description, page_title, width, weight, height, depth) VALUES (:name, :description, :meta_keywords, :meta_description, :page_title, :width, :weight, :height, :depth)";
+        $sql = "INSERT INTO product (name, description, meta_keywords, meta_description, page_title, width, weight, height, depth) 
+                VALUES (:name, :description, :meta_keywords, :meta_description, :page_title, :width, :weight, :height, :depth)";
         $query_params = array(
             ":name" => $name,
             ":description" => $description,
@@ -56,7 +58,8 @@ class BigCommerce
 
     public function add_sku($product_id, $sku)
     {
-        $sql = "INSERT INTO sku (product_id, sku) VALUES (:product_id, :sku)";
+        $sql = "INSERT INTO sku (product_id, sku) 
+                VALUES (:product_id, :sku)";
         $query_params = array(
             ":product_id" => $product_id,
             ":sku" => $sku
@@ -75,7 +78,8 @@ class BigCommerce
         } elseif ($condition == "Refurbished") {
             $condition_id = 5;
         }
-        $sql = "INSERT INTO stock (sku_id, condition_id, uofm_id) VALUES (:sku_id, :condition_id, :uofm_id)";
+        $sql = "INSERT INTO stock (sku_id, condition_id, uofm_id) 
+                VALUES (:sku_id, :condition_id, :uofm_id)";
         $query_params = array(
             ":sku_id" => $sku_id,
             ":condition_id" => $condition_id,
@@ -86,7 +90,8 @@ class BigCommerce
 
     public function add_stock_to_listing($store_id, $stock_id, $store_listing_id)
     {
-        $sql = "INSERT INTO listing_bigcommerce (store_id, stock_id, store_listing_id) VALUES (:store_id, :stock_id, :store_listing_id)";
+        $sql = "INSERT INTO listing_bigcommerce (store_id, stock_id, store_listing_id) 
+                VALUES (:store_id, :stock_id, :store_listing_id)";
         $query_params = array(
             ":store_id" => $store_id,
             ":stock_id" => $stock_id,
@@ -97,7 +102,8 @@ class BigCommerce
 
     public function add_product_availability($product_id, $store_id)
     {
-        $sql = "INSERT INTO product_availability (product_id, store_id, is_available) VALUES (:product_id, :store_id, 1)";
+        $sql = "INSERT INTO product_availability (product_id, store_id, is_available) 
+                VALUES (:product_id, :store_id, 1)";
         $query_params = array(
             ":product_id" => $product_id,
             ":store_id" => $store_id
@@ -107,7 +113,8 @@ class BigCommerce
 
     public function add_product_price($sku_id, $price, $store_id)
     {
-        $sql = "INSERT INTO product_price (sku_id, price, store_id) VALUES (:sku_id, :price, :store_id";
+        $sql = "INSERT INTO product_price (sku_id, price, store_id) 
+                VALUES (:sku_id, :price, :store_id";
         $query_params = array(
             ":sku_id" => $sku_id,
             ":price" => $price,
@@ -118,13 +125,18 @@ class BigCommerce
 
     public function get_product_with_upc()
     {
-        $sql = "SELECT p.id, p.upc, sk.sku, lb.store_listing_id FROM product p JOIN sku sk ON sk.product_id = p.id JOIN listing_bigcommerce lb ON lb.sku = sk.sku";
+        $sql = "SELECT p.id, p.upc, sk.sku, lb.store_listing_id 
+                FROM product p 
+                JOIN sku sk ON sk.product_id = p.id 
+                JOIN listing_bigcommerce lb ON lb.sku = sk.sku";
         return MDB::query($sql, [], 'fetchAll');
     }
 
     public function update_upc($sku, $upc)
     {
-        $sql = "UPDATE listing_bigcommerce SET upc = :upc WHERE sku = :sku";
+        $sql = "UPDATE listing_bigcommerce 
+                SET upc = :upc 
+                WHERE sku = :sku";
         $query_params = [
             ':upc' => $upc,
             ':sku' => $sku

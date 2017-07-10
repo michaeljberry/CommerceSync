@@ -4,7 +4,10 @@ namespace bc;
 
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\Buyer;
 use models\channels\Order;
+use models\channels\OrderItem;
+use models\channels\OrderXML;
 use models\channels\SKU;
 
 class BigCommerceOrder extends BigCommerce
@@ -14,12 +17,12 @@ class BigCommerceOrder extends BigCommerce
         $orders = $BC::getOrders($filter);
         if ($orders) {
             foreach ($orders as $o) {
-                $order_num = $o->id;
-                $found = Ecommerce::orderExists($order_num);
+                $orderNum = $o->id;
+                $found = Order::get($orderNum);
                 if (!$found) {
                     $state_code = $o->shipping_addresses[0]->state;
                     $total_tax = $o->total_tax;
-                    $ship_info = $this->get_bc_order_ship_info($order_num);
+                    $ship_info = $this->get_bc_order_ship_info($orderNum);
                     $shipping = 'ZSTD';
                     $total_order = $o->total_ex_tax;
                     if ($total_order > 299) {
@@ -42,21 +45,22 @@ class BigCommerceOrder extends BigCommerce
                         $country = 'USA';
                     }
                     $city_id = Address::citySoi($city, $state_id);
-                    $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
+                    $cust_id = Buyer::customer_soi($first_name, $last_name, ucwords(strtolower($address)),
+                        ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                     if (!LOCAL) {
-                        $order_id = Order::save(BigCommerceClient::getStoreID(), $cust_id, $order_num,
+                        $order_id = Order::save(BigCommerceClient::getStoreID(), $cust_id, $orderNum,
                             $shipping, $shipping_amount, $total_tax);
                     }
-                    $response = $this->getOrderItems($order_num);
+                    $response = $this->getOrderItems($orderNum);
                     $info_array = $this->parseItems($response, $ecommerce, $state_code, $total_tax, $order_id);
                     $item_xml = $info_array['item_xml'];
                     $channelName = 'BigCommerce';
                     $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country);
                     if (!LOCAL) {
-                        $ecommerce->saveXmlToFTP($order_num, $xml, $folder, $channelName);
+                        $ecommerce->saveXmlToFTP($orderNum, $xml, $folder, $channelName);
                     }
                 } else {
-                    echo 'Order ' . $order_num . ' is already in the database.';
+                    echo 'Order ' . $orderNum . ' is already in the database.';
                 }
             }
         }
@@ -155,18 +159,18 @@ class BigCommerceOrder extends BigCommerce
         }
     }
 
-    public function get_bc_order_product($order_num)
+    public function get_bc_order_product($orderNum)
     {
-        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_num . '/products.json';
+        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $orderNum . '/products.json';
         $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
 
         $items = json_decode($response);
         return $items;
     }
 
-    public function getOrderItems($order_num)
+    public function getOrderItems($orderNum)
     {
-        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_num . '/products.json';
+        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $orderNum . '/products.json';
         return BigCommerceClient::bigcommerceCurl($api_url, 'GET');
     }
 
@@ -186,7 +190,7 @@ class BigCommerceOrder extends BigCommerce
             $upc = $this->get_bc_product_upc($product_id);
             $sku_id = SKU::searchOrInsert($sku);
             if (!LOCAL) {
-                $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
+                OrderItem::save($order_id, $sku_id, $item_total, $quantity);
             }
             $item_xml .= $ecommerce->create_item_xml($sku, $title, $ponumber, $quantity, $item_total, $upc);
             $ponumber++;
@@ -234,7 +238,7 @@ class BigCommerceOrder extends BigCommerce
         $channel_name = 'Store';
         $channel = "BigCommerce";
         $channel_num = $ecommerce->get_channel_num($channel, $sku);
-        $order_num = $o->id;
+        $orderNum = $o->id;
         $timestamp = $o->date_created;
         $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));
         $timestamp = str_replace(' ', 'T', $timestamp);
@@ -242,7 +246,8 @@ class BigCommerceOrder extends BigCommerce
         $shipping_amount = number_format($o->shipping_cost_inc_tax, 2);
         $order_date = $timestamp;
         $ship_to_name = $first_name . ' ' . $last_name;
-        $xml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+        $xml = OrderXML::create($channel_num, $channel_name, $orderNum, $timestamp, $shipping_amount, $shipping,
+            $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
         return $xml;
     }
 

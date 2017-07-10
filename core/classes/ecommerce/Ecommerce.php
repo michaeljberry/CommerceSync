@@ -2,6 +2,8 @@
 
 namespace ecommerce;
 
+use models\channels\Channel;
+use models\channels\Order;
 use models\channels\SKU;
 use models\channels\Tracking;
 use PDO;
@@ -38,241 +40,6 @@ class Ecommerce
         $returnArray[2] = $updateString;
         $returnArray[3] = $preparedArray;
         return $returnArray;
-    }
-
-    //Return listing_id from Select or Insert if not Exists, Update if it does
-
-    //Save order from channels to DB
-
-    public function updateOrderShippingAndTaxes($order_id, $shipping, $taxes)
-    {
-        $sql = "UPDATE sync.order SET shipping_amount = :shipping, taxes = :taxes WHERE id = :id";
-        $queryParams = [
-            ':shipping' => $shipping,
-            ':taxes' => $taxes,
-            ':id' => $order_id
-        ];
-        return MDB::query($sql, $queryParams, 'id');
-    }
-
-    //Save order items from channel orders to DB
-    public function save_order_items($order_id, $sku_id, $price, $quantity, $item_id = '')
-    {
-        $sql = "INSERT INTO order_item (order_id, sku_id, price, item_id, quantity) VALUES (:order_id, :sku_id, :price, :item_id, :quantity)";
-        $queryParams = [
-            ':order_id' => $order_id,
-            ':sku_id' => $sku_id,
-            ':price' => $price,
-            ':item_id' => $item_id,
-            ':quantity' => $quantity
-        ];
-        return MDB::query($sql, $queryParams, 'boolean');
-    }
-
-    //Return cust_id from Select or Insert if not Exists
-    public function customer_soi(
-        $first_name,
-        $last_name,
-        $street_address,
-        $street_address2,
-        $city_id,
-        $state_id,
-        $zip_id
-    ) {
-        $sql = "SELECT id FROM customer WHERE first_name = :first_name AND last_name = :last_name AND street_address = :street_address AND zip_id = :zip_id";
-        $queryParams = [
-            ':first_name' => $first_name,
-            ':last_name' => $last_name,
-            ':street_address' => $street_address,
-            ':zip_id' => $zip_id
-        ];
-        $cust_id = MDB::query($sql, $queryParams, 'fetchColumn');
-        if (empty($cust_id)) {
-            $sql = "INSERT INTO customer (first_name, last_name, street_address, street_address2, city_id, state_id, zip_id) VALUES (:first_name, :last_name, :street_address, :street_address2, :city_id, :state_id, :zip_id)";
-            $queryParams = [
-                ":first_name" => $first_name,
-                ":last_name" => $last_name,
-                ":street_address" => $street_address,
-                ":street_address2" => $street_address2,
-                ":city_id" => $city_id,
-                ":state_id" => $state_id,
-                ":zip_id" => $zip_id
-            ];
-            $cust_id = MDB::query($sql, $queryParams, 'id');
-        }
-        return $cust_id;
-    }
-
-    public function get_current_inventory($table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT sku, inventory_level FROM $table";
-        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
-    }
-
-    public function update_inventory($sku, $qty, $price, $table)
-    {
-        $table = CHC::sanitize_table_name($table);
-        if (!empty($price)) {
-            $sql = "UPDATE $table tb SET tb.inventory_level = :qty, tb.price = :price WHERE tb.sku = :item";
-            $queryParams = [
-                ":qty" => $qty,
-                ":price" => $price,
-                ":item" => $sku
-            ];
-        } else {
-//            $sql = "UPDATE stock st JOIN sku sk ON sk.id = st.sku_id JOIN $table tb ON st.id = tb.stock_id SET tb.inventory_level = :qty WHERE sk.sku = :item";
-//            UPDATE $table tb SET tb.inventory_level = :qty WHERE tb.sku = :item
-//            INSERT INTO $table tb (tb.sku, tb.inventory_level) VALUES(:sku, :qty) ON DUPLICATE KEY UPDATE tb.inventory_level = :qty2
-            $sql = "INSERT INTO $table (sku, inventory_level) VALUES(:sku, :qty) ON DUPLICATE KEY UPDATE inventory_level = :qty2";
-            $queryParams = [
-                ":qty" => $qty,
-                ":sku" => $sku,
-                ":qty2" => $qty
-            ];
-        }
-        return MDB::query($sql, $queryParams, 'boolean');
-    }
-
-    public function sync_inventory_from($fromtable, $totable)
-    {
-        $fromtable = CHC::sanitize_table_name($fromtable);
-        $totable = CHC::sanitize_table_name($totable);
-        $sql = "SELECT la.title, la.description, p.upc, sk.sku, la.inventory_level AS quantity, la.price, la.category_id, p.weight FROM sync.product p JOIN sku sk ON sk.product_id = p.id JOIN $fromtable la ON la.sku = sk.sku LEFT OUTER JOIN $totable le ON le.sku = la.sku WHERE p.upc <> '' AND le.sku IS NULL";
-        return MDB::query($sql, [], 'fetchAll');
-    }
-
-    public function get_mapped_category($fromcolumn, $tocolumn, $category_id)
-    {
-        $fromcolumn = CHC::sanitize_table_name($fromcolumn);
-        $tocolumn = CHC::sanitize_table_name($tocolumn);
-        $sql = "SELECT $tocolumn FROM categories_mapped WHERE $fromcolumn = :category_id";
-        $queryParams = [
-            ':category_id' => $category_id
-        ];
-        return MDB::query($sql, $queryParams, 'fetchColumn');
-    }
-
-    //Find if order has been downloaded to VAI
-    public static function findDownloadedVaiOrder($order_num)
-    {
-        $sql = "SELECT * FROM order_sync WHERE order_num = :order_num AND success = 1";
-        $queryParams = [
-            ':order_num' => $order_num
-        ];
-        return MDB::query($sql, $queryParams, 'rowCount');
-    }
-
-    public static function orderExists($orderNum)
-    {
-        $number = Ecommerce::findDownloadedVaiOrder($orderNum);
-
-        if ($number > 0) {
-            Ecommerce::dd("Found in database");
-            return true;
-        }
-        return false;
-    }
-
-    //Create order for download to VAI to allow for XML creation
-    public function insertOrder($order_num, $success = 1, $type = 'Amazon')
-    {
-        $sql = "INSERT INTO order_sync (order_num, success, type) VALUES (:order_num, :success, :type)";
-        $queryParams = [
-            ":order_num" => $order_num,
-            ":success" => $success,
-            ":type" => $type
-        ];
-        return MDB::query($sql, $queryParams, 'boolean');
-    }
-
-    //Get Channel Account #'s
-    public function get_acct_num($channel)
-    {
-        $sql = "SELECT co_one_acct, co_two_acct FROM channel WHERE channel.name = :name";
-        $queryParams = [
-            ':name' => $channel
-        ];
-        return MDB::query($sql, $queryParams, 'fetch');
-    }
-
-    //Create order XML for download to VAI
-    public function create_xml(
-        $channel_num,
-        $channel_name,
-        $order_num,
-        $timestamp,
-        $shipping_amount,
-        $shipping,
-        $order_date,
-        $buyer_phone,
-        $ship_to_name,
-        $address,
-        $address2,
-        $city,
-        $state,
-        $zip,
-        $country,
-        $item_xml
-    ) {
-        $xml = <<<EOD
-        <NAMM_PO version="2007.1">
-            <Id>S2S{$channel_num}_PO$order_num</Id>
-            <Timestamp>$timestamp</Timestamp>
-            <BuyerId>$channel_num</BuyerId>
-            <BuyerIdDesc>My Music Life $channel_name</BuyerIdDesc>
-            <PO>$order_num</PO>
-            <Backorder>Y</Backorder>
-            <SupplierId>33076</SupplierId>
-            <SupplierName>Chesbro Music Co.</SupplierName>
-            <TermsCode>P999</TermsCode>
-            <TermsDays>0</TermsDays>
-            <TermsDate>12/31/1899</TermsDate>
-            <TermsPercent>$shipping_amount</TermsPercent>
-            <TermsPercentDays>0</TermsPercentDays>
-            <ShipInstructions></ShipInstructions>
-            <TranspCode>$shipping</TranspCode>
-            <TranspDesc></TranspDesc>
-            <TranspCarrier></TranspCarrier>
-            <TranspTime>0</TranspTime>
-            <TranspTerms></TranspTerms>
-            <DateOrdered>$timestamp</DateOrdered>
-            <DateBeginShip>12/31/1899</DateBeginShip>
-            <DateEndShip>12/31/1899</DateEndShip>
-            <DateCancel>12/31/1899</DateCancel>
-            <BuyerName></BuyerName>
-            <BuyerPhone>$buyer_phone</BuyerPhone>
-            <POComments></POComments>
-            <ShipToName>$ship_to_name</ShipToName>
-            <ShipToId>$channel_num</ShipToId>
-            <ShipToAddress1>$address</ShipToAddress1>
-            <ShipToAddress2>$address2</ShipToAddress2>
-            <ShipToAddress3></ShipToAddress3>
-            <ShipToAddress4></ShipToAddress4>
-            <ShipToCity>$city</ShipToCity>
-            <ShipToState>$state</ShipToState>
-            <ShipToPostalCode>$zip</ShipToPostalCode>
-            <ShipToCountry></ShipToCountry>
-            <ShipToCountryCode>$country</ShipToCountryCode>
-            <SoldToName>My Music Life $channel_name</SoldToName>
-            <SoldToId>$channel_num</SoldToId>
-            <SoldToAddress1>PO Box 2009</SoldToAddress1>
-            <SoldToAddress2></SoldToAddress2>
-            <SoldToAddress3></SoldToAddress3>
-            <SoldToAddress4></SoldToAddress4>
-            <SoldToCity>Idaho Falls</SoldToCity>
-            <SoldToState>ID</SoldToState>
-            <SoldToPostalCode>83403-2009</SoldToPostalCode>
-            <SoldToCountry></SoldToCountry>
-            <SoldToCountryCode></SoldToCountryCode>
-            <PORevisionNumber></PORevisionNumber>
-            <POStatusIndicator></POStatusIndicator>
-            <ASNRequirement></ASNRequirement>
-            <POFileType></POFileType>
-            $item_xml
-            </NAMM_PO>
-EOD;
-        return $xml;
     }
 
     //Create Order Item XML for inclusion in Order XML
@@ -379,7 +146,7 @@ EOD;
     //Look for this in cronorderseb.php and other channels. Currently only in cronordersam.php
     public function get_channel_num($channel_name, $sku)
     {
-        $accounts = $this->get_acct_num($channel_name);
+        $accounts = Channel::getAccountByChannel($channel_name);
         $co_one_acct = $accounts['co_one_acct'];
         $co_two_acct = $accounts['co_two_acct'];
         $inventory = IBM::findInventory($sku, $channel_name);
@@ -642,7 +409,7 @@ EOD;
         self::saveFileToDisk($folder, $filename, $orderXml);
         if (file_exists($folder . $filename)) {
             echo "Successfully uploaded $filename<br />";
-            $results = $this->insertOrder($orderNum, 1, $channel);
+            $results = Order::saveToSync($orderNum, 1, $channel);
             if ($results) {
                 echo "$orderNum successfully updated in DB.";
             }

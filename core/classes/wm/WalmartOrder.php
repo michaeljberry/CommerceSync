@@ -4,7 +4,10 @@ namespace wm;
 
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\Buyer;
 use models\channels\Order as Order1;
+use models\channels\OrderItem;
+use models\channels\OrderXML;
 use models\channels\SKU;
 use \Walmart\Order;
 
@@ -97,7 +100,8 @@ class WalmartOrder extends Walmart
         }
 
         $cityID = Address::citySoi($city, $stateID);
-        $custumerID = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($address)), ucwords(strtolower($address2)), $cityID, $stateID, $zipID);
+        $custumerID = Order1::customer_soi($firstName, $lastName, ucwords(strtolower($address)),
+            ucwords(strtolower($address2)), $cityID, $stateID, $zipID);
         if (!LOCAL) {
             $orderID = Order1::save(WalmartClient::getStoreID(), $custumerID, $orderNum, $shippingMethod,
                 $shippingTotal, $totalTax);
@@ -174,7 +178,7 @@ class WalmartOrder extends Walmart
             $upc = $item['MPItemView']['upc'];
             $sku_id = SKU::searchOrInsert($sku);
             if (!LOCAL) {
-                $ecommerce->save_order_items($order_id, $sku_id, $item_total, $quantity);
+                OrderItem::save($order_id, $sku_id, $item_total, $quantity);
             }
             $item_xml .= $ecommerce->create_item_xml($sku, $title, $ponumber, $quantity, $item_total, $upc);
             $ponumber++;
@@ -223,7 +227,8 @@ class WalmartOrder extends Walmart
         $timestamp = $timestamp . '.000Z';
         $order_date = $timestamp;
         $ship_to_name = $first_name . ' ' . $last_name;
-        $xml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+        $xml = OrderXML::create($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping,
+            $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
         return $xml;
     }
 
@@ -337,7 +342,7 @@ class WalmartOrder extends Walmart
         Ecommerce::dd($order);
         $order_num = $order['purchaseOrderId'];
         echo "Order: $order_num<br><br>";
-        $found = Ecommerce::orderExists($order_num);
+        $found = Order1::get($order_num);
         if (!$found) {
             if (!LOCAL) {
                 $acknowledged = $wmord->acknowledge_order($order_num);

@@ -87,7 +87,10 @@ class Order
 
     public static function getIdByStoreIdAndOrderNum($storeID, $orderNum)
     {
-        $sql = "SELECT id FROM sync.order WHERE store_id = :store_id AND order_num = :order_num";
+        $sql = "SELECT id 
+                FROM sync.order 
+                WHERE store_id = :store_id 
+                AND order_num = :order_num";
         $queryParams = [
             ':store_id' => $storeID,
             ':order_num' => $orderNum
@@ -124,7 +127,7 @@ class Order
         return $order_id;
     }
 
-    public static function save_taxes($orderID, $taxes)
+    public static function saveTaxes($orderID, $taxes)
     {
         $sql = "UPDATE sync.order 
                 SET taxes = :taxes 
@@ -134,5 +137,53 @@ class Order
             ":id" => $orderID
         ];
         return MDB::query($sql, $queryParams, 'id');
+    }
+
+    public static function updateShippingAndTaxes($orderID, $shipping, $taxes)
+    {
+        $sql = "UPDATE sync.order 
+                SET shipping_amount = :shipping, taxes = :taxes 
+                WHERE id = :id";
+        $queryParams = [
+            ':shipping' => $shipping,
+            ':taxes' => $taxes,
+            ':id' => $orderID
+        ];
+        return MDB::query($sql, $queryParams, 'id');
+    }
+
+    public static function findDownloadedVaiOrder($orderNum)
+    {
+        $sql = "SELECT * 
+                FROM order_sync 
+                WHERE order_num = :order_num 
+                AND success = 1";
+        $queryParams = [
+            ':order_num' => $orderNum
+        ];
+        return MDB::query($sql, $queryParams, 'rowCount');
+    }
+
+    public static function get($orderNum)
+    {
+        $number = Order::findDownloadedVaiOrder($orderNum);
+
+        if ($number > 0) {
+            Ecommerce::dd("Found in database");
+            return true;
+        }
+        return false;
+    }
+
+    public static function saveToSync($orderNum, $success = 1, $channel = 'Amazon')
+    {
+        $sql = "INSERT INTO order_sync (order_num, success, type) 
+                VALUES (:order_num, :success, :channel)";
+        $queryParams = [
+            ":order_num" => $orderNum,
+            ":success" => $success,
+            ":channel" => $channel
+        ];
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 }

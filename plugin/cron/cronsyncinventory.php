@@ -1,4 +1,8 @@
 <?php
+use ecommerce\Ecommerce;
+use models\channels\Category;
+use models\channels\Listing;
+
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 $user_id = 838;
@@ -7,7 +11,7 @@ require WEBPLUGIN . 'am/amvar.php';
 require WEBPLUGIN . 'bc/bcvar.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
-$bigcommerce->configure($BC, $bc_store_url, $bc_username, $bc_api_key);
+$bigcommerce->configure($BC);
 
 $from_array = [
     'table' => 'listing_amazon',
@@ -18,7 +22,7 @@ $to_array = [
     'category_column' => 'categories_ebay_id'
 ];
 
-$eligible_products = $ecommerce->sync_inventory_from($from_array['table'], $to_array['table']);
+$eligible_products = Listing::syncFromTo($from_array['table'], $to_array['table']);
 //print_r($eligible_products);
 $x = 0;
 $page = 34;
@@ -42,13 +46,14 @@ foreach ($eligible_products as $p) {
     $category_id = $p['category_id'];
     $weight = $p['weight'];
     echo "$title $upc $sku $category_id: ";
-    $category_id = $ecommerce->get_mapped_category($from_array['category_column'], $to_array['category_column'], $category_id);
+    $category_id = Category::getMapped($from_array['category_column'], $to_array['category_column'],
+        $category_id);
     echo $category_id . '<br>';
     //Need to check if item is non-stock in VAI before listing
     $result = IBM::findNonstockItem($sku);
     if (!empty($result)) {
         if (strpos($to_array['table'], 'ebay') !== false) {
-            $response = $ebinv->add_ebay_inventory($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price);
+            $response = $ebinv->add_ebay_inventory($category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price);
             echo '<br><br>';
 //            print_r($response);
             $item_id = $ecommerce->substring_between($response, '<itemid>', '</itemid>');
@@ -57,7 +62,7 @@ foreach ($eligible_products as $p) {
             if ($errors) {
                 print_r($errors);
             } else {
-                $listing_id = $ebinv->add_inventory_items($item_id, '1', $ecommerce, $eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token);
+                $listing_id = $ebinv->sync_inventory_items($item_id, '1', $ecommerce);
                 echo "$sku: UPC - $upc; ListingID - $listing_id<img src='$photo_url' width='200' height='200'><br>";
 //                echo "$sku: UPC - $upc; ListingID - $item_id<img src='$photo_url' width='200' height='200'><br>";
             }

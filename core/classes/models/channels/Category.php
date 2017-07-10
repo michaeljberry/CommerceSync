@@ -121,4 +121,17 @@ class Category
         ];
         return MDB::query($sql, $queryParams, 'boolean');
     }
+
+    public static function getMapped($fromColumn, $toColumn, $categoryID)
+    {
+        $fromColumn = CHC::sanitize_table_name($fromColumn);
+        $toColumn = CHC::sanitize_table_name($toColumn);
+        $sql = "SELECT $toColumn 
+                FROM categories_mapped 
+                WHERE $fromColumn = :category_id";
+        $queryParams = [
+            ':category_id' => $categoryID
+        ];
+        return MDB::query($sql, $queryParams, 'fetchColumn');
+    }
 }

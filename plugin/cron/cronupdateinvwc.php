@@ -38,7 +38,7 @@ foreach ($vaidata as $v) {
     $sku = $v['ITEM'];
     $qty = $v['QTY'];
     $price = $v['PRICE'];
-    $result = $ecommerce->update_inventory($sku, $qty, $price, $table);
+    $result = Listing::updateInventoryAndPrice($sku, $qty, $price, $table);
     if ($result) echo $sku . ' is updated.<br />';
 }
 $folder = '/var/www/html/portal/';

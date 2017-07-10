@@ -1,5 +1,8 @@
 <?php
 
+use ecommerce\Ecommerce;
+use models\channels\Listing;
+
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
@@ -20,7 +23,7 @@ $log_file_name = date('ymd-H-i') . ' - VAI Inventory.txt';
 $inventory_log = $folder . 'log/inventory/' . $log_file_name;
 echo "Updated SKU's: Stock_QTY" . PHP_EOL;
 
-$current_quantities = $ecommerce->get_current_inventory($table);
+$current_quantities = Listing::getCurrent($table);
 
 //ecom::dd($current_quantities);
 
@@ -30,7 +33,7 @@ foreach ($vaidata as $v) {
 
     if (array_key_exists($sku, $current_quantities)) {
         if ((int)$current_quantities[$sku]['inventory_level'] !== $qty) {
-            $result = $ecommerce->update_inventory($sku, $qty, '', $table);
+            $result = Listing::updateInventory($sku, $qty, $table);
             if ($result) {
                 echo $sku . ' is updated.<br />';
             }

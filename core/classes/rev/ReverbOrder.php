@@ -4,7 +4,10 @@ namespace rev;
 
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\Buyer;
 use models\channels\Order;
+use models\channels\OrderItem;
+use models\channels\OrderXML;
 use models\channels\SKU;
 
 class ReverbOrder extends Reverb
@@ -33,7 +36,7 @@ class ReverbOrder extends Reverb
             foreach ($orders as $o) {
                 foreach ($o as $order) {
                     $order_num = $order->order_number;
-                    $found = Ecommerce::orderExists($order_num);
+                    $found = Order::get($order_num);
                     if (!$found) {
                         $ship_to_name = $order->buyer_name;
                         $name = explode(' ', $ship_to_name);
@@ -87,16 +90,19 @@ class ReverbOrder extends Reverb
                         $state_id = Address::stateId($state);
                         $zip_id = Address::zipSoi($zip, $state_id);
                         $city_id = Address::citySoi($city, $state_id);
-                        $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)), ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
+                        $cust_id = Buyer::customer_soi($first_name, $last_name, ucwords(strtolower($address)),
+                            ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                         if (!LOCAL) {
                             $order_id = Order::save(ReverbClient::getStoreID(), $cust_id, $order_num,
                                 $shipping, $shipping_amount, $tax);
                         }
                         $sku_id = SKU::searchOrInsert($sku);
                         if (!LOCAL) {
-                            $ecommerce->save_order_items($order_id, $sku_id, $total, $quantity);
+                            OrderItem::save($order_id, $sku_id, $total, $quantity);
                         }
-                        $xml = $ecommerce->create_xml($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+                        $xml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp,
+                            $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2,
+                            $city, $state, $zip, $country, $item_xml);
                         if (!LOCAL) {
                             $ecommerce->saveXmlToFTP($order_num, $xml, $folder, $channelName);
                         }

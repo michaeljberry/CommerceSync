@@ -6,6 +6,7 @@ namespace models\channels;
 use controllers\channels\ChannelHelperController as CHC;
 use ecommerce\Ecommerce;
 use models\ModelDB as MDB;
+use PDO;
 
 class Listing
 {
@@ -110,7 +111,10 @@ class Listing
 
     public static function getId($table, $stockID, $storeID)
     {
-        $sql = "SELECT id FROM $table WHERE stock_id = :stock_id AND store_id = :store_id";
+        $sql = "SELECT id 
+                FROM $table 
+                WHERE stock_id = :stock_id 
+                AND store_id = :store_id";
         $queryParams = [
             ':stock_id' => $stockID,
             ':store_id' => $storeID
@@ -140,5 +144,54 @@ class Listing
             $listingID = Listing::save($table, $columns, $values, $updateString, $queryParams);
         }
         return $listingID;
+    }
+
+    public static function getCurrent($table)
+    {
+        $table = CHC::sanitize_table_name($table);
+        $sql = "SELECT sku, inventory_level 
+                FROM $table";
+        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
+    }
+
+    public static function updateInventoryAndPrice($sku, $qty, $price, $table)
+    {
+        $table = CHC::sanitize_table_name($table);
+        $sql = "UPDATE $table tb 
+                SET tb.inventory_level = :qty, tb.price = :price 
+                WHERE tb.sku = :item";
+        $queryParams = [
+            ":qty" => $qty,
+            ":price" => $price,
+            ":item" => $sku
+        ];
+        return MDB::query($sql, $queryParams, 'boolean');
+    }
+
+    public static function updateInventory($sku, $qty, $table)
+    {
+        $table = CHC::sanitize_table_name($table);
+        $sql = "INSERT INTO $table (sku, inventory_level) 
+                VALUES(:sku, :qty) 
+                ON DUPLICATE KEY UPDATE inventory_level = :qty2";
+        $queryParams = [
+            ":qty" => $qty,
+            ":sku" => $sku,
+            ":qty2" => $qty
+        ];
+        return MDB::query($sql, $queryParams, 'boolean');
+    }
+
+    public static function syncFromTo($fromTable, $toTable)
+    {
+        $fromTable = CHC::sanitize_table_name($fromTable);
+        $toTable = CHC::sanitize_table_name($toTable);
+        $sql = "SELECT la.title, la.description, p.upc, sk.sku, la.inventory_level AS quantity, la.price, la.category_id, p.weight 
+                FROM sync.product p 
+                JOIN sku sk ON sk.product_id = p.id 
+                JOIN $fromTable la ON la.sku = sk.sku 
+                LEFT OUTER JOIN $toTable le ON le.sku = la.sku 
+                WHERE p.upc <> '' AND le.sku IS NULL";
+        return MDB::query($sql, [], 'fetchAll');
     }
 }

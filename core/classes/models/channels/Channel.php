@@ -35,4 +35,15 @@ class Channel
         ];
         return MDB::query($sql, $queryParams, 'id');
     }
+
+    public static function getAccountByChannel($channel)
+    {
+        $sql = "SELECT co_one_acct, co_two_acct 
+                FROM channel 
+                WHERE channel.name = :name";
+        $queryParams = [
+            ':name' => $channel
+        ];
+        return MDB::query($sql, $queryParams, 'fetch');
+    }
 }

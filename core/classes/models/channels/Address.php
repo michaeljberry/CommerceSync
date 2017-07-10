@@ -13,18 +13,18 @@ class Address
         $sql = "SELECT id 
                 FROM zip 
                 WHERE zip.zip = :zip";
-        $query_params = [
+        $queryParams = [
             ':zip' => $zip
         ];
-        $zip_id = MDB::query($sql, $query_params, 'fetchColumn');
+        $zip_id = MDB::query($sql, $queryParams, 'fetchColumn');
         if (empty($zip_id)) {
             $sql = "INSERT INTO zip (state_id, zip) 
                     VALUES (:state_id, :zip) ";
-            $query_params = [
+            $queryParams = [
                 ':state_id' => $state_id,
                 ':zip' => $zip
             ];
-            $zip_id = MDB::query($sql, $query_params, 'id');
+            $zip_id = MDB::query($sql, $queryParams, 'id');
         }
         return $zip_id;
     }
@@ -34,10 +34,10 @@ class Address
         $sql = "SELECT id 
                 FROM state 
                 WHERE state.abbr = :state";
-        $query_params = [
+        $queryParams = [
             ':state' => $state_abbr
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function stateToAbbr($state)
@@ -45,10 +45,10 @@ class Address
         $sql = "SELECT abbr 
                 FROM state 
                 WHERE state.name = :state";
-        $query_params = [
+        $queryParams = [
             ':state' => $state
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function citySoi($city, $state_id)
@@ -57,19 +57,19 @@ class Address
                 FROM city 
                 WHERE city.name = :city 
                 AND state_id = :state_id";
-        $query_params = [
+        $queryParams = [
             ':city' => ucwords(strtolower($city)),
             ':state_id' => $state_id
         ];
-        $city_id = MDB::query($sql, $query_params, 'fetchColumn');
+        $city_id = MDB::query($sql, $queryParams, 'fetchColumn');
         if (empty($city_id)) {
             $sql = "INSERT INTO city (state_id, name) 
                     VALUES (:state_id, :city)";
-            $query_params = [
+            $queryParams = [
                 ':city' => ucwords(strtolower($city)),
                 ':state_id' => $state_id
             ];
-            $city_id = MDB::query($sql, $query_params, 'id');
+            $city_id = MDB::query($sql, $queryParams, 'id');
         }
         return $city_id;
     }

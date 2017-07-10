@@ -6,6 +6,7 @@ use ecommerce\Ecommerce;
 use \DateTime;
 use \DateTimeZone;
 use models\channels\Address;
+use models\channels\Order;
 use models\channels\SKU;
 
 class AmazonOrder extends Amazon
@@ -264,7 +265,8 @@ class AmazonOrder extends Amazon
                 $cityId = Address::citySoi($shippingCity, $stateId);
                 $custId = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)), ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
                 if (!LOCAL) {
-                    $orderId = $ecommerce->save_order(AmazonClient::getStoreID(), $custId, $orderNum, $shipping, $totalShipping, $totalTax);
+                    $orderId = Order::save(AmazonClient::getStoreID(), $custId, $orderNum, $shipping,
+                        $totalShipping, $totalTax);
                 }
 
                 $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);

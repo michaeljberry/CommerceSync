@@ -33,7 +33,7 @@ class OrderStats
         $sql = "INSERT INTO order_stats (channel, stats_date, sales, units_sold) 
                 VALUES (:channel, :date, :sales, :units_sold) 
                 ON DUPLICATE KEY UPDATE sales = :sales2, units_sold = :units_sold2";
-        $query_params = [
+        $queryParams = [
             ':channel' => $channel,
             ':date' => $date,
             ':sales' => $sales,
@@ -41,7 +41,7 @@ class OrderStats
             ':sales2' => $sales,
             ':units_sold2' => $units_sold
         ];
-        return MDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 
     public static function getWeek()
@@ -66,17 +66,17 @@ class OrderStats
                     FROM order_stats 
                     WHERE $condition 
                     GROUP BY channel";
-            $query_params = [];
+            $queryParams = [];
         } else {
             $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold 
                     FROM order_stats 
                     WHERE $condition 
                     AND channel = :channel";
-            $query_params = [
+            $queryParams = [
                 ':channel' => $channel
             ];
         }
-        return MDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $queryParams, 'fetchAll');
     }
 
     public static function getSalesHistory($sku_id)
@@ -92,10 +92,10 @@ class OrderStats
                 WHERE oi.sku_id = :sku_id
                 GROUP BY channel, DATE_FORMAT(date, '%Y-%m')
                 ORDER BY date DESC";
-        $query_params = [
+        $queryParams = [
             ':sku_id' => $sku_id
         ];
-        return MDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_ASSOC);
+        return MDB::query($sql, $queryParams, 'fetchAll', PDO::FETCH_ASSOC);
     }
 
     public static function analyzeSales($sku)

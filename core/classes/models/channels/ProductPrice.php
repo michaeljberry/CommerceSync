@@ -15,23 +15,23 @@ class ProductPrice
                 FROM product_price 
                 WHERE sku_id = :sku_id 
                 AND store_id = :store_id";
-        $query_params = [
+        $queryParams = [
             ':sku_id' => $skuID,
             ':store_id' => $storeID
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function saveBySKUId($skuID, $price, $storeID)
     {
         $sql = "INSERT INTO product_price (sku_id, price, store_id) 
                 VALUES (:sku_id, :price, :store_id)";
-        $query_params = [
+        $queryParams = [
             ':sku_id' => $skuID,
             ':price' => $price,
             ':store_id' => $storeID
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     public static function searchOrInsert($skuID, $storeID, $price = null)
@@ -48,7 +48,7 @@ class ProductPrice
         $sql = "INSERT INTO product_cost (sku_id, msrp, pl10, map, pl1, cost) 
                 VALUES (:sku_id, :msrp, :pl10, :map, :pl1, :cost) 
                 ON DUPLICATE KEY UPDATE msrp = :msrp2, pl10 = :pl102, map = :map2, pl1 = :pl12, cost = :cost2";
-        $query_params = [
+        $queryParams = [
             ':sku_id' => $skuID,
             ':msrp' => Ecommerce::toCents($msrp),
             ':pl1' => Ecommerce::toCents($pl1),
@@ -61,7 +61,7 @@ class ProductPrice
             ':pl102' => Ecommerce::toCents($pl10),
             ':cost2' => Ecommerce::toCents($cost)
         ];
-        return MDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 
     public static function getUpsideDownCost()

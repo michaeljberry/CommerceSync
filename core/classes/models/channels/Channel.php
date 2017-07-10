@@ -9,7 +9,7 @@ class Channel
     public static function getAppInfo($user_id, $table, $channel, $columns)
     {
         $columnSelect = $table . '.' . implode(",$table.", $columns);
-        $query_params = [
+        $queryParams = [
             'user_id' => $user_id,
             'channel' => $channel
         ];
@@ -19,20 +19,20 @@ class Channel
                 INNER JOIN account ON account.company_id = store.company_id 
                 INNER JOIN channel ON channel.id = store.channel_id 
                 WHERE account.id = :user_id AND channel.name = :channel";
-        return MDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $queryParams, 'fetch');
     }
 
     public static function setAppInfo($store_id, $dev_id, $app_id, $cert_id, $token)
     {
         $sql = "INSERT INTO api_ebay (store_id, devid, appid, certid, token) 
                 VALUES (:store_id, :devid, :appid, :certid, :token)";
-        $query_params = [
+        $queryParams = [
             ":store_id" => $store_id,
             ":devid" => Crypt::encrypt($dev_id),
             ":appid" => Crypt::encrypt($app_id),
             ":certid" => Crypt::encrypt($cert_id),
             ":token" => Crypt::encrypt($token)
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 }

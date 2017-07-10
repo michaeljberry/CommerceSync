@@ -34,7 +34,7 @@ $amazonOrdersThatHaveShipped = [];
 
 foreach ($unshippedOrders as $o) {
     $order_num = $o['order_num'];
-    $order_id = Order::getID($order_num);
+    $order_id = Order::getIdByOrderNum($order_num);
     $channel = $o['type'];
     $channelNumbers = $ecommerce->getChannelNumbers($channel);
     $item_id = $o['item_id'];

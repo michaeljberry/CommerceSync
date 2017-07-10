@@ -24,10 +24,10 @@ class Category
         $sql = "SELECT categories_amazon_id AS id 
                 FROM categories_mapped 
                 WHERE categories_ebay_id = :cat";
-        $query_params = [
+        $queryParams = [
             ':cat' => $categoryID
         ];
-        return MDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $queryParams, 'fetchAll');
     }
 
     public static function getMappable($categoryID = null)
@@ -64,10 +64,10 @@ class Category
                 FROM categories_ebay 
                 WHERE category_id LIKE :cat_id 
                 ORDER BY parent_category_id ASC";
-        $query_params = [
+        $queryParams = [
             ':cat_id' => "%" . $cat_id . "%"
         ];
-        return MDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $queryParams, 'fetchAll');
     }
 
     public static function getAllSubCategories($parentCategory, $table)
@@ -77,10 +77,10 @@ class Category
                 FROM $table 
                 WHERE parent_category_id = :parent_category_id 
                 ORDER BY category_id ASC";
-        $query_params = [
+        $queryParams = [
             ':parent_category' => $parentCategory
         ];
-        return MDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $queryParams, 'fetchAll');
     }
 
     public static function save($category_id, $category_name, $category_parent_id, $table)
@@ -89,13 +89,13 @@ class Category
         $sql = "INSERT INTO $table (category_id, parent_category_id, category_name) 
                 VALUES (:category_id, :parent_category_id, :category_name) 
                 ON DUPLICATE KEY UPDATE category_name = :category_name2";
-        $query_params = [
+        $queryParams = [
             ":category_id" => $category_id,
             ":parent_category_id" => $category_parent_id,
             ":category_name" => $category_name,
             ':category_name2' => $category_name
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     public static function updateMap($id, $category_id, $column)
@@ -104,21 +104,21 @@ class Category
         $sql = "UPDATE categories_mapped 
                 SET $column = :category_id 
                 WHERE id = :id";
-        $query_params = [
+        $queryParams = [
             ':category_id' => $category_id,
             ':id' => $id
         ];
-        return MDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 
     public static function update($sku, $category_id, $table)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "UPDATE $table SET category_id = :category_id WHERE sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':category_id' => $category_id,
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 }

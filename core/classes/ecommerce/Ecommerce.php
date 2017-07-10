@@ -42,94 +42,31 @@ class Ecommerce
 
     //Return listing_id from Select or Insert if not Exists, Update if it does
 
-    public function update_shipping_amount($order, $shipping_amount)
-    {
-        $sql = "UPDATE sync.order SET shipping_amount = :shipping_amount WHERE order_num = :order";
-        $query_params = [
-            ':shipping_amount' => $shipping_amount,
-            ':order' => $order
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
-
-    public function update_item_qty($order, $sku, $quantity)
-    {
-        $sql = "UPDATE order_item oi JOIN sync.order o ON o.id = oi.order_id JOIN sku sk ON sk.id = oi.sku_id SET oi.quantity = :quantity WHERE o.order_num = :order AND sk.sku = :sku";
-        $query_params = [
-            ':quantity' => $quantity,
-            ':order' => $order,
-            ':sku' => $sku
-        ];
-        return MDB::query($sql, $query_params, 'boolean');
-    }
-
     //Save order from channels to DB
-    public function save_order(
-        $store_id,
-        $cust_id,
-        $order_num,
-        $ship_method,
-        $shipping_amount,
-        $tax_amount = 0,
-        $fee = 0,
-        $trans_id = null
-    ) {
-        $sql = "SELECT id FROM sync.order WHERE store_id = :store_id AND order_num = :order_num";
-        $query_params = [
-            ':store_id' => $store_id,
-            ':order_num' => $order_num
-        ];
-        $order_id = MDB::query($sql, $query_params, 'fetchColumn');
-        if (empty($order_id)) {
-            $sql = "INSERT INTO sync.order (store_id, cust_id, order_num, ship_method, shipping_amount, taxes, fee, channel_order_id) VALUES (:store_id, :cust_id, :order_num, :ship_method, :shipping_amount, :taxes, :fee, :trans_id)";
-            $query_params = [
-                ":store_id" => $store_id,
-                ":cust_id" => $cust_id,
-                ":order_num" => $order_num,
-                ":ship_method" => $ship_method,
-                ":shipping_amount" => $shipping_amount,
-                ":taxes" => $tax_amount,
-                ':fee' => $fee,
-                ':trans_id' => $trans_id
-            ];
-            $order_id = MDB::query($sql, $query_params, 'id');
-        }
-        return $order_id;
-    }
-
-    public function save_taxes($order_id, $taxes)
-    {
-        $sql = "UPDATE sync.order SET taxes = :taxes WHERE id = :id";
-        $query_params = [
-            ":taxes" => $taxes,
-            ":id" => $order_id
-        ];
-        return MDB::query($sql, $query_params, 'id');
-    }
 
     public function updateOrderShippingAndTaxes($order_id, $shipping, $taxes)
     {
         $sql = "UPDATE sync.order SET shipping_amount = :shipping, taxes = :taxes WHERE id = :id";
-        $query_params = [
+        $queryParams = [
             ':shipping' => $shipping,
             ':taxes' => $taxes,
             ':id' => $order_id
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     //Save order items from channel orders to DB
     public function save_order_items($order_id, $sku_id, $price, $quantity, $item_id = '')
     {
         $sql = "INSERT INTO order_item (order_id, sku_id, price, item_id, quantity) VALUES (:order_id, :sku_id, :price, :item_id, :quantity)";
-        $query_params = [
+        $queryParams = [
             ':order_id' => $order_id,
             ':sku_id' => $sku_id,
             ':price' => $price,
             ':item_id' => $item_id,
             ':quantity' => $quantity
         ];
-        return MDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 
     //Return cust_id from Select or Insert if not Exists
@@ -143,16 +80,16 @@ class Ecommerce
         $zip_id
     ) {
         $sql = "SELECT id FROM customer WHERE first_name = :first_name AND last_name = :last_name AND street_address = :street_address AND zip_id = :zip_id";
-        $query_params = [
+        $queryParams = [
             ':first_name' => $first_name,
             ':last_name' => $last_name,
             ':street_address' => $street_address,
             ':zip_id' => $zip_id
         ];
-        $cust_id = MDB::query($sql, $query_params, 'fetchColumn');
+        $cust_id = MDB::query($sql, $queryParams, 'fetchColumn');
         if (empty($cust_id)) {
             $sql = "INSERT INTO customer (first_name, last_name, street_address, street_address2, city_id, state_id, zip_id) VALUES (:first_name, :last_name, :street_address, :street_address2, :city_id, :state_id, :zip_id)";
-            $query_params = [
+            $queryParams = [
                 ":first_name" => $first_name,
                 ":last_name" => $last_name,
                 ":street_address" => $street_address,
@@ -161,7 +98,7 @@ class Ecommerce
                 ":state_id" => $state_id,
                 ":zip_id" => $zip_id
             ];
-            $cust_id = MDB::query($sql, $query_params, 'id');
+            $cust_id = MDB::query($sql, $queryParams, 'id');
         }
         return $cust_id;
     }
@@ -178,7 +115,7 @@ class Ecommerce
         $table = CHC::sanitize_table_name($table);
         if (!empty($price)) {
             $sql = "UPDATE $table tb SET tb.inventory_level = :qty, tb.price = :price WHERE tb.sku = :item";
-            $query_params = [
+            $queryParams = [
                 ":qty" => $qty,
                 ":price" => $price,
                 ":item" => $sku
@@ -188,13 +125,13 @@ class Ecommerce
 //            UPDATE $table tb SET tb.inventory_level = :qty WHERE tb.sku = :item
 //            INSERT INTO $table tb (tb.sku, tb.inventory_level) VALUES(:sku, :qty) ON DUPLICATE KEY UPDATE tb.inventory_level = :qty2
             $sql = "INSERT INTO $table (sku, inventory_level) VALUES(:sku, :qty) ON DUPLICATE KEY UPDATE inventory_level = :qty2";
-            $query_params = [
+            $queryParams = [
                 ":qty" => $qty,
                 ":sku" => $sku,
                 ":qty2" => $qty
             ];
         }
-        return MDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 
     public function sync_inventory_from($fromtable, $totable)
@@ -210,20 +147,20 @@ class Ecommerce
         $fromcolumn = CHC::sanitize_table_name($fromcolumn);
         $tocolumn = CHC::sanitize_table_name($tocolumn);
         $sql = "SELECT $tocolumn FROM categories_mapped WHERE $fromcolumn = :category_id";
-        $query_params = [
+        $queryParams = [
             ':category_id' => $category_id
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     //Find if order has been downloaded to VAI
     public static function findDownloadedVaiOrder($order_num)
     {
         $sql = "SELECT * FROM order_sync WHERE order_num = :order_num AND success = 1";
-        $query_params = [
+        $queryParams = [
             ':order_num' => $order_num
         ];
-        return MDB::query($sql, $query_params, 'rowCount');
+        return MDB::query($sql, $queryParams, 'rowCount');
     }
 
     public static function orderExists($orderNum)
@@ -241,22 +178,22 @@ class Ecommerce
     public function insertOrder($order_num, $success = 1, $type = 'Amazon')
     {
         $sql = "INSERT INTO order_sync (order_num, success, type) VALUES (:order_num, :success, :type)";
-        $query_params = [
+        $queryParams = [
             ":order_num" => $order_num,
             ":success" => $success,
             ":type" => $type
         ];
-        return MDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 
     //Get Channel Account #'s
     public function get_acct_num($channel)
     {
         $sql = "SELECT co_one_acct, co_two_acct FROM channel WHERE channel.name = :name";
-        $query_params = [
+        $queryParams = [
             ':name' => $channel
         ];
-        return MDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $queryParams, 'fetch');
     }
 
     //Create order XML for download to VAI
@@ -478,10 +415,10 @@ EOD;
     public function getCompanyTaxInfo($company_id)
     {
         $sql = "SELECT s.abbr, t.tax_rate, t.tax_line_name, t.shipping_taxed FROM taxes t INNER JOIN state s ON s.id = t.state_id WHERE company_id = :company_id";
-        $query_params = [
+        $queryParams = [
             ':company_id' => $company_id
         ];
-        return MDB::query($sql, $query_params, 'fetchAll', PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
+        return MDB::query($sql, $queryParams, 'fetchAll', PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
 
     public function taxableState($stateArray, $state)

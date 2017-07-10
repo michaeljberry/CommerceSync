@@ -28,10 +28,10 @@ class Listing
         $sql = "SELECT * 
                 FROM $table 
                 WHERE sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $queryParams, 'fetch');
     }
 
     public static function getPriceBySKU($sku, $table)
@@ -41,10 +41,10 @@ class Listing
                 FROM $table 
                 WHERE sku = :sku 
                 AND override_price = 0";
-        $query_params = [
+        $queryParams = [
             'sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function getUpdatedBySKU($table, $sku)
@@ -54,10 +54,10 @@ class Listing
                 FROM stock st 
                 JOIN $table tb ON tb.stock_id = st.id 
                 WHERE tb.sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $queryParams, 'fetch');
     }
 
     public static function getAll($table)
@@ -90,10 +90,10 @@ class Listing
         $sql = "SELECT store_listing_id 
                 FROM $table_col 
                 WHERE stock_id = :stock_id";
-        $query_params = [
+        $queryParams = [
             ':stock_id' => $stockID
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function getIdBySKU($sku, $table)
@@ -102,20 +102,20 @@ class Listing
         $sql = "SELECT store_listing_id 
                 FROM $table_col 
                 WHERE stock_id = :stock_id";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function getId($table, $stockID, $storeID)
     {
         $sql = "SELECT id FROM $table WHERE stock_id = :stock_id AND store_id = :store_id";
-        $query_params = [
+        $queryParams = [
             ':stock_id' => $stockID,
             ':store_id' => $storeID
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function save($table, $columns, $values, $updateString, $queryParams)

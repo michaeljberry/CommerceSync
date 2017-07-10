@@ -13,9 +13,25 @@ class OrderItem
                 JOIN sku s ON oi.sku_id = s.id 
                 JOIN product p ON s.product_id = p.id 
                 WHERE order_id = :order_id";
-        $query_params = [
+        $queryParams = [
             ":order_id" => $id
         ];
-        return MDB::query($sql, $query_params, 'fetchAll');
+        return MDB::query($sql, $queryParams, 'fetchAll');
+    }
+
+    public static function updateQty($order, $sku, $quantity)
+    {
+        $sql = "UPDATE order_item oi 
+                JOIN sync.order o ON o.id = oi.order_id 
+                JOIN sku sk ON sk.id = oi.sku_id 
+                SET oi.quantity = :quantity 
+                WHERE o.order_num = :order_num 
+                AND sk.sku = :sku";
+        $queryParams = [
+            ':quantity' => $quantity,
+            ':order_num' => $order,
+            ':sku' => $sku
+        ];
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 }

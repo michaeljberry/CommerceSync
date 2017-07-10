@@ -14,21 +14,21 @@ class SKU
         if (!$productId) {
             $sql = "INSERT INTO sku (sku) 
                     VALUES (:sku)";
-            $query_params = [
+            $queryParams = [
                 ':sku' => $sku
             ];
         } else {
             $sql = "INSERT INTO sku (product_id, sku) 
                     VALUES (:product_id, :sku) 
                     ON DUPLICATE KEY UPDATE product_id = :product_id2";
-            $query_params = [
+            $queryParams = [
                 ':product_id' => $productId,
                 ':sku' => $sku,
                 ':product_id2' => $productId
             ];
         }
 
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     public static function getById($sku_id)
@@ -36,10 +36,10 @@ class SKU
         $sql = "SELECT sku.sku 
                 FROM sku 
                 WHERE id = :sku_id";
-        $query_params = [
+        $queryParams = [
             'sku_id' => $sku_id
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function getId($sku)
@@ -47,10 +47,10 @@ class SKU
         $sql = "SELECT id 
                 FROM sku 
                 WHERE sku.sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function searchOrInsert($sku)
@@ -67,10 +67,10 @@ class SKU
         $sql = "SELECT id 
                 FROM sku 
                 WHERE product_id = :product_id";
-        $query_params = [
+        $queryParams = [
             ':product_id' => $product_id
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function getSKUCosts($sku, $table)
@@ -82,10 +82,10 @@ class SKU
                 JOIN product p ON p.id = sk.product_id 
                 JOIN $table lt ON lt.sku = sk.sku 
                 WHERE sk.sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetch', PDO::FETCH_ASSOC);
+        return MDB::query($sql, $queryParams, 'fetch', PDO::FETCH_ASSOC);
     }
 
 

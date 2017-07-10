@@ -12,10 +12,10 @@ class Condition
         $sql = "SELECT id 
                 FROM sync.condition 
                 WHERE condition.condition = :condition";
-        $query_params = [
+        $queryParams = [
             ':condition' => $condition
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function searchOrInsert($condition)

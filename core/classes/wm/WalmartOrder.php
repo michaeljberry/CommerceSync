@@ -4,6 +4,7 @@ namespace wm;
 
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\Order as Order1;
 use models\channels\SKU;
 use \Walmart\Order;
 
@@ -98,7 +99,8 @@ class WalmartOrder extends Walmart
         $cityID = Address::citySoi($city, $stateID);
         $custumerID = $ecommerce->customer_soi($firstName, $lastName, ucwords(strtolower($address)), ucwords(strtolower($address2)), $cityID, $stateID, $zipID);
         if (!LOCAL) {
-            $orderID = $ecommerce->save_order(WalmartClient::getStoreID(), $custumerID, $orderNum, $shippingMethod, $shippingTotal, $totalTax);
+            $orderID = Order1::save(WalmartClient::getStoreID(), $custumerID, $orderNum, $shippingMethod,
+                $shippingTotal, $totalTax);
         }
         $infoArray = $this->get_wm_order_items($ecommerce, $orderNum, $orderItems, $stateCode, $totalTax, $orderID);
         $itemXml = $infoArray['item_xml'];

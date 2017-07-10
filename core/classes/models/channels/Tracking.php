@@ -30,10 +30,10 @@ class Tracking
         $sql = "UPDATE order_sync 
                 SET track_successful = '1' 
                 WHERE order_num = :order_num";
-        $query_params = [
+        $queryParams = [
             ':order_num' => $order_num
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     public static function updateTrackingNum($order_id, $tracking_num, $carrier)
@@ -42,20 +42,20 @@ class Tracking
                 FROM tracking 
                 WHERE order_id = :order_id 
                 AND tracking_num = :tracking_num";
-        $query_params = [
+        $queryParams = [
             ':order_id' => $order_id,
             ':tracking_num' => $tracking_num
         ];
-        $tracking_id = MDB::query($sql, $query_params, 'fetchColumn');
+        $tracking_id = MDB::query($sql, $queryParams, 'fetchColumn');
         if (empty($tracking_id)) {
             $sql = "INSERT INTO tracking (order_id, tracking_num, carrier) 
                     VALUES (:order_id, :tracking_num, :carrier)";
-            $query_params = [
+            $queryParams = [
                 ':order_id' => $order_id,
                 ':tracking_num' => $tracking_num,
                 ':carrier' => $carrier
             ];
-            $tracking_id = MDB::query($sql, $query_params, 'id');
+            $tracking_id = MDB::query($sql, $queryParams, 'id');
         }
         return $tracking_id;
     }

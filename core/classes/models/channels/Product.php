@@ -12,14 +12,14 @@ class Product
     {
         $sql = "INSERT INTO product (product.name, subtitle, description, upc, weight) 
                 VALUES (:name, :subtitle, :description, :upc, :weight)";
-        $query_params = [
+        $queryParams = [
             ':name' => $name,
             ':subtitle' => $sub_title,
             ':description' => $description,
             ':upc' => $upc,
             ':weight' => $weight
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     public static function getFromSKU($sku)
@@ -28,10 +28,10 @@ class Product
                 FROM product 
                 JOIN sku ON sku.product_id = product.id 
                 WHERE sku.sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $queryParams, 'fetch');
     }
 
     public static function getId($sku)
@@ -40,10 +40,10 @@ class Product
                 FROM product 
                 JOIN sku ON sku.product_id = product.id 
                 WHERE sku.sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function updateUPC($productId, $upc)
@@ -51,11 +51,11 @@ class Product
         $sql = "UPDATE product 
                 SET upc = :upc 
                 WHERE id = :id";
-        $query_params = [
+        $queryParams = [
             ':upc' => $upc,
             ':id' => $productId
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     public static function updateStatus($productId, $status)
@@ -63,11 +63,11 @@ class Product
         $sql = "UPDATE product 
                 SET status = :status 
                 WHERE id = :id";
-        $query_params = [
+        $queryParams = [
             ':status' => $status,
             ':id' => $productId
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     public static function searchOrInsertFromSKUGetSKUId($sku, $name, $subTitle, $description, $upc, $weight, $status = '')
@@ -108,22 +108,22 @@ class Product
                 WHERE product_id = :product_id 
                 AND store_id = :store_id 
                 AND is_available = '1'";
-        $query_params = [
+        $queryParams = [
             ':product_id' => $productId,
             ':store_id' => $storeID
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function saveAvailability($productID, $storeID)
     {
         $sql = "INSERT INTO product_availability (product_id, store_id, is_available) 
                 VALUES (:product_id, :store_id, 1)";
-        $query_params = [
+        $queryParams = [
             ":product_id" => $productID,
             ":store_id" => $storeID
         ];
-        return MDB::query($sql, $query_params, 'id');
+        return MDB::query($sql, $queryParams, 'id');
     }
 
     public static function searchOrInsertAvailability($productID, $storeID)
@@ -142,10 +142,10 @@ class Product
                 JOIN sku sk ON p.id = sk.product_id 
                 JOIN stock st ON st.sku_id = sk.id 
                 WHERE sk.sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetch');
+        return MDB::query($sql, $queryParams, 'fetch');
     }
 
 }

@@ -17,10 +17,10 @@ class Fee
                 FROM $table cat 
                 LEFT JOIN $table2 list ON cat.category_id = list.primary_category 
                 WHERE list.sku = :sku";
-        $query_params = [
+        $queryParams = [
             ':sku' => $sku
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function getCategory($categoryID)
@@ -28,10 +28,10 @@ class Fee
         $sql = "SELECT category_fee 
                 FROM categories_ebay 
                 WHERE category_id = :category_id";
-        $query_params = [
+        $queryParams = [
             ':category_id' => $categoryID
         ];
-        return MDB::query($sql, $query_params, 'fetchColumn');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
     public static function saveCategory($categoryID, $fee)
@@ -39,10 +39,10 @@ class Fee
         $sql = "UPDATE categories_ebay 
                 SET category_fee = :fee 
                 WHERE category_id = :category_id";
-        $query_params = [
+        $queryParams = [
             ':fee' => $fee,
             ':category_id' => $categoryID
         ];
-        return MDB::query($sql, $query_params, 'boolean');
+        return MDB::query($sql, $queryParams, 'boolean');
     }
 }

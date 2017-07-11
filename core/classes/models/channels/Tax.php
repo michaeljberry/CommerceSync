@@ -3,40 +3,59 @@
 namespace models\channels;
 
 
+use models\ModelDB as MDB;
+use PDO;
+
 class Tax
 {
 
-    public static function create_tax_item_xml($poNumber, $totalTax, $state, $stateTaxItemName = '')
+    public static function getItemXml($state_code, $poNumber, $totalTax, $stateTaxItemName = '')
     {
-        $itemName = '';
+        $itemXml = '';
         if (!empty($stateTaxItemName)) {
-            $itemName = $stateTaxItemName;
+            $itemXml .= TaxXML::create($poNumber, $totalTax, '', $stateTaxItemName);
         } else {
-            if ($state == 'ID') {
-                $itemName = "SALES TAX IDAHO @ 6%";
-            } elseif ($state == 'CA') {
-                $itemName = "SALES TAX CALIFORNIA";
-            } elseif ($state == 'WA') {
-                $itemName = "SALES TAX WASHINGTON";
+            if (strtolower($state_code) == 'id' || strtolower($state_code) == 'idaho') {
+                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'ID');
+            } elseif (strtolower($state_code) == 'ca' || strtolower($state_code) == 'california') {
+                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'CA');
+            } elseif (strtolower($state_code) == 'wa' || strtolower($state_code) == 'washington') {
+                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'WA');
             }
         }
-        $itemXml = "<Item>
-                    <ItemId>$itemName</ItemId>
-                    <ItemDesc><![CDATA[ $itemName ]]></ItemDesc>
-                    <POLineNumber>$poNumber</POLineNumber>
-                    <UOM>EACH</UOM>
-                    <Qty>1</Qty>
-                    <UCValue>$totalTax</UCValue>
-                    <UCCurrencyCode></UCCurrencyCode>
-                    <RetailValue></RetailValue>
-                    <RetailCurrencyCode></RetailCurrencyCode>
-                    <StdPackQty></StdPackQty>
-                    <StdContainerQty></StdContainerQty>
-                    <SupplierItemId>$itemName</SupplierItemId>
-                    <BarcodeId></BarcodeId>
-                    <BarcodeType>UPC</BarcodeType>
-                    <ItemNote></ItemNote>
-                </Item>";
         return $itemXml;
+    }
+
+    public static function getCompanyInfo($companyID)
+    {
+        $sql = "SELECT s.abbr, t.tax_rate, t.tax_line_name, t.shipping_taxed 
+                FROM taxes t 
+                INNER JOIN state s ON s.id = t.state_id 
+                WHERE company_id = :company_id";
+        $queryParams = [
+            ':company_id' => $companyID
+        ];
+        return MDB::query($sql, $queryParams, 'fetchAll', PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
+    }
+
+    public static function state($stateArray, $state)
+    {
+        $taxable = false;
+        foreach ($stateArray as $s => $value) {
+            if ($s == $state) {
+                $taxable = true;
+            }
+        }
+        return $taxable;
+    }
+
+    public static function calculate($stateTaxArray, $totalWithoutTax, $totalShipping)
+    {
+        $taxRate = $stateTaxArray['tax_rate'] / 100;
+        $totalTax = number_format($totalWithoutTax * $taxRate, 2);
+        if ($stateTaxArray['shipping_taxed']) {
+            $totalTax += number_format($totalShipping * $taxRate, 2);
+        }
+        return $totalTax;
     }
 }

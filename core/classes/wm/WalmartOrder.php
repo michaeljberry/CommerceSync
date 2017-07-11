@@ -11,6 +11,7 @@ use models\channels\OrderItem;
 use models\channels\OrderItemXML;
 use models\channels\OrderXML;
 use models\channels\SKU;
+use models\channels\Tax;
 use \Walmart\Order as WMOrder;
 
 class WalmartOrder extends Walmart
@@ -192,7 +193,7 @@ class WalmartOrder extends Walmart
 //        }elseif(strtolower($state_code) == 'wa' || strtolower($state_code) == 'washington'){
 //            $item_xml .= $ecommerce->create_tax_item_xml($ponumber, number_format($total_tax, 2), 'WA');
 //        }
-        $item_xml .= $ecommerce->get_tax_item_xml($state_code, $ponumber, $total_tax);
+        $item_xml .= Tax::getItemXml($state_code, $ponumber, $total_tax);
         $info_array = [
             'item_xml' => $item_xml
         ];

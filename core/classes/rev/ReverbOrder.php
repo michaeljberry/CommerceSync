@@ -11,6 +11,7 @@ use models\channels\OrderItem;
 use models\channels\OrderItemXML;
 use models\channels\OrderXML;
 use models\channels\SKU;
+use models\channels\Tax;
 
 class ReverbOrder extends Reverb
 {
@@ -96,7 +97,7 @@ class ReverbOrder extends Reverb
                         }
                         $item_xml = OrderItemXML::create($sku, $title, $ponumber, $quantity, $principle, $upc);
                         $ponumber++;
-                        $item_xml .= $ecommerce->get_tax_item_xml($state, $ponumber, $tax);
+                        $item_xml .= Tax::getItemXml($state, $ponumber, $tax);
                         $total = number_format($principle / $quantity, 2);
                         if ($total >= 250) {
                             $shipping = 'URIP';

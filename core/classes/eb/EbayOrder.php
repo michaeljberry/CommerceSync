@@ -10,7 +10,9 @@ use models\channels\Order;
 use models\channels\OrderItem;
 use models\channels\OrderItemXML;
 use models\channels\OrderXML;
+use models\channels\Shipping;
 use models\channels\SKU;
+use models\channels\Tax;
 
 class EbayOrder extends Ebay
 {
@@ -151,7 +153,7 @@ class EbayOrder extends Ebay
                         'zip' => '41025'
                     ];
 
-                    $shipping = $ecommerce->shippingCode($total, $erlanger);
+                    $shipping = Shipping::code($total, $erlanger);
 
                     $item_taxes = Ecommerce::formatMoney((float)$xml->ShippingDetails->SalesTax->SalesTaxAmount);
                     Ecommerce::dd($item_taxes);
@@ -177,7 +179,7 @@ class EbayOrder extends Ebay
                     $sku = (string)$items->sku;
                     $itemXml = (string)$items->itemXml;
 
-                    $itemXml .= Ecommerce::get_tax_item_xml($state, $poNumber, $item_taxes);
+                    $itemXml .= Tax::getItemXml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
                     $channel_num = Channel::getNumber($channelName, $sku);
                     $orderXml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp,

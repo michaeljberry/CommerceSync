@@ -3,6 +3,8 @@
 namespace am;
 
 use ecommerce\Ecommerce;
+use models\channels\Curl;
+use models\channels\XML;
 
 trait AmazonClientCurl
 {
@@ -156,8 +158,8 @@ trait AmazonClientCurl
 
         $request = 'AmazonEnvelope';
         $param = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd"';
-        $header = Ecommerce::openXMLParentTag($request, $param);
-        $header .= Ecommerce::makeXML($xml);
+        $header = XML::openXMLParentTag($request, $param);
+        $header .= XML::makeXML($xml);
 
         return $header;
     }
@@ -168,7 +170,7 @@ trait AmazonClientCurl
     protected static function xmlAmazonEnvelopeFooter()
     {
         $request = 'AmazonEnvelope';
-        $footer = Ecommerce::closeXMLParentTag($request);
+        $footer = XML::closeXMLParentTag($request);
         return $footer;
     }
 
@@ -180,7 +182,7 @@ trait AmazonClientCurl
     {
         $amazonXml = '';
         if (is_array($xml)) {
-            $amazonXml .= Ecommerce::makeXML($xml);
+            $amazonXml .= XML::makeXML($xml);
         } else {
             $amazonXml .= $xml;
         }
@@ -195,7 +197,7 @@ trait AmazonClientCurl
     {
         $amazonXML = '';
         if ($xml) {
-            $amazonXML = Ecommerce::xmlOpenTag();
+            $amazonXML = XML::xmlOpenTag();
             $amazonXML .= AmazonClient::xmlAmazonEnvelopeHeader();
             $amazonXML .= AmazonClient::parseXML($xml);
             $amazonXML .= AmazonClient::xmlAmazonEnvelopeFooter();
@@ -217,7 +219,7 @@ trait AmazonClientCurl
         $link = AmazonClient::createLink($feed, $version, $param, $whatToDo);
         $httpHeader = AmazonClient::buildHeader($amazon_feed);
         $request = AmazonClient::setCurlOptions($link, $httpHeader, $amazon_feed);
-        $response = Ecommerce::curlRequest($request);
+        $response = Curl::request($request);
         return $response;
     }
 

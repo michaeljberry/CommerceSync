@@ -10,9 +10,6 @@ $userId = 838;
 $companyId = 1;
 $folder = '/home/chesbro_amazon/';
 
-$taxableStates = $ecommerce->getCompanyTaxInfo($companyId);
-//\ecommerceclass\ecommerceclass::dd($taxableStates);
-
 $orders = $amord->getOrders();
 
 $amord->parseOrders($orders, $ecommerce, $folder, $companyId);

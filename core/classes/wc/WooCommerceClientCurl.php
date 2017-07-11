@@ -3,6 +3,7 @@
 namespace wc;
 
 use ecommerce\Ecommerce;
+use models\channels\Curl;
 
 trait WooCommerceClientCurl
 {
@@ -35,7 +36,7 @@ trait WooCommerceClientCurl
     public static function woocommerceCurl($url, $method, $post_string = null)
     {
         $request = WooCommerceClientCurl::setCurlOptions($url, $method, $post_string);
-        $response = Ecommerce::curlRequest($request);
+        $response = Curl::request($request);
         return $response;
     }
 }

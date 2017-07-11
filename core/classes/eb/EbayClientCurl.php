@@ -3,6 +3,8 @@
 namespace eb;
 
 use ecommerce\Ecommerce;
+use models\channels\Curl;
+use models\channels\XML;
 
 trait EbayClientCurl
 {
@@ -92,18 +94,18 @@ trait EbayClientCurl
     protected static function eBayCredentialsXML()
     {
         $credentialTag = 'RequesterCredentials';
-        $credentials = Ecommerce::openXMLParentTag($credentialTag);
-        $credentials .= Ecommerce::xmlTag('eBayAuthToken', EbayClient::getToken());
-        $credentials .= Ecommerce::closeXMLParentTag($credentialTag);
+        $credentials = XML::openXMLParentTag($credentialTag);
+        $credentials .= XML::xmlTag('eBayAuthToken', EbayClient::getToken());
+        $credentials .= XML::closeXMLParentTag($credentialTag);
         return $credentials;
     }
 
     protected static function xmlHeader($requestName, $callType)
     {
-        $header = Ecommerce::xmlOpenTag();
+        $header = XML::xmlOpenTag();
         $request = $requestName . 'Request';
         $param = EbayClient::headerParameter($callType);
-        $header .= Ecommerce::openXMLParentTag($request, $param);
+        $header .= XML::openXMLParentTag($request, $param);
         if ($callType !== 'finding' && $callType !== 'shopping') {
             $header .= EbayClient::eBayCredentialsXML();
         }
@@ -113,7 +115,7 @@ trait EbayClientCurl
     protected static function xmlFooter($requestName)
     {
         $request = $requestName . 'Request';
-        $footer = Ecommerce::closeXMLParentTag($request);
+        $footer = XML::closeXMLParentTag($request);
         return $footer;
     }
 
@@ -137,7 +139,7 @@ trait EbayClientCurl
     protected static function curlPostString($requestName, $xml, $callType)
     {
         $post_string = EbayClient::xmlHeader($requestName, $callType);
-        $post_string .= Ecommerce::makeXML($xml);
+        $post_string .= XML::makeXML($xml);
         $post_string .= EbayClient::xmlFooter($requestName);
         return $post_string;
     }
@@ -161,7 +163,7 @@ trait EbayClientCurl
         $headers = EbayClient::createHeader($post_string, $requestName, $callType);
         $curlUrl = EbayClient::setCurlUrl($callType);
         $request = EbayClient::setCurlOptions($headers, $post_string, $curlUrl);
-        $response = Ecommerce::curlRequest($request);
+        $response = Curl::request($request);
 
         return $response;
     }

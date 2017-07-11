@@ -12,7 +12,10 @@ use models\channels\Order;
 use models\channels\OrderItem;
 use models\channels\OrderItemXML;
 use models\channels\OrderXML;
+use models\channels\Shipping;
 use models\channels\SKU;
+use models\channels\Tax;
+use models\channels\XML;
 
 class AmazonOrder extends Amazon
 {
@@ -32,7 +35,7 @@ class AmazonOrder extends Amazon
                 ]
             ]
         ];
-        $amazonFeed = Ecommerce::makeXML($xml);
+        $amazonFeed = XML::makeXML($xml);
         return $amazonFeed;
     }
 
@@ -53,7 +56,7 @@ class AmazonOrder extends Amazon
         $xml = [
             'MessageType' => 'OrderFulfillment',
         ];
-        $xml = Ecommerce::makeXML($xml);
+        $xml = XML::makeXML($xml);
         $xml .= $xml1;
 
         $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
@@ -210,7 +213,7 @@ class AmazonOrder extends Amazon
 
     public function parseOrders($orders, Ecommerce $ecommerce, $folder, $companyId, $nextPage = null)
     {
-        $taxableStates = $ecommerce->getCompanyTaxInfo($companyId);
+        $taxableStates = Tax::getCompanyInfo($companyId);
 
         $xmlOrders = simplexml_load_string($orders);
 
@@ -260,7 +263,7 @@ class AmazonOrder extends Amazon
 
                 $shipmentMethod = (string)$order->ShipmentServiceLevelCategory;
 
-                $shipping = $ecommerce->shippingCode($orderTotal, [], $shipmentMethod);
+                $shipping = Shipping::code($orderTotal, [], $shipmentMethod);
 
                 $totalTax = 0.00;
                 $totalShipping = 0.00;
@@ -284,14 +287,15 @@ class AmazonOrder extends Amazon
                 $sku = (string)$items->sku;
                 $itemXml = (string)$items->itemXml;
 
-                if ($ecommerce->taxableState($taxableStates, $shippingState)) {
+                if (Tax::state($taxableStates, $shippingState)) {
                     echo 'Should be taxed<br>';
                     if ($totalTax == 0) {
                         // No tax collected, but tax is required to remit.
                         // Need to calculate taxes and subtract from sales price of item(s)
-                        $totalTax = $ecommerce->calculateTax($taxableStates[$shippingState], $totalWithoutTax, $totalShipping);
+                        $totalTax = Tax::calculate($taxableStates[$shippingState], $totalWithoutTax,
+                            $totalShipping);
                     }
-                    $itemXml .= Ecommerce::get_tax_item_xml(
+                    $itemXml .= Tax::getItemXml(
                         $shippingState,
                         $poNumber,
                         $totalTax,

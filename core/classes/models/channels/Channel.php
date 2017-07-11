@@ -2,6 +2,7 @@
 
 namespace models\channels;
 
+use ecommerce\Ecommerce;
 use IBM;
 use models\ModelDB as MDB;
 
@@ -37,7 +38,7 @@ class Channel
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function getAccount($name)
+    public static function getAccounts($name)
     {
         $sql = "SELECT co_one_acct, co_two_acct 
                 FROM channel 
@@ -50,7 +51,7 @@ class Channel
 
     public static function getNumber($name, $sku)
     {
-        $accounts = Channel::getAccount($name);
+        $accounts = Channel::getAccounts($name);
         $companyOneAccount = $accounts['co_one_acct'];
         $companyTwoAccount = $accounts['co_two_acct'];
         $inventory = IBM::findInventory($sku, $name);
@@ -64,5 +65,12 @@ class Channel
             $number = $companyOneAccount;
         }
         return $number;
+    }
+
+    public static function getNumbers($channel)
+    {
+        $companyNumbers = Channel::getAccounts($channel);
+        return implode(",", $companyNumbers);
+
     }
 }

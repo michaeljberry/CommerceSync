@@ -10,6 +10,7 @@ require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
 use ecommerce\Ecommerce;
+use models\channels\Channel;
 use models\channels\Tracking;
 use models\channels\Order;
 
@@ -36,7 +37,7 @@ foreach ($unshippedOrders as $o) {
     $order_num = $o['order_num'];
     $order_id = Order::getIdByOrderNum($order_num);
     $channel = $o['type'];
-    $channelNumbers = $ecommerce->getChannelNumbers($channel);
+    $channelNumbers = Channel::getNumbers($channel);
     $item_id = $o['item_id'];
     $t = '';;
     if (!empty($item_id)) {

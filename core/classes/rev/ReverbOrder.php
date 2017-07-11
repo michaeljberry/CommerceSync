@@ -6,6 +6,7 @@ use ecommerce\Ecommerce;
 use models\channels\Address;
 use models\channels\Buyer;
 use models\channels\Channel;
+use models\channels\FTP;
 use models\channels\Order;
 use models\channels\OrderItem;
 use models\channels\OrderItemXML;
@@ -119,7 +120,7 @@ class ReverbOrder extends Reverb
                             $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2,
                             $city, $state, $zip, $country, $item_xml);
                         if (!LOCAL) {
-                            $ecommerce->saveXmlToFTP($order_num, $xml, $folder, $channelName);
+                            FTP::saveXmlToFTP($order_num, $xml, $folder, $channelName);
                         }
                     } else {
                         echo 'Order ' . $order_num . ' is already in the database.<br>';

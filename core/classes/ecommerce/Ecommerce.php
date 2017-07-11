@@ -3,6 +3,7 @@
 namespace ecommerce;
 
 use models\channels\Channel;
+use models\channels\FTP;
 use models\channels\Order;
 use models\channels\OrderItemXML;
 use models\channels\Shipping;
@@ -63,28 +64,6 @@ class Ecommerce
         echo '<br><pre>';
         print_r($data);
         echo '</pre><br>';
-    }
-
-    protected static function saveFileToDisk($folder, $filename, $orderXml)
-    {
-        file_put_contents($folder . $filename, $orderXml);
-        chmod($folder . $filename, 0777);
-        file_put_contents($folder . 'backup/' . $filename, $orderXml);
-        chmod($folder . 'backup/' . $filename, 0777);
-    }
-
-    public function saveXmlToFTP($orderNum, $orderXml, $folder, $channel)
-    {
-        $filename = $orderNum . '.xml';
-        echo $filename . '<br />';
-        Ecommerce::saveFileToDisk($folder, $filename, $orderXml);
-        if (file_exists($folder . $filename)) {
-            echo "Successfully uploaded $filename<br />";
-            $results = Order::saveToSync($orderNum, 1, $channel);
-            if ($results) {
-                echo "$orderNum successfully updated in DB.";
-            }
-        }
     }
 
     protected static function cellOpeningTag($value, $cellType)
@@ -224,12 +203,6 @@ class Ecommerce
         return $number;
     }
 
-    public static function getChannelListingsFromDB($channel)
-    {
-        $sql = "SELECT sku, store_listing_id as id FROM listing_$channel";
-        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
-    }
-
     public static function createFormattedDate($date, $format = 'Y/m/d')
     {
         $date = date_create($date);
@@ -337,18 +310,4 @@ class Ecommerce
         return $html;
     }
 
-    public function getChannelNumbers($channel)
-    {
-        $companyNumbers = [
-            'ebay' => ['5001072', '5001420'],
-            'amazon' => ['5001017', '5004375'],
-            'reverb' => ['5001942', '5005843'],
-            'bigcommerce' => ['5002050', '5005370'],
-            'walmart' => ['5002193', '5007106'],
-            'fba' => ['5001432', '5005460'],
-            'harmony' => ['5001860']
-        ];
-        return implode(",", $companyNumbers[strtolower($channel)]);
-
-    }
 }

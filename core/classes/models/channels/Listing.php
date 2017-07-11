@@ -194,4 +194,11 @@ class Listing
                 WHERE p.upc <> '' AND le.sku IS NULL";
         return MDB::query($sql, [], 'fetchAll');
     }
+
+    public static function getByChannel($channel)
+    {
+        $sql = "SELECT sku, store_listing_id as id 
+                FROM listing_$channel";
+        return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
+    }
 }

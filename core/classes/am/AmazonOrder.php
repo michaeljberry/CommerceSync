@@ -8,6 +8,7 @@ use \DateTimeZone;
 use models\channels\Address;
 use models\channels\Buyer;
 use models\channels\Channel;
+use models\channels\FTP;
 use models\channels\Order;
 use models\channels\OrderItem;
 use models\channels\OrderItemXML;
@@ -311,7 +312,7 @@ class AmazonOrder extends Amazon
                     $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2,
                     $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
                 if (!LOCAL) {
-                    $ecommerce->saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
+                    FTP::saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
                 }
             }
         }

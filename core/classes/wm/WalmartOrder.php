@@ -6,6 +6,7 @@ use ecommerce\Ecommerce;
 use models\channels\Address;
 use models\channels\Buyer;
 use models\channels\Channel;
+use models\channels\FTP;
 use models\channels\Order;
 use models\channels\OrderItem;
 use models\channels\OrderItemXML;
@@ -114,7 +115,7 @@ class WalmartOrder extends Walmart
         $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $ecommerce, $firstName, $lastName, $shippingMethod, $buyerPhone, $address, $address2, $city, $stateCode, $zip, $country, $shippingTotal);
         $channelName = 'Walmart';
         if (!LOCAL) {
-            $ecommerce->saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
+            WMOrder::saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
         }
     }
 

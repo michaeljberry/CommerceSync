@@ -10,6 +10,7 @@ require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
 use ecommerce\Ecommerce;
+use models\channels\Listing;
 use models\channels\ProductPrice;
 
 $start = startClock();
@@ -19,10 +20,10 @@ echo $count . '<br>';
 
 $updatedPrices = ProductPrice::getUpdated(15);
 
-$reverbListings = Ecommerce::getChannelListingsFromDB('reverb');
-$ebayListings = Ecommerce::getChannelListingsFromDB('ebay');
-$amazonListings = Ecommerce::getChannelListingsFromDB('amazon');
-$bigcommerceListings = Ecommerce::getChannelListingsFromDB('bigcommerce');
+$reverbListings = Listing::getByChannel('reverb');
+$ebayListings = Listing::getByChannel('ebay');
+$amazonListings = Listing::getByChannel('amazon');
+$bigcommerceListings = Listing::getByChannel('bigcommerce');
 
 $x = 1;
 $y = 0;

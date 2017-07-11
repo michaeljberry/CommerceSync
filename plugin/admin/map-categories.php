@@ -3,7 +3,7 @@ use models\channels\Category;
 
 include 'header-admin.php';
 
-$results = Category::getMappable();
+$results = Category::get();
 //print_r($results);
 
 $html = "<table><thead><tr>

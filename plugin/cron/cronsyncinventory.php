@@ -46,14 +46,14 @@ foreach ($eligible_products as $p) {
     $category_id = $p['category_id'];
     $weight = $p['weight'];
     echo "$title $upc $sku $category_id: ";
-    $category_id = Category::getMapped($from_array['category_column'], $to_array['category_column'],
-        $category_id);
+    $category_id = Category::getMappedById($from_array['category_column'], $to_array['category_column'], $category_id);
     echo $category_id . '<br>';
     //Need to check if item is non-stock in VAI before listing
     $result = IBM::findNonstockItem($sku);
     if (!empty($result)) {
         if (strpos($to_array['table'], 'ebay') !== false) {
-            $response = $ebinv->add_ebay_inventory($category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price);
+            $response = $ebinv->add_ebay_inventory($category_id, $title, $description, $upc, $sku, $photo_url,
+                $quantity, $price);
             echo '<br><br>';
 //            print_r($response);
             $item_id = $ecommerce->substring_between($response, '<itemid>', '</itemid>');
@@ -74,7 +74,19 @@ foreach ($eligible_products as $p) {
                 $photo_sku = str_replace('#', '', $photo_sku);
             }
             $photo_url = "$photo_sku.jpg";
-            $add_result = [$title, 'P', 'Y', 'by product', $cat_array, $price, $weight, $description, $sku, $upc, $photo_url];
+            $add_result = [
+                $title,
+                'P',
+                'Y',
+                'by product',
+                $cat_array,
+                $price,
+                $weight,
+                $description,
+                $sku,
+                $upc,
+                $photo_url
+            ];
             $bc_array[] = $add_result;
 //            $bcinv->add_item($title, $cat_array, $price, $weight, $description, $sku, $upc, $BC); //$bc_username, $bc_api_key
 //            $result = $bcinv->get_product_id_by_sku($sku, $page, $bc_username, $bc_api_key);

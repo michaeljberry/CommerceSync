@@ -19,25 +19,6 @@ class Category
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public static function getById($categoryID)
-    {
-        $sql = "SELECT categories_amazon_id AS id 
-                FROM categories_mapped 
-                WHERE categories_ebay_id = :cat";
-        $queryParams = [
-            ':cat' => $categoryID
-        ];
-        return MDB::query($sql, $queryParams, 'fetchAll');
-    }
-
-    public static function getMappable($categoryID = null)
-    {
-        if (empty($categoryID)) {
-            return Category::get();
-        }
-        return Category::getById($categoryID);
-    }
-
     public static function getParents($table)
     {
         $table = CHC::sanitize_table_name($table);
@@ -58,19 +39,20 @@ class Category
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public static function getEbay($cat_id)
+    public static function getInfo($catID, $table)
     {
+        $table = CHC::sanitize_table_name($table);
         $sql = "SELECT category_id, parent_category_id, category_name 
-                FROM categories_ebay 
+                FROM categories_$table 
                 WHERE category_id LIKE :cat_id 
                 ORDER BY parent_category_id ASC";
         $queryParams = [
-            ':cat_id' => "%" . $cat_id . "%"
+            ':cat_id' => "%" . $catID . "%"
         ];
         return MDB::query($sql, $queryParams, 'fetchAll');
     }
 
-    public static function getAllSubCategories($parentCategory, $table)
+    public static function getAllSubsByParentId($parentID, $table)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT category_id, parent_category_id, category_name 
@@ -78,51 +60,51 @@ class Category
                 WHERE parent_category_id = :parent_category_id 
                 ORDER BY category_id ASC";
         $queryParams = [
-            ':parent_category' => $parentCategory
+            ':parent_category_id' => $parentID
         ];
         return MDB::query($sql, $queryParams, 'fetchAll');
     }
 
-    public static function save($category_id, $category_name, $category_parent_id, $table)
+    public static function save($id, $name, $parentID, $table)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "INSERT INTO $table (category_id, parent_category_id, category_name) 
                 VALUES (:category_id, :parent_category_id, :category_name) 
                 ON DUPLICATE KEY UPDATE category_name = :category_name2";
         $queryParams = [
-            ":category_id" => $category_id,
-            ":parent_category_id" => $category_parent_id,
-            ":category_name" => $category_name,
-            ':category_name2' => $category_name
+            ":category_id" => $id,
+            ":parent_category_id" => $parentID,
+            ":category_name" => $name,
+            ':category_name2' => $name
         ];
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function updateMap($id, $category_id, $column)
+    public static function updateMap($mapID, $id, $column)
     {
         $column = CHC::sanitize_table_name($column);
         $sql = "UPDATE categories_mapped 
                 SET $column = :category_id 
                 WHERE id = :id";
         $queryParams = [
-            ':category_id' => $category_id,
-            ':id' => $id
+            ':category_id' => $id,
+            ':id' => $mapID
         ];
         return MDB::query($sql, $queryParams, 'boolean');
     }
 
-    public static function update($sku, $category_id, $table)
+    public static function update($sku, $id, $table)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "UPDATE $table SET category_id = :category_id WHERE sku = :sku";
         $queryParams = [
-            ':category_id' => $category_id,
+            ':category_id' => $id,
             ':sku' => $sku
         ];
         return MDB::query($sql, $queryParams, 'boolean');
     }
 
-    public static function getMapped($fromColumn, $toColumn, $categoryID)
+    public static function getMappedById($fromColumn, $toColumn, $categoryID)
     {
         $fromColumn = CHC::sanitize_table_name($fromColumn);
         $toColumn = CHC::sanitize_table_name($toColumn);

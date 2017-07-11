@@ -7,7 +7,7 @@ if (!isset($_REQUEST['term'])) {
     exit;
 }
 $category_id = htmlentities($_REQUEST['term']);
-$results = Category::getEbay($category_id);
+$results = Category::getInfo($category_id, 'ebay');
 $data = array();
 if ($results && count($results)) {
     foreach ($results as $rows) {

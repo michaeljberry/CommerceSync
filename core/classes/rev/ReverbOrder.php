@@ -108,7 +108,7 @@ class ReverbOrder extends Reverb
                         $state_id = State::getIdByAbbr($state);
                         $zip_id = Address::searchOrInsertZip($zip, $state_id);
                         $city_id = Address::searchOrInsertCity($city, $state_id);
-                        $cust_id = Buyer::customer_soi($first_name, $last_name, ucwords(strtolower($address)),
+                        $cust_id = Buyer::searchOrInsert($first_name, $last_name, ucwords(strtolower($address)),
                             ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                         if (!LOCAL) {
                             $order_id = Order::save(ReverbClient::getStoreID(), $cust_id, $order_num,

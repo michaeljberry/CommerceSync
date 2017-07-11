@@ -51,7 +51,7 @@ class BigCommerceOrder extends BigCommerce
                         $country = 'USA';
                     }
                     $city_id = Address::searchOrInsertCity($city, $state_id);
-                    $cust_id = Buyer::customer_soi($first_name, $last_name, ucwords(strtolower($address)),
+                    $cust_id = Buyer::searchOrInsert($first_name, $last_name, ucwords(strtolower($address)),
                         ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                     if (!LOCAL) {
                         $order_id = Order::save(BigCommerceClient::getStoreID(), $cust_id, $orderNum,

@@ -40,7 +40,7 @@ class Buyer
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function customer_soi(
+    public static function searchOrInsert(
         $firstName,
         $lastName,
         $streetAddress,

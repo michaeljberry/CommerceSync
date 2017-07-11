@@ -106,7 +106,7 @@ class WalmartOrder extends Walmart
         }
 
         $cityID = Address::searchOrInsertCity($city, $stateID);
-        $custumerID = Order::customer_soi($firstName, $lastName, ucwords(strtolower($address)),
+        $custumerID = Buyer::searchOrInsert($firstName, $lastName, ucwords(strtolower($address)),
             ucwords(strtolower($address2)), $cityID, $stateID, $zipID);
         if (!LOCAL) {
             $orderID = Order::save(WalmartClient::getStoreID(), $custumerID, $orderNum, $shippingMethod,

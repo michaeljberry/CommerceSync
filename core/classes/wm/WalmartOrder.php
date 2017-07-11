@@ -4,7 +4,7 @@ namespace wm;
 
 use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
-use models\channels\Address;
+use models\channels\address\Address;
 use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;

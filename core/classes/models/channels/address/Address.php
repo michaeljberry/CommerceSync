@@ -1,9 +1,7 @@
 <?php
 
-namespace models\channels;
+namespace models\channels\address;
 
-use models\channels\address\City;
-use models\channels\address\ZipCode;
 use models\ModelDB as MDB;
 
 class Address

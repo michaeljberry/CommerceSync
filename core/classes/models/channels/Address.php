@@ -2,6 +2,7 @@
 
 namespace models\channels;
 
+use models\channels\address\City;
 use models\channels\address\ZipCode;
 use models\ModelDB as MDB;
 
@@ -18,26 +19,12 @@ class Address
         return $zip_id;
     }
 
-    public static function citySoi($city, $state_id)
+    public static function searchOrInsertCity($city, $stateID)
     {
-        $sql = "SELECT id 
-                FROM city 
-                WHERE city.name = :city 
-                AND state_id = :state_id";
-        $queryParams = [
-            ':city' => ucwords(strtolower($city)),
-            ':state_id' => $state_id
-        ];
-        $city_id = MDB::query($sql, $queryParams, 'fetchColumn');
-        if (empty($city_id)) {
-            $sql = "INSERT INTO city (state_id, name) 
-                    VALUES (:state_id, :city)";
-            $queryParams = [
-                ':city' => ucwords(strtolower($city)),
-                ':state_id' => $state_id
-            ];
-            $city_id = MDB::query($sql, $queryParams, 'id');
+        $cityID = City::getId($city, $stateID);
+        if (empty($cityID)) {
+            $cityID = City::save($city, $stateID);
         }
-        return $city_id;
+        return $cityID;
     }
 }

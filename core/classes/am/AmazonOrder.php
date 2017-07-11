@@ -273,7 +273,7 @@ class AmazonOrder extends Amazon
 
                 $stateId = State::getIdByAbbr(strtoupper($shippingState));
                 $zipId = Address::searchOrInsertZip($shippingPostalCode, $stateId);
-                $cityId = Address::citySoi($shippingCity, $stateId);
+                $cityId = Address::searchOrInsertCity($shippingCity, $stateId);
                 $custId = Buyer::customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)),
                     ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
                 if (!LOCAL) {

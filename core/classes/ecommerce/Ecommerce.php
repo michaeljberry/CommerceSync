@@ -4,7 +4,9 @@ namespace ecommerce;
 
 use models\channels\Channel;
 use models\channels\Order;
+use models\channels\OrderItemXML;
 use models\channels\SKU;
+use models\channels\Tax;
 use models\channels\Tracking;
 use PDO;
 use controllers\channels\ChannelHelperController as CHC;
@@ -42,64 +44,6 @@ class Ecommerce
         return $returnArray;
     }
 
-    //Create Order Item XML for inclusion in Order XML
-    public function create_item_xml($sku, $title, $ponumber, $quantity, $principle, $upc)
-    {
-        $item_xml = "<Item>
-            <ItemId>$sku</ItemId>
-            <ItemDesc><![CDATA[ $title ]]></ItemDesc>
-            <POLineNumber>$ponumber</POLineNumber>
-            <UOM>EACH</UOM>
-            <Qty>$quantity</Qty>
-            <UCValue>$principle</UCValue>
-            <UCCurrencyCode></UCCurrencyCode>
-            <RetailValue></RetailValue>
-            <RetailCurrencyCode></RetailCurrencyCode>
-            <StdPackQty></StdPackQty>
-            <StdContainerQty></StdContainerQty>
-            <SupplierItemId>$sku</SupplierItemId>
-            <BarcodeId>$upc</BarcodeId>
-            <BarcodeType>UPC</BarcodeType>
-            <ItemNote></ItemNote>
-        </Item>";
-        return $item_xml;
-    }
-
-    //Create Tax Item for inclusion in Order XML
-    public static function create_tax_item_xml($poNumber, $totalTax, $state, $stateTaxItemName = '')
-    {
-        $itemName = '';
-        if (!empty($stateTaxItemName)) {
-            $itemName = $stateTaxItemName;
-        } else {
-            if ($state == 'ID') {
-                $itemName = "SALES TAX IDAHO @ 6%";
-            } elseif ($state == 'CA') {
-                $itemName = "SALES TAX CALIFORNIA";
-            } elseif ($state == 'WA') {
-                $itemName = "SALES TAX WASHINGTON";
-            }
-        }
-        $itemXml = "<Item>
-                    <ItemId>$itemName</ItemId>
-                    <ItemDesc><![CDATA[ $itemName ]]></ItemDesc>
-                    <POLineNumber>$poNumber</POLineNumber>
-                    <UOM>EACH</UOM>
-                    <Qty>1</Qty>
-                    <UCValue>$totalTax</UCValue>
-                    <UCCurrencyCode></UCCurrencyCode>
-                    <RetailValue></RetailValue>
-                    <RetailCurrencyCode></RetailCurrencyCode>
-                    <StdPackQty></StdPackQty>
-                    <StdContainerQty></StdContainerQty>
-                    <SupplierItemId>$itemName</SupplierItemId>
-                    <BarcodeId></BarcodeId>
-                    <BarcodeType>UPC</BarcodeType>
-                    <ItemNote></ItemNote>
-                </Item>";
-        return $itemXml;
-    }
-
     public function substring_between($haystack, $start, $end)
     {
         if (stripos($haystack, $start) === false || stripos($haystack, $end) === false) {
@@ -111,69 +55,20 @@ class Ecommerce
         }
     }
 
-    public function curl($url)
-    {
-        $options = [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_AUTOREFERER => true,
-            CURLOPT_CONNECTTIMEOUT => 120,
-            CURLOPT_TIMEOUT => 120,
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_USERAGENT => "Mozilla/5.0 (Windows; U; MSIE 9.0; Windows NT 9.0; en-US)",
-            CURLOPT_URL => $url,
-            CURLOPT_SSL_VERIFYPEER => false
-        ];
-        $ch = curl_init();
-        curl_setopt_array($ch, $options);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        return $data;
-    }
-
-    public function clean_sku($sku)
-    {
-        if (strpos($sku, ';') > 0) {
-            $sku = substr($sku, 0, strpos($sku, ';'));
-        } else {
-            if (strpos($sku, ',') > 0) {
-                $sku = substr($sku, 0, strpos($sku, ','));
-            }
-        }
-        return $sku;
-    }
-
     //Look for this in cronorderseb.php and other channels. Currently only in cronordersam.php
-    public function get_channel_num($channel_name, $sku)
-    {
-        $accounts = Channel::getAccountByChannel($channel_name);
-        $co_one_acct = $accounts['co_one_acct'];
-        $co_two_acct = $accounts['co_two_acct'];
-        $inventory = IBM::findInventory($sku, $channel_name);
-        $co_one_qty = $inventory['CO_ONE'];
-        $co_two_qty = $inventory['CO_TWO'];
-        if (!empty($co_one_qty)) {
-            $channel_num = $co_one_acct;
-        } elseif (!empty($co_two_qty)) {
-            $channel_num = $co_two_acct;
-        } else {
-            $channel_num = $co_one_acct;
-        }
-        return $channel_num;
-    }
 
     public static function get_tax_item_xml($state_code, $poNumber, $totalTax, $stateTaxItemName = '')
     {
         $itemXml = '';
         if (!empty($stateTaxItemName)) {
-            $itemXml .= self::create_tax_item_xml($poNumber, $totalTax, '', $stateTaxItemName);
+            $itemXml .= Tax::create_tax_item_xml($poNumber, $totalTax, '', $stateTaxItemName);
         } else {
             if (strtolower($state_code) == 'id' || strtolower($state_code) == 'idaho') {
-                $itemXml .= self::create_tax_item_xml($poNumber, number_format($totalTax, 2), 'ID');
+                $itemXml .= Tax::create_tax_item_xml($poNumber, number_format($totalTax, 2), 'ID');
             } elseif (strtolower($state_code) == 'ca' || strtolower($state_code) == 'california') {
-                $itemXml .= self::create_tax_item_xml($poNumber, number_format($totalTax, 2), 'CA');
+                $itemXml .= Tax::create_tax_item_xml($poNumber, number_format($totalTax, 2), 'CA');
             } elseif (strtolower($state_code) == 'wa' || strtolower($state_code) == 'washington') {
-                $itemXml .= self::create_tax_item_xml($poNumber, number_format($totalTax, 2), 'WA');
+                $itemXml .= Tax::create_tax_item_xml($poNumber, number_format($totalTax, 2), 'WA');
             }
         }
         return $itemXml;
@@ -218,7 +113,7 @@ class Ecommerce
 
     public static function curlRequest($request)
     {
-        return self::sendCurl($request);
+        return Ecommerce::sendCurl($request);
     }
 
     protected static function sendCurl($request)
@@ -268,9 +163,9 @@ class Ecommerce
 
     protected static function generateXML($value, $pkey, $key)
     {
-        $generatedXML = self::openXMLParentTag($pkey);
-        $generatedXML .= self::makeXML($value, $key);
-        $generatedXML .= self::closeXMLParentTag($pkey);
+        $generatedXML = Ecommerce::openXMLParentTag($pkey);
+        $generatedXML .= Ecommerce::makeXML($value, $key);
+        $generatedXML .= Ecommerce::closeXMLParentTag($pkey);
         return $generatedXML;
     }
 
@@ -311,19 +206,19 @@ class Ecommerce
         foreach ($xml as $key => $value) {
             if (is_array($value)) {
                 if (is_numeric($key)) {
-                    $generatedXML .= self::generateXML($value, $pkey, $key);
-//                    $generatedXML .= self::openXMLParentTag($pkey);
-//                    $generatedXML .= self::makeXML($value, $key);
-//                    $generatedXML .= self::closeXMLParentTag($pkey);
+                    $generatedXML .= Ecommerce::generateXML($value, $pkey, $key);
+//                    $generatedXML .= Ecommerce::openXMLParentTag($pkey);
+//                    $generatedXML .= Ecommerce::makeXML($value, $key);
+//                    $generatedXML .= Ecommerce::closeXMLParentTag($pkey);
                 } else {
                     $pkey = $key;
                     if (array_key_exists(0, $value)) {
-                        $generatedXML .= self::makeXML($value, $pkey);
+                        $generatedXML .= Ecommerce::makeXML($value, $pkey);
                     } else {
-                        $generatedXML .= self::generateXML($value, $key, $pkey);
-//                        $generatedXML .= self::openXMLParentTag($key);
-//                        $generatedXML .= self::makeXML($value, $pkey);
-//                        $generatedXML .= self::closeXMLParentTag($key);
+                        $generatedXML .= Ecommerce::generateXML($value, $key, $pkey);
+//                        $generatedXML .= Ecommerce::openXMLParentTag($key);
+//                        $generatedXML .= Ecommerce::makeXML($value, $pkey);
+//                        $generatedXML .= Ecommerce::closeXMLParentTag($key);
                     }
                 }
             } else {
@@ -337,7 +232,7 @@ class Ecommerce
                     $parameters[] = $attributeValue;
                     $key = strstr($key, $delimiter, true);
                 }
-                $generatedXML .= self::xmlTag($key, $value, $parameters);
+                $generatedXML .= Ecommerce::xmlTag($key, $value, $parameters);
             }
         }
         return $generatedXML;
@@ -389,8 +284,8 @@ class Ecommerce
         if ($total >= 250) {
             $shipping = 'URIP';
         }
-        $shipping = self::determineErlanger($shipping, $address);
-        $shipping = self::determineShippingCode($shipping, $shipmentMethod);
+        $shipping = Ecommerce::determineErlanger($shipping, $address);
+        $shipping = Ecommerce::determineShippingCode($shipping, $shipmentMethod);
         return $shipping;
     }
 
@@ -406,7 +301,7 @@ class Ecommerce
     {
         $filename = $orderNum . '.xml';
         echo $filename . '<br />';
-        self::saveFileToDisk($folder, $filename, $orderXml);
+        Ecommerce::saveFileToDisk($folder, $filename, $orderXml);
         if (file_exists($folder . $filename)) {
             echo "Successfully uploaded $filename<br />";
             $results = Order::saveToSync($orderNum, 1, $channel);
@@ -420,7 +315,7 @@ class Ecommerce
     {
         $openTag = '';
         $openTag .= "<$cellType ";
-        $openTag .= self::cellFormat($value);
+        $openTag .= Ecommerce::cellFormat($value);
         $openTag .= ">";
         return $openTag;
     }
@@ -470,9 +365,9 @@ class Ecommerce
     {
         $row = "<tr>";
         foreach ($array as $key => $value) {
-            $row .= self::cellOpeningTag($value, $cellType);
-            $row .= self::cellValue($value, $cellType);
-            $row .= self::cellClosingTag($cellType);
+            $row .= Ecommerce::cellOpeningTag($value, $cellType);
+            $row .= Ecommerce::cellValue($value, $cellType);
+            $row .= Ecommerce::cellClosingTag($cellType);
         }
         $row .= "<tr>";
 
@@ -483,7 +378,7 @@ class Ecommerce
     {
         $head = "<thead>";
         $headArray = array_keys($array[0]);
-        $head .= self::tableRow($headArray, "th");
+        $head .= Ecommerce::tableRow($headArray, "th");
         $head .= "</thead>";
 
         return $head;
@@ -493,7 +388,7 @@ class Ecommerce
     {
         $body = "<tbody>";
         foreach ($array as $a) {
-            $body .= self::tableRow($a);
+            $body .= Ecommerce::tableRow($a);
         }
         $body .= "</tbody>";
 
@@ -504,8 +399,8 @@ class Ecommerce
     {
         $table = $tableLabel;
         $table .= "<table class='tableBorder'>";
-        $table .= self::arrayToTableHead($array);
-        $table .= self::arrayToTableBody($array);
+        $table .= Ecommerce::arrayToTableHead($array);
+        $table .= Ecommerce::arrayToTableBody($array);
         $table .= "</table>";
 
         return $table;
@@ -525,7 +420,7 @@ class Ecommerce
     public static function toDollars($cents)
     {
         $dollars = $cents / 100;
-        $dollars = self::formatMoney($dollars);
+        $dollars = Ecommerce::formatMoney($dollars);
         return $dollars;
     }
 
@@ -570,7 +465,7 @@ class Ecommerce
     {
         $sku = $item['sku'];
         $name = $item['name'];
-        $price = self::formatMoney($item['price']);
+        $price = Ecommerce::formatMoney($item['price']);
         $total += $price;
         $quantity = $item['quantity'];
         $itemHtml = "<dt><span class='hide'>Quantity x Name</span></dt>
@@ -588,7 +483,7 @@ class Ecommerce
     public function orderHtml($oi, $total, $item_html)
     {
         extract($oi);
-        $date = self::createFormattedDate($oi['date'], 'm/d/Y');
+        $date = Ecommerce::createFormattedDate($oi['date'], 'm/d/Y');
         $tracking_url = '';
         if ($carrier == 'USPS') {
             $tracking_url = 'https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=' . $tracking_num;
@@ -597,7 +492,7 @@ class Ecommerce
         } elseif ($carrier == 'UPS') {
             $tracking_url = 'https://wwwapps.ups.com/WebTracking/track?track=yes&trackNums=' . $tracking_num . '&loc=en_us';
         }
-        $date_processed = self::createFormattedDate($oi['date'], 'm/d/Y H:i:s');
+        $date_processed = Ecommerce::createFormattedDate($oi['date'], 'm/d/Y H:i:s');
         $status = 'Unshipped';
         if ($track_successful == '1') {
             $status = 'Shipped';

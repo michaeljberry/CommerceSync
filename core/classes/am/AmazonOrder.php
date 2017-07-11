@@ -7,8 +7,10 @@ use \DateTime;
 use \DateTimeZone;
 use models\channels\Address;
 use models\channels\Buyer;
+use models\channels\Channel;
 use models\channels\Order;
 use models\channels\OrderItem;
+use models\channels\OrderItemXML;
 use models\channels\OrderXML;
 use models\channels\SKU;
 
@@ -195,7 +197,7 @@ class AmazonOrder extends Amazon
             if (!LOCAL) {
                 OrderItem::save($orderId, $skuId, $itemPrice, $quantity);
             }
-            $itemXml .= $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
+            $itemXml .= OrderItemXML::create($sku, $title, $poNumber, $quantity, $principle, $upc);
             $poNumber++;
         }
         $itemObject['poNumber'] = $poNumber;
@@ -299,7 +301,7 @@ class AmazonOrder extends Amazon
 
                 $orderId = Order::updateShippingAndTaxes($orderId, $totalShipping, $totalTax);
                 $channelName = 'Amazon';
-                $channelNum = $ecommerce->get_channel_num($channelName, $sku);
+                $channelNum = Channel::getNumber($channelName, $sku);
 
                 $orderXml = OrderXML::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping,
                     $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2,

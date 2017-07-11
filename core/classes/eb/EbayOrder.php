@@ -5,8 +5,10 @@ namespace eb;
 use ecommerce\Ecommerce;
 use models\channels\Address;
 use models\channels\Buyer;
+use models\channels\Channel;
 use models\channels\Order;
 use models\channels\OrderItem;
+use models\channels\OrderItemXML;
 use models\channels\OrderXML;
 use models\channels\SKU;
 
@@ -64,7 +66,7 @@ class EbayOrder extends Ebay
         if (!LOCAL) {
             OrderItem::save($order_id, $sku_id, $principle, $quantity, $item_id);
         }
-        $itemXml = $ecommerce->create_item_xml($sku, $title, $poNumber, $quantity, $principle, $upc);
+        $itemXml = OrderItemXML::create($sku, $title, $poNumber, $quantity, $principle, $upc);
         $itemObject['sku'] = $sku;
         $itemObject['itemXml'] .= $itemXml;
         $poNumber++;
@@ -177,7 +179,7 @@ class EbayOrder extends Ebay
 
                     $itemXml .= Ecommerce::get_tax_item_xml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
-                    $channel_num = $ecommerce->get_channel_num($channelName, $sku);
+                    $channel_num = Channel::getNumber($channelName, $sku);
                     $orderXml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp,
                         $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2,
                         $city, $state, $zip, $country, $itemXml);

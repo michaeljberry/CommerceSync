@@ -5,13 +5,27 @@ namespace rev;
 use ecommerce\Ecommerce;
 use models\channels\Address;
 use models\channels\Buyer;
+use models\channels\Channel;
 use models\channels\Order;
 use models\channels\OrderItem;
+use models\channels\OrderItemXML;
 use models\channels\OrderXML;
 use models\channels\SKU;
 
 class ReverbOrder extends Reverb
 {
+    public static function clean_sku($sku)
+    {
+        if (strpos($sku, ';') > 0) {
+            $sku = substr($sku, 0, strpos($sku, ';'));
+        } else {
+            if (strpos($sku, ',') > 0) {
+                $sku = substr($sku, 0, strpos($sku, ','));
+            }
+        }
+        return $sku;
+    }
+
     public function getOrders()
     {
         $url = 'https://api.reverb.com/api/my/orders/selling/awaiting_shipment/';
@@ -56,7 +70,7 @@ class ReverbOrder extends Reverb
                         $order_date = $timestamp;
                         $shipping = 'ZSTD';
                         $sku = $order->sku;
-                        $sku = $ecommerce->clean_sku($sku);
+                        $sku = ReverbOrder::clean_sku($sku);
                         $title = $order->title;
                         $quantity = $order->quantity;
                         $upc = '';
@@ -65,7 +79,7 @@ class ReverbOrder extends Reverb
                         $shipping_amount = $order->shipping->amount;
                         $ponumber = 1;
                         $channelName = 'Reverb';
-                        $channel_num = $ecommerce->get_channel_num($channelName, $sku);
+                        $channel_num = Channel::getNumber($channelName, $sku);
                         $tax = 0;
                         if (strcasecmp($state, 'ID') == 0) {
                             //Subtract 6% from sub-total, add as sales tax; adjust sub-total
@@ -80,7 +94,7 @@ class ReverbOrder extends Reverb
                             $tax = $principle * .09;
                             $principle -= $tax;
                         }
-                        $item_xml = $ecommerce->create_item_xml($sku, $title, $ponumber, $quantity, $principle, $upc);
+                        $item_xml = OrderItemXML::create($sku, $title, $ponumber, $quantity, $principle, $upc);
                         $ponumber++;
                         $item_xml .= $ecommerce->get_tax_item_xml($state, $ponumber, $tax);
                         $total = number_format($principle / $quantity, 2);

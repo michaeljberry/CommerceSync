@@ -5,8 +5,10 @@ namespace bc;
 use ecommerce\Ecommerce;
 use models\channels\Address;
 use models\channels\Buyer;
+use models\channels\Channel;
 use models\channels\Order;
 use models\channels\OrderItem;
+use models\channels\OrderItemXML;
 use models\channels\OrderXML;
 use models\channels\SKU;
 
@@ -192,7 +194,7 @@ class BigCommerceOrder extends BigCommerce
             if (!LOCAL) {
                 OrderItem::save($order_id, $sku_id, $item_total, $quantity);
             }
-            $item_xml .= $ecommerce->create_item_xml($sku, $title, $ponumber, $quantity, $item_total, $upc);
+            $item_xml .= OrderItemXML::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
             $ponumber++;
         }
         $item_xml .= $ecommerce->get_tax_item_xml($state_code, $ponumber, $total_tax);
@@ -237,7 +239,7 @@ class BigCommerceOrder extends BigCommerce
         $sku = $ecommerce->substring_between($item_xml, '<ItemId>', '</ItemId>');
         $channel_name = 'Store';
         $channel = "BigCommerce";
-        $channel_num = $ecommerce->get_channel_num($channel, $sku);
+        $channel_num = Channel::getNumber($channel, $sku);
         $orderNum = $o->id;
         $timestamp = $o->date_created;
         $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));

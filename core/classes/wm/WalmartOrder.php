@@ -5,11 +5,13 @@ namespace wm;
 use ecommerce\Ecommerce;
 use models\channels\Address;
 use models\channels\Buyer;
-use models\channels\Order as Order1;
+use models\channels\Channel;
+use models\channels\Order;
 use models\channels\OrderItem;
+use models\channels\OrderItemXML;
 use models\channels\OrderXML;
 use models\channels\SKU;
-use \Walmart\Order;
+use \Walmart\Order as WMOrder;
 
 class WalmartOrder extends Walmart
 {
@@ -21,7 +23,7 @@ class WalmartOrder extends Walmart
      */
     public function configure()
     {
-        $wmorder = new Order([
+        $wmorder = new WMOrder([
             'consumerId' => WalmartClient::getConsumerKey(),
             'privateKey' => WalmartClient::getSecretKey(),
             'wmConsumerChannelType' => WalmartClient::getAPIHeader()
@@ -100,10 +102,10 @@ class WalmartOrder extends Walmart
         }
 
         $cityID = Address::citySoi($city, $stateID);
-        $custumerID = Order1::customer_soi($firstName, $lastName, ucwords(strtolower($address)),
+        $custumerID = Order::customer_soi($firstName, $lastName, ucwords(strtolower($address)),
             ucwords(strtolower($address2)), $cityID, $stateID, $zipID);
         if (!LOCAL) {
-            $orderID = Order1::save(WalmartClient::getStoreID(), $custumerID, $orderNum, $shippingMethod,
+            $orderID = Order::save(WalmartClient::getStoreID(), $custumerID, $orderNum, $shippingMethod,
                 $shippingTotal, $totalTax);
         }
         $infoArray = $this->get_wm_order_items($ecommerce, $orderNum, $orderItems, $stateCode, $totalTax, $orderID);
@@ -180,7 +182,7 @@ class WalmartOrder extends Walmart
             if (!LOCAL) {
                 OrderItem::save($order_id, $sku_id, $item_total, $quantity);
             }
-            $item_xml .= $ecommerce->create_item_xml($sku, $title, $ponumber, $quantity, $item_total, $upc);
+            $item_xml .= OrderItemXML::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
             $ponumber++;
         }
 //        if(strtolower($state_code) == 'id' || strtolower($state_code) == 'idaho'){
@@ -219,7 +221,7 @@ class WalmartOrder extends Walmart
     {
         $sku = $order['orderLines']['orderLine']['item']['sku'];
         $channel_name = 'Walmart';
-        $channel_num = $ecommerce->get_channel_num($channel_name, $sku);
+        $channel_num = Channel::getNumber($channel_name, $sku);
         $order_num = $order['purchaseOrderId'];
         $timestamp = $order['orderDate'];
         $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));
@@ -342,7 +344,7 @@ class WalmartOrder extends Walmart
         Ecommerce::dd($order);
         $order_num = $order['purchaseOrderId'];
         echo "Order: $order_num<br><br>";
-        $found = Order1::get($order_num);
+        $found = Order::get($order_num);
         if (!$found) {
             if (!LOCAL) {
                 $acknowledged = $wmord->acknowledge_order($order_num);

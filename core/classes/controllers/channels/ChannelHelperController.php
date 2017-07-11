@@ -4,7 +4,25 @@ namespace controllers\channels;
 
 class ChannelHelperController
 {
-    //To sanitize column names before inserted into query directly
+
+    public static function sanitizeAPITableName($table)
+    {
+        $table = '';
+        $tableArray = [
+            'api_amazon',
+            'api_bigcommerce',
+            'api_ebay',
+            'api_ecd',
+            'api_reverb',
+            'api_wc',
+            'api_walmart',
+        ];
+        if (in_array($table, $tableArray)) {
+            $table = $table;
+        }
+        return $table;
+    }
+
     public static function sanitize_table_name($tab)
     {
         $table = '';

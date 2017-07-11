@@ -2,39 +2,72 @@
 
 namespace models\channels;
 
-use ecommerce\Ecommerce;
 use IBM;
+use controllers\channels\ChannelHelperController as CHC;
 use models\ModelDB as MDB;
 
 class Channel
 {
+
+    public static function prepareColumnList($table, $columns)
+    {
+        return $table . '.' . implode(",$table.", $columns);
+    }
+
+    public static function prepareColumnInsert($columns)
+    {
+        return implode(',', $columns);
+    }
+
+    public static function prepareColumnValues($columns)
+    {
+        return ':' . implode(',:', $columns);
+    }
+
+    public static function prepareColumnParams($columns)
+    {
+        $params = [];
+
+        foreach ($columns as $column){
+            $params[':' . $column] = $column;
+        }
+
+        return $params;
+    }
+
     public static function getAppInfo($user_id, $table, $channel, $columns)
     {
-        $columnSelect = $table . '.' . implode(",$table.", $columns);
-        $queryParams = [
-            'user_id' => $user_id,
-            'channel' => $channel
-        ];
+        $columnSelect = Channel::prepareColumnList($table, $columns);
+
         $sql = "SELECT $columnSelect
                 FROM $table
                 INNER JOIN store ON $table.store_id = store.id 
                 INNER JOIN account ON account.company_id = store.company_id 
                 INNER JOIN channel ON channel.id = store.channel_id 
                 WHERE account.id = :user_id AND channel.name = :channel";
+        $queryParams = [
+            'user_id' => $user_id,
+            'channel' => $channel
+        ];
         return MDB::query($sql, $queryParams, 'fetch');
     }
 
-    public static function setAppInfo($store_id, $dev_id, $app_id, $cert_id, $token)
+    public static function saveAppInfo($storeID, $table, $columns)
     {
-        $sql = "INSERT INTO api_ebay (store_id, devid, appid, certid, token) 
-                VALUES (:store_id, :devid, :appid, :certid, :token)";
+        $columnInsert = Channel::prepareColumnInsert($columns);
+        $columnValues = Channel::prepareColumnValues($columns);
+        $columnParams = Channel::prepareColumnParams($columns);
+
+        $table = CHC::sanitizeAPITableName($table);
+
+        $sql = "INSERT INTO $table ($columnInsert) 
+                VALUES ($columnValues)
+                ON DUPLICATE KEY UPDATE ";
         $queryParams = [
-            ":store_id" => $store_id,
-            ":devid" => Crypt::encrypt($dev_id),
-            ":appid" => Crypt::encrypt($app_id),
-            ":certid" => Crypt::encrypt($cert_id),
-            ":token" => Crypt::encrypt($token)
+            ":store_id" => $storeID,
         ];
+        $queryParams = array_merge($queryParams, $columnParams);
+
         return MDB::query($sql, $queryParams, 'id');
     }
 

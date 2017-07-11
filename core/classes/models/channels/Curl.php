@@ -8,10 +8,10 @@ class Curl
 
     public static function request($request)
     {
-        return Curl::sendCurl($request);
+        return Curl::send($request);
     }
 
-    protected static function sendCurl($request)
+    protected static function send($request)
     {
         $response = curl_exec($request);
         if (curl_errno($request)) {

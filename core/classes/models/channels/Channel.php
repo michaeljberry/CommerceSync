@@ -49,7 +49,7 @@ class Channel
         return MDB::query($sql, $queryParams, 'fetch');
     }
 
-    public static function getNumber($name, $sku)
+    public static function getAccountNumbersBySku($name, $sku)
     {
         $accounts = Channel::getAccounts($name);
         $companyOneAccount = $accounts['co_one_acct'];
@@ -67,7 +67,7 @@ class Channel
         return $number;
     }
 
-    public static function getNumbers($channel)
+    public static function getAccountNumbers($channel)
     {
         $companyNumbers = Channel::getAccounts($channel);
         return implode(",", $companyNumbers);

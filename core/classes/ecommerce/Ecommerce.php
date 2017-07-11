@@ -2,20 +2,6 @@
 
 namespace ecommerce;
 
-use models\channels\Channel;
-use models\channels\FTP;
-use models\channels\Order;
-use models\channels\OrderItemXML;
-use models\channels\Shipping;
-use models\channels\SKU;
-use models\channels\Tax;
-use models\channels\TaxXML;
-use models\channels\Tracking;
-use models\channels\XML;
-use PDO;
-use controllers\channels\ChannelHelperController as CHC;
-use models\ModelDB as MDB;
-use IBM;
 
 class Ecommerce
 {

@@ -2,8 +2,10 @@
 
 namespace eb;
 
+use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\FTP;
@@ -164,8 +166,8 @@ class EbayOrder extends Ebay
                     $name = explode(' ', $ship_to_name);
                     $last_name = ucwords(strtolower(array_pop($name)));
                     $first_name = ucwords(strtolower(implode(' ', $name)));
-                    $state_id = Address::stateId($state);
-                    $zip_id = Address::zipSoi($zip, $state_id);
+                    $state_id = State::getIdByAbbr($state);
+                    $zip_id = Address::searchOrInsertZip($zip, $state_id);
                     $city_id = Address::citySoi($city, $state_id);
                     $cust_id = Buyer::customer_soi($first_name, $last_name, ucwords(strtolower($address)),
                         ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
@@ -182,13 +184,13 @@ class EbayOrder extends Ebay
 
                     $itemXml .= Tax::getItemXml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
-                    $channel_num = Channel::getNumber($channelName, $sku);
+                    $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
                     $orderXml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp,
                         $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2,
                         $city, $state, $zip, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
-                        FTP::saveXmlToFTP($order_num, $orderXml, $folder, $channelName);
+                        FTP::saveXml($order_num, $orderXml, $folder, $channelName);
                     }
                 }
             }

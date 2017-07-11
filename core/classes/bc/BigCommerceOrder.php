@@ -2,8 +2,10 @@
 
 namespace bc;
 
+use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\FTP;
@@ -39,10 +41,10 @@ class BigCommerceOrder extends BigCommerce
                     $address2 = ucwords(strtolower($ship_info[0]->street_2));
                     $city = ucwords(strtolower($ship_info[0]->city));
                     $state = ucwords(strtolower($ship_info[0]->state));
-                    $state = Address::stateToAbbr($state);
-                    $state_id = Address::stateId($state);
+                    $state = State::getAbbr($state);
+                    $state_id = State::getIdByAbbr($state);
                     $zip = $ship_info[0]->zip;
-                    $zip_id = Address::zipSoi($zip, $state_id);
+                    $zip_id = Address::searchOrInsertZip($zip, $state_id);
                     $country = $ship_info[0]->country;
                     $shipping_amount = number_format($o->shipping_cost_inc_tax, 2);
                     if ($country == "United States") {
@@ -61,7 +63,7 @@ class BigCommerceOrder extends BigCommerce
                     $channelName = 'BigCommerce';
                     $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country);
                     if (!LOCAL) {
-                        FTP::saveXmlToFTP($orderNum, $xml, $folder, $channelName);
+                        FTP::saveXml($orderNum, $xml, $folder, $channelName);
                     }
                 } else {
                     echo 'Order ' . $orderNum . ' is already in the database.';
@@ -241,7 +243,7 @@ class BigCommerceOrder extends BigCommerce
         $sku = $ecommerce->substring_between($item_xml, '<ItemId>', '</ItemId>');
         $channel_name = 'Store';
         $channel = "BigCommerce";
-        $channel_num = Channel::getNumber($channel, $sku);
+        $channel_num = Channel::getAccountNumbersBySku($channel, $sku);
         $orderNum = $o->id;
         $timestamp = $o->date_created;
         $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));

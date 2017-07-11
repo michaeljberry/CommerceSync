@@ -2,10 +2,12 @@
 
 namespace am;
 
+use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use \DateTime;
 use \DateTimeZone;
 use models\channels\Address;
+use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\FTP;
@@ -255,7 +257,7 @@ class AmazonOrder extends Amazon
                 $shippingCity = (string)$order->ShippingAddress->City;
                 $shippingState = strtolower((string)$order->ShippingAddress->StateOrRegion);
                 if (strlen($shippingState) > 2) {
-                    $shippingState = Address::stateToAbbr(ucfirst($shippingState));
+                    $shippingState = State::getAbbr(ucfirst($shippingState));
                 }
                 $shippingState = strtoupper($shippingState);
                 $shippingPostalCode = (string)$order->ShippingAddress->PostalCode;
@@ -269,8 +271,8 @@ class AmazonOrder extends Amazon
                 $totalTax = 0.00;
                 $totalShipping = 0.00;
 
-                $stateId = Address::stateId(strtoupper($shippingState));
-                $zipId = Address::zipSoi($shippingPostalCode, $stateId);
+                $stateId = State::getIdByAbbr(strtoupper($shippingState));
+                $zipId = Address::searchOrInsertZip($shippingPostalCode, $stateId);
                 $cityId = Address::citySoi($shippingCity, $stateId);
                 $custId = Buyer::customer_soi($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)),
                     ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
@@ -306,13 +308,13 @@ class AmazonOrder extends Amazon
 
                 $orderId = Order::updateShippingAndTaxes($orderId, $totalShipping, $totalTax);
                 $channelName = 'Amazon';
-                $channelNum = Channel::getNumber($channelName, $sku);
+                $channelNum = Channel::getAccountNumbersBySku($channelName, $sku);
 
                 $orderXml = OrderXML::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping,
                     $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2,
                     $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
                 if (!LOCAL) {
-                    FTP::saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
+                    FTP::saveXml($orderNum, $orderXml, $folder, $channelName);
                 }
             }
         }

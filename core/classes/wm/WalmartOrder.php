@@ -2,8 +2,10 @@
 
 namespace wm;
 
+use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\FTP;
@@ -80,9 +82,9 @@ class WalmartOrder extends Walmart
             $address2 = $order['shippingInfo']['postalAddress']['address2'];
         }
         $city = $order['shippingInfo']['postalAddress']['city'];
-        $stateID = Address::stateId($stateCode);
+        $stateID = State::getIdByAbbr($stateCode);
         $zip = $order['shippingInfo']['postalAddress']['postalCode'];
-        $zipID = Address::zipSoi($zip, $stateID);
+        $zipID = Address::searchOrInsertZip($zip, $stateID);
         $country = $order['shippingInfo']['postalAddress']['country'];
 
         echo "<br><br>Order: $orderNum<br><pre>";
@@ -115,7 +117,7 @@ class WalmartOrder extends Walmart
         $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $ecommerce, $firstName, $lastName, $shippingMethod, $buyerPhone, $address, $address2, $city, $stateCode, $zip, $country, $shippingTotal);
         $channelName = 'Walmart';
         if (!LOCAL) {
-            WMOrder::saveXmlToFTP($orderNum, $orderXml, $folder, $channelName);
+            FTP::saveXml($orderNum, $orderXml, $folder, $channelName);
         }
     }
 
@@ -223,7 +225,7 @@ class WalmartOrder extends Walmart
     {
         $sku = $order['orderLines']['orderLine']['item']['sku'];
         $channel_name = 'Walmart';
-        $channel_num = Channel::getNumber($channel_name, $sku);
+        $channel_num = Channel::getAccountNumbersBySku($channel_name, $sku);
         $order_num = $order['purchaseOrderId'];
         $timestamp = $order['orderDate'];
         $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));

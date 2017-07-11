@@ -2,8 +2,10 @@
 
 namespace rev;
 
+use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\Address;
+use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\FTP;
@@ -81,7 +83,7 @@ class ReverbOrder extends Reverb
                         $shipping_amount = $order->shipping->amount;
                         $ponumber = 1;
                         $channelName = 'Reverb';
-                        $channel_num = Channel::getNumber($channelName, $sku);
+                        $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
                         $tax = 0;
                         if (strcasecmp($state, 'ID') == 0) {
                             //Subtract 6% from sub-total, add as sales tax; adjust sub-total
@@ -103,8 +105,8 @@ class ReverbOrder extends Reverb
                         if ($total >= 250) {
                             $shipping = 'URIP';
                         }
-                        $state_id = Address::stateId($state);
-                        $zip_id = Address::zipSoi($zip, $state_id);
+                        $state_id = State::getIdByAbbr($state);
+                        $zip_id = Address::searchOrInsertZip($zip, $state_id);
                         $city_id = Address::citySoi($city, $state_id);
                         $cust_id = Buyer::customer_soi($first_name, $last_name, ucwords(strtolower($address)),
                             ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
@@ -120,7 +122,7 @@ class ReverbOrder extends Reverb
                             $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2,
                             $city, $state, $zip, $country, $item_xml);
                         if (!LOCAL) {
-                            FTP::saveXmlToFTP($order_num, $xml, $folder, $channelName);
+                            FTP::saveXml($order_num, $xml, $folder, $channelName);
                         }
                     } else {
                         echo 'Order ' . $order_num . ' is already in the database.<br>';

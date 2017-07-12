@@ -12,6 +12,8 @@ class WalmartClient implements EcommerceInterface
     private static $walmartConsumerKey;
     private static $walmartSecretKey;
     private static $walmartAPIHeader;
+    private static $apiTable = 'api_walmart';
+    private static $channel = 'Walmart';
     protected static $instance = null;
 
     public static function __callStatic($method, $args)
@@ -38,8 +40,6 @@ class WalmartClient implements EcommerceInterface
 
     private function setInfo($user_id)
     {
-        $table = 'api_walmart';
-        $channel = 'Walmart';
         $columns = [
             'store_id',
             'consumer_id',
@@ -47,7 +47,7 @@ class WalmartClient implements EcommerceInterface
             'api_header'
         ];
 
-        self::$walmartInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$walmartInfo = Channel::getAppInfo($user_id, WalmartClient::$apiTable, WalmartClient::$channel, $columns);
     }
 
     private function setConsumerKey()

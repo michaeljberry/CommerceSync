@@ -15,6 +15,8 @@ class BigCommerceClient implements EcommerceInterface
     private static $bigcommerceUsername;
     private static $bigcommerceAPIKey;
     private static $bigcommerceStoreID;
+    private static $apiTable = 'api_bigcommerce';
+    private static $channel = 'BigCommerce';
     protected static $instance = null;
 
     public static function __callStatic($method, $args)
@@ -42,8 +44,6 @@ class BigCommerceClient implements EcommerceInterface
 
     private function setInfo($user_id)
     {
-        $table = 'api_bigcommerce';
-        $channel = 'BigCommerce';
         $columns = [
             'store_id',
             'store_url',
@@ -51,7 +51,7 @@ class BigCommerceClient implements EcommerceInterface
             'api_key'
         ];
 
-        self::$bigcommerceInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$bigcommerceInfo = Channel::getAppInfo($user_id, BigCommerceClient::$apiTable, BigCommerceClient::$channel, $columns);
     }
 
     private function setStoreUrl()

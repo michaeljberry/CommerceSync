@@ -13,6 +13,8 @@ class ReverbClient implements EcommerceInterface
     private static $reverbInfo;
     private static $reverbAuth;
     private static $reverbStoreID;
+    private static $apiTable = 'api_reverb';
+    private static $channel = 'Reverb';
     protected static $instance = null;
 
     public static function __callStatic($method, $args)
@@ -37,8 +39,6 @@ class ReverbClient implements EcommerceInterface
 
     private function setInfo($user_id)
     {
-        $table = 'api_reverb';
-        $channel = 'Reverb';
         $columns = [
             'reverb_email',
             'reverb_pass',
@@ -46,7 +46,7 @@ class ReverbClient implements EcommerceInterface
             'store_id'
         ];
 
-        self::$reverbInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$reverbInfo = Channel::getAppInfo($user_id, ReverbClient::$apiTable, ReverbClient::$channel, $columns);
     }
 
     private function setAuthToken()

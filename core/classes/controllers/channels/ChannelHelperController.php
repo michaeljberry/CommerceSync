@@ -5,7 +5,7 @@ namespace controllers\channels;
 class ChannelHelperController
 {
 
-    public static function sanitizeAPITableName($table)
+    public static function sanitizeAPITableName($tab)
     {
         $table = '';
         $tableArray = [
@@ -17,8 +17,8 @@ class ChannelHelperController
             'api_wc',
             'api_walmart',
         ];
-        if (in_array($table, $tableArray)) {
-            $table = $table;
+        if (in_array($tab, $tableArray)) {
+            $table = $tab;
         }
         return $table;
     }

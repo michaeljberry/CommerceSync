@@ -14,6 +14,8 @@ class WooCommerceClient implements EcommerceInterface
     private static $woocommerceSecretKey;
     private static $woocommerceSite;
     private static $woocommerceStoreID;
+    private static $apiTable = 'api_woocommerce';
+    private static $channel = 'WooCommerce';
     protected static $instance = null;
 
     public static function __callStatic($method, $args)
@@ -40,8 +42,6 @@ class WooCommerceClient implements EcommerceInterface
 
     private function setInfo($user_id)
     {
-        $table = 'api_woocommerce';
-        $channel = 'WooCommerce';
         $columns = [
             'store_id',
             'consumer_key',
@@ -49,7 +49,7 @@ class WooCommerceClient implements EcommerceInterface
             'site'
         ];
 
-        self::$woocommerceInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$woocommerceInfo = Channel::getAppInfo($user_id, WooCommerceClient::$apiTable, WooCommerceClient::$channel, $columns);
     }
 
     private function setConsumerKey()

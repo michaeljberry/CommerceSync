@@ -16,6 +16,8 @@ class EbayClient implements EcommerceInterface
     private static $eBayCertID;
     private static $eBayToken;
     private static $eBayStoreID;
+    private static $apiTable = 'api_ebay';
+    private static $channel = 'Ebay';
     protected static $instance = null;
 
     public static function __callStatic($method, $args)
@@ -43,8 +45,6 @@ class EbayClient implements EcommerceInterface
 
     private static function setInfo($user_id)
     {
-        $table = 'api_ebay';
-        $channel = 'Ebay';
         $columns = [
             'store_id',
             'devid',
@@ -53,7 +53,7 @@ class EbayClient implements EcommerceInterface
             'token'
         ];
 
-        self::$ebayInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$ebayInfo = Channel::getAppInfo($user_id, EbayClient::$apiTable, EbayClient::$channel, $columns);
     }
 
     private static function setDevID()

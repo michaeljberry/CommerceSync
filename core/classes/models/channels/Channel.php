@@ -2,12 +2,30 @@
 
 namespace models\channels;
 
+use ecommerce\Ecommerce;
 use IBM;
 use controllers\channels\ChannelHelperController as CHC;
 use models\ModelDB as MDB;
 
 class Channel
 {
+
+    protected static $columnsToEncrypt = ['pass', 'token', 'cert', 'app', 'dev', 'api', 'username', 'merchant', 'marketplace', 'secret', 'access'];
+
+    /**
+     * @param $column
+     * @param $value
+     * @return string
+     */
+    public static function encryptColumn($column, $value): string
+    {
+        foreach (Channel::$columnsToEncrypt as $encrypt) {
+            if (strpos($column, $encrypt) !== false) {
+                $value = \Crypt::encrypt($value);
+            }
+        }
+        return $value;
+    }
 
     public static function prepareColumnList($table, $columns)
     {
@@ -16,23 +34,39 @@ class Channel
 
     public static function prepareColumnInsert($columns)
     {
-        return implode(',', $columns);
+        return implode(',', array_keys($columns));
     }
 
     public static function prepareColumnValues($columns)
     {
-        return ':' . implode(',:', $columns);
+        return ':' . implode(',:', array_keys($columns));
     }
 
     public static function prepareColumnParams($columns)
     {
         $params = [];
 
-        foreach ($columns as $column){
-            $params[':' . $column] = $column;
+        foreach ($columns as $column => $value){
+            $value = Channel::encryptColumn($column, $value);
+            $params[':' . $column] = $value;
+            $params[':' . $column . '2'] = $value;
         }
 
         return $params;
+    }
+
+    public static function prepareColumnUpdate($columns)
+    {
+        $update = '';
+
+        foreach($columns as $key => $column){
+            $update .= "$key = :{$key}2";
+            if($column !== end($columns)){
+                $update .= ", ";
+            }
+        }
+
+        return $update;
     }
 
     public static function getAppInfo($user_id, $table, $channel, $columns)
@@ -57,16 +91,19 @@ class Channel
         $columnInsert = Channel::prepareColumnInsert($columns);
         $columnValues = Channel::prepareColumnValues($columns);
         $columnParams = Channel::prepareColumnParams($columns);
+        $updateValues = Channel::prepareColumnUpdate($columns);
 
         $table = CHC::sanitizeAPITableName($table);
 
-        $sql = "INSERT INTO $table ($columnInsert) 
-                VALUES ($columnValues)
-                ON DUPLICATE KEY UPDATE ";
+        $sql = "INSERT INTO $table (store_id, $columnInsert) 
+                VALUES (:store_id, $columnValues)
+                ON DUPLICATE KEY UPDATE $updateValues";
         $queryParams = [
             ":store_id" => $storeID,
         ];
         $queryParams = array_merge($queryParams, $columnParams);
+        Ecommerce::dd($sql);
+        Ecommerce::dd($queryParams);
 
         return MDB::query($sql, $queryParams, 'id');
     }
@@ -106,4 +143,6 @@ class Channel
         return implode(",", $companyNumbers);
 
     }
+
+
 }

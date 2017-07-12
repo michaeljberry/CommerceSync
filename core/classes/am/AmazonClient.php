@@ -16,6 +16,8 @@ class AmazonClient implements EcommerceInterface
     private static $amazonAWSAccessKey;
     private static $amazonSecretKey;
     private static $amazonStoreID;
+    private static $apiTable = 'api_amazon';
+    private static $channel = 'Amazon';
     protected static $instance = null;
 
     private static $apiFeedInfo = [
@@ -68,8 +70,6 @@ class AmazonClient implements EcommerceInterface
      */
     private function setInfo($user_id)
     {
-        $table = 'api_amazon';
-        $channel = 'Amazon';
         $columns = [
             'store_id',
             'merchantid',
@@ -78,7 +78,7 @@ class AmazonClient implements EcommerceInterface
             'secret_key'
         ];
 
-        self::$amazonInfo = Channel::getAppInfo($user_id, $table, $channel, $columns);
+        self::$amazonInfo = Channel::getAppInfo($user_id, AmazonClient::$apiTable, AmazonClient::$channel, $columns);
     }
 
     private function setMerchantID()

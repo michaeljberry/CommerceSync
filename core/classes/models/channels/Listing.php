@@ -23,7 +23,7 @@ class Listing
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public static function getBySKU($sku, $table)
+    public static function getBySku($sku, $table)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT * 
@@ -35,7 +35,7 @@ class Listing
         return MDB::query($sql, $queryParams, 'fetch');
     }
 
-    public static function getPriceBySKU($sku, $table)
+    public static function getPriceBySku($sku, $table)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT price 
@@ -48,7 +48,7 @@ class Listing
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function getUpdatedBySKU($table, $sku)
+    public static function getUpdatedBySku($table, $sku)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT st.id, st.sku_id, tb.inventory_level AS stock_qty 
@@ -85,7 +85,7 @@ class Listing
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public static function getStoreIdByStockId($stockID, $table)
+    public static function getChannelListingIdByStockId($stockID, $table)
     {
         $table_col = CHC::sanitize_table_name($table);
         $sql = "SELECT store_listing_id 
@@ -97,7 +97,7 @@ class Listing
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function getIdBySKU($sku, $table)
+    public static function getIdBySku($sku, $table)
     {
         $table_col = CHC::sanitize_table_name($table);
         $sql = "SELECT store_listing_id 
@@ -109,7 +109,7 @@ class Listing
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function getId($table, $stockID, $storeID)
+    public static function getIdByStockId($table, $stockID, $storeID)
     {
         $sql = "SELECT id 
                 FROM $table 
@@ -133,7 +133,7 @@ class Listing
     public static function searchOrInsert($table, $storeID, $stockID, $channelArray, $update = false)
     {
         $table = CHC::sanitize_table_name($table);
-        $listingID = Listing::getId($table, $stockID, $storeID);
+        $listingID = Listing::getIdByStockId($table, $stockID, $storeID);
         if ($update) {
             $returnArray = Ecommerce::prepare_arrays($channelArray);
             $columns = $returnArray[0];
@@ -146,7 +146,7 @@ class Listing
         return $listingID;
     }
 
-    public static function getCurrent($table)
+    public static function getInventory($table)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT sku, inventory_level 
@@ -195,10 +195,11 @@ class Listing
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public static function getByChannel($channel)
+    public static function getByChannel($table)
     {
+        $table = CHC::sanitize_table_name($table);
         $sql = "SELECT sku, store_listing_id as id 
-                FROM listing_$channel";
+                FROM $table";
         return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
 }

@@ -55,7 +55,7 @@ if ($_POST['price_sku']) {
 
     if (!empty($override)) {
         $stock_id = Stock::searchOrInsert($sku_id);
-        $listing_id = Listing::getStoreIdByStockId($stock_id, 'listing_ebay');
+        $listing_id = Listing::getChannelListingIdByStockId($stock_id, 'listing_ebay');
         $response = simplexml_load_string($ebinv->getSingleItem(listing_id));
         $pl10 = $response->Item->StartPrice;
     }

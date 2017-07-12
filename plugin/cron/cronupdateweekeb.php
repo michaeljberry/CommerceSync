@@ -23,7 +23,7 @@ foreach ($updated as $u) {
     $sku_id = $u['sku_id'];
     $stock_qty = $u['stock_qty'];
     $sku = SKU::getById($sku_id);
-    $price = Listing::getPriceBySKU($sku, 'listing_ebay');
+    $price = Listing::getPriceBySku($sku, 'listing_ebay');
     if (empty($price)) {
         $price = '';
     }

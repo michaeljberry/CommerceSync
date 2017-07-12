@@ -44,7 +44,7 @@ foreach ($updated as $u) {
     $stock_qty = $u['stock_qty'];
     $sku = $u['sku'];
     fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-    $price = Listing::getPriceBySKU($sku, $table);
+    $price = Listing::getPriceBySku($sku, $table);
     if (empty($price)) {
         $price = '';
     }

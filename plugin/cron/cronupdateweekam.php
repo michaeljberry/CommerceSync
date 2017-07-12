@@ -26,7 +26,7 @@ foreach ($updated as $u) {
     $sku_id = $u['sku_id'];
     $stock_qty = $u['stock_qty'];
     $sku = SKU::getById($sku_id);
-    $price = Listing::getPriceBySKU($sku, $table);
+    $price = Listing::getPriceBySku($sku, $table);
     if (!empty($price)) {
         $amazon_price_xml .= $aminv->create_inventory_price_update_item_xml($sku, $price, $x);
     }

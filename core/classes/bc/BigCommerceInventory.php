@@ -25,7 +25,7 @@ class BigCommerceInventory extends BigCommerce
 
     public function update_bc_inventory($stock_id, $stock_qty, $price, Ecommerce $ecommerce)
     { //$BC
-        $store_listing_id = Listing::getStoreIdByStockId($stock_id, 'listing_bigcommerce');
+        $store_listing_id = Listing::getChannelListingIdByStockId($stock_id, 'listing_bigcommerce');
         echo 'Stock ID: ' . $stock_id . ', ID: ' . $store_listing_id . ', Price: ' . $price . ', Qty: ' . $stock_qty . '<br>';
         $filter = [
 //            "inventory_level" => $stock_qty

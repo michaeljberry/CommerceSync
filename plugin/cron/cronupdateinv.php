@@ -23,7 +23,7 @@ $log_file_name = date('ymd-H-i') . ' - VAI Inventory.txt';
 $inventory_log = $folder . 'log/inventory/' . $log_file_name;
 echo "Updated SKU's: Stock_QTY" . PHP_EOL;
 
-$current_quantities = Listing::getCurrent($table);
+$current_quantities = Listing::getInventory($table);
 
 //ecom::dd($current_quantities);
 

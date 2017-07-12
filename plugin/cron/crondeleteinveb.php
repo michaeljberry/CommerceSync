@@ -14,7 +14,7 @@ foreach ($results as $r) {
 //        continue;
 //    }
     $sku = trim($r['IFITEM']);
-    $listing_id = Listing::getIdBySKU($sku, 'listing_ebay');
+    $listing_id = Listing::getIdBySku($sku, 'listing_ebay');
     $result = $ebinv->deleteItem($listing_id);
     echo "$sku: <br>";
     print_r($result);

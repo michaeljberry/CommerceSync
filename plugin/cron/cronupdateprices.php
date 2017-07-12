@@ -20,10 +20,10 @@ echo $count . '<br>';
 
 $updatedPrices = ProductPrice::getUpdated(15);
 
-$reverbListings = Listing::getByChannel('reverb');
-$ebayListings = Listing::getByChannel('ebay');
-$amazonListings = Listing::getByChannel('amazon');
-$bigcommerceListings = Listing::getByChannel('bigcommerce');
+$reverbListings = Listing::getByChannel('listing_reverb');
+$ebayListings = Listing::getByChannel('listing_ebay');
+$amazonListings = Listing::getByChannel('listing_amazon');
+$bigcommerceListings = Listing::getByChannel('listing_bigcommerce');
 
 $x = 1;
 $y = 0;

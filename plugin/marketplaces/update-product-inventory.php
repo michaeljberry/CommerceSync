@@ -32,7 +32,7 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = Listing::getUpdatedBySKU($table, $sku);
+        $updated = Listing::getUpdatedBySku($table, $sku);
         if (!empty($updated)) {
 //        print_r($updated);cd /var/www/html/portal/amazon
             /* Update Amazon Quantity per SKU */
@@ -45,7 +45,7 @@ if ($_POST['inventory-sku']) {
             $stock_qty = $updated['stock_qty'];
             $sku = SKU::getById($sku_id);
             fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-            $price = Listing::getPriceBySKU($sku, $table);
+            $price = Listing::getPriceBySku($sku, $table);
             if (!empty($price)) {
                 $amazon_price_xml .= $aminv->create_inventory_price_update_item_xml($sku, $price, $y);
             } else {
@@ -92,14 +92,14 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = Listing::getUpdatedBySKU($table, $sku);
+        $updated = Listing::getUpdatedBySku($table, $sku);
         if (!empty($updated)) {
             $stock_id = $updated['id'];
             $sku_id = $updated['sku_id'];
             $stock_qty = $updated['stock_qty'];
             $sku = SKU::getById($sku_id);
             fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-            $price = Listing::getPriceBySKU($sku, $table);
+            $price = Listing::getPriceBySku($sku, $table);
             if (empty($price)) {
                 $price = '';
                 echo 'There was either no price, or the price was overrode<br>';
@@ -135,7 +135,7 @@ if ($_POST['inventory-sku']) {
         fwrite($fp, "------------------" . date("Y/m/d H:i:s") . substr((string)$start_time, 1, 6) . "------------------" . PHP_EOL);
         fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 
-        $updated = Listing::getUpdatedBySKU($table, $sku);
+        $updated = Listing::getUpdatedBySku($table, $sku);
         if (!empty($updated)) {
             print_r($updated);
             $stock_id = $updated['id'];
@@ -143,7 +143,7 @@ if ($_POST['inventory-sku']) {
             $stock_qty = $updated['stock_qty'];
             $sku = SKU::getById($sku_id);
             fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-            $price = Listing::getPriceBySKU($sku, $table);
+            $price = Listing::getPriceBySku($sku, $table);
             if (empty($price)) {
                 $price = '';
                 echo 'There was either no price, or the price was overrode<br>';

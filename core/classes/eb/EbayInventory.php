@@ -120,7 +120,7 @@ class EbayInventory extends Ebay
 
     public function update_ebay_inventory($stock_id, $quantity, $price, Ecommerce $ecommerce)
     {
-        $item_id = Listing::getStoreIdByStockId($stock_id, 'listing_ebay');
+        $item_id = Listing::getChannelListingIdByStockId($stock_id, 'listing_ebay');
 
         $requestName = 'ReviseInventoryStatus';
         $xml = [

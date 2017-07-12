@@ -9,35 +9,44 @@ use PDO;
 class SKU
 {
 
-    public static function save($sku, $productId = null)
+    public static function create($sku)
     {
-        if (!$productId) {
-            $sql = "INSERT INTO sku (sku) 
+        $sql = "INSERT INTO sku (sku) 
                     VALUES (:sku)";
-            $queryParams = [
-                ':sku' => $sku
-            ];
-        } else {
-            $sql = "INSERT INTO sku (product_id, sku) 
-                    VALUES (:product_id, :sku) 
-                    ON DUPLICATE KEY UPDATE product_id = :product_id2";
-            $queryParams = [
-                ':product_id' => $productId,
-                ':sku' => $sku,
-                ':product_id2' => $productId
-            ];
-        }
-
+        $queryParams = [
+            ':sku' => $sku
+        ];
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function getById($sku_id)
+    public static function update($sku, $productID)
+    {
+        $sql = "INSERT INTO sku (product_id, sku) 
+                    VALUES (:product_id, :sku) 
+                    ON DUPLICATE KEY UPDATE product_id = :product_id2";
+        $queryParams = [
+            ':product_id' => $productID,
+            ':sku' => $sku,
+            ':product_id2' => $productID
+        ];
+        return MDB::query($sql, $queryParams, 'id');
+    }
+
+    public static function save($sku, $productID = null)
+    {
+        if (!$productID) {
+            return SKU::create($sku);
+        }
+        return SKU::update($sku, $productID);
+    }
+
+    public static function getById($id)
     {
         $sql = "SELECT sku.sku 
                 FROM sku 
                 WHERE id = :sku_id";
         $queryParams = [
-            'sku_id' => $sku_id
+            'sku_id' => $id
         ];
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
@@ -55,25 +64,25 @@ class SKU
 
     public static function searchOrInsert($sku)
     {
-        $sku_id = SKU::getId($sku);
-        if (empty($sku_id) && !empty($sku)) {
-            $sku_id = SKU::save($sku);
+        $id = SKU::getId($sku);
+        if (empty($id) && !empty($sku)) {
+            return SKU::save($sku);
         }
-        return $sku_id;
+        return $id;
     }
 
-    public static function getIdFromProductId($product_id)
+    public static function getIdByProductId($productID)
     {
         $sql = "SELECT id 
                 FROM sku 
                 WHERE product_id = :product_id";
         $queryParams = [
-            ':product_id' => $product_id
+            ':product_id' => $productID
         ];
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function getSKUCosts($sku, $table)
+    public static function getCosts($sku, $table)
     {
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT (pc.msrp/100) as msrp, (pc.pl10/100) as pl10, (pc.pl1/100) as pl1, (pc.cost/100) as cost, lt.override_price, lt.title, p.upc 

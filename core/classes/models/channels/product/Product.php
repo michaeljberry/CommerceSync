@@ -81,10 +81,10 @@ class Product
             $skuID = SKU::save($sku, $productID);
         } elseif (empty($upc2)) {
             $productID = Product::updateUpc($productID, $upc);
-            $skuID = SKU::getIdFromProductId($productID);
+            $skuID = SKU::getIdByProductId($productID);
         } elseif (empty($active)) {
             $productID = Product::updateStatus($productID, $status);
-            $skuID = SKU::getIdFromProductId($productID);
+            $skuID = SKU::getIdByProductId($productID);
         } else {
             $skuID = SKU::getId($sku);
         }

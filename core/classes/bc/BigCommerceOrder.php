@@ -15,6 +15,7 @@ use models\channels\order\OrderItemXML;
 use models\channels\order\OrderXML;
 use models\channels\SKU;
 use models\channels\Tax;
+use models\channels\TaxXML;
 
 class BigCommerceOrder extends BigCommerce
 {
@@ -201,7 +202,7 @@ class BigCommerceOrder extends BigCommerce
             $item_xml .= OrderItemXML::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
             $ponumber++;
         }
-        $item_xml .= Tax::getItemXml($state_code, $ponumber, $total_tax);
+        $item_xml .= TaxXML::getItemXml($state_code, $ponumber, $total_tax);
         $info_array = [
             'item_xml' => $item_xml
         ];

@@ -9,23 +9,6 @@ use PDO;
 class Tax
 {
 
-    public static function getItemXml($state_code, $poNumber, $totalTax, $stateTaxItemName = '')
-    {
-        $itemXml = '';
-        if (!empty($stateTaxItemName)) {
-            $itemXml .= TaxXML::create($poNumber, $totalTax, '', $stateTaxItemName);
-        } else {
-            if (strtolower($state_code) == 'id' || strtolower($state_code) == 'idaho') {
-                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'ID');
-            } elseif (strtolower($state_code) == 'ca' || strtolower($state_code) == 'california') {
-                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'CA');
-            } elseif (strtolower($state_code) == 'wa' || strtolower($state_code) == 'washington') {
-                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'WA');
-            }
-        }
-        return $itemXml;
-    }
-
     public static function getCompanyInfo($companyID)
     {
         $sql = "SELECT s.abbr, t.tax_rate, t.tax_line_name, t.shipping_taxed 

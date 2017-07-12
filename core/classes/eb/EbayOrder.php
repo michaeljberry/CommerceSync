@@ -16,6 +16,7 @@ use models\channels\order\OrderXML;
 use models\channels\Shipping;
 use models\channels\SKU;
 use models\channels\Tax;
+use models\channels\TaxXML;
 
 class EbayOrder extends Ebay
 {
@@ -182,7 +183,7 @@ class EbayOrder extends Ebay
                     $sku = (string)$items->sku;
                     $itemXml = (string)$items->itemXml;
 
-                    $itemXml .= Tax::getItemXml($state, $poNumber, $item_taxes);
+                    $itemXml .= TaxXML::getItemXml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
                     $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
                     $orderXml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);

@@ -39,4 +39,21 @@ class TaxXML
                 </Item>";
         return $itemXml;
     }
+
+    public static function getItemXml($stateCode, $poNumber, $totalTax, $stateTaxItemName = '')
+    {
+        $itemXml = '';
+        if (!empty($stateTaxItemName)) {
+            $itemXml .= TaxXML::create($poNumber, $totalTax, '', $stateTaxItemName);
+        } else {
+            if (strtolower($stateCode) == 'id' || strtolower($stateCode) == 'idaho') {
+                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'ID');
+            } elseif (strtolower($stateCode) == 'ca' || strtolower($stateCode) == 'california') {
+                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'CA');
+            } elseif (strtolower($stateCode) == 'wa' || strtolower($stateCode) == 'washington') {
+                $itemXml .= TaxXML::create($poNumber, number_format($totalTax, 2), 'WA');
+            }
+        }
+        return $itemXml;
+    }
 }

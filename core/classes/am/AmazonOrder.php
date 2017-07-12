@@ -18,6 +18,7 @@ use models\channels\order\OrderXML;
 use models\channels\Shipping;
 use models\channels\SKU;
 use models\channels\Tax;
+use models\channels\TaxXML;
 use models\channels\XML;
 
 class AmazonOrder extends Amazon
@@ -299,7 +300,7 @@ class AmazonOrder extends Amazon
                         $totalTax = Tax::calculate($taxableStates[$shippingState], $totalWithoutTax,
                             $totalShipping);
                     }
-                    $itemXml .= Tax::getItemXml(
+                    $itemXml .= TaxXML::getItemXml(
                         $shippingState,
                         $poNumber,
                         $totalTax,

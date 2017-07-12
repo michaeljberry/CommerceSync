@@ -27,7 +27,7 @@ if (!$debug) {
             if ($status) {
                 $status = 1;
             }
-            $sku_id = Product::searchOrInsertFromSKUGetSKUId($sku, $name, $sub_title, $description, $upc, $weight, $status);
+            $sku_id = Product::searchOrInsertBySku($sku, $name, $sub_title, $description, $upc, $weight, $status);
 
             $sku = str_replace("'", "''", $sku);
             $money = IBM::syncVAIPrices($sku, '1');

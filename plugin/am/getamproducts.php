@@ -9,6 +9,7 @@ use ecommerce\Ecommerce;
 use models\channels\Condition;
 use models\channels\Listing;
 use models\channels\Product;
+use models\channels\product\ProductAvailability;
 use models\channels\ProductPrice;
 use models\channels\SKU;
 use models\channels\Stock;
@@ -136,9 +137,9 @@ if (!$report) {
             }
 
             //find-product-id
-            $product_id = Product::searchOrInsertFromSKUGetId($sku, $name, '', $description, '', '');
+            $product_id = Product::searchOrInsert($sku, $name, '', $description, '', '');
             //add-product-availability
-            $availability_id = Product::searchOrInsertAvailability($product_id, $am_store_id);
+            $availability_id = ProductAvailability::searchOrInsert($product_id, $am_store_id);
             //find sku
             $sku_id = SKU::searchOrInsert($sku);
             //add price

@@ -5,6 +5,7 @@ namespace rev;
 use ecommerce\Ecommerce;
 use models\channels\Listing;
 use models\channels\Product;
+use models\channels\product\ProductAvailability;
 
 class ReverbInventory extends Reverb
 {
@@ -61,9 +62,10 @@ class ReverbInventory extends Reverb
                     $shipping_cost = $r->shipping->us_rate->amount;
 
                     //find-product-id
-                    $product_id = Product::searchOrInsertFromSKUGetId($sku, $name, '', $description, '', '');
+                    $product_id = Product::searchOrInsert($sku, $name, '', $description, '', '');
                     //add-product-availability
-                    $availability_id = Product::searchOrInsertAvailability($product_id, ReverbClient::getStoreID());
+                    $availability_id = ProductAvailability::searchOrInsert($product_id,
+                        ReverbClient::getStoreID());
                     //find sku
                     $sku_id = $ecommerce->sku_soi($sku);
                     //add price

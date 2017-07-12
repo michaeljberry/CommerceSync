@@ -5,6 +5,7 @@ namespace eb;
 use ecommerce\Ecommerce;
 use models\channels\Listing;
 use models\channels\Product;
+use models\channels\product\ProductAvailability;
 
 class EbayInventory extends Ebay
 {
@@ -71,9 +72,9 @@ class EbayInventory extends Ebay
         }
 //
         //find-product-id
-        $product_id = Product::searchOrInsertFromSKUGetId($sku, $title, '', $description, '', '');
+        $product_id = Product::searchOrInsert($sku, $title, '', $description, '', '');
         //add-product-availability
-        $availability_id = Product::searchOrInsertAvailability($product_id, $store_id);
+        $availability_id = ProductAvailability::searchOrInsert($product_id, $store_id);
         //find sku
         $sku_id = $ecommerce->sku_soi($sku);
         //add price

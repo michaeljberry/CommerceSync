@@ -3,18 +3,19 @@
 namespace models\channels;
 
 
+use models\channels\product\ProductAvailability;
 use models\ModelDB as MDB;
 
 class Product
 {
 
-    public static function save($name, $sub_title, $description, $upc, $weight)
+    public static function save($name, $subTitle, $description, $upc, $weight)
     {
         $sql = "INSERT INTO product (product.name, subtitle, description, upc, weight) 
                 VALUES (:name, :subtitle, :description, :upc, :weight)";
         $queryParams = [
             ':name' => $name,
-            ':subtitle' => $sub_title,
+            ':subtitle' => $subTitle,
             ':description' => $description,
             ':upc' => $upc,
             ':weight' => $weight
@@ -22,7 +23,7 @@ class Product
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function getFromSKU($sku)
+    public static function getBySku($sku)
     {
         $sql = "SELECT product.id, product.upc, product.status 
                 FROM product 
@@ -34,7 +35,7 @@ class Product
         return MDB::query($sql, $queryParams, 'fetch');
     }
 
-    public static function getId($sku)
+    public static function getIdBySku($sku)
     {
         $sql = "SELECT product.id 
                 FROM product 
@@ -46,33 +47,33 @@ class Product
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function updateUPC($productId, $upc)
+    public static function updateUpc($id, $upc)
     {
         $sql = "UPDATE product 
                 SET upc = :upc 
                 WHERE id = :id";
         $queryParams = [
             ':upc' => $upc,
-            ':id' => $productId
+            ':id' => $id
         ];
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function updateStatus($productId, $status)
+    public static function updateStatus($id, $status)
     {
         $sql = "UPDATE product 
                 SET status = :status 
                 WHERE id = :id";
         $queryParams = [
             ':status' => $status,
-            ':id' => $productId
+            ':id' => $id
         ];
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function searchOrInsertFromSKUGetSKUId($sku, $name, $subTitle, $description, $upc, $weight, $status = '')
+    public static function searchOrInsertBySku($sku, $name, $subTitle, $description, $upc, $weight, $status = '')
     {
-        $results = Product::getFromSKU($sku);
+        $results = Product::getBySku($sku);
         $productID = $results['id'];
         $upc2 = $results['upc'];
         $active = $results['status'];
@@ -80,7 +81,7 @@ class Product
             $productID = Product::save($name, $subTitle, $description, $upc, $weight);
             $skuID = SKU::save($sku, $productID);
         } elseif (empty($upc2)) {
-            $productID = Product::updateUPC($productID, $upc);
+            $productID = Product::updateUpc($productID, $upc);
             $skuID = SKU::getIdFromProductId($productID);
         } elseif (empty($active)) {
             $productID = Product::updateStatus($productID, $status);
@@ -91,48 +92,14 @@ class Product
         return $skuID;
     }
 
-    public static function searchOrInsertFromSKUGetId($sku, $name, $subTitle, $description, $upc, $weight)
+    public static function searchOrInsert($sku, $name, $subTitle, $description, $upc, $weight)
     {
-        $productID = Product::getId($sku);
-        if (!empty($productID)) {
-            return $productID;
+        $id = Product::getIdBySku($sku);
+        if (!empty($id)) {
+            return $id;
         }
-        $productID = Product::save($name, $subTitle, $description, $upc, $weight);
-        SKU::save($sku, $productID);
-    }
-
-    public static function getAvailability($productId, $storeID)
-    {
-        $sql = "SELECT id 
-                FROM product_availability 
-                WHERE product_id = :product_id 
-                AND store_id = :store_id 
-                AND is_available = '1'";
-        $queryParams = [
-            ':product_id' => $productId,
-            ':store_id' => $storeID
-        ];
-        return MDB::query($sql, $queryParams, 'fetchColumn');
-    }
-
-    public static function saveAvailability($productID, $storeID)
-    {
-        $sql = "INSERT INTO product_availability (product_id, store_id, is_available) 
-                VALUES (:product_id, :store_id, 1)";
-        $queryParams = [
-            ":product_id" => $productID,
-            ":store_id" => $storeID
-        ];
-        return MDB::query($sql, $queryParams, 'id');
-    }
-
-    public static function searchOrInsertAvailability($productID, $storeID)
-    {
-        $id = Product::getAvailability($productID, $storeID);
-        if (empty($id)) {
-            $id = Product::saveAvailability($productID, $storeID);
-        }
-        return $id;
+        $id = Product::save($name, $subTitle, $description, $upc, $weight);
+        SKU::save($sku, $id);
     }
 
     public static function getAllInfo($sku)

@@ -339,7 +339,7 @@ class BigCommerce
                 $photo_url = $b->primary_image->standard_url;
 
                 //find-product-id
-                $product_id = Product::searchOrInsertFromSKUGetId($sku, $name, '', $description, $upc, $weight);
+                $product_id = Product::searchOrInsert($sku, $name, '', $description, $upc, $weight);
                 //add-product-availability
                 $availability_id = MDB::availability_soi($product_id, BigCommerceClient::getStoreID());
                 //find sku

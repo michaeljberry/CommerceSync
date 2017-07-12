@@ -9,7 +9,7 @@ use models\ModelDB as MDB;
 class Fee
 {
 
-    public static function getCategoryFeeOfSKU($table, $table2, $sku)
+    public static function getCategoryBySku($table, $table2, $sku)
     {
         $table = CHC::sanitize_table_name($table);
         $table2 = CHC::sanitize_table_name($table2);
@@ -23,7 +23,7 @@ class Fee
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function getCategory($categoryID)
+    public static function getCategoryById($categoryID)
     {
         $sql = "SELECT category_fee 
                 FROM categories_ebay 
@@ -34,7 +34,7 @@ class Fee
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function saveCategory($categoryID, $fee)
+    public static function updateCategory($categoryID, $fee)
     {
         $sql = "UPDATE categories_ebay 
                 SET category_fee = :fee 

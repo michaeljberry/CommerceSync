@@ -128,7 +128,7 @@ class Ebay
 
         $shippingCost = 3.99; //Amount we paid to ship the product
 
-        $ebayFeePercent = Fee::getCategoryFeeOfSKU('categories_ebay', 'listing_ebay', $sku);
+        $ebayFeePercent = Fee::getCategoryBySku('categories_ebay', 'listing_ebay', $sku);
 
         $shippingCollected = Ecommerce::formatMoney($shippingIncludedInPrice ? $shippingCharged : 0);
 

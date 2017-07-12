@@ -2,7 +2,7 @@
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 
-use models\channels\OrderStats;
+use models\channels\order\OrderStats;
 
 $start = startClock();
 

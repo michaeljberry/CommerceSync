@@ -12,7 +12,7 @@ require WEBPLUGIN . 'wm/wmvar.php';
 use ecommerce\Ecommerce;
 use models\channels\Channel;
 use models\channels\Tracking;
-use models\channels\Order;
+use models\channels\order\Order;
 
 //ob_start();
 

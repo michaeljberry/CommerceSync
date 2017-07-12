@@ -2,7 +2,7 @@
 
 namespace controllers\channels;
 
-use models\channels\OrderStats;
+use models\channels\order\OrderStats;
 use ecommerce\Ecommerce;
 
 class OrderStatsController

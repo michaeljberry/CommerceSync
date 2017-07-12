@@ -7,6 +7,6 @@ if (!empty($_POST['status'])) {
         \models\channels\Tracking::updateTrackingSuccessful($orderNum);
     } elseif ($_POST['status'] == 'cancel') {
         $orderNum = htmlentities($_POST['id']);
-        \models\channels\Order::cancel($orderNum);
+        \models\channels\order\Order::cancel($orderNum);
     }
 }

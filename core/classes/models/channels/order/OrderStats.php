@@ -1,6 +1,6 @@
 <?php
 
-namespace models\channels;
+namespace models\channels\order;
 
 use controllers\channels\ChannelHelperController as CHC;
 use models\ModelDB as MDB;

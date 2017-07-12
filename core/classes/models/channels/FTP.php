@@ -3,6 +3,8 @@
 namespace models\channels;
 
 
+use models\channels\order\Order;
+
 class FTP
 {
 

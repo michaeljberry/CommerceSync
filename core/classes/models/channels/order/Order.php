@@ -1,9 +1,10 @@
 <?php
 
-namespace models\channels;
+namespace models\channels\order;
 
 use controllers\channels\ChannelHelperController as CHC;
 use ecommerce\Ecommerce;
+use models\channels\Tracking;
 use models\ModelDB as MDB;
 
 class Order

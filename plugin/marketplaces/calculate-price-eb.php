@@ -2,7 +2,7 @@
 
 use ecommerce\Ecommerce;
 use models\channels\Listing;
-use models\channels\OrderStats;
+use models\channels\order\OrderStats;
 use models\channels\SKU;
 use models\channels\Stock;
 

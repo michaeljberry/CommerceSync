@@ -1,6 +1,6 @@
 <?php
 use ecommerce\Ecommerce;
-use models\channels\OrderStats;
+use models\channels\order\OrderStats;
 
 require '../../core/init.php';
 

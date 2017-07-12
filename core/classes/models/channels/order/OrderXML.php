@@ -1,6 +1,6 @@
 <?php
 
-namespace models\channels;
+namespace models\channels\order;
 
 
 class OrderXML

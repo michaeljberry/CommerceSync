@@ -1,7 +1,7 @@
 <?php
 require '../../core/init.php';
 
-use models\channels\OrderStats;
+use models\channels\order\OrderStats;
 
 $channel = '';
 if (isset($_GET['channel']) && !empty($_GET['channel'])) {

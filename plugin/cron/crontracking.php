@@ -27,7 +27,7 @@ $tracking_log = $folder . 'log/tracking/' . $log_file_name;
 echo "Tracking Numbers" . PHP_EOL;
 echo "Channel -> Order Num : Tracking Number<br><br>" . PHP_EOL;
 
-$unshippedOrders = Tracking::getUnshippedOrders();
+$unshippedOrders = Tracking::findUnshippedOrders();
 
 $amazonOrderCount = 1;
 $amazonTrackingXML = '';

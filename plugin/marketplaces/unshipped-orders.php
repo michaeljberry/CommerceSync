@@ -8,7 +8,7 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
     $channel = htmlentities($_GET['channel']);
 }
 
-$unshippedOrders = Tracking::getUnshippedOrders($channel);
+$unshippedOrders = Tracking::findUnshippedOrders($channel);
 
 //print_r($orders_last_day);
 $x = 0;

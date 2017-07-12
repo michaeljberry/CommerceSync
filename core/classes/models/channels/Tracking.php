@@ -6,23 +6,42 @@ use models\ModelDB as MDB;
 
 class Tracking
 {
-    public static function getUnshippedOrders($channel = null)
+
+    public static function getUnshippedOrdersByChannel($channel)
     {
-        $params = [];
-        if (!empty($channel)) {
-            $params = [
-                ':channel' => $channel
-            ];
-        }
+
         $sql = "SELECT a.order_num, a.type, a.processed, c.item_id 
                 FROM order_sync a
                 JOIN sync.order b ON b.order_num = a.order_num
                 JOIN order_item c ON c.order_id = b.id
-                WHERE a.track_successful IS NULL";
-        $sql .= !empty($channel) ? " AND a.type = :channel" : "";
-        $sql .= " AND b.cancelled IS NULL
+                WHERE a.track_successful IS NULL 
+                AND a.type = :channel
+                AND b.cancelled IS NULL 
                 ORDER BY a.processed";
-        return MDB::query($sql, $params, 'fetchAll');
+        $queryParams = [
+            ':channel' => $channel
+        ];
+        return MDB::query($sql, $queryParams, 'fetchAll');
+    }
+
+    public static function getUnshippedOrders()
+    {
+        $sql = "SELECT a.order_num, a.type, a.processed, c.item_id 
+                FROM order_sync a
+                JOIN sync.order b ON b.order_num = a.order_num
+                JOIN order_item c ON c.order_id = b.id
+                WHERE a.track_successful IS NULL 
+                AND b.cancelled IS NULL
+                ORDER BY a.processed";
+        return MDB::query($sql, [], 'fetchAll');
+    }
+
+    public static function findUnshippedOrders($channel = null)
+    {
+        if (!empty($channel)) {
+            return Tracking::getUnshippedOrdersByChannel($channel);
+        }
+        return Tracking::getUnshippedOrders();
     }
 
     public static function updateTrackingSuccessful($order_num)
@@ -36,27 +55,37 @@ class Tracking
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function updateTrackingNum($order_id, $tracking_num, $carrier)
+    public static function getId($orderID, $trackingNumber)
     {
         $sql = "SELECT id 
                 FROM tracking 
                 WHERE order_id = :order_id 
                 AND tracking_num = :tracking_num";
         $queryParams = [
-            ':order_id' => $order_id,
-            ':tracking_num' => $tracking_num
+            ':order_id' => $orderID,
+            ':tracking_num' => $trackingNumber
         ];
-        $tracking_id = MDB::query($sql, $queryParams, 'fetchColumn');
-        if (empty($tracking_id)) {
-            $sql = "INSERT INTO tracking (order_id, tracking_num, carrier) 
-                    VALUES (:order_id, :tracking_num, :carrier)";
-            $queryParams = [
-                ':order_id' => $order_id,
-                ':tracking_num' => $tracking_num,
-                ':carrier' => $carrier
-            ];
-            $tracking_id = MDB::query($sql, $queryParams, 'id');
+        return MDB::query($sql, $queryParams, 'fetchColumn');
+    }
+
+    public static function save($orderID, $trackingNumber, $carrier)
+    {
+        $sql = "INSERT INTO tracking (order_id, tracking_num, carrier) 
+                VALUES (:order_id, :tracking_num, :carrier)";
+        $queryParams = [
+            ':order_id' => $orderID,
+            ':tracking_num' => $trackingNumber,
+            ':carrier' => $carrier
+        ];
+        return MDB::query($sql, $queryParams, 'id');
+    }
+
+    public static function updateTrackingNum($orderID, $trackingNumber, $carrier)
+    {
+        $id = Tracking::getId($orderID, $trackingNumber);
+        if (empty($id)) {
+            $id = Tracking::save($orderID, $trackingNumber, $carrier);
         }
-        return $tracking_id;
+        return $id;
     }
 }

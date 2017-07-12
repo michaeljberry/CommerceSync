@@ -32,7 +32,10 @@ class XML
         $tag = "<$tagName";
         if ($parameters) {
             $tag .= " ";
-            $tag .= $parameters[0] . '="' . $parameters[1] . '"';
+            $tag .= $parameters[0];
+            $tag .= '="';
+            $tag .= $parameters[1];
+            $tag .= '"';
         }
         $tag .= ">";
         $tag .= htmlspecialchars($tagContents);
@@ -40,80 +43,133 @@ class XML
         return $tag;
     }
 
-    public static function generateXML($value, $pkey, $key)
+    public static function generateXML($value, $parentKey, $key)
     {
-        $generatedXML = XML::openXMLParentTag($pkey);
+        $generatedXML = XML::openXMLParentTag($parentKey);
         $generatedXML .= XML::makeXML($value, $key);
-        $generatedXML .= XML::closeXMLParentTag($pkey);
+        $generatedXML .= XML::closeXMLParentTag($parentKey);
         return $generatedXML;
     }
 
-    public static function makeXML($xml, $pkey = null)
+    public static function makeXML($xml, $parentKey = null)
     {
-        //        $xml = [
+//        $xml = [
 //            'Item' =>
-//            [
-//                'Title' => 'The Whiz Bang Awesome Product',
-//                'SKU' => '123456',
-//                'NameValueList' => [
-//                    'Name' => 'Brand',
-//                    'Value' => 'Unbranded'
-//                ],
-//                'NameValueList' => [
-//                    'Name' => 'MPN',
-//                    'Value' => '123456'
-//                ],
-//                'ShippingDetails' => [
-//                    'ShippingServiceOptions' => [
-//                        'FreeShipping' => 'true',
-//                        'ShippingService' => 'ShippingMethodStandard',
-//                        'ShippingServiceCost' => '0.00',
-//                        'ShippingServiceAdditionalCost' => '0.00',
-//                        'ShippingServicePriority' => '1'
+//                [
+//                    'Title' => 'The Whiz Bang Awesome Product',
+//                    'SKU' => '123456',
+//                    'NameValueList' => [
+//                        [
+//                            'Name' => 'Brand',
+//                            'Value' => 'Unbranded'
+//                        ],
+//                        [
+//                            'Name' => 'MPN',
+//                            'Value' => '123456'
+//                        ]
 //                    ],
-//                    'ShippingServiceOptions' => [
-//                        'ShippingService' => 'UPSGround',
-//                        'ShippingServiceCost' => '9.99',
-//                        'ShippingServiceAdditionalCost' => '9.99',
-//                        'ShippingServicePriority' => '2'
+//                    'ShippingDetails' => [
+//                        'ShippingServiceOptions' => [
+//                            [
+//                                'FreeShipping' => 'true',
+//                                'ShippingService' => 'ShippingMethodStandard',
+//                                'ShippingServiceCost' => '0.00',
+//                                'ShippingServiceAdditionalCost' => '0.00',
+//                                'ShippingServicePriority' => '1'
+//                            ],
+//                            [
+//                                'ShippingService' => 'UPSGround',
+//                                'ShippingServiceCost' => '9.99',
+//                                'ShippingServiceAdditionalCost' => '9.99',
+//                                'ShippingServicePriority' => '2'
+//                            ]
+//                        ],
 //                    ]
 //                ]
-//            ]
 //        ];
 
         $generatedXML = '';
         foreach ($xml as $key => $value) {
             if (is_array($value)) {
-                if (is_numeric($key)) {
-                    $generatedXML .= XML::generateXML($value, $pkey, $key);
-//                    $generatedXML .= Ecommerce::openXMLParentTag($pkey);
-//                    $generatedXML .= Ecommerce::makeXML($value, $key);
-//                    $generatedXML .= Ecommerce::closeXMLParentTag($pkey);
-                } else {
-                    $pkey = $key;
-                    if (array_key_exists(0, $value)) {
-                        $generatedXML .= XML::makeXML($value, $pkey);
-                    } else {
-                        $generatedXML .= XML::generateXML($value, $key, $pkey);
-//                        $generatedXML .= Ecommerce::openXMLParentTag($key);
-//                        $generatedXML .= Ecommerce::makeXML($value, $pkey);
-//                        $generatedXML .= Ecommerce::closeXMLParentTag($key);
-                    }
-                }
+                $generatedXML .= XML::parent($parentKey, $key, $value);
             } else {
                 $parameters = null;
                 $delimiter = '~';
-                if (strpos($key, $delimiter) !== false) {
-                    $param = substr($key, strpos($key, $delimiter) + 1);
-                    $attribute = strstr($param, '=', true);
-                    $attributeValue = substr($param, strpos($param, '=') + 1);
-                    $parameters[] = $attribute;
-                    $parameters[] = $attributeValue;
-                    $key = strstr($key, $delimiter, true);
-                }
+                list($parameters, $key) = XML::parameterized($key, $delimiter, $parameters);
                 $generatedXML .= XML::xmlTag($key, $value, $parameters);
             }
         }
         return $generatedXML;
+    }
+
+    /**
+     * @param $value
+     * @return bool
+     */
+    public static function keyExists($value): bool
+    {
+        return array_key_exists(0, $value);
+    }
+
+    /**
+     * @param $key
+     * @param $delimiter
+     * @return bool
+     */
+    public static function stringContains($key, $delimiter): bool
+    {
+        return strpos($key, $delimiter) !== false;
+    }
+
+    /**
+     * @param $parentKey
+     * @param $value
+     * @param $generatedXML
+     * @param $key
+     * @return string
+     */
+    public static function children($parentKey, $value, $key): string
+    {
+        if (! XML::keyExists($value)) {
+            return XML::generateXML($value, $key, $parentKey);
+        }
+        return XML::makeXML($value, $parentKey);
+
+    }
+
+    /**
+     * @param $parentKey
+     * @param $key
+     * @param $value
+     * @param $generatedXML
+     * @return string
+     */
+    public static function parent($parentKey, $key, $value): string
+    {
+        if ( !is_numeric($key)) {
+            $parentKey = $key;
+            return XML::children($parentKey, $value, $key);
+        }
+        return XML::generateXML($value, $parentKey, $key);
+
+    }
+
+    /**
+     * @param $key
+     * @param $delimiter
+     * @param $parameters
+     * @return array
+     */
+    public static function parameterized($key, $delimiter, $parameters): array
+    {
+        if (XML::stringContains($key, $delimiter)) {
+            $param = substr($key, strpos($key, $delimiter) + 1);
+            $attribute = strstr($param, '=', true);
+            $attributeValue = substr($param, strpos($param, '=') + 1);
+            $parameters[] = $attribute;
+            $parameters[] = $attributeValue;
+            $key = strstr($key, $delimiter, true);
+        }
+        return array($parameters, $key);
     }
 }

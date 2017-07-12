@@ -11,7 +11,7 @@ require WEBPLUGIN . 'wm/wmvar.php';
 
 use ecommerce\Ecommerce;
 use models\channels\Listing;
-use models\channels\ProductPrice;
+use models\channels\product\ProductPrice;
 
 $start = startClock();
 

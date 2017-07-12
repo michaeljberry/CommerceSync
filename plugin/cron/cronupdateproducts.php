@@ -3,8 +3,8 @@ require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 
 use ecommerce\Ecommerce;
-use models\channels\Product;
-use models\channels\ProductPrice;
+use models\channels\product\Product;
+use models\channels\product\ProductPrice;
 
 $start = startClock();
 
@@ -45,7 +45,7 @@ if (!$debug) {
                 $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
                 $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
             }
-            $result = ProductPrice::updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost);
+            $result = ProductPrice::update($sku_id, $msrp, $pl1, $map, $pl10, $cost);
 
             if ($sku_id) {
 //            echo $sku . ': Title: ' . $name . '; Subtitle: ' . $sub_title . '; Description: ' . $description . '; UPC: ' . $upc . '; Weight: ' . $weight . '<br>';
@@ -86,7 +86,7 @@ if (!$debug) {
         $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
         $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
     }
-    $result = ProductPrice::updatePrices($sku_id, $msrp, $pl1, $map, $pl10, $cost);
+    $result = ProductPrice::update($sku_id, $msrp, $pl1, $map, $pl10, $cost);
 
     if ($sku_id) {
 //        echo $sku . ': Title: ' . $name . '; Subtitle: ' . $sub_title . '; Description: ' . $description . '; UPC: ' . $upc . '; Weight: ' . $weight . '<br>';

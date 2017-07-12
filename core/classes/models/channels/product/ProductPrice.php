@@ -1,6 +1,6 @@
 <?php
 
-namespace models\channels;
+namespace models\channels\product;
 
 use ecommerce\Ecommerce;
 use models\ModelDB as MDB;
@@ -22,7 +22,7 @@ class ProductPrice
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function saveBySKUId($skuID, $price, $storeID)
+    public static function save($skuID, $price, $storeID)
     {
         $sql = "INSERT INTO product_price (sku_id, price, store_id) 
                 VALUES (:sku_id, :price, :store_id)";
@@ -38,12 +38,12 @@ class ProductPrice
     {
         $product_price_id = ProductPrice::getBySKUId($skuID, $storeID);
         if (empty($product_price_id)) {
-            $product_price_id = ProductPrice::saveBySKUId($skuID, $price, $storeID);
+            $product_price_id = ProductPrice::save($skuID, $price, $storeID);
         }
         return $product_price_id;
     }
 
-    public static function updatePrices($skuID, $msrp, $pl1, $map, $pl10, $cost)
+    public static function update($skuID, $msrp, $pl1, $map, $pl10, $cost)
     {
         $sql = "INSERT INTO product_cost (sku_id, msrp, pl10, map, pl1, cost) 
                 VALUES (:sku_id, :msrp, :pl10, :map, :pl1, :cost) 

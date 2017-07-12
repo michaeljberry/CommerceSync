@@ -4,7 +4,7 @@ namespace rev;
 
 use ecommerce\Ecommerce;
 use models\channels\Listing;
-use models\channels\Product;
+use models\channels\product\Product;
 use models\channels\product\ProductAvailability;
 
 class ReverbInventory extends Reverb

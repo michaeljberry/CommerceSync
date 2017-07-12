@@ -4,7 +4,7 @@ namespace eb;
 
 use ecommerce\Ecommerce;
 use models\channels\Listing;
-use models\channels\Product;
+use models\channels\product\Product;
 use models\channels\product\ProductAvailability;
 
 class EbayInventory extends Ebay

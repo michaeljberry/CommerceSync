@@ -4,7 +4,7 @@ namespace bc;
 
 use ecommerce\Ecommerce;
 use models\channels\Listing;
-use models\channels\Product;
+use models\channels\product\Product;
 use models\ModelDB as MDB;
 
 class BigCommerce

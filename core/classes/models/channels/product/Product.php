@@ -1,9 +1,8 @@
 <?php
 
-namespace models\channels;
+namespace models\channels\product;
 
-
-use models\channels\product\ProductAvailability;
+use models\channels\SKU;
 use models\ModelDB as MDB;
 
 class Product

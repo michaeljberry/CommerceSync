@@ -8,9 +8,9 @@ use controllers\channels\ConditionController;
 use ecommerce\Ecommerce;
 use models\channels\Condition;
 use models\channels\Listing;
-use models\channels\Product;
+use models\channels\product\Product;
 use models\channels\product\ProductAvailability;
-use models\channels\ProductPrice;
+use models\channels\product\ProductPrice;
 use models\channels\SKU;
 use models\channels\Stock;
 

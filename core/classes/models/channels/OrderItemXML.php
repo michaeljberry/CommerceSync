@@ -6,14 +6,14 @@ namespace models\channels;
 class OrderItemXML
 {
 
-    public static function create($sku, $title, $ponumber, $quantity, $principle, $upc)
+    public static function create($sku, $title, $poNum, $qty, $principle, $upc)
     {
         $item_xml = "<Item>
             <ItemId>$sku</ItemId>
             <ItemDesc><![CDATA[ $title ]]></ItemDesc>
-            <POLineNumber>$ponumber</POLineNumber>
+            <POLineNumber>$poNum</POLineNumber>
             <UOM>EACH</UOM>
-            <Qty>$quantity</Qty>
+            <Qty>$qty</Qty>
             <UCValue>$principle</UCValue>
             <UCCurrencyCode></UCCurrencyCode>
             <RetailValue></RetailValue>

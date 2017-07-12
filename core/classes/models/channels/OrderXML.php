@@ -13,7 +13,6 @@ class OrderXML
         $timestamp,
         $shippingAmount,
         $shipping,
-        $orderDate,
         $buyerPhone,
         $shipToName,
         $address,
@@ -26,7 +25,7 @@ class OrderXML
     ) {
         $xml = <<<EOD
         <NAMM_PO version="2007.1">
-            <Id>S2S{$channelNumber}_PO$orderNum</Id>
+            <Id>S2S{$channelNumber}_PO{$orderNum}</Id>
             <Timestamp>$timestamp</Timestamp>
             <BuyerId>$channelNumber</BuyerId>
             <BuyerIdDesc>My Music Life $channel</BuyerIdDesc>

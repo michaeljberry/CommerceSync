@@ -149,7 +149,8 @@ class AmazonOrder extends Amazon
         $orderItems = simplexml_load_string($this->getOrderItems($orderNum));
 
         if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
-            $items = $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $orderId, $totalTax, $totalShipping, $ecommerce);
+            $items = $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $orderId, $totalTax,
+                $totalShipping, $ecommerce);
             return $items;
         } else {
             sleep(2);
@@ -310,9 +311,7 @@ class AmazonOrder extends Amazon
                 $channelName = 'Amazon';
                 $channelNum = Channel::getAccountNumbersBySku($channelName, $sku);
 
-                $orderXml = OrderXML::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping,
-                    $shipping, $purchaseDate, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2,
-                    $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
+                $orderXml = OrderXML::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
                 if (!LOCAL) {
                     FTP::saveXml($orderNum, $orderXml, $folder, $channelName);
                 }

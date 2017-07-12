@@ -185,9 +185,7 @@ class EbayOrder extends Ebay
                     $itemXml .= Tax::getItemXml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
                     $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
-                    $orderXml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp,
-                        $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2,
-                        $city, $state, $zip, $country, $itemXml);
+                    $orderXml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
                         FTP::saveXml($order_num, $orderXml, $folder, $channelName);

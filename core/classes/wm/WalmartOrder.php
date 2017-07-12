@@ -233,8 +233,7 @@ class WalmartOrder extends Walmart
         $timestamp = $timestamp . '.000Z';
         $order_date = $timestamp;
         $ship_to_name = $first_name . ' ' . $last_name;
-        $xml = OrderXML::create($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping,
-            $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+        $xml = OrderXML::create($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
         return $xml;
     }
 

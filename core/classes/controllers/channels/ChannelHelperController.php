@@ -161,4 +161,31 @@ class ChannelHelperController
         return $newArray;
     }
 
+    public static function prepare_arrays($channelArray)
+    {
+        $columns = '';
+        $values = '';
+        $updateString = '';
+        $preparedArray = [];
+        $returnArray = [];
+        foreach ($channelArray as $key => $val) {
+            $columns .= $key;
+            $values .= ":" . $key;
+            $updateString .= $key . "=:" . $key . '2';
+            end($channelArray);
+            if (key($channelArray) !== $key) {
+                $columns .= ',';
+                $values .= ',';
+                $updateString .= ',';
+            }
+            $preparedArray[':' . $key] = $val;
+            $preparedArray[':' . $key . '2'] = $val;
+        }
+        $returnArray[0] = $columns;
+        $returnArray[1] = $values;
+        $returnArray[2] = $updateString;
+        $returnArray[3] = $preparedArray;
+        return $returnArray;
+    }
+
 }

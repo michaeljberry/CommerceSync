@@ -8,18 +8,18 @@ use models\ModelDB as MDB;
 
 class Order
 {
-    public static function cancel($id)
+    public static function cancel($orderNum)
     {
         $sql = "UPDATE sync.order 
                 SET cancelled = 1 
                 WHERE order_num = :order_num";
         $queryParams = [
-            ':order_num' => $id
+            ':order_num' => $orderNum
         ];
         MDB::query($sql, $queryParams);
     }
 
-    public static function getIdByOrderNum($orderNum)
+    public static function getId($orderNum)
     {
         $sql = "SELECT id 
                 FROM sync.order 
@@ -32,9 +32,9 @@ class Order
 
     public static function getBySearch($array, $channel)
     {
-        $result_array = CHC::parseConditions($array);
-        $condition = $result_array[0];
-        $queryParams = $result_array[1];
+        $resultArray = CHC::parseConditions($array);
+        $condition = $resultArray[0];
+        $queryParams = $resultArray[1];
         $queryParams['channel'] = $channel;
         $sql = "SELECT o.id, o.order_num, o.date, c.first_name, c.last_name, t.tracking_num, t.carrier 
                 FROM sync.order o 
@@ -46,7 +46,7 @@ class Order
         return MDB::query($sql, $queryParams, 'fetchAll');
     }
 
-    public static function getByID($order_id)
+    public static function getByID($id)
     {
         $sql = "SELECT o.order_num, o.date, o.ship_method, o.shipping_amount, o.taxes, c.first_name, c.last_name, c.street_address, c.street_address2, city.name AS city, s.name, s.abbr as state_abbr, z.zip, t.tracking_num, t.carrier, os.processed as date_processed, os.success, os.type as channel, os.track_successful 
                 FROM sync.order o 
@@ -58,34 +58,34 @@ class Order
                 JOIN zip z ON c.zip_id = z.id 
                 WHERE o.id = :order_id";
         $queryParams = [
-            ':order_id' => $order_id
+            ':order_id' => $id
         ];
         return MDB::query($sql, $queryParams, 'fetch');
     }
 
-    public static function markAsShipped($order_num, $channel)
+    public static function markAsShipped($orderNum, $channel)
     {
-        $response = Tracking::updateTrackingSuccessful($order_num);
+        $response = Tracking::updateTrackingSuccessful($orderNum);
         if ($response) {
-            echo "Tracking for $channel order $order_num was updated!";
+            echo "Tracking for $channel order $orderNum was updated!";
             return true;
         }
         return false;
     }
 
-    public static function updateShippingAmount($order, $shipping_amount)
+    public static function updateShippingAmount($orderNum, $shippingAmount)
     {
         $sql = "UPDATE sync.order 
                 SET shipping_amount = :shipping_amount 
                 WHERE order_num = :order_num";
         $queryParams = [
-            ':shipping_amount' => $shipping_amount,
-            ':order_num' => $order
+            ':shipping_amount' => $shippingAmount,
+            ':order_num' => $orderNum
         ];
         return MDB::query($sql, $queryParams, 'boolean');
     }
 
-    public static function getIdByStoreIdAndOrderNum($storeID, $orderNum)
+    public static function getIdByStoreId($storeID, $orderNum)
     {
         $sql = "SELECT id 
                 FROM sync.order 
@@ -100,7 +100,7 @@ class Order
 
     public static function save(
         $storeID,
-        $custID,
+        $buyerID,
         $orderNum,
         $shipMethod,
         $shippingAmount,
@@ -108,13 +108,13 @@ class Order
         $fee = 0,
         $channelOrderID = null
     ) {
-        $order_id = Order::getIdByStoreIdAndOrderNum($storeID, $orderNum);
+        $order_id = Order::getIdByStoreId($storeID, $orderNum);
         if (empty($order_id)) {
             $sql = "INSERT INTO sync.order (store_id, cust_id, order_num, ship_method, shipping_amount, taxes, fee, channel_order_id) 
                     VALUES (:store_id, :cust_id, :order_num, :ship_method, :shipping_amount, :taxes, :fee, :channel_order_id)";
             $queryParams = [
                 ":store_id" => $storeID,
-                ":cust_id" => $custID,
+                ":cust_id" => $buyerID,
                 ":order_num" => $orderNum,
                 ":ship_method" => $shipMethod,
                 ":shipping_amount" => $shippingAmount,
@@ -127,32 +127,32 @@ class Order
         return $order_id;
     }
 
-    public static function saveTaxes($orderID, $taxes)
+    public static function saveTax($orderID, $tax)
     {
         $sql = "UPDATE sync.order 
                 SET taxes = :taxes 
                 WHERE id = :id";
         $queryParams = [
-            ":taxes" => $taxes,
+            ":taxes" => $tax,
             ":id" => $orderID
         ];
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function updateShippingAndTaxes($orderID, $shipping, $taxes)
+    public static function updateShippingAndTaxes($orderID, $shipping, $tax)
     {
         $sql = "UPDATE sync.order 
                 SET shipping_amount = :shipping, taxes = :taxes 
                 WHERE id = :id";
         $queryParams = [
             ':shipping' => $shipping,
-            ':taxes' => $taxes,
+            ':taxes' => $tax,
             ':id' => $orderID
         ];
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function findDownloadedVaiOrder($orderNum)
+    public static function getUploadedVaiOrder($orderNum)
     {
         $sql = "SELECT * 
                 FROM order_sync 
@@ -166,7 +166,7 @@ class Order
 
     public static function get($orderNum)
     {
-        $number = Order::findDownloadedVaiOrder($orderNum);
+        $number = Order::getUploadedVaiOrder($orderNum);
 
         if ($number > 0) {
             Ecommerce::dd("Found in database");

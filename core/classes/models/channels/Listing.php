@@ -135,7 +135,7 @@ class Listing
         $table = CHC::sanitize_table_name($table);
         $listingID = Listing::getIdByStockId($table, $stockID, $storeID);
         if ($update) {
-            $returnArray = Ecommerce::prepare_arrays($channelArray);
+            $returnArray = CHC::prepare_arrays($channelArray);
             $columns = $returnArray[0];
             $values = $returnArray[1];
             $updateString = $returnArray[2];

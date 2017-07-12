@@ -3,10 +3,10 @@ require __DIR__ . '/../../core/init.php';
 
 if (!empty($_POST['status'])) {
     if ($_POST['status'] == 'complete') {
-        $id = htmlentities($_POST['id']);
-        \models\channels\Tracking::updateTrackingSuccessful($id);
+        $orderNum = htmlentities($_POST['id']);
+        \models\channels\Tracking::updateTrackingSuccessful($orderNum);
     } elseif ($_POST['status'] == 'cancel') {
-        $id = htmlentities($_POST['id']);
-        \models\channels\Order::cancel($id);
+        $orderNum = htmlentities($_POST['id']);
+        \models\channels\Order::cancel($orderNum);
     }
 }

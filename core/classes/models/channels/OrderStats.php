@@ -17,18 +17,21 @@ class OrderStats
         $sql = "SELECT channel, stats_date, sales 
                 FROM order_stats
                 WHERE stats_date BETWEEN NOW() - INTERVAL :time_period $interval AND NOW()";
-        $sql .= !empty($channel) ? "AND channel = :channel" : "";
-        $sql .= " GROUP BY DATE(stats_date)";
-        if (empty($channel)) {
-            $sql .= ", channel";
-        } else {
+        $group = " GROUP BY DATE(stats_date)";
+
+        if(!empty($channel)){
+            $sql .= " AND channel = :channel";
             $params[':channel'] = $channel;
+        }else{
+            $group .= ", channel";
         }
+        $sql .= $group;
+
         $results = MDB::query($sql, $params, 'fetchAll');
         return $results;
     }
 
-    public static function save($channel, $date, $sales, $units_sold)
+    public static function save($channel, $date, $sales, $unitsSold)
     {
         $sql = "INSERT INTO order_stats (channel, stats_date, sales, units_sold) 
                 VALUES (:channel, :date, :sales, :units_sold) 
@@ -37,9 +40,9 @@ class OrderStats
             ':channel' => $channel,
             ':date' => $date,
             ':sales' => $sales,
-            ':units_sold' => $units_sold,
+            ':units_sold' => $unitsSold,
             ':sales2' => $sales,
-            ':units_sold2' => $units_sold
+            ':units_sold2' => $unitsSold
         ];
         return MDB::query($sql, $queryParams, 'boolean');
     }
@@ -57,29 +60,18 @@ class OrderStats
 
     public static function getSum($channel = null, $period = 'THISMTD', $period2 = null, $period3 = null)
     {
-        $interval = CHC::sanitize_time_period($period);
         $dateColumn = 'stats_date';
-        $condition = CHC::determine_time_condition($dateColumn, $period, $period2, $period3);
+        $timeCondition = CHC::determine_time_condition($dateColumn, $period, $period2, $period3);
 
         if (empty($channel)) {
-            $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold 
-                    FROM order_stats 
-                    WHERE $condition 
-                    GROUP BY channel";
-            $queryParams = [];
+            list($sql, $queryParams) = OrderStats::getSumTotal($timeCondition);
         } else {
-            $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold 
-                    FROM order_stats 
-                    WHERE $condition 
-                    AND channel = :channel";
-            $queryParams = [
-                ':channel' => $channel
-            ];
+            list($sql, $queryParams) = OrderStats::getSumByChannel($channel, $timeCondition);
         }
         return MDB::query($sql, $queryParams, 'fetchAll');
     }
 
-    public static function getSalesHistory($sku_id)
+    public static function getSalesBySkuId($skuID)
     {
         $sql = "SELECT
                 os.type AS channel,
@@ -93,7 +85,7 @@ class OrderStats
                 GROUP BY channel, DATE_FORMAT(date, '%Y-%m')
                 ORDER BY date DESC";
         $queryParams = [
-            ':sku_id' => $sku_id
+            ':sku_id' => $skuID
         ];
         return MDB::query($sql, $queryParams, 'fetchAll', PDO::FETCH_ASSOC);
     }
@@ -118,6 +110,37 @@ class OrderStats
                     ORDER BY sk.sku, o.date ASC";
             return MDB::query($sql, [], 'fetchAll');
         }
+    }
+
+    /**
+     * @param $timeCondition
+     * @return array
+     */
+    public static function getSumTotal($timeCondition): array
+    {
+        $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold 
+                    FROM order_stats 
+                    WHERE $timeCondition 
+                    GROUP BY channel";
+        $queryParams = [];
+        return array($sql, $queryParams);
+    }
+
+    /**
+     * @param $channel
+     * @param $timeCondition
+     * @return array
+     */
+    public static function getSumByChannel($channel, $timeCondition): array
+    {
+        $sql = "SELECT channel, ROUND(SUM(sales), 2) AS sales, SUM(units_sold) AS units_sold 
+                    FROM order_stats 
+                    WHERE $timeCondition 
+                    AND channel = :channel";
+        $queryParams = [
+            ':channel' => $channel
+        ];
+        return array($sql, $queryParams);
     }
 
 

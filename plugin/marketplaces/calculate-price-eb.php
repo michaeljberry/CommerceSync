@@ -36,7 +36,7 @@ if ($_POST['price_sku']) {
     $currentEbayListings = simplexml_load_string($ebinv->findItemsAdvanced($upc));
     $currentAmazonListings = simplexml_load_string($aminv->getLowestOfferListingsForSKU($sku));
     $ourAmazonPrice = simplexml_load_string($aminv->GetMyPriceForSKU($sku));
-    $ourSalesHistory = OrderStats::getSalesHistory($sku_id);
+    $ourSalesHistory = OrderStats::getSalesBySkuId($sku_id);
 //    $ebayRecentSales = simplexml_load_string($ebinv->findCompletedItems($upc));
 
     echo "$title: $upc-> $sku: <br>";

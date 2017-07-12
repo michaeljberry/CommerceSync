@@ -36,7 +36,6 @@ $ecommerce = new \ecommerce\Ecommerce();
 use PhpRbac\Rbac;
 
 $rbac = new Rbac();
-require WEBPLUGIN . 'ecd/ecdvar.php';
 if ($general->logged_in() === true) {
     $user_id = $_SESSION['id'];
     $user = $users->userdata($user_id);

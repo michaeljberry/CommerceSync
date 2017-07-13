@@ -1,6 +1,6 @@
 <?php
 
-namespace controllers\channels;
+namespace controllers\channels\tax;
 
 
 class TaxXMLController

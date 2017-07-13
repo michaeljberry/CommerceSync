@@ -3,6 +3,7 @@
 namespace am;
 
 use controllers\channels\FTPController;
+use controllers\channels\tax\TaxController;
 use ecommerce\Ecommerce;
 use \DateTime;
 use \DateTimeZone;
@@ -18,7 +19,7 @@ use models\channels\order\OrderXML;
 use models\channels\Shipping;
 use models\channels\SKU;
 use models\channels\Tax;
-use controllers\channels\TaxXMLController;
+use controllers\channels\tax\TaxXMLController;
 use controllers\channels\XMLController;
 
 class AmazonOrder extends Amazon
@@ -292,12 +293,12 @@ class AmazonOrder extends Amazon
                 $sku = (string)$items->sku;
                 $itemXml = (string)$items->itemXml;
 
-                if (Tax::state($taxableStates, $shippingState)) {
+                if (TaxController::state($taxableStates, $shippingState)) {
                     echo 'Should be taxed<br>';
                     if ($totalTax == 0) {
                         // No tax collected, but tax is required to remit.
                         // Need to calculate taxes and subtract from sales price of item(s)
-                        $totalTax = Tax::calculate($taxableStates[$shippingState], $totalWithoutTax,
+                        $totalTax = TaxController::calculate($taxableStates[$shippingState], $totalWithoutTax,
                             $totalShipping);
                     }
                     $itemXml .= TaxXMLController::getItemXml(

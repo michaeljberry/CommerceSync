@@ -15,7 +15,7 @@ use models\channels\order\OrderItemXML;
 use models\channels\order\OrderXML;
 use models\channels\SKU;
 use models\channels\Tax;
-use controllers\channels\TaxXMLController;
+use controllers\channels\tax\TaxXMLController;
 
 class BigCommerceOrder extends BigCommerce
 {

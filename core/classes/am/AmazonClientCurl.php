@@ -3,7 +3,7 @@
 namespace am;
 
 use ecommerce\Ecommerce;
-use models\channels\Curl;
+use controllers\channels\CurlController;
 use controllers\channels\XMLController;
 
 trait AmazonClientCurl
@@ -219,8 +219,7 @@ trait AmazonClientCurl
         $link = AmazonClient::createLink($feed, $version, $param, $whatToDo);
         $httpHeader = AmazonClient::buildHeader($amazon_feed);
         $request = AmazonClient::setCurlOptions($link, $httpHeader, $amazon_feed);
-        $response = Curl::request($request);
-        return $response;
+        return CurlController::request($request);
     }
 
     /**

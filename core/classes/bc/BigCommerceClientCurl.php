@@ -3,7 +3,7 @@
 namespace bc;
 
 use ecommerce\Ecommerce;
-use models\channels\Curl;
+use controllers\channels\CurlController;
 
 trait BigCommerceClientCurl
 {
@@ -33,6 +33,6 @@ trait BigCommerceClientCurl
     public static function bigcommerceCurl($url, $method, $post_string = null)
     {
         $request = BigCommerceClient::setCurlOptions($url, $method, $post_string);
-        return Curl::request($request);
+        return CurlController::request($request);
     }
 }

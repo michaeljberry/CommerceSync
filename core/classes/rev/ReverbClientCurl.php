@@ -3,7 +3,7 @@
 namespace rev;
 
 use ecommerce\Ecommerce;
-use models\channels\Curl;
+use controllers\channels\CurlController;
 
 trait ReverbClientCurl
 {
@@ -45,7 +45,6 @@ trait ReverbClientCurl
     {
         $headers = ReverbClient::createHeader();
         $request = ReverbClient::setCurlOptions($url, $method, $headers, $post_string);
-        $response = Curl::request($request);
-        return $response;
+        return CurlController::request($request);
     }
 }

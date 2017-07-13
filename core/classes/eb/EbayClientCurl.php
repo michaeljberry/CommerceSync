@@ -3,7 +3,7 @@
 namespace eb;
 
 use ecommerce\Ecommerce;
-use models\channels\Curl;
+use controllers\channels\CurlController;
 use controllers\channels\XMLController;
 
 trait EbayClientCurl
@@ -163,8 +163,6 @@ trait EbayClientCurl
         $headers = EbayClient::createHeader($post_string, $requestName, $callType);
         $curlUrl = EbayClient::setCurlUrl($callType);
         $request = EbayClient::setCurlOptions($headers, $post_string, $curlUrl);
-        $response = Curl::request($request);
-
-        return $response;
+        return CurlController::request($request);
     }
 }

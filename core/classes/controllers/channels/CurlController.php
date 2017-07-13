@@ -1,14 +1,14 @@
 <?php
 
-namespace models\channels;
+namespace controllers\channels;
 
 
-class Curl
+class CurlController
 {
 
     public static function request($request)
     {
-        return Curl::send($request);
+        return CurlController::send($request);
     }
 
     protected static function send($request)

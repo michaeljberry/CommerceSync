@@ -11,8 +11,8 @@ use models\channels\Channel;
 use models\channels\FTP;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
-use models\channels\order\OrderItemXML;
-use models\channels\order\OrderXML;
+use controllers\channels\order\OrderItemXMLController;
+use controllers\channels\order\OrderXMLController;
 use models\channels\Shipping;
 use models\channels\SKU;
 use models\channels\Tax;
@@ -72,7 +72,7 @@ class EbayOrder extends Ebay
         if (!LOCAL) {
             OrderItem::save($order_id, $sku_id, $principle, $quantity, $item_id);
         }
-        $itemXml = OrderItemXML::create($sku, $title, $poNumber, $quantity, $principle, $upc);
+        $itemXml = OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $principle, $upc);
         $itemObject['sku'] = $sku;
         $itemObject['itemXml'] .= $itemXml;
         $poNumber++;
@@ -186,7 +186,7 @@ class EbayOrder extends Ebay
                     $itemXml .= TaxXMLController::getItemXml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
                     $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
-                    $orderXml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
+                    $orderXml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
                         FTP::saveXml($order_num, $orderXml, $folder, $channelName);

@@ -14,8 +14,8 @@ use models\channels\Channel;
 use models\channels\FTP;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
-use models\channels\order\OrderItemXML;
-use models\channels\order\OrderXML;
+use controllers\channels\order\OrderItemXMLController;
+use controllers\channels\order\OrderXMLController;
 use models\channels\Shipping;
 use models\channels\SKU;
 use models\channels\Tax;
@@ -206,7 +206,7 @@ class AmazonOrder extends Amazon
             if (!LOCAL) {
                 OrderItem::save($orderId, $skuId, $itemPrice, $quantity);
             }
-            $itemXml .= OrderItemXML::create($sku, $title, $poNumber, $quantity, $principle, $upc);
+            $itemXml .= OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $principle, $upc);
             $poNumber++;
         }
         $itemObject['poNumber'] = $poNumber;
@@ -313,7 +313,7 @@ class AmazonOrder extends Amazon
                 $channelName = 'Amazon';
                 $channelNum = Channel::getAccountNumbersBySku($channelName, $sku);
 
-                $orderXml = OrderXML::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
+                $orderXml = OrderXMLController::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
                 if (!LOCAL) {
                     FTP::saveXml($orderNum, $orderXml, $folder, $channelName);
                 }

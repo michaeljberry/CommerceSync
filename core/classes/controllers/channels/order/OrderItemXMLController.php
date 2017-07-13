@@ -1,9 +1,9 @@
 <?php
 
-namespace models\channels\order;
+namespace controllers\channels\order;
 
 
-class OrderItemXML
+class OrderItemXMLController
 {
 
     public static function create($sku, $title, $poNum, $qty, $principle, $upc)

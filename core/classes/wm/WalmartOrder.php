@@ -11,8 +11,8 @@ use models\channels\Channel;
 use models\channels\FTP;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
-use models\channels\order\OrderItemXML;
-use models\channels\order\OrderXML;
+use controllers\channels\order\OrderItemXMLController;
+use controllers\channels\order\OrderXMLController;
 use models\channels\SKU;
 use models\channels\Tax;
 use controllers\channels\tax\TaxXMLController;
@@ -187,7 +187,7 @@ class WalmartOrder extends Walmart
             if (!LOCAL) {
                 OrderItem::save($order_id, $sku_id, $item_total, $quantity);
             }
-            $item_xml .= OrderItemXML::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
+            $item_xml .= OrderItemXMLController::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
             $ponumber++;
         }
 //        if(strtolower($state_code) == 'id' || strtolower($state_code) == 'idaho'){
@@ -234,7 +234,7 @@ class WalmartOrder extends Walmart
         $timestamp = $timestamp . '.000Z';
         $order_date = $timestamp;
         $ship_to_name = $first_name . ' ' . $last_name;
-        $xml = OrderXML::create($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+        $xml = OrderXMLController::create($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
         return $xml;
     }
 

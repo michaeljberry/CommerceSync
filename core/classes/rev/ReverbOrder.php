@@ -11,8 +11,8 @@ use models\channels\Channel;
 use models\channels\FTP;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
-use models\channels\order\OrderItemXML;
-use models\channels\order\OrderXML;
+use controllers\channels\order\OrderItemXMLController;
+use controllers\channels\order\OrderXMLController;
 use models\channels\SKU;
 use models\channels\Tax;
 use controllers\channels\tax\TaxXMLController;
@@ -99,7 +99,7 @@ class ReverbOrder extends Reverb
                             $tax = $principle * .09;
                             $principle -= $tax;
                         }
-                        $item_xml = OrderItemXML::create($sku, $title, $ponumber, $quantity, $principle, $upc);
+                        $item_xml = OrderItemXMLController::create($sku, $title, $ponumber, $quantity, $principle, $upc);
                         $ponumber++;
                         $item_xml .= TaxXMLController::getItemXml($state, $ponumber, $tax);
                         $total = number_format($principle / $quantity, 2);
@@ -119,7 +119,7 @@ class ReverbOrder extends Reverb
                         if (!LOCAL) {
                             OrderItem::save($order_id, $sku_id, $total, $quantity);
                         }
-                        $xml = OrderXML::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+                        $xml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
                         if (!LOCAL) {
                             FTP::saveXml($order_num, $xml, $folder, $channelName);
                         }

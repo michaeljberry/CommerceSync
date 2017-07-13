@@ -11,8 +11,8 @@ use models\channels\Channel;
 use models\channels\FTP;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
-use models\channels\order\OrderItemXML;
-use models\channels\order\OrderXML;
+use controllers\channels\order\OrderItemXMLController;
+use controllers\channels\order\OrderXMLController;
 use models\channels\SKU;
 use models\channels\Tax;
 use controllers\channels\tax\TaxXMLController;
@@ -199,7 +199,7 @@ class BigCommerceOrder extends BigCommerce
             if (!LOCAL) {
                 OrderItem::save($order_id, $sku_id, $item_total, $quantity);
             }
-            $item_xml .= OrderItemXML::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
+            $item_xml .= OrderItemXMLController::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
             $ponumber++;
         }
         $item_xml .= TaxXMLController::getItemXml($state_code, $ponumber, $total_tax);
@@ -253,7 +253,7 @@ class BigCommerceOrder extends BigCommerce
         $shipping_amount = number_format($o->shipping_cost_inc_tax, 2);
         $order_date = $timestamp;
         $ship_to_name = $first_name . ' ' . $last_name;
-        $xml = OrderXML::create($channel_num, $channel_name, $orderNum, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+        $xml = OrderXMLController::create($channel_num, $channel_name, $orderNum, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
         return $xml;
     }
 

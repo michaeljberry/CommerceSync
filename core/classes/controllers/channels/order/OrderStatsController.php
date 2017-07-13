@@ -1,6 +1,6 @@
 <?php
 
-namespace controllers\channels;
+namespace controllers\channels\order;
 
 use models\channels\order\OrderStats;
 use ecommerce\Ecommerce;

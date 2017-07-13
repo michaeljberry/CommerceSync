@@ -4,7 +4,7 @@ namespace eb;
 
 use ecommerce\Ecommerce;
 use models\channels\Curl;
-use models\channels\XML;
+use controllers\channels\XMLController;
 
 trait EbayClientCurl
 {
@@ -94,18 +94,18 @@ trait EbayClientCurl
     protected static function eBayCredentialsXML()
     {
         $credentialTag = 'RequesterCredentials';
-        $credentials = XML::openXMLParentTag($credentialTag);
-        $credentials .= XML::xmlTag('eBayAuthToken', EbayClient::getToken());
-        $credentials .= XML::closeXMLParentTag($credentialTag);
+        $credentials = XMLController::openXMLParentTag($credentialTag);
+        $credentials .= XMLController::xmlTag('eBayAuthToken', EbayClient::getToken());
+        $credentials .= XMLController::closeXMLParentTag($credentialTag);
         return $credentials;
     }
 
     protected static function xmlHeader($requestName, $callType)
     {
-        $header = XML::xmlOpenTag();
+        $header = XMLController::xmlOpenTag();
         $request = $requestName . 'Request';
         $param = EbayClient::headerParameter($callType);
-        $header .= XML::openXMLParentTag($request, $param);
+        $header .= XMLController::openXMLParentTag($request, $param);
         if ($callType !== 'finding' && $callType !== 'shopping') {
             $header .= EbayClient::eBayCredentialsXML();
         }
@@ -115,7 +115,7 @@ trait EbayClientCurl
     protected static function xmlFooter($requestName)
     {
         $request = $requestName . 'Request';
-        $footer = XML::closeXMLParentTag($request);
+        $footer = XMLController::closeXMLParentTag($request);
         return $footer;
     }
 
@@ -139,7 +139,7 @@ trait EbayClientCurl
     protected static function curlPostString($requestName, $xml, $callType)
     {
         $post_string = EbayClient::xmlHeader($requestName, $callType);
-        $post_string .= XML::makeXML($xml);
+        $post_string .= XMLController::makeXML($xml);
         $post_string .= EbayClient::xmlFooter($requestName);
         return $post_string;
     }

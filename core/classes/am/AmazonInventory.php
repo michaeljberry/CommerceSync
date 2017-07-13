@@ -3,7 +3,7 @@
 namespace am;
 
 use ecommerce\Ecommerce;
-use models\channels\XML;
+use controllers\channels\XMLController;
 
 class AmazonInventory extends Amazon
 {
@@ -54,7 +54,7 @@ class AmazonInventory extends Amazon
         $xml = [
             'MessageType' => 'Product'
         ];
-        $xml = XML::makeXML($xml);
+        $xml = XMLController::makeXML($xml);
         $xml .= $xml1;
 //        Ecommerce::dd($xml);
 
@@ -81,7 +81,7 @@ class AmazonInventory extends Amazon
         $xml = [
             'MessageType' => 'Price'
         ];
-        $xml = XML::makeXML($xml);
+        $xml = XMLController::makeXML($xml);
         $xml .= $xml1;
 
         $paramAdditionalConfig = [
@@ -296,7 +296,7 @@ class AmazonInventory extends Amazon
                 ]
             ]
         ];
-        $amazon_feed = XML::makeXML($xml);
+        $amazon_feed = XMLController::makeXML($xml);
 
         return $amazon_feed;
     }
@@ -312,7 +312,7 @@ class AmazonInventory extends Amazon
                 ]
             ]
         ];
-        $amazon_feed = XML::makeXML($xml);
+        $amazon_feed = XMLController::makeXML($xml);
         return $amazon_feed;
     }
 
@@ -332,7 +332,7 @@ class AmazonInventory extends Amazon
                 ]
             ]
         ];
-        $amazonFeed = XML::makeXML($xml);
+        $amazonFeed = XMLController::makeXML($xml);
         return $amazonFeed;
     }
 
@@ -350,7 +350,7 @@ class AmazonInventory extends Amazon
                 ]
             ]
         ];
-        $amazonFeed = XML::makeXML($xml);
+        $amazonFeed = XMLController::makeXML($xml);
         return $amazonFeed;
     }
 

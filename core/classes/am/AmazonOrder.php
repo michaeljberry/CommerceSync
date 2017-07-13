@@ -19,7 +19,7 @@ use models\channels\Shipping;
 use models\channels\SKU;
 use models\channels\Tax;
 use models\channels\TaxXML;
-use models\channels\XML;
+use controllers\channels\XMLController;
 
 class AmazonOrder extends Amazon
 {
@@ -39,7 +39,7 @@ class AmazonOrder extends Amazon
                 ]
             ]
         ];
-        $amazonFeed = XML::makeXML($xml);
+        $amazonFeed = XMLController::makeXML($xml);
         return $amazonFeed;
     }
 
@@ -60,7 +60,7 @@ class AmazonOrder extends Amazon
         $xml = [
             'MessageType' => 'OrderFulfillment',
         ];
-        $xml = XML::makeXML($xml);
+        $xml = XMLController::makeXML($xml);
         $xml .= $xml1;
 
         $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);

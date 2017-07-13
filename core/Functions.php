@@ -19,3 +19,8 @@ function decrypt($infoToDecrypt)
 {
     return Crypt::decrypt($infoToDecrypt);
 }
+
+function standardCase($string)
+{
+    return ucwords(strtolower($string));
+}

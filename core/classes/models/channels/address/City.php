@@ -6,6 +6,24 @@ use models\ModelDB as MDB;
 
 class City
 {
+
+    private $city;
+    private $stateID;
+    public $cityID;
+
+    public function __construct($city, $stateID)
+    {
+
+        $this->city = $city;
+        $this->stateID = $stateID;
+        $this->cityID = City::searchOrInsert($this->city, $this->stateID);
+    }
+
+    public function getCityId()
+    {
+        return $this->cityID;
+    }
+
     public static function getId($city, $stateID)
     {
         $sql = "SELECT id 
@@ -28,5 +46,14 @@ class City
             ':state_id' => $stateID
         ];
         return MDB::query($sql, $queryParams, 'id');
+    }
+
+    public static function searchOrInsert($city, $stateID)
+    {
+        $cityID = City::getId($city, $stateID);
+        if (empty($cityID)) {
+            $cityID = City::save($city, $stateID);
+        }
+        return $cityID;
     }
 }

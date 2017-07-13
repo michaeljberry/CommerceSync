@@ -5,7 +5,9 @@ namespace bc;
 use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\address\Address;
+use models\channels\address\City;
 use models\channels\address\State;
+use models\channels\address\ZipCode;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
@@ -44,13 +46,13 @@ class BigCommerceOrder extends BigCommerce
                     $state = State::getAbbr($state);
                     $state_id = State::getIdByAbbr($state);
                     $zip = $ship_info[0]->zip;
-                    $zip_id = Address::searchOrInsertZip($zip, $state_id);
+                    $zip_id = ZipCode::searchOrInsert($zip, $state_id);
                     $country = $ship_info[0]->country;
                     $shipping_amount = number_format($o->shipping_cost_inc_tax, 2);
                     if ($country == "United States") {
                         $country = 'USA';
                     }
-                    $city_id = Address::searchOrInsertCity($city, $state_id);
+                    $city_id = City::searchOrInsert($city, $state_id);
                     $cust_id = Buyer::searchOrInsert($first_name, $last_name, ucwords(strtolower($address)),
                         ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                     if (!LOCAL) {

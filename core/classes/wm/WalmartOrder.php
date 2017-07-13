@@ -5,7 +5,9 @@ namespace wm;
 use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\address\Address;
+use models\channels\address\City;
 use models\channels\address\State;
+use models\channels\address\ZipCode;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
@@ -84,7 +86,7 @@ class WalmartOrder extends Walmart
         $city = $order['shippingInfo']['postalAddress']['city'];
         $stateID = State::getIdByAbbr($stateCode);
         $zip = $order['shippingInfo']['postalAddress']['postalCode'];
-        $zipID = Address::searchOrInsertZip($zip, $stateID);
+        $zipID = ZipCode::searchOrInsert($zip, $stateID);
         $country = $order['shippingInfo']['postalAddress']['country'];
 
         echo "<br><br>Order: $orderNum<br><pre>";
@@ -105,7 +107,7 @@ class WalmartOrder extends Walmart
             $shippingMethod = 'URIP';
         }
 
-        $cityID = Address::searchOrInsertCity($city, $stateID);
+        $cityID = City::searchOrInsertCity($city, $stateID);
         $custumerID = Buyer::searchOrInsert($firstName, $lastName, ucwords(strtolower($address)),
             ucwords(strtolower($address2)), $cityID, $stateID, $zipID);
         if (!LOCAL) {
@@ -274,20 +276,7 @@ class WalmartOrder extends Walmart
                 $tracking = $this->process_tracking($order['orderLines']['orderLine'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
             }
         }
-//        foreach ($order['orderLines'] as $o){
-//            $lineNumber = $o['lineNumber'];
-//            $quantity = $o['orderLineQuantity']['amount'];
-//            $wmorder = $this->construct_auth($wm_consumer_key, $wm_secret_key, $wm_api_header);
-//            try {
-//                $tracking = $wmorder->ship(
-//                    $order_num,
-//                    $this->create_tracking_array($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
-//                );
-//            }catch(Exception $e){
-//                die("There was a problem requesting the data: " . $e->getMessage());
-//            }
-//            print_r($tracking);
-//        }
+
         return $tracking;
     }
 
@@ -305,7 +294,7 @@ class WalmartOrder extends Walmart
             } catch (Exception $e) {
                 die("There was a problem requesting the data: " . $e->getMessage());
             }
-//            print_r($tracking);
+            print_r($tracking);
         }
         return $tracking;
     }

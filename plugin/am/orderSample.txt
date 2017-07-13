@@ -1,0 +1,227 @@
+SimpleXMLElement Object
+(
+    [ListOrdersResult] => SimpleXMLElement Object
+        (
+            [Orders] => SimpleXMLElement Object
+                (
+                    [Order] => Array
+                        (
+                            [0] => SimpleXMLElement Object
+                                (
+                                    [LatestShipDate] => 2017-07-18T06:59:59Z
+                                    [OrderType] => StandardOrder
+                                    [PurchaseDate] => 2017-07-13T17:37:15Z
+                                    [BuyerEmail] => ymm3vtb6f999999@marketplace.amazon.com
+                                    [AmazonOrderId] => 113-9728641-9999999
+                                    [LastUpdateDate] => 2017-07-13T18:07:31Z
+                                    [IsReplacementOrder] => false
+                                    [ShipServiceLevel] => Std APO/FPO Street Addr
+                                    [NumberOfItemsShipped] => 0
+                                    [OrderStatus] => Unshipped
+                                    [SalesChannel] => Amazon.com
+                                    [ShippedByAmazonTFM] => false
+                                    [IsBusinessOrder] => false
+                                    [LatestDeliveryDate] => 2017-08-31T06:59:59Z
+                                    [NumberOfItemsUnshipped] => 1
+                                    [PaymentMethodDetails] => SimpleXMLElement Object
+                                        (
+                                            [PaymentMethodDetail] => CreditCard
+                                        )
+
+                                    [BuyerName] => Customer Name
+                                    [EarliestDeliveryDate] => 2017-08-09T07:00:00Z
+                                    [OrderTotal] => SimpleXMLElement Object
+                                        (
+                                            [CurrencyCode] => USD
+                                            [Amount] => 12.44
+                                        )
+
+                                    [IsPremiumOrder] => false
+                                    [EarliestShipDate] => 2017-07-14T07:00:00Z
+                                    [MarketplaceId] => ATVPDKIKX0DER
+                                    [FulfillmentChannel] => MFN
+                                    [PaymentMethod] => Other
+                                    [ShippingAddress] => SimpleXMLElement Object
+                                        (
+                                            [StateOrRegion] => AS
+                                            [City] => APO
+                                            [Phone] => 123-456-7890
+                                            [CountryCode] => US
+                                            [PostalCode] => 99999
+                                            [Name] => Customer Name
+                                            [AddressLine1] => 4th St
+                                            [AddressLine2] => Apt B
+                                        )
+
+                                    [IsPrime] => false
+                                    [ShipmentServiceLevelCategory] => Standard
+                                )
+
+                            [1] => SimpleXMLElement Object
+                                (
+                                    [LatestShipDate] => 2017-07-18T06:59:59Z
+                                    [OrderType] => StandardOrder
+                                    [PurchaseDate] => 2017-07-13T18:22:19Z
+                                    [BuyerEmail] => yl8wdlqf5999999@marketplace.amazon.com
+                                    [AmazonOrderId] => 114-1240744-9999999
+                                    [LastUpdateDate] => 2017-07-13T19:02:10Z
+                                    [IsReplacementOrder] => false
+                                    [ShipServiceLevel] => Std Cont US Street Addr
+                                    [NumberOfItemsShipped] => 0
+                                    [OrderStatus] => Unshipped
+                                    [SalesChannel] => Amazon.com
+                                    [ShippedByAmazonTFM] => false
+                                    [IsBusinessOrder] => false
+                                    [LatestDeliveryDate] => 2017-07-25T06:59:59Z
+                                    [NumberOfItemsUnshipped] => 2
+                                    [PaymentMethodDetails] => SimpleXMLElement Object
+                                        (
+                                            [PaymentMethodDetail] => Array
+                                                (
+                                                    [0] => CreditCard
+                                                    [1] => GiftCertificate
+                                                )
+
+                                        )
+
+                                    [BuyerName] => Customer Name
+                                    [EarliestDeliveryDate] => 2017-07-19T07:00:00Z
+                                    [OrderTotal] => SimpleXMLElement Object
+                                        (
+                                            [CurrencyCode] => USD
+                                            [Amount] => 6.57
+                                        )
+
+                                    [IsPremiumOrder] => false
+                                    [EarliestShipDate] => 2017-07-14T07:00:00Z
+                                    [MarketplaceId] => ATVPDKIKX0DER
+                                    [FulfillmentChannel] => MFN
+                                    [PaymentMethod] => Other
+                                    [ShippingAddress] => SimpleXMLElement Object
+                                        (
+                                            [StateOrRegion] => NY
+                                            [City] => SOMEWHERE
+                                            [Phone] => 1234567890
+                                            [CountryCode] => US
+                                            [PostalCode] => 99999-5411
+                                            [Name] => Customer Name
+                                            [AddressLine1] => 123 Main St
+                                        )
+
+                                    [IsPrime] => false
+                                    [ShipmentServiceLevelCategory] => Standard
+                                )
+
+                            [2] => SimpleXMLElement Object
+                                (
+                                    [LatestShipDate] => 2017-07-18T06:59:59Z
+                                    [OrderType] => StandardOrder
+                                    [PurchaseDate] => 2017-07-13T19:11:17Z
+                                    [BuyerEmail] => dlg0r5832999999@marketplace.amazon.com
+                                    [AmazonOrderId] => 113-5339760-9999999
+                                    [LastUpdateDate] => 2017-07-13T19:41:35Z
+                                    [IsReplacementOrder] => false
+                                    [ShipServiceLevel] => Std US Dom
+                                    [NumberOfItemsShipped] => 0
+                                    [OrderStatus] => Unshipped
+                                    [SalesChannel] => Amazon.com
+                                    [ShippedByAmazonTFM] => false
+                                    [IsBusinessOrder] => false
+                                    [LatestDeliveryDate] => 2017-08-05T06:59:59Z
+                                    [NumberOfItemsUnshipped] => 2
+                                    [PaymentMethodDetails] => SimpleXMLElement Object
+                                        (
+                                            [PaymentMethodDetail] => CreditCard
+                                        )
+
+                                    [BuyerName] => Customer Name
+                                    [EarliestDeliveryDate] => 2017-07-20T07:00:00Z
+                                    [OrderTotal] => SimpleXMLElement Object
+                                        (
+                                            [CurrencyCode] => USD
+                                            [Amount] => 16.90
+                                        )
+
+                                    [IsPremiumOrder] => false
+                                    [EarliestShipDate] => 2017-07-14T07:00:00Z
+                                    [MarketplaceId] => ATVPDKIKX0DER
+                                    [FulfillmentChannel] => MFN
+                                    [PaymentMethod] => Other
+                                    [ShippingAddress] => SimpleXMLElement Object
+                                        (
+                                            [StateOrRegion] => New York
+                                            [City] => Somewhere
+                                            [Phone] => 1234567890
+                                            [CountryCode] => US
+                                            [PostalCode] => 999999-9706
+                                            [Name] => Customer Name
+                                            [AddressLine1] => 123 Main St
+                                        )
+
+                                    [IsPrime] => false
+                                    [ShipmentServiceLevelCategory] => Standard
+                                )
+
+                            [3] => SimpleXMLElement Object
+                                (
+                                    [LatestShipDate] => 2017-07-18T06:59:59Z
+                                    [OrderType] => StandardOrder
+                                    [PurchaseDate] => 2017-07-13T19:40:23Z
+                                    [BuyerEmail] => szyq7hpm4999999@marketplace.amazon.com
+                                    [AmazonOrderId] => 114-4931368-9999999
+                                    [LastUpdateDate] => 2017-07-13T20:13:31Z
+                                    [IsReplacementOrder] => false
+                                    [ShipServiceLevel] => Exp Cont US Street Addr
+                                    [NumberOfItemsShipped] => 0
+                                    [OrderStatus] => Unshipped
+                                    [SalesChannel] => Amazon.com
+                                    [ShippedByAmazonTFM] => false
+                                    [IsBusinessOrder] => false
+                                    [LatestDeliveryDate] => 2017-07-21T06:59:59Z
+                                    [NumberOfItemsUnshipped] => 1
+                                    [PaymentMethodDetails] => SimpleXMLElement Object
+                                        (
+                                            [PaymentMethodDetail] => CreditCard
+                                        )
+
+                                    [BuyerName] => Customer Name
+                                    [EarliestDeliveryDate] => 2017-07-17T07:00:00Z
+                                    [OrderTotal] => SimpleXMLElement Object
+                                        (
+                                            [CurrencyCode] => USD
+                                            [Amount] => 15.88
+                                        )
+
+                                    [IsPremiumOrder] => false
+                                    [EarliestShipDate] => 2017-07-14T07:00:00Z
+                                    [MarketplaceId] => ATVPDKIKX0DER
+                                    [FulfillmentChannel] => MFN
+                                    [PaymentMethod] => Other
+                                    [ShippingAddress] => SimpleXMLElement Object
+                                        (
+                                            [StateOrRegion] => NY
+                                            [City] => SOMEWHERE
+                                            [Phone] => 123-456-7890
+                                            [CountryCode] => US
+                                            [PostalCode] => 99999-3609
+                                            [Name] => Customer Name
+                                            [AddressLine1] => 123 Main St
+                                        )
+
+                                    [IsPrime] => false
+                                    [ShipmentServiceLevelCategory] => Expedited
+                                )
+
+                        )
+
+                )
+
+            [CreatedBefore] => 2017-07-13T20:13:25Z
+        )
+
+    [ResponseMetadata] => SimpleXMLElement Object
+        (
+            [RequestId] => 2268c8d7-3318-45f0-b1aa-14299b5bf72b
+        )
+
+)

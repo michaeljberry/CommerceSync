@@ -2,13 +2,16 @@
 
 namespace am;
 
+use controllers\channels\BuyerController;
 use controllers\channels\FTPController;
 use controllers\channels\tax\TaxController;
 use ecommerce\Ecommerce;
 use \DateTime;
 use \DateTimeZone;
 use models\channels\address\Address;
+use models\channels\address\City;
 use models\channels\address\State;
+use models\channels\address\ZipCode;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
@@ -232,24 +235,41 @@ class AmazonOrder extends Amazon
 
             $found = Order::get($orderNum);
 
-            if (!$found) {
+            if (LOCAL || !$found) {
 
-                $latestDeliveryDate = $order->LatestDeliveryDate;
+                Ecommerce::dd($order);
+
+                $latestDeliveryDate = (string)$order->LatestDeliveryDate;
                 $orderType = (string)$order->OrderType;
                 $purchaseDate = rtrim((string)$order->PurchaseDate, 'Z');
 
-                $isReplacementOrder = $order->IsReplacementOrder;
-                $numberOfItemsShipped = $order->NumberOfItemsShipped;
-                $orderStatus = $order->OrderStatus;
-                $salesChannel = $order->SalesChannel;
-                $isBusinessOrder = $order->IsBusinessOrder;
+                $isReplacementOrder = (string)$order->IsReplacementOrder;
+                $numberOfItemsShipped = (int)$order->NumberOfItemsShipped;
+                $numberOfItemsUnshipped = (int)$order->NumberOfItemsUnshipped;
+                $orderStatus = (string)$order->OrderStatus;
+                $salesChannel = (string)$order->SalesChannel;
+                $isBusinessOrder = (string)$order->IsBusinessOrder;
+                $lastUpdateDate = (string)$order->LastUpdateDate;
+                $shipServiceLevel = (string)$order->ShipServiceLevel;
+                $shippedByAmazonTFM = (string)$order->ShippedByAmazonTFM;
+                $paymentMethodDetails = (object)$order->PaymentMethodDetails;
+                $paymentMethodDetail = (string)$order->PaymentMethodDetail;
+                $paymentMethod = (string)$order->PaymentMethod;
+                $earliestDeliveryDate = (string)$order->EarliestDeliveryDate;
+                $earliestShipDate = (string)$order->EarliestShipDate;
+                $isPremiumOrder = (string)$order->IsPremiumOrder;
+                $marketplaceId = (string)$order->MarketplaceId;
+                $fulfillmentChannel = (string)$order->FulfillmentChannel;
+                $isPrime = (string)$order->IsPrime;
+                $buyer = (string)$order->BuyerName;
 
-                $orderTotal = (float)$order->OrderTotal->Amount;
+                $orderTotal = (object)$order->OrderTotal;
+                $orderTotalAmount = (float)$order->OrderTotal->Amount;
+
+                $shippingAddress = (object)$order->ShippingAddress;
 
                 $shipToName = (string)$order->ShippingAddress->Name;
-                $buyerName = explode(' ', $shipToName);
-                $lastName = ucwords(strtolower(array_pop($buyerName)));
-                $firstName = ucwords(strtolower(implode(' ', $buyerName)));
+                list($lastName, $firstName) = BuyerController::splitName($shipToName);
                 $buyerEmail = (string)$order->BuyerEmail;
                 $shippingPhone = (string)$order->ShippingAddress->Phone;
                 $shipByDate = (string)$order->LatestShipDate;
@@ -268,16 +288,12 @@ class AmazonOrder extends Amazon
 
                 $shipmentMethod = (string)$order->ShipmentServiceLevelCategory;
 
-                $shipping = ShippingController::code($orderTotal, [], $shipmentMethod);
+                $shipping = ShippingController::code($orderTotalAmount, [], $shipmentMethod);
 
                 $totalTax = 0.00;
                 $totalShipping = 0.00;
 
-                $stateId = State::getIdByAbbr(strtoupper($shippingState));
-                $zipId = Address::searchOrInsertZip($shippingPostalCode, $stateId);
-                $cityId = Address::searchOrInsertCity($shippingCity, $stateId);
-                $custId = Buyer::searchOrInsert($firstName, $lastName, ucwords(strtolower($shippingAddressLine1)),
-                    ucwords(strtolower($shippingAddressLine2)), $cityId, $stateId, $zipId);
+                $custId = (new Buyer($firstName, $lastName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode))->getBuyerId();
                 if (!LOCAL) {
                     $orderId = Order::save(AmazonClient::getStoreID(), $custId, $orderNum, $shipping,
                         $totalShipping, $totalTax);
@@ -329,4 +345,6 @@ class AmazonOrder extends Amazon
             $this->parseOrders($orders, $ecommerce, $folder, $companyId, true);
         }
     }
+
+
 }

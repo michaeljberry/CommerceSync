@@ -5,7 +5,9 @@ namespace eb;
 use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\address\Address;
+use models\channels\address\City;
 use models\channels\address\State;
+use models\channels\address\ZipCode;
 use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
@@ -167,8 +169,8 @@ class EbayOrder extends Ebay
                     $last_name = ucwords(strtolower(array_pop($name)));
                     $first_name = ucwords(strtolower(implode(' ', $name)));
                     $state_id = State::getIdByAbbr($state);
-                    $zip_id = Address::searchOrInsertZip($zip, $state_id);
-                    $city_id = Address::searchOrInsertCity($city, $state_id);
+                    $zip_id = ZipCode::searchOrInsert($zip, $state_id);
+                    $city_id = City::searchOrInsert($city, $state_id);
                     $cust_id = Buyer::searchOrInsert($first_name, $last_name, ucwords(strtolower($address)),
                         ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
                     if (!LOCAL) {

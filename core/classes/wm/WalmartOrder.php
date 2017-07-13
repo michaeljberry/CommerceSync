@@ -2,6 +2,7 @@
 
 namespace wm;
 
+use controllers\channels\BuyerController;
 use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\address\Address;
@@ -66,28 +67,12 @@ class WalmartOrder extends Walmart
     public function get_wm_order(Ecommerce $ecommerce, $folder, $order)
     {
         $orderNum = $order['purchaseOrderId'];
-        $stateCode = $order['shippingInfo']['postalAddress']['state'];
+
 
         $totalTax = 0;
         $shippingTotal = 0;
         $shippingMethod = 'ZSTD';
         $orderTotal = 0;
-
-        $buyerPhone = $order['shippingInfo']['phone'];
-        $name = explode(' ', $order['shippingInfo']['postalAddress']['name']);
-        $firstName = $name[0];
-        $lastName = $name[2];
-
-        $address = ucwords(strtolower($order['shippingInfo']['postalAddress']['address1']));
-        $address2 = '';
-        if (isset($order['shippingInfo']['postalAddress']['address2'])) {
-            $address2 = $order['shippingInfo']['postalAddress']['address2'];
-        }
-        $city = $order['shippingInfo']['postalAddress']['city'];
-        $stateID = State::getIdByAbbr($stateCode);
-        $zip = $order['shippingInfo']['postalAddress']['postalCode'];
-        $zipID = ZipCode::searchOrInsert($zip, $stateID);
-        $country = $order['shippingInfo']['postalAddress']['country'];
 
         echo "<br><br>Order: $orderNum<br><pre>";
         print_r($order);
@@ -107,16 +92,30 @@ class WalmartOrder extends Walmart
             $shippingMethod = 'URIP';
         }
 
-        $cityID = City::searchOrInsertCity($city, $stateID);
-        $custumerID = Buyer::searchOrInsert($firstName, $lastName, ucwords(strtolower($address)),
-            ucwords(strtolower($address2)), $cityID, $stateID, $zipID);
+        //Address
+        $streetAddress = (string)$order['shippingInfo']['postalAddress']['address1'];
+        $streetAddress2 = (string)$order['shippingInfo']['postalAddress']['address2'] ?? '';
+        $city = (string)$order['shippingInfo']['postalAddress']['city'];
+        $state = (string)$order['shippingInfo']['postalAddress']['state'];
+        $zipCode = (string)$order['shippingInfo']['postalAddress']['postalCode'];
+        $country = (string)$order['shippingInfo']['postalAddress']['country'];
+
+
+        //Buyer
+        $shipToName = (string)$order['shippingInfo']['postalAddress']['name'];
+        $buyerPhone = (string)$order['shippingInfo']['phone'];
+        list($lastName, $firstName) = BuyerController::splitName($shipToName);
+        $custID = (new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country))->getBuyerId();
+
+
+        //Save Orders
         if (!LOCAL) {
-            $orderID = Order::save(WalmartClient::getStoreID(), $custumerID, $orderNum, $shippingMethod,
+            $orderID = Order::save(WalmartClient::getStoreID(), $custID, $orderNum, $shippingMethod,
                 $shippingTotal, $totalTax);
         }
-        $infoArray = $this->get_wm_order_items($ecommerce, $orderNum, $orderItems, $stateCode, $totalTax, $orderID);
+        $infoArray = $this->get_wm_order_items($ecommerce, $orderNum, $orderItems, $state, $totalTax, $orderID);
         $itemXml = $infoArray['item_xml'];
-        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $ecommerce, $firstName, $lastName, $shippingMethod, $buyerPhone, $address, $address2, $city, $stateCode, $zip, $country, $shippingTotal);
+        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $ecommerce, $firstName, $lastName, $shippingMethod, $buyerPhone, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $shippingTotal);
         $channelName = 'Walmart';
         if (!LOCAL) {
             FTPController::saveXml($orderNum, $orderXml, $folder, $channelName);

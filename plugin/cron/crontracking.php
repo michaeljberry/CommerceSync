@@ -99,7 +99,8 @@ foreach ($unshippedOrders as $o) {
             }
         } elseif (strtolower($channel) == 'walmart') {
             //Update Walmart
-//            $response = $wmord->updateWalmartTracking($order_num, $tracking_id, $carrier);
+            $response = $wmord->updateWalmartTracking($order_num, $tracking_id, $carrier);
+//            Ecommerce::dd($response);
 //            if (array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
 //                if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
 //                    $shipped = true;

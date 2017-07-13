@@ -266,25 +266,7 @@ class AmazonOrder extends Amazon
                 $orderTotal = (object)$order->OrderTotal;
                 $orderTotalAmount = (float)$order->OrderTotal->Amount;
 
-                $shippingAddress = (object)$order->ShippingAddress;
-
-                $shipToName = (string)$order->ShippingAddress->Name;
-                list($lastName, $firstName) = BuyerController::splitName($shipToName);
-                $buyerEmail = (string)$order->BuyerEmail;
-                $shippingPhone = (string)$order->ShippingAddress->Phone;
                 $shipByDate = (string)$order->LatestShipDate;
-
-                $shippingAddressLine1 = (string)$order->ShippingAddress->AddressLine1;
-                $shippingAddressLine2 = (string)$order->ShippingAddress->AddressLine2 ?? '';
-                $shippingCity = (string)$order->ShippingAddress->City;
-                $shippingState = strtolower((string)$order->ShippingAddress->StateOrRegion);
-                if (strlen($shippingState) > 2) {
-                    $shippingState = State::getAbbr(ucfirst($shippingState));
-                }
-                $shippingState = strtoupper($shippingState);
-                $shippingPostalCode = (string)$order->ShippingAddress->PostalCode;
-                $shippingCountryCode = (string)$order->ShippingAddress->CountryCode;
-                $shippingCountryCode = (string)$shippingCountryCode == 'US' ? 'USA' : $shippingCountryCode;
 
                 $shipmentMethod = (string)$order->ShipmentServiceLevelCategory;
 
@@ -293,9 +275,29 @@ class AmazonOrder extends Amazon
                 $totalTax = 0.00;
                 $totalShipping = 0.00;
 
-                $custId = (new Buyer($firstName, $lastName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode))->getBuyerId();
+
+                //Address
+                $shippingAddress = (object)$order->ShippingAddress;
+                $streetAddress = (string)$shippingAddress->AddressLine1;
+                $streetAddress2 = (string)$shippingAddress->AddressLine2 ?? '';
+                $city = (string)$shippingAddress->City;
+                $state = (string)$shippingAddress->StateOrRegion;
+                $zipCode = (string)$shippingAddress->PostalCode;
+                $country = (string)$shippingAddress->CountryCode;
+                $country = (string)$country == 'US' ? 'USA' : $country;
+
+
+                //Buyer
+                $shipToName = (string)$order->ShippingAddress->Name;
+                $buyerPhone = (string)$order->ShippingAddress->Phone;
+                $buyerEmail = (string)$order->BuyerEmail;
+                list($lastName, $firstName) = BuyerController::splitName($shipToName);
+                $buyerID = (new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $buyerEmail))->getBuyerId();
+
+
+                //Save Order
                 if (!LOCAL) {
-                    $orderId = Order::save(AmazonClient::getStoreID(), $custId, $orderNum, $shipping,
+                    $orderId = Order::save(AmazonClient::getStoreID(), $buyerID, $orderNum, $shipping,
                         $totalShipping, $totalTax);
                 }
 
@@ -308,19 +310,19 @@ class AmazonOrder extends Amazon
                 $sku = (string)$items->sku;
                 $itemXml = (string)$items->itemXml;
 
-                if (TaxController::state($taxableStates, $shippingState)) {
+                if (TaxController::state($taxableStates, $state)) {
                     echo 'Should be taxed<br>';
                     if ($totalTax == 0) {
                         // No tax collected, but tax is required to remit.
                         // Need to calculate taxes and subtract from sales price of item(s)
-                        $totalTax = TaxController::calculate($taxableStates[$shippingState], $totalWithoutTax,
+                        $totalTax = TaxController::calculate($taxableStates[$state], $totalWithoutTax,
                             $totalShipping);
                     }
                     $itemXml .= TaxXMLController::getItemXml(
-                        $shippingState,
+                        $state,
                         $poNumber,
                         $totalTax,
-                        $taxableStates[$shippingState]['tax_line_name']
+                        $taxableStates[$state]['tax_line_name']
                     );
                 }
 
@@ -328,7 +330,7 @@ class AmazonOrder extends Amazon
                 $channelName = 'Amazon';
                 $channelNum = Channel::getAccountNumbersBySku($channelName, $sku);
 
-                $orderXml = OrderXMLController::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
+                $orderXml = OrderXMLController::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
                 if (!LOCAL) {
                     FTPController::saveXml($orderNum, $orderXml, $folder, $channelName);
                 }

@@ -27,7 +27,7 @@ class BigCommerceOrder extends BigCommerce
             foreach ($orders as $o) {
                 $orderNum = $o->id;
                 $found = Order::get($orderNum);
-                if (!$found) {
+                if (LOCAL || !$found) {
                     $state_code = $o->shipping_addresses[0]->state;
                     $total_tax = $o->total_tax;
                     $ship_info = $this->get_bc_order_ship_info($orderNum);
@@ -36,34 +36,36 @@ class BigCommerceOrder extends BigCommerce
                     if ($total_order > 299) {
                         $shipping = 'URIP';
                     }
-                    $buyer_phone = $ship_info[0]->phone;
-                    $first_name = $ship_info[0]->first_name;
-                    $last_name = $ship_info[0]->last_name;
-                    $address = ucwords(strtolower($ship_info[0]->street_1));
-                    $address2 = ucwords(strtolower($ship_info[0]->street_2));
-                    $city = ucwords(strtolower($ship_info[0]->city));
-                    $state = ucwords(strtolower($ship_info[0]->state));
-                    $state = State::getAbbr($state);
-                    $state_id = State::getIdByAbbr($state);
-                    $zip = $ship_info[0]->zip;
-                    $zip_id = ZipCode::searchOrInsert($zip, $state_id);
-                    $country = $ship_info[0]->country;
+
+
                     $shipping_amount = number_format($o->shipping_cost_inc_tax, 2);
-                    if ($country == "United States") {
-                        $country = 'USA';
-                    }
-                    $city_id = City::searchOrInsert($city, $state_id);
-                    $cust_id = Buyer::searchOrInsert($first_name, $last_name, ucwords(strtolower($address)),
-                        ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
+
+
+                    //Address
+                    $address = (string)$ship_info[0]->street_1;
+                    $address2 = (string)$ship_info[0]->street_2;
+                    $city = (string)$ship_info[0]->city;
+                    $state = (string)$ship_info[0]->state;
+                    $zipCode = (string)$ship_info[0]->zip;
+                    $country = (string)$ship_info[0]->country;
+
+
+                    //Buyer
+                    $firstName = (string)$ship_info[0]->first_name;
+                    $lastName = (string)$ship_info[0]->last_name;
+                    $buyerPhone = (string)$ship_info[0]->phone;
+                    $custID = (new Buyer($firstName, $lastName, $address, $address2, $city, $state, $zipCode, $country))->getBuyerId();
+
+                    //Save Orders
                     if (!LOCAL) {
-                        $order_id = Order::save(BigCommerceClient::getStoreID(), $cust_id, $orderNum,
+                        $order_id = Order::save(BigCommerceClient::getStoreID(), $custID, $orderNum,
                             $shipping, $shipping_amount, $total_tax);
                     }
                     $response = $this->getOrderItems($orderNum);
                     $info_array = $this->parseItems($response, $ecommerce, $state_code, $total_tax, $order_id);
                     $item_xml = $info_array['item_xml'];
                     $channelName = 'BigCommerce';
-                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country);
+                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $firstName, $lastName, $shipping, $buyerPhone, $address, $address2, $city, $state, $zipCode, $country);
                     if (!LOCAL) {
                         FTPController::saveXml($orderNum, $xml, $folder, $channelName);
                     }
@@ -215,8 +217,8 @@ class BigCommerceOrder extends BigCommerce
         $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_id . '/shippingaddresses.json';
         $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
 
-        $items = json_decode($response);
-        return $items;
+        $shipping = json_decode($response);
+        return $shipping;
     }
 
     public function get_bc_order_info($order_id)

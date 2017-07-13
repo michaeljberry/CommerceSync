@@ -13,7 +13,8 @@ class State
 
     public function __construct($state)
     {
-        $this->state = $state;
+        $state = $this->longName($state);
+        $this->state = strtoupper($state);
         $this->stateID = State::getIdByAbbr($state);
     }
 
@@ -42,5 +43,17 @@ class State
             ':state' => $state
         ];
         return MDB::query($sql, $queryParams, 'fetchColumn');
+    }
+
+    /**
+     * @param $state
+     * @return bool|string
+     */
+    public function longName($state)
+    {
+        if (strlen($state) > 2) {
+            $state = State::getAbbr(standardCase($state));
+        }
+        return $state;
     }
 }

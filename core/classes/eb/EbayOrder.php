@@ -2,6 +2,7 @@
 
 namespace eb;
 
+use controllers\channels\BuyerController;
 use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\address\Address;
@@ -109,47 +110,25 @@ class EbayOrder extends Ebay
 
     protected function parseOrders($xml_orders, $folder, Ecommerce $ecommerce)
     {
-        foreach ($xml_orders->OrderArray->Order as $xml) {
-            $order_num = (string)$xml->ExternalTransaction->ExternalTransactionID;
-            $fee = Ecommerce::formatMoney((float)$xml->ExternalTransaction->FeeOrCreditAmount);
+        foreach ($xml_orders->OrderArray->Order as $order) {
+            $order_num = (string)$order->ExternalTransaction->ExternalTransactionID;
+            $fee = Ecommerce::formatMoney((float)$order->ExternalTransaction->FeeOrCreditAmount);
 
-            $order_status = trim($xml->OrderStatus);
+            $order_status = trim((string)$order->OrderStatus);
 
             if ($order_status !== 'Cancelled') {
 
                 echo "Order: $order_num -> Status: $order_status<br>";
-                echo $xml->OrderID . '<br>';
+                echo (string)$order->OrderID . '<br>';
                 $found = Order::get($order_num);
 
-                if (!$found) {
-                    Ecommerce::dd($xml);
-                    $timestamp = $xml->CreatedTime;
-                    $order_date = $timestamp;
-                    $ismultilegshipping = $xml->IsMultiLegShipping;
-                    if (strcasecmp($ismultilegshipping, 'true') == 0) {
-                        $shippinginfo = $xml->MultiLegShippingDetails->SellerShipmentToLogisticsProvider->ShipToAddress;
-                        $address = strtoupper($shippinginfo->ReferenceID);
-                        $address2 = strtoupper($shippinginfo->Street1);
-                    } else {
-                        $shippinginfo = $xml->ShippingAddress;
-                        $address = strtoupper($shippinginfo->Street1);
-                        if (is_object($shippinginfo->Street2)) {
-                            $address2 = '';
-                        } else {
-                            $address2 = strtoupper($shippinginfo->Street2);
-                        }
-                    }
-                    $buyer_phone = $shippinginfo->Phone;
-                    $ship_to_name = strtoupper($shippinginfo->Name);
-                    $city = strtoupper($shippinginfo->CityName);
-                    $state = $shippinginfo->StateOrProvince;
-                    $zip = $shippinginfo->PostalCode;
-                    $country = $shippinginfo->Country;
-                    if ($country == 'US') {
-                        $country = 'USA';
-                    }
-                    $shipping_amount = Ecommerce::formatMoney((float)$xml->ShippingDetails->ShippingServiceOptions->ShippingServiceCost);
-                    $total = $xml->Total;
+                if (LOCAL || !$found) {
+                    Ecommerce::dd($order);
+                    $timestamp = (string)$order->CreatedTime;
+                    $ismultilegshipping = (string)$order->IsMultiLegShipping;
+
+                    $shipping_amount = Ecommerce::formatMoney((float)$order->ShippingDetails->ShippingServiceOptions->ShippingServiceCost);
+                    $total = $order->Total;
 
                     $erlanger = [
                         'address2' => '1850 Airport',
@@ -160,25 +139,49 @@ class EbayOrder extends Ebay
 
                     $shipping = ShippingController::code($total, $erlanger);
 
-                    $item_taxes = Ecommerce::formatMoney((float)$xml->ShippingDetails->SalesTax->SalesTaxAmount);
+                    $item_taxes = Ecommerce::formatMoney((float)$order->ShippingDetails->SalesTax->SalesTaxAmount);
                     Ecommerce::dd($item_taxes);
-                    $trans_id = $xml->ShippingDetails->SellingManagerSalesRecordNumber;
+                    $trans_id = $order->ShippingDetails->SellingManagerSalesRecordNumber;
 
-                    //Get Info into DB
-                    $name = explode(' ', $ship_to_name);
-                    $last_name = ucwords(strtolower(array_pop($name)));
-                    $first_name = ucwords(strtolower(implode(' ', $name)));
-                    $state_id = State::getIdByAbbr($state);
-                    $zip_id = ZipCode::searchOrInsert($zip, $state_id);
-                    $city_id = City::searchOrInsert($city, $state_id);
-                    $cust_id = Buyer::searchOrInsert($first_name, $last_name, ucwords(strtolower($address)),
-                        ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
+                    //Address
+                    if (strcasecmp($ismultilegshipping, 'true') == 0) {
+                        $shippinginfo = (object)$order
+                            ->MultiLegShippingDetails
+                            ->SellerShipmentToLogisticsProvider
+                            ->ShipToAddress;
+                        $streetAddress = (string)$shippinginfo->ReferenceID;
+                        $streetAddress2 = (string)$shippinginfo->Street1;
+                    } else {
+                        $shippinginfo = (string)$order
+                            ->ShippingAddress;
+                        $streetAddress = (string)$shippinginfo->Street1;
+                        if (is_object($shippinginfo->Street2)) {
+                            $streetAddress2 = '';
+                        } else {
+                            $streetAddress2 = (string)$shippinginfo->Street2;
+                        }
+                    }
+                    $city = (string)$shippinginfo->CityName;
+                    $state = (string)$shippinginfo->StateOrProvince;
+                    $zipCode = (string)$shippinginfo->PostalCode;
+                    $country = (string)$shippinginfo->Country;
+
+
+                    //Buyer
+                    $shipToName = (string)$shippinginfo->Name;
+                    $buyerPhone = (string)$shippinginfo->Phone;
+                    list($lastName, $firstName) = BuyerController::splitName($shipToName);
+                    $buyerID = (new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state,
+                        $zipCode, $country))->getBuyerId();
+
+                    //Save Order
                     if (!LOCAL) {
-                        $order_id = Order::save(EbayClient::getStoreID(), $cust_id, $order_num, $shipping,
+                        $order_id = Order::save(EbayClient::getStoreID(), $buyerID, $order_num, $shipping,
                             $shipping_amount, $item_taxes, $fee, $trans_id);
                     }
 
-                    $items = $this->getItems($xml->TransactionArray, $order_id, $ecommerce);
+                    //Order Items
+                    $items = $this->getItems($order->TransactionArray, $order_id, $ecommerce);
 
                     $poNumber = (string)$items->poNumber;
                     $sku = (string)$items->sku;
@@ -187,7 +190,7 @@ class EbayOrder extends Ebay
                     $itemXml .= TaxXMLController::getItemXml($state, $poNumber, $item_taxes);
                     $channelName = 'Ebay';
                     $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
-                    $orderXml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
+                    $orderXml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
                         FTPController::saveXml($order_num, $orderXml, $folder, $channelName);

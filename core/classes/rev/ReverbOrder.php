@@ -2,6 +2,7 @@
 
 namespace rev;
 
+use controllers\channels\BuyerController;
 use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
 use models\channels\address\Address;
@@ -58,24 +59,30 @@ class ReverbOrder extends Reverb
                     $order_num = $order->order_number;
                     $found = Order::get($order_num);
                     if (!$found) {
-                        $ship_to_name = $order->buyer_name;
-                        $name = explode(' ', $ship_to_name);
-                        $last_name = ucwords(strtolower(array_pop($name)));
-                        $first_name = ucwords(strtolower(implode(' ', $name)));
-                        $state = $order->shipping_address->region;
-                        $zip = $order->shipping_address->postal_code;
-                        $city = $order->shipping_address->locality;
-                        $address = $order->shipping_address->street_address;
-                        $address2 = $order->shipping_address->extended_address;
-                        $buyer_phone = $order->shipping_address->phone;
-                        $country = $order->shipping_address->country_code;
-                        if ($country == 'US') {
-                            $country = 'USA';
-                        }
+
                         $timestamp = $order->created_at;
-                        $order_date = $timestamp;
+
+
+                        //Address
+                        $streetAddress = (string)$order->shipping_address->street_address;
+                        $streetAddress2 = (string)$order->shipping_address->extended_address;
+                        $city = $order->shipping_address->locality;
+                        $state = $order->shipping_address->region;
+                        $zipCode = $order->shipping_address->postal_code;
+                        $country = $order->shipping_address->country_code;
+
+
+                        //Buyer
+                        $shipToName = (string)$order->buyer_name;
+                        $buyer_phone = $order->shipping_address->phone;
+                        list($lastName, $firstName) = BuyerController::splitName($shipToName);
+                        $custID = (new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state,
+                            $zipCode, $country))->getBuyerId();
+
+
+                        //Order Items
                         $shipping = 'ZSTD';
-                        $sku = $order->sku;
+                        $sku = (string)$order->sku;
                         $sku = ReverbOrder::clean_sku($sku);
                         $title = $order->title;
                         $quantity = $order->quantity;
@@ -107,20 +114,19 @@ class ReverbOrder extends Reverb
                         if ($total >= 250) {
                             $shipping = 'URIP';
                         }
-                        $state_id = State::getIdByAbbr($state);
-                        $zip_id = ZipCode::searchOrInsert($zip, $state_id);
-                        $city_id = City::searchOrInsert($city, $state_id);
-                        $cust_id = Buyer::searchOrInsert($first_name, $last_name, ucwords(strtolower($address)),
-                            ucwords(strtolower($address2)), $city_id, $state_id, $zip_id);
+
+
+                        //Save Order
                         if (!LOCAL) {
-                            $order_id = Order::save(ReverbClient::getStoreID(), $cust_id, $order_num,
+                            $order_id = Order::save(ReverbClient::getStoreID(), $custID, $order_num,
                                 $shipping, $shipping_amount, $tax);
                         }
+
                         $sku_id = SKU::searchOrInsert($sku);
                         if (!LOCAL) {
                             OrderItem::save($order_id, $sku_id, $total, $quantity);
                         }
-                        $xml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+                        $xml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $item_xml);
                         if (!LOCAL) {
                             FTPController::saveXml($order_num, $xml, $folder, $channelName);
                         }

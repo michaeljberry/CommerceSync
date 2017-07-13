@@ -2,9 +2,11 @@
 
 namespace models\channels\address;
 
-use models\ModelDB as MDB;
 
 class Address
 {
-
+    public static function countryCode($country)
+    {
+        return ($country == 'United States' || $country == 'US') ? 'USA' : $country;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace models\channels;
 
+use models\channels\address\Address;
 use models\channels\address\City;
 use models\channels\address\State;
 use models\channels\address\ZipCode;
@@ -12,35 +13,39 @@ class Buyer
 
     private $firstName;
     private $lastName;
-    private $shippingAddress;
-    private $shippingAddress2;
+    private $streetAddress;
+    private $streetAddress2;
     private $cityID;
     private $stateID;
     private $zipID;
     private $buyerID;
     private $email;
+    private $country;
 
     public function __construct(
         $firstName,
         $lastName,
-        $shippingAddress,
-        $shippingAddress2,
+        $streetAddress,
+        $streetAddress2,
         $city,
         $state,
         $zipCode,
+        $country,
         $email = null
     ) {
 
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
-        $this->shippingAddress = standardCase($shippingAddress);
-        $this->shippingAddress2 = standardCase($shippingAddress2);
+        $this->firstName = standardCase($firstName);
+        $this->lastName = standardCase($lastName);
+        $this->streetAddress = standardCase($streetAddress);
+        $this->streetAddress2 = standardCase($streetAddress2);
         $this->stateID = (new State($state))->getStateId();
         $this->cityID = (new City($city, $this->stateID))->getCityId();
         $this->zipID = (new ZipCode($zipCode, $this->stateID))->getZipCodeId();
+        $this->country = Address::countryCode($country);
         $this->email = $email;
-        $this->buyerID = Buyer::searchOrInsert($this->firstName, $this->lastName, $this->shippingAddress,
-            $this->shippingAddress2, $this->cityID, $this->stateID, $this->zipID);
+        $this->buyerID = Buyer::searchOrInsert($this->firstName, $this->lastName, $this->streetAddress,
+            $this->streetAddress2, $this->cityID, $this->stateID, $this->zipID);
+        $this->country = $country;
     }
 
     public function getBuyerId()

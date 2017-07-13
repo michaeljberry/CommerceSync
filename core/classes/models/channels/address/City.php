@@ -14,7 +14,7 @@ class City
     public function __construct($city, $stateID)
     {
 
-        $this->city = $city;
+        $this->city = standardCase($city);
         $this->stateID = $stateID;
         $this->cityID = City::searchOrInsert($this->city, $this->stateID);
     }

@@ -31,11 +31,7 @@ class XML
     {
         $tag = "<$tagName";
         if ($parameters) {
-            $tag .= " ";
-            $tag .= $parameters[0];
-            $tag .= '="';
-            $tag .= $parameters[1];
-            $tag .= '"';
+            $tag .= XML::xmlParameters($parameters);
         }
         $tag .= ">";
         $tag .= htmlspecialchars($tagContents);
@@ -90,14 +86,7 @@ class XML
 
         $generatedXML = '';
         foreach ($xml as $key => $value) {
-            if (is_array($value)) {
-                $generatedXML .= XML::parent($parentKey, $key, $value);
-            } else {
-                $parameters = null;
-                $delimiter = '~';
-                list($parameters, $key) = XML::parameterized($key, $delimiter, $parameters);
-                $generatedXML .= XML::xmlTag($key, $value, $parameters);
-            }
+            $generatedXML .= XML::generate($parentKey, $value, $key);
         }
         return $generatedXML;
     }
@@ -171,5 +160,38 @@ class XML
             $key = strstr($key, $delimiter, true);
         }
         return array($parameters, $key);
+    }
+
+    /**
+     * @param $parentKey
+     * @param $value
+     * @param $key
+     * @param $generatedXML
+     * @return string
+     */
+    public static function generate($parentKey, $value, $key): string
+    {
+        if (!is_array($value)) {
+            $parameters = null;
+            $delimiter = '~';
+            list($parameters, $key) = XML::parameterized($key, $delimiter, $parameters);
+            return XML::xmlTag($key, $value, $parameters);
+        }
+        return XML::parent($parentKey, $key, $value);
+    }
+
+    /**
+     * @param $parameters
+     * @param $tag
+     * @return string
+     */
+    public static function xmlParameters($parameters): string
+    {
+        $tag = " ";
+        $tag .= $parameters[0];
+        $tag .= '="';
+        $tag .= $parameters[1];
+        $tag .= '"';
+        return $tag;
     }
 }

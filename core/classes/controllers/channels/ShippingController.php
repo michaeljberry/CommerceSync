@@ -1,9 +1,9 @@
 <?php
 
-namespace models\channels;
+namespace controllers\channels;
 
 
-class Shipping
+class ShippingController
 {
 
     public static function determineErlanger($shipping, $address)
@@ -52,8 +52,8 @@ class Shipping
         if ($total >= 250) {
             $shipping = 'URIP';
         }
-        $shipping = Shipping::determineErlanger($shipping, $address);
-        $shipping = Shipping::determineCode($shipping, $shipmentMethod);
+        $shipping = ShippingController::determineErlanger($shipping, $address);
+        $shipping = ShippingController::determineCode($shipping, $shipmentMethod);
         return $shipping;
     }
 }

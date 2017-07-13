@@ -13,7 +13,7 @@ use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\order\OrderItemXMLController;
 use controllers\channels\order\OrderXMLController;
-use models\channels\Shipping;
+use controllers\channels\ShippingController;
 use models\channels\SKU;
 use models\channels\Tax;
 use controllers\channels\tax\TaxXMLController;
@@ -157,7 +157,7 @@ class EbayOrder extends Ebay
                         'zip' => '41025'
                     ];
 
-                    $shipping = Shipping::code($total, $erlanger);
+                    $shipping = ShippingController::code($total, $erlanger);
 
                     $item_taxes = Ecommerce::formatMoney((float)$xml->ShippingDetails->SalesTax->SalesTaxAmount);
                     Ecommerce::dd($item_taxes);

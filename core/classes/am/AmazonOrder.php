@@ -16,7 +16,7 @@ use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\order\OrderItemXMLController;
 use controllers\channels\order\OrderXMLController;
-use models\channels\Shipping;
+use controllers\channels\ShippingController;
 use models\channels\SKU;
 use models\channels\Tax;
 use controllers\channels\tax\TaxXMLController;
@@ -269,7 +269,7 @@ class AmazonOrder extends Amazon
 
                 $shipmentMethod = (string)$order->ShipmentServiceLevelCategory;
 
-                $shipping = Shipping::code($orderTotal, [], $shipmentMethod);
+                $shipping = ShippingController::code($orderTotal, [], $shipmentMethod);
 
                 $totalTax = 0.00;
                 $totalShipping = 0.00;

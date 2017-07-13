@@ -8,7 +8,7 @@ use models\channels\address\Address;
 use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
-use models\channels\FTP;
+use controllers\channels\FTPController;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\order\OrderItemXMLController;
@@ -64,7 +64,7 @@ class BigCommerceOrder extends BigCommerce
                     $channelName = 'BigCommerce';
                     $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country);
                     if (!LOCAL) {
-                        FTP::saveXml($orderNum, $xml, $folder, $channelName);
+                        FTPController::saveXml($orderNum, $xml, $folder, $channelName);
                     }
                 } else {
                     echo 'Order ' . $orderNum . ' is already in the database.';

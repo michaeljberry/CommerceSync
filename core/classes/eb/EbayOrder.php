@@ -8,7 +8,7 @@ use models\channels\address\Address;
 use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
-use models\channels\FTP;
+use controllers\channels\FTPController;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\order\OrderItemXMLController;
@@ -189,7 +189,7 @@ class EbayOrder extends Ebay
                     $orderXml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
-                        FTP::saveXml($order_num, $orderXml, $folder, $channelName);
+                        FTPController::saveXml($order_num, $orderXml, $folder, $channelName);
                     }
                 }
             }

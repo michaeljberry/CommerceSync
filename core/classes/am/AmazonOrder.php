@@ -11,7 +11,7 @@ use models\channels\address\Address;
 use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
-use models\channels\FTP;
+use controllers\channels\FTPController;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\order\OrderItemXMLController;
@@ -315,7 +315,7 @@ class AmazonOrder extends Amazon
 
                 $orderXml = OrderXMLController::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $shippingPhone, $shipToName, $shippingAddressLine1, $shippingAddressLine2, $shippingCity, $shippingState, $shippingPostalCode, $shippingCountryCode, $itemXml);
                 if (!LOCAL) {
-                    FTP::saveXml($orderNum, $orderXml, $folder, $channelName);
+                    FTPController::saveXml($orderNum, $orderXml, $folder, $channelName);
                 }
             }
         }

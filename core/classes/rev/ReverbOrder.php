@@ -8,7 +8,7 @@ use models\channels\address\Address;
 use models\channels\address\State;
 use models\channels\Buyer;
 use models\channels\Channel;
-use models\channels\FTP;
+use controllers\channels\FTPController;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\order\OrderItemXMLController;
@@ -121,7 +121,7 @@ class ReverbOrder extends Reverb
                         }
                         $xml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
                         if (!LOCAL) {
-                            FTP::saveXml($order_num, $xml, $folder, $channelName);
+                            FTPController::saveXml($order_num, $xml, $folder, $channelName);
                         }
                     } else {
                         echo 'Order ' . $order_num . ' is already in the database.<br>';

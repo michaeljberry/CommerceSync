@@ -265,7 +265,7 @@ class AmazonOrder extends Amazon
                 $buyer = (string)$order->BuyerName;
 
                 $orderTotal = (object)$order->OrderTotal;
-                $orderTotalAmount = (float)$order->OrderTotal->Amount;
+                $orderTotalAmount = (float)$orderTotal->Amount;
 
                 $shipByDate = (string)$order->LatestShipDate;
 

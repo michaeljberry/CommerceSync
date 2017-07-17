@@ -15,6 +15,6 @@ $ebayDays = $ebord->get_order_days(EbayClient::getStoreID());
 $pagenumber = 1;
 $requestName = 'GetOrders';
 
-$ebord->getOrders($requestName, $pagenumber, $ebayDays, $ecommerce);
+$ebord->getOrders($requestName, $pagenumber, $ebayDays);
 
 endClock($start);

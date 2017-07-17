@@ -62,7 +62,7 @@ class EbayOrder extends Ebay
         return $response;
     }
 
-    protected function saveItems($item, $poNumber, $order_id, Ecommerce $ecommerce, $itemObject)
+    protected function saveItems($item, $poNumber, $order_id, $itemObject)
     {
         $sku = $item->Item->SKU;
         $title = $item->Item->Title;
@@ -82,7 +82,7 @@ class EbayOrder extends Ebay
         return $itemObject;
     }
 
-    protected function getItems($items, $order_id, Ecommerce $ecommerce)
+    protected function getItems($items, $order_id)
     {
         $poNumber = 1;
 
@@ -91,11 +91,11 @@ class EbayOrder extends Ebay
 
         if (count($items->Transaction) > 1) {
             foreach ($items->Transaction as $item) {
-                $itemObject = $this->saveItems($item, $poNumber, $order_id, $ecommerce, $itemObject);
+                $itemObject = $this->saveItems($item, $poNumber, $order_id, $itemObject);
                 $poNumber = $itemObject['poNumber'];
             }
         } else {
-            $itemObject = $this->saveItems($items->Transaction, $poNumber, $order_id, $ecommerce, $itemObject);
+            $itemObject = $this->saveItems($items->Transaction, $poNumber, $order_id, $itemObject);
         }
 
         return (object)$itemObject;
@@ -108,7 +108,7 @@ class EbayOrder extends Ebay
         return $response;
     }
 
-    protected function parseOrders($xml_orders, Ecommerce $ecommerce)
+    protected function parseOrders($xml_orders)
     {
         foreach ($xml_orders->OrderArray->Order as $order) {
             $order_num = (string)$order->ExternalTransaction->ExternalTransactionID;
@@ -181,7 +181,7 @@ class EbayOrder extends Ebay
                     }
 
                     //Order Items
-                    $items = $this->getItems($order->TransactionArray, $order_id, $ecommerce);
+                    $items = $this->getItems($order->TransactionArray, $order_id);
 
                     $poNumber = (string)$items->poNumber;
                     $sku = (string)$items->sku;
@@ -200,17 +200,17 @@ class EbayOrder extends Ebay
         }
     }
 
-    public function getOrders($requestName, $pagenumber, $ebayDays, Ecommerce $ecommerce)
+    public function getOrders($requestName, $pagenumber, $ebayDays)
     {
         $response = $this->getMoreOrders($requestName, $pagenumber, $ebayDays);
         if ($response) {
             $xml_orders = simplexml_load_string($response);
             $orderCount = count($xml_orders->OrderArray->Order);
             echo "Order Count: $orderCount<br>";
-            $this->parseOrders($xml_orders, $ecommerce);
+            $this->parseOrders($xml_orders);
             if ($orderCount >= 100) {
                 $pagenumber++;
-                $this->getOrders($requestName, $pagenumber, $ebayDays, $ecommerce);
+                $this->getOrders($requestName, $pagenumber, $ebayDays);
             }
         }
     }

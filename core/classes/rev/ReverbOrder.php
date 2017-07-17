@@ -47,7 +47,7 @@ class ReverbOrder extends Reverb
         return $response;
     }
 
-    public function saveOrders($request, Ecommerce $ecommerce)
+    public function saveOrders($request)
     {
         $orders = substr($request, strpos($request, '"orders":'), -1);
         $orders = '{' . $orders . '}';

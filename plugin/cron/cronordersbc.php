@@ -7,12 +7,10 @@ require WEBPLUGIN . 'bc/bcvar.php';
 $start = startClock();
 $user_id = 838;
 
-$folder = '/home/chesbro_amazon/';
-
 $filter = array(
     'min_date_created' => date('r', strtotime("-3 days")),
     'status_id' => 11
 );
-$bcord->get_bc_orders($BC, $filter, $ecommerce, $folder);
+$bcord->get_bc_orders($BC, $filter, $ecommerce);
 
 endClock($start);

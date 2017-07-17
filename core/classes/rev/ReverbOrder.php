@@ -47,7 +47,7 @@ class ReverbOrder extends Reverb
         return $response;
     }
 
-    public function saveOrders($request, Ecommerce $ecommerce, $folder)
+    public function saveOrders($request, Ecommerce $ecommerce)
     {
         $orders = substr($request, strpos($request, '"orders":'), -1);
         $orders = '{' . $orders . '}';
@@ -128,7 +128,7 @@ class ReverbOrder extends Reverb
                         }
                         $xml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $item_xml);
                         if (!LOCAL) {
-                            FTPController::saveXml($order_num, $xml, $folder, $channelName);
+                            FTPController::saveXml($order_num, $xml, $channelName);
                         }
                     } else {
                         echo 'Order ' . $order_num . ' is already in the database.<br>';

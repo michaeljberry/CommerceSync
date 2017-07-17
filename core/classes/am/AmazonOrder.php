@@ -220,7 +220,7 @@ class AmazonOrder extends Amazon
         return (object)$itemObject;
     }
 
-    public function parseOrders($orders, $folder, $companyId, $nextPage = null)
+    public function parseOrders($orders, $companyId, $nextPage = null)
     {
         $taxableStates = Tax::getCompanyInfo($companyId);
 
@@ -336,7 +336,7 @@ class AmazonOrder extends Amazon
 
                 $orderXml = OrderXMLController::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
                 if (!LOCAL) {
-                    FTPController::saveXml($orderNum, $orderXml, $folder, $channelName);
+                    FTPController::saveXml($orderNum, $orderXml, $channelName);
                 }
             }
         }
@@ -348,7 +348,7 @@ class AmazonOrder extends Amazon
         if (isset($nextToken)) {
             $orders = $this->getMoreOrders($nextToken);
 
-            $this->parseOrders($orders, $folder, $companyId, true);
+            $this->parseOrders($orders, $companyId, true);
         }
     }
 

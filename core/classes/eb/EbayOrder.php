@@ -108,7 +108,7 @@ class EbayOrder extends Ebay
         return $response;
     }
 
-    protected function parseOrders($xml_orders, $folder, Ecommerce $ecommerce)
+    protected function parseOrders($xml_orders, Ecommerce $ecommerce)
     {
         foreach ($xml_orders->OrderArray->Order as $order) {
             $order_num = (string)$order->ExternalTransaction->ExternalTransactionID;
@@ -193,24 +193,24 @@ class EbayOrder extends Ebay
                     $orderXml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
-                        FTPController::saveXml($order_num, $orderXml, $folder, $channelName);
+                        FTPController::saveXml($order_num, $orderXml, $channelName);
                     }
                 }
             }
         }
     }
 
-    public function getOrders($requestName, $pagenumber, $ebayDays, $folder, Ecommerce $ecommerce)
+    public function getOrders($requestName, $pagenumber, $ebayDays, Ecommerce $ecommerce)
     {
         $response = $this->getMoreOrders($requestName, $pagenumber, $ebayDays);
         if ($response) {
             $xml_orders = simplexml_load_string($response);
             $orderCount = count($xml_orders->OrderArray->Order);
             echo "Order Count: $orderCount<br>";
-            $this->parseOrders($xml_orders, $folder, $ecommerce);
+            $this->parseOrders($xml_orders, $ecommerce);
             if ($orderCount >= 100) {
                 $pagenumber++;
-                $this->getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce);
+                $this->getOrders($requestName, $pagenumber, $ebayDays, $ecommerce);
             }
         }
     }

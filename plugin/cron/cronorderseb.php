@@ -12,11 +12,9 @@ $user_id = 838;
 
 $ebayDays = $ebord->get_order_days(EbayClient::getStoreID());
 
-$folder = '/home/chesbro_amazon/';
-
 $pagenumber = 1;
 $requestName = 'GetOrders';
 
-$ebord->getOrders($requestName, $pagenumber, $ebayDays, $folder, $ecommerce);
+$ebord->getOrders($requestName, $pagenumber, $ebayDays, $ecommerce);
 
 endClock($start);

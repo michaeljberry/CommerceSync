@@ -8,10 +8,9 @@ include_once WEBPLUGIN . 'am/amvar.php';
 $start = startClock();
 $userId = 838;
 $companyId = 1;
-$folder = '/home/chesbro_amazon/';
 
 $orders = $amord->getOrders();
 
-$amord->parseOrders($orders, $folder, $companyId);
+$amord->parseOrders($orders, $companyId);
 
 endClock($start);

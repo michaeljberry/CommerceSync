@@ -20,7 +20,7 @@ use controllers\channels\tax\TaxXMLController;
 
 class BigCommerceOrder extends BigCommerce
 {
-    public function get_bc_orders($BC, $filter, Ecommerce $ecommerce, $folder)
+    public function get_bc_orders($BC, $filter, Ecommerce $ecommerce)
     {
         $orders = $BC::getOrders($filter);
         if ($orders) {
@@ -67,7 +67,7 @@ class BigCommerceOrder extends BigCommerce
                     $channelName = 'BigCommerce';
                     $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $firstName, $lastName, $shipping, $buyerPhone, $address, $address2, $city, $state, $zipCode, $country);
                     if (!LOCAL) {
-                        FTPController::saveXml($orderNum, $xml, $folder, $channelName);
+                        FTPController::saveXml($orderNum, $xml, $channelName);
                     }
                 } else {
                     echo 'Order ' . $orderNum . ' is already in the database.';

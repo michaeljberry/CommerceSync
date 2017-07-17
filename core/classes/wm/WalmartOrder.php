@@ -56,7 +56,6 @@ class WalmartOrder extends Walmart
     }
 
     /**
-     * @param $folder
      * @param $order
      * @internal param $wm_store_id
      * @internal param $ibmdata
@@ -124,7 +123,7 @@ class WalmartOrder extends Walmart
         $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $firstName, $lastName, $shippingMethod, $buyerPhone, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $shippingTotal);
         $channelName = 'Walmart';
         if (!LOCAL) {
-            FTPController::saveXml($orderNum, $orderXml, $folder, $channelName);
+            FTPController::saveXml($orderNum, $orderXml, $channelName);
         }
     }
 
@@ -331,7 +330,7 @@ class WalmartOrder extends Walmart
         return $tracking;
     }
 
-    protected function parseOrder($order, WalmartOrder $wmord, $folder)
+    protected function parseOrder($order, WalmartOrder $wmord)
     {
         Ecommerce::dd($order);
         $order_num = $order['purchaseOrderId'];
@@ -348,12 +347,12 @@ class WalmartOrder extends Walmart
                     $acknowledged['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
                 || $acknowledged['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
             ) {
-                $wmord->get_wm_order($folder, $order);
+                $wmord->get_wm_order($order);
             }
         }
     }
 
-    public function getOrders($wmorder, $wmord, $folder, $next = null)
+    public function getOrders($wmorder, $wmord, $next = null)
     {
         try {
             $fromDate = '-3 days';
@@ -379,12 +378,12 @@ class WalmartOrder extends Walmart
             if ($totalCount > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
                 echo "Multiple Orders<br>";
                 foreach ($orders['elements']['order'] as $order) {
-                    $this->parseOrder($order, $wmord, $folder);
+                    $this->parseOrder($order, $wmord);
                 }
             } else {
                 echo "Single Order:<br>";
                 foreach ($orders['elements'] as $order) {
-                    $this->parseOrder($order, $wmord, $folder);
+                    $this->parseOrder($order, $wmord);
                 }
             }
         } catch (Exception $e) {

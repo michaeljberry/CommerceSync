@@ -13,17 +13,22 @@ class State
 
     public function __construct($state)
     {
-        $state = $this->longName($state);
-        $this->state = strtoupper($state);
+        $this->setState($state);
         $this->stateID = State::getIdByAbbr($state);
     }
 
-    public function getStateId()
+    private function setState($state)
+    {
+        $state = $this->longName($state);
+        $this->state = strtoupper($state);
+    }
+
+    public function getId(): int
     {
         return $this->stateID;
     }
 
-    public static function getIdByAbbr($stateAbbreviation)
+    public static function getIdByAbbr($stateAbbreviation): int
     {
         $sql = "SELECT id 
                 FROM state 
@@ -34,7 +39,7 @@ class State
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function getAbbr($state)
+    public static function getAbbr($state): string
     {
         $sql = "SELECT abbr 
                 FROM state 
@@ -49,7 +54,7 @@ class State
      * @param $state
      * @return bool|string
      */
-    public function longName($state)
+    public function longName($state): string
     {
         if (strlen($state) > 2) {
             $state = State::getAbbr(standardCase($state));

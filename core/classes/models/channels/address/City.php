@@ -11,20 +11,29 @@ class City
     private $stateID;
     public $cityID;
 
-    public function __construct($city, $stateID)
+    public function __construct($city, State $state)
     {
-
-        $this->city = standardCase($city);
-        $this->stateID = $stateID;
+        $this->setCity($city);
+        $this->setStateId($state);
         $this->cityID = City::searchOrInsert($this->city, $this->stateID);
     }
 
-    public function getCityId()
+    private function setCity($city)
+    {
+        $this->city = standardCase($city);
+    }
+
+    private function setStateId(State $state)
+    {
+        $this->stateID = $state->getId();
+    }
+
+    public function getId(): int
     {
         return $this->cityID;
     }
 
-    public static function getId($city, $stateID)
+    public static function getIdByState($city, $stateID): int
     {
         $sql = "SELECT id 
                 FROM city 
@@ -37,7 +46,7 @@ class City
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function save($city, $stateID)
+    public static function save($city, $stateID): int
     {
         $sql = "INSERT INTO city (state_id, name) 
                 VALUES (:state_id, :city)";
@@ -48,9 +57,9 @@ class City
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function searchOrInsert($city, $stateID)
+    public static function searchOrInsert($city, $stateID): int
     {
-        $cityID = City::getId($city, $stateID);
+        $cityID = City::getIdByState($city, $stateID);
         if (empty($cityID)) {
             $cityID = City::save($city, $stateID);
         }

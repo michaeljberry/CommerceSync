@@ -15,9 +15,9 @@ class Buyer
     private $lastName;
     private $streetAddress;
     private $streetAddress2;
-    private $cityID;
-    private $stateID;
-    private $zipID;
+    private $city;
+    private $state;
+    private $zipCode;
     private $buyerID;
     private $email;
     private $country;
@@ -38,14 +38,44 @@ class Buyer
         $this->lastName = standardCase($lastName);
         $this->streetAddress = standardCase($streetAddress);
         $this->streetAddress2 = standardCase($streetAddress2);
-        $this->stateID = (new State($state))->getStateId();
-        $this->cityID = (new City($city, $this->stateID))->getCityId();
-        $this->zipID = (new ZipCode($zipCode, $this->stateID))->getZipCodeId();
+        $this->setState($state);
+        $this->setCity($city, $this->state);
+        $this->setZipCode($zipCode, $this->state);
         $this->country = Address::countryCode($country);
         $this->email = $email;
         $this->buyerID = Buyer::searchOrInsert($this->firstName, $this->lastName, $this->streetAddress,
-            $this->streetAddress2, $this->cityID, $this->stateID, $this->zipID);
+            $this->streetAddress2, $this->city->getId(), $this->state->getId(), $this->zipCode->getId());
         $this->country = $country;
+    }
+
+    private function setState($state)
+    {
+        $this->state = new State($state);
+    }
+
+    private function setCity($city, State $state)
+    {
+        $this->city = new City($city, $state);
+    }
+
+    private function setZipCode($zipCode, State $state)
+    {
+        $this->zipCode = new ZipCode($zipCode, $state);
+    }
+
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    public function getZipCode()
+    {
+        return $this->zipCode;
     }
 
     public function getBuyerId()

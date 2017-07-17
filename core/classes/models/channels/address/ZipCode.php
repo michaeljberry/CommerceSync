@@ -9,22 +9,32 @@ class ZipCode
 
     private $zipCode;
     private $stateID;
-    private $zipID;
+    private $zipCodeID;
 
-    public function __construct($zipCode, $stateID)
+    public function __construct($zipCode, State $state)
     {
 
+        $this->setZipCode($zipCode);
+        $this->setStateId($state);
+        $this->zipCodeID = ZipCode::searchOrInsert($this->zipCode, $this->stateID);
+    }
+
+    private function setZipCode($zipCode)
+    {
         $this->zipCode = $zipCode;
-        $this->stateID = $stateID;
-        $this->zipID = ZipCode::searchOrInsert($this->zipCode, $this->stateID);
     }
 
-    public function getZipCodeId()
+    private function setStateId(State $state)
     {
-        return $this->zipID;
+        $this->stateID = $state->getId();
     }
 
-    public static function getId($zip)
+    public function getId(): int
+    {
+        return $this->zipCodeID;
+    }
+
+    public static function getIdByZip($zip): int
     {
         $sql = "SELECT id 
                 FROM zip 
@@ -35,7 +45,7 @@ class ZipCode
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function save($stateID, $zip)
+    public static function save($stateID, $zip): int
     {
         $sql = "INSERT INTO zip (state_id, zip) 
                 VALUES (:state_id, :zip) ";
@@ -46,10 +56,10 @@ class ZipCode
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function searchOrInsert($zip, $stateID = '')
+    public static function searchOrInsert($zip, $stateID = ''): int
     {
         $zip = substr($zip, 0, 5); //Constrain ZIP to first 5 characters
-        $zip_id = ZipCode::getId($zip);
+        $zip_id = ZipCode::getIdByZip($zip);
         if (empty($zip_id)) {
             $zip_id = ZipCode::save($stateID, $zip);
         }

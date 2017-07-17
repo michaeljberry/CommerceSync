@@ -292,7 +292,8 @@ class AmazonOrder extends Amazon
                 $buyerPhone = (string)$order->ShippingAddress->Phone;
                 $buyerEmail = (string)$order->BuyerEmail;
                 list($lastName, $firstName) = BuyerController::splitName($shipToName);
-                $buyerID = (new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $buyerEmail))->getBuyerId();
+                $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $buyerEmail);
+                $buyerID = $buyer->getBuyerId();
 
 
                 //Save Order

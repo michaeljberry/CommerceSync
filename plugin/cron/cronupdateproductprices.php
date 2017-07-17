@@ -32,7 +32,7 @@ for ($low = 0; $low < $count; $low += 500) {
                 Ecommerce::removeCommasInNumber($currentPrices[$sku]['pl10']) !== $pl10 ||
                 Ecommerce::removeCommasInNumber($currentPrices[$sku]['cost']) !== $cost
             ) {
-                $sku_id = SKU::getId($sku);
+                $sku_id = SKU::getIdBySku($sku);
                 $result = ProductPrice::update($sku_id, $msrp, $pl1, $map, $pl10, $cost);
                 if ($result) {
                     echo "<br>$sku is updated<br>";

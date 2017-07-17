@@ -86,7 +86,7 @@ class Product
             $productID = Product::updateStatus($productID, $status);
             $skuID = SKU::getIdByProductId($productID);
         } else {
-            $skuID = SKU::getId($sku);
+            $skuID = SKU::getIdBySku($sku);
         }
         return $skuID;
     }

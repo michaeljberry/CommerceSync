@@ -24,7 +24,7 @@ if ($_POST['price_sku']) {
     $shippingIncludedInPrice = htmlentities(isset($_POST['price-include-shipping']) ? $_POST['price-include-shipping'] : 0);
     $shippingCharged = htmlentities($_POST['price_shipping']);
 
-    $sku_id = SKU::getId($sku);
+    $sku_id = SKU::getIdBySku($sku);
     $prices = SKU::getCosts($sku, 'listing_ebay');
     extract($prices);
 

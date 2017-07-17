@@ -12,6 +12,6 @@ $folder = '/home/chesbro_amazon/';
 
 $orders = $amord->getOrders();
 
-$amord->parseOrders($orders, $ecommerce, $folder, $companyId);
+$amord->parseOrders($orders, $folder, $companyId);
 
 endClock($start);

@@ -148,21 +148,22 @@ class AmazonOrder extends Amazon
         return $response;
     }
 
-    protected function ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, Ecommerce $ecommerce)
+    protected function ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping)
     {
         $orderItems = simplexml_load_string($this->getOrderItems($orderNum));
+//        Ecommerce::dd($orderItems);
 
         if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
             $items = $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $orderId, $totalTax,
-                $totalShipping, $ecommerce);
+                $totalShipping);
             return $items;
         } else {
             sleep(2);
-            $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);
+            $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping);
         }
     }
 
-    protected function parseItems($items, $orderId, $totalTax, $totalShipping, Ecommerce $ecommerce)
+    protected function parseItems($items, $orderId, $totalTax, $totalShipping)
     {
         $totalWithoutTax = 0.00;
         $poNumber = 1;
@@ -219,7 +220,7 @@ class AmazonOrder extends Amazon
         return (object)$itemObject;
     }
 
-    public function parseOrders($orders, Ecommerce $ecommerce, $folder, $companyId, $nextPage = null)
+    public function parseOrders($orders, $folder, $companyId, $nextPage = null)
     {
         $taxableStates = Tax::getCompanyInfo($companyId);
 
@@ -302,7 +303,7 @@ class AmazonOrder extends Amazon
                         $totalShipping, $totalTax);
                 }
 
-                $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping, $ecommerce);
+                $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping);
 
                 $poNumber = (string)$items->poNumber;
                 $totalTax = Ecommerce::formatMoney((float)$items->totalTax);
@@ -327,6 +328,8 @@ class AmazonOrder extends Amazon
                     );
                 }
 
+                Ecommerce::dd($itemXml);
+
                 $orderId = Order::updateShippingAndTaxes($orderId, $totalShipping, $totalTax);
                 $channelName = 'Amazon';
                 $channelNum = Channel::getAccountNumbersBySku($channelName, $sku);
@@ -345,7 +348,7 @@ class AmazonOrder extends Amazon
         if (isset($nextToken)) {
             $orders = $this->getMoreOrders($nextToken);
 
-            $this->parseOrders($orders, $ecommerce, $folder, $companyId, true);
+            $this->parseOrders($orders, $folder, $companyId, true);
         }
     }
 

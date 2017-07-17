@@ -34,18 +34,37 @@ class Buyer
         $email = null
     ) {
 
-        $this->firstName = standardCase($firstName);
-        $this->lastName = standardCase($lastName);
-        $this->streetAddress = standardCase($streetAddress);
-        $this->streetAddress2 = standardCase($streetAddress2);
+        $this->setFirstName($firstName);
+        $this->setLastName($lastName);
+        $this->setStreetAddress($streetAddress);
+        $this->setStreetAddress2($streetAddress2);
         $this->setState($state);
-        $this->setCity($city, $this->state);
-        $this->setZipCode($zipCode, $this->state);
-        $this->country = Address::countryCode($country);
-        $this->email = $email;
+        $this->setCity($city, $this->getState());
+        $this->setZipCode($zipCode, $this->getState());
+        $this->setCountry($country);
+        $this->setEmail($email);
         $this->buyerID = Buyer::searchOrInsert($this->firstName, $this->lastName, $this->streetAddress,
-            $this->streetAddress2, $this->city->getId(), $this->state->getId(), $this->zipCode->getId());
-        $this->country = $country;
+            $this->streetAddress2, $this->getCity()->getId(), $this->getState()->getId(), $this->getZipCode()->getId());
+    }
+
+    private function setFirstName($firstName)
+    {
+        $this->firstName = standardCase($firstName);
+    }
+
+    private function setLastName($lastName)
+    {
+        $this->lastName = standardCase($lastName);
+    }
+
+    private function setStreetAddress($streetAddress)
+    {
+        $this->streetAddress = standardCase($streetAddress);
+    }
+
+    private function setStreetAddress2($streetAddress2)
+    {
+        $this->streetAddress2 = standardCase($streetAddress2);
     }
 
     private function setState($state)
@@ -63,6 +82,36 @@ class Buyer
         $this->zipCode = new ZipCode($zipCode, $state);
     }
 
+    private function setCountry($country)
+    {
+        $this->country = Address::countryCode($country);
+    }
+
+    private function setEmail($email)
+    {
+        $this->email = $email;
+    }
+
+    public function getFirstName(): string
+    {
+        return $this->firstName;
+    }
+
+    public function getLastName(): string
+    {
+        return $this->lastName;
+    }
+
+    public function getStreetAddress(): string
+    {
+        return $this->streetAddress;
+    }
+
+    public function getStreetAddress2(): string
+    {
+        return $this->streetAddress2;
+    }
+
     public function getState()
     {
         return $this->state;
@@ -76,6 +125,16 @@ class Buyer
     public function getZipCode()
     {
         return $this->zipCode;
+    }
+
+    public function getCountry(): string
+    {
+        return $this->country;
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email;
     }
 
     public function getBuyerId()

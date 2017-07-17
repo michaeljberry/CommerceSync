@@ -58,7 +58,7 @@ class ReverbOrder extends Reverb
                 foreach ($o as $order) {
                     $order_num = $order->order_number;
                     $found = Order::get($order_num);
-                    if (!$found) {
+                    if (LOCAL || !$found) {
 
                         $timestamp = $order->created_at;
 

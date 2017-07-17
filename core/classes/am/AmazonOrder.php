@@ -172,7 +172,7 @@ class AmazonOrder extends Amazon
         $itemObject = [];
 
         foreach ($items as $item) {
-            $quantity = $item->QuantityOrdered;
+            $quantity = (int)$item->QuantityOrdered;
 
             $title = $item->Title;
             $sku = $item->SellerSKU;
@@ -211,7 +211,7 @@ class AmazonOrder extends Amazon
 //                OrderItem::save($orderId, $skuId, $principle, $quantity);
                 $orderItem->save($Order);
             }
-            $itemXml .= OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
+            $itemXml .= OrderItemXMLController::create($orderItem);
             $poNumber++;
         }
         $itemObject['poNumber'] = $poNumber;

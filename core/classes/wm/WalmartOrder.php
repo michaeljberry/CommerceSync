@@ -198,7 +198,7 @@ class WalmartOrder extends Walmart
 //                OrderItem::save($orderID, $skuID, $price, $quantity);
                 $orderItem->save($Order);
             }
-            $item_xml .= OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
+            $item_xml .= OrderItemXMLController::create($orderItem);
             $poNumber++;
         }
         $item_xml .= TaxXMLController::getItemXml($state_code, $poNumber, $total_tax);

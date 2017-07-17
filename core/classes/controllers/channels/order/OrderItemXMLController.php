@@ -11,7 +11,7 @@ class OrderItemXMLController
     public static function create(OrderItem $orderItem)
     {
         return "<Item>
-            <ItemId>{$orderItem->getSku()}</ItemId>
+            <ItemId>{$orderItem->getSku()->getSku()}</ItemId>
             <ItemDesc><![CDATA[ {$orderItem->getTitle()} ]]></ItemDesc>
             <POLineNumber>{$orderItem->getPoNumber()}</POLineNumber>
             <UOM>EACH</UOM>
@@ -22,7 +22,7 @@ class OrderItemXMLController
             <RetailCurrencyCode></RetailCurrencyCode>
             <StdPackQty></StdPackQty>
             <StdContainerQty></StdContainerQty>
-            <SupplierItemId>{$orderItem->getSku()}</SupplierItemId>
+            <SupplierItemId>{$orderItem->getSku()->getSku()}</SupplierItemId>
             <BarcodeId>{$orderItem->getUpc()}</BarcodeId>
             <BarcodeType>UPC</BarcodeType>
             <ItemNote></ItemNote>

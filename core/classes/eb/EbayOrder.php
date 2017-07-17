@@ -64,19 +64,19 @@ class EbayOrder extends Ebay
 
     protected function saveItems($item, $poNumber, $itemObject, $Order)
     {
-        $sku = $item->Item->SKU;
-        $title = $item->Item->Title;
-        $quantity = $item->QuantityPurchased;
+        $sku = (string)$item->Item->SKU;
+        $title = (string)$item->Item->Title;
+        $quantity = (int)$item->QuantityPurchased;
         $upc = '';
         $price = Ecommerce::removeCommasInNumber((float)$item->TransactionPrice);
-        $itemID = $item->Item->ItemID . '-' . $item->TransactionID;
+        $itemID = (string)$item->Item->ItemID . '-' . (string)$item->TransactionID;
         $skuID = SKU::searchOrInsert($sku);
-        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
+        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber, $itemID);
         if (!LOCAL) {
 //            OrderItem::save($orderID, $skuID, $principle, $quantity, $itemID);
             $orderItem->save($Order);
         }
-        $itemXml = OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
+        $itemXml = OrderItemXMLController::create($orderItem);
         $itemObject['sku'] = $sku;
         $itemObject['itemXml'] .= $itemXml;
         $poNumber++;
@@ -154,7 +154,7 @@ class EbayOrder extends Ebay
                         $streetAddress = (string)$shippinginfo->ReferenceID;
                         $streetAddress2 = (string)$shippinginfo->Street1;
                     } else {
-                        $shippinginfo = (string)$order
+                        $shippinginfo = (object)$order
                             ->ShippingAddress;
                         $streetAddress = (string)$shippinginfo->Street1;
                         if (is_object($shippinginfo->Street2)) {

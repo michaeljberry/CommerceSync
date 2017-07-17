@@ -9,6 +9,6 @@ $user_id = 838;
 $request = $revord->getOrders();
 //\ecommerceclass\ecommerceclass::dd($request);
 
-$revord->saveOrders($request, $ecommerce);
+$revord->saveOrders($request);
 
 endClock($start);

@@ -105,7 +105,8 @@ class ReverbOrder extends Reverb
                             $tax = $price * .09;
                             $price -= $tax;
                         }
-                        $item_xml = OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
+                        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
+                        $item_xml = OrderItemXMLController::create($orderItem);
                         $poNumber++;
                         $item_xml .= TaxXMLController::getItemXml($state, $poNumber, $tax);
                         $total = number_format($price / $quantity, 2);
@@ -122,7 +123,7 @@ class ReverbOrder extends Reverb
                         }
 
                         $sku_id = SKU::searchOrInsert($sku);
-                        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
+
                         if (!LOCAL) {
 //                            OrderItem::save($order_id, $sku_id, $total, $quantity);
                             $orderItem->save($Order);

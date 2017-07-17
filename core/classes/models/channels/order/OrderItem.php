@@ -28,7 +28,7 @@ class OrderItem
         $this->setPoNumber($poNumber);
         $this->setUpc($upc);
         $this->setChannelOrderItemId($channelOrderItemID);
-        $this->setItemXml();
+//        $this->setItemXml();
     }
 
     private function setSku($sku)
@@ -71,7 +71,7 @@ class OrderItem
         $this->itemXML = OrderItemXMLController::create($this);
     }
 
-    public function getSku(): string
+    public function getSku(): SKU
     {
         return $this->sku;
     }
@@ -86,7 +86,7 @@ class OrderItem
         return $this->quantity;
     }
 
-    public function getPrice(): int
+    public function getPrice(): float
     {
         return $this->price;
     }

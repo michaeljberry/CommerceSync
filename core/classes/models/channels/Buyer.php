@@ -43,8 +43,7 @@ class Buyer
         $this->setZipCode($zipCode, $this->getState());
         $this->setCountry($country);
         $this->setEmail($email);
-        $this->buyerID = Buyer::searchOrInsert($this->firstName, $this->lastName, $this->streetAddress,
-            $this->streetAddress2, $this->getCity()->getId(), $this->getState()->getId(), $this->getZipCode()->getId());
+        $this->setBuyerId();
     }
 
     private function setFirstName($firstName)
@@ -92,6 +91,13 @@ class Buyer
         $this->email = $email;
     }
 
+    private function setBuyerId()
+    {
+        $this->buyerID = Buyer::searchOrInsert($this->getFirstName(), $this->getLastName(), $this->getStreetAddress(),
+            $this->getStreetAddress2(), $this->getCity()->getId(), $this->getState()->getId(),
+            $this->getZipCode()->getId());
+    }
+
     public function getFirstName(): string
     {
         return $this->firstName;
@@ -112,17 +118,17 @@ class Buyer
         return $this->streetAddress2;
     }
 
-    public function getState()
+    public function getState(): State
     {
         return $this->state;
     }
 
-    public function getCity()
+    public function getCity(): City
     {
         return $this->city;
     }
 
-    public function getZipCode()
+    public function getZipCode(): ZipCode
     {
         return $this->zipCode;
     }
@@ -137,7 +143,7 @@ class Buyer
         return $this->email;
     }
 
-    public function getBuyerId()
+    public function getBuyerId(): int
     {
         return $this->buyerID;
     }

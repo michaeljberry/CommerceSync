@@ -56,8 +56,8 @@ foreach ($eligible_products as $p) {
                 $quantity, $price);
             echo '<br><br>';
 //            print_r($response);
-            $item_id = $ecommerce->substring_between($response, '<itemid>', '</itemid>');
-            $errors = $ecommerce->substring_between($response, '<errors>', '</errors>');
+            $item_id = Ecommerce::substring_between($response, '<itemid>', '</itemid>');
+            $errors = Ecommerce::substring_between($response, '<errors>', '</errors>');
             echo "Item ID: $item_id<br><br>";
             if ($errors) {
                 print_r($errors);

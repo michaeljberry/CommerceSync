@@ -20,7 +20,7 @@ use controllers\channels\tax\TaxXMLController;
 
 class BigCommerceOrder extends BigCommerce
 {
-    public function get_bc_orders($BC, $filter, Ecommerce $ecommerce)
+    public function get_bc_orders($BC, $filter)
     {
         $orders = $BC::getOrders($filter);
         if ($orders) {
@@ -62,10 +62,10 @@ class BigCommerceOrder extends BigCommerce
                             $shipping, $shipping_amount, $total_tax);
                     }
                     $response = $this->getOrderItems($orderNum);
-                    $info_array = $this->parseItems($response, $ecommerce, $state_code, $total_tax, $order_id);
+                    $info_array = $this->parseItems($response, $state_code, $total_tax, $order_id);
                     $item_xml = $info_array['item_xml'];
                     $channelName = 'BigCommerce';
-                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $ecommerce, $firstName, $lastName, $shipping, $buyerPhone, $address, $address2, $city, $state, $zipCode, $country);
+                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $firstName, $lastName, $shipping, $buyerPhone, $address, $address2, $city, $state, $zipCode, $country);
                     if (!LOCAL) {
                         FTPController::saveXml($orderNum, $xml, $channelName);
                     }
@@ -184,7 +184,7 @@ class BigCommerceOrder extends BigCommerce
         return BigCommerceClient::bigcommerceCurl($api_url, 'GET');
     }
 
-    public function parseItems($response, Ecommerce $ecommerce, $state_code, $total_tax, $order_id)
+    public function parseItems($response, $state_code, $total_tax, $order_id)
     {
         $items = json_decode($response);
         $item_xml = '';
@@ -242,9 +242,9 @@ class BigCommerceOrder extends BigCommerce
         return $order;
     }
 
-    public function save_bc_order_to_xml($o, $item_xml, Ecommerce $ecommerce, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country)
+    public function save_bc_order_to_xml($o, $item_xml, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country)
     {
-        $sku = $ecommerce->substring_between($item_xml, '<ItemId>', '</ItemId>');
+        $sku = Ecommerce::substring_between($item_xml, '<ItemId>', '</ItemId>');
         $channel_name = 'Store';
         $channel = "BigCommerce";
         $channel_num = Channel::getAccountNumbersBySku($channel, $sku);

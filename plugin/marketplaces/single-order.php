@@ -11,12 +11,12 @@ if (isset($_POST['id']) && !empty($_POST['id'])) {
     $total = Ecommerce::formatMoney($oi['taxes']);
     $item_html = "";
     foreach ($items as $i) {
-        $itemInfo = $ecommerce->orderItemHtml($i, $total);
+        $itemInfo = Ecommerce::orderItemHtml($i, $total);
         $item_html .= $itemInfo[0];
         $total = $itemInfo[1];
     }
 
-    $html = $ecommerce->orderHtml($oi, $total, $item_html);
+    $html = Ecommerce::orderHtml($oi, $total, $item_html);
 
     echo $html;
 }

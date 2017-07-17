@@ -8,7 +8,7 @@ class Ecommerce
 
     //Prepare channel listings into arrays for manipulation
 
-    public function substring_between($haystack, $start, $end)
+    public static function substring_between($haystack, $start, $end)
     {
         if (stripos($haystack, $start) === false || stripos($haystack, $end) === false) {
             return false;
@@ -170,7 +170,7 @@ class Ecommerce
         return $date;
     }
 
-    public function orderItemHtml($item, $total)
+    public static function orderItemHtml($item, $total)
     {
         $sku = $item['sku'];
         $name = $item['name'];
@@ -189,7 +189,7 @@ class Ecommerce
         ];
     }
 
-    public function orderHtml($oi, $total, $item_html)
+    public static function orderHtml($oi, $total, $item_html)
     {
         extract($oi);
         $date = Ecommerce::createFormattedDate($oi['date'], 'm/d/Y');

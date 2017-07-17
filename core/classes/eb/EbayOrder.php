@@ -62,19 +62,21 @@ class EbayOrder extends Ebay
         return $response;
     }
 
-    protected function saveItems($item, $poNumber, $order_id, $itemObject)
+    protected function saveItems($item, $poNumber, $itemObject, $Order)
     {
         $sku = $item->Item->SKU;
         $title = $item->Item->Title;
         $quantity = $item->QuantityPurchased;
         $upc = '';
-        $principle = Ecommerce::removeCommasInNumber((float)$item->TransactionPrice);
-        $item_id = $item->Item->ItemID . '-' . $item->TransactionID;
-        $sku_id = SKU::searchOrInsert($sku);
+        $price = Ecommerce::removeCommasInNumber((float)$item->TransactionPrice);
+        $itemID = $item->Item->ItemID . '-' . $item->TransactionID;
+        $skuID = SKU::searchOrInsert($sku);
+        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
         if (!LOCAL) {
-            OrderItem::save($order_id, $sku_id, $principle, $quantity, $item_id);
+//            OrderItem::save($orderID, $skuID, $principle, $quantity, $itemID);
+            $orderItem->save($Order);
         }
-        $itemXml = OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $principle, $upc);
+        $itemXml = OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
         $itemObject['sku'] = $sku;
         $itemObject['itemXml'] .= $itemXml;
         $poNumber++;
@@ -82,7 +84,7 @@ class EbayOrder extends Ebay
         return $itemObject;
     }
 
-    protected function getItems($items, $order_id)
+    protected function getItems($items, $Order)
     {
         $poNumber = 1;
 
@@ -91,11 +93,11 @@ class EbayOrder extends Ebay
 
         if (count($items->Transaction) > 1) {
             foreach ($items->Transaction as $item) {
-                $itemObject = $this->saveItems($item, $poNumber, $order_id, $itemObject);
+                $itemObject = $this->saveItems($item, $poNumber, $itemObject, $Order);
                 $poNumber = $itemObject['poNumber'];
             }
         } else {
-            $itemObject = $this->saveItems($items->Transaction, $poNumber, $order_id, $itemObject);
+            $itemObject = $this->saveItems($items->Transaction, $poNumber, $itemObject, $Order);
         }
 
         return (object)$itemObject;
@@ -111,23 +113,23 @@ class EbayOrder extends Ebay
     protected function parseOrders($xml_orders)
     {
         foreach ($xml_orders->OrderArray->Order as $order) {
-            $order_num = (string)$order->ExternalTransaction->ExternalTransactionID;
+            $orderNum = (string)$order->ExternalTransaction->ExternalTransactionID;
             $fee = Ecommerce::formatMoney((float)$order->ExternalTransaction->FeeOrCreditAmount);
 
             $order_status = trim((string)$order->OrderStatus);
 
             if ($order_status !== 'Cancelled') {
 
-                echo "Order: $order_num -> Status: $order_status<br>";
+                echo "Order: $orderNum -> Status: $order_status<br>";
                 echo (string)$order->OrderID . '<br>';
-                $found = Order::get($order_num);
+                $found = Order::get($orderNum);
 
                 if (LOCAL || !$found) {
                     Ecommerce::dd($order);
                     $timestamp = (string)$order->CreatedTime;
                     $ismultilegshipping = (string)$order->IsMultiLegShipping;
 
-                    $shipping_amount = Ecommerce::formatMoney((float)$order->ShippingDetails->ShippingServiceOptions->ShippingServiceCost);
+                    $shippingPrice = Ecommerce::formatMoney((float)$order->ShippingDetails->ShippingServiceOptions->ShippingServiceCost);
                     $total = $order->Total;
 
                     $erlanger = [
@@ -137,11 +139,11 @@ class EbayOrder extends Ebay
                         'zip' => '41025'
                     ];
 
-                    $shipping = ShippingController::code($total, $erlanger);
+                    $shippingCode = ShippingController::code($total, $erlanger);
 
-                    $item_taxes = Ecommerce::formatMoney((float)$order->ShippingDetails->SalesTax->SalesTaxAmount);
-                    Ecommerce::dd($item_taxes);
-                    $trans_id = $order->ShippingDetails->SellingManagerSalesRecordNumber;
+                    $tax = Ecommerce::formatMoney((float)$order->ShippingDetails->SalesTax->SalesTaxAmount);
+                    Ecommerce::dd($tax);
+                    $channelOrderID = (string)$order->ShippingDetails->SellingManagerSalesRecordNumber;
 
                     //Address
                     if (strcasecmp($ismultilegshipping, 'true') == 0) {
@@ -171,29 +173,29 @@ class EbayOrder extends Ebay
                     $shipToName = (string)$shippinginfo->Name;
                     $buyerPhone = (string)$shippinginfo->Phone;
                     list($lastName, $firstName) = BuyerController::splitName($shipToName);
-                    $buyerID = (new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state,
-                        $zipCode, $country))->getBuyerId();
+                    $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
 
+                    $Order = new Order(EbayClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
                     //Save Order
                     if (!LOCAL) {
-                        $order_id = Order::save(EbayClient::getStoreID(), $buyerID, $order_num, $shipping,
-                            $shipping_amount, $item_taxes, $fee, $trans_id);
+//                        $order_id = Order::save(EbayClient::getStoreID(), $buyerID, $orderNum, $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
+                        $Order->save(EbayClient::getStoreID());
                     }
 
                     //Order Items
-                    $items = $this->getItems($order->TransactionArray, $order_id);
+                    $items = $this->getItems($order->TransactionArray, $Order);
 
                     $poNumber = (string)$items->poNumber;
                     $sku = (string)$items->sku;
                     $itemXml = (string)$items->itemXml;
 
-                    $itemXml .= TaxXMLController::getItemXml($state, $poNumber, $item_taxes);
+                    $itemXml .= TaxXMLController::getItemXml($state, $poNumber, $tax);
                     $channelName = 'Ebay';
                     $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
-                    $orderXml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
+                    $orderXml = OrderXMLController::create($channel_num, $channelName, $orderNum, $timestamp, $shippingPrice, $shippingCode, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
-                        FTPController::saveXml($order_num, $orderXml, $channelName);
+                        FTPController::saveXml($orderNum, $orderXml, $channelName);
                     }
                 }
             }

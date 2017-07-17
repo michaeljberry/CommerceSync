@@ -3,29 +3,30 @@
 namespace controllers\channels\order;
 
 
+use models\channels\order\OrderItem;
+
 class OrderItemXMLController
 {
 
-    public static function create($sku, $title, $poNum, $qty, $principle, $upc)
+    public static function create(OrderItem $orderItem)
     {
-        $item_xml = "<Item>
-            <ItemId>$sku</ItemId>
-            <ItemDesc><![CDATA[ $title ]]></ItemDesc>
-            <POLineNumber>$poNum</POLineNumber>
+        return "<Item>
+            <ItemId>{$orderItem->getSku()}</ItemId>
+            <ItemDesc><![CDATA[ {$orderItem->getTitle()} ]]></ItemDesc>
+            <POLineNumber>{$orderItem->getPoNumber()}</POLineNumber>
             <UOM>EACH</UOM>
-            <Qty>$qty</Qty>
-            <UCValue>$principle</UCValue>
+            <Qty>{$orderItem->getQuantity()}</Qty>
+            <UCValue>{$orderItem->getPrice()}</UCValue>
             <UCCurrencyCode></UCCurrencyCode>
             <RetailValue></RetailValue>
             <RetailCurrencyCode></RetailCurrencyCode>
             <StdPackQty></StdPackQty>
             <StdContainerQty></StdContainerQty>
-            <SupplierItemId>$sku</SupplierItemId>
-            <BarcodeId>$upc</BarcodeId>
+            <SupplierItemId>{$orderItem->getSku()}</SupplierItemId>
+            <BarcodeId>{$orderItem->getUpc()}</BarcodeId>
             <BarcodeType>UPC</BarcodeType>
             <ItemNote></ItemNote>
         </Item>";
-        return $item_xml;
     }
 
 }

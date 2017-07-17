@@ -43,7 +43,7 @@ class Buyer
         $this->setZipCode($zipCode, $this->getState());
         $this->setCountry($country);
         $this->setEmail($email);
-        $this->setBuyerId();
+        $this->setId();
     }
 
     private function setFirstName($firstName)
@@ -91,7 +91,7 @@ class Buyer
         $this->email = $email;
     }
 
-    private function setBuyerId()
+    private function setId()
     {
         $this->buyerID = Buyer::searchOrInsert($this->getFirstName(), $this->getLastName(), $this->getStreetAddress(),
             $this->getStreetAddress2(), $this->getCity()->getId(), $this->getState()->getId(),
@@ -143,7 +143,7 @@ class Buyer
         return $this->email;
     }
 
-    public function getBuyerId(): int
+    public function getId(): int
     {
         return $this->buyerID;
     }

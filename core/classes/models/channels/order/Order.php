@@ -4,11 +4,126 @@ namespace models\channels\order;
 
 use controllers\channels\ChannelHelperController as CHC;
 use ecommerce\Ecommerce;
+use models\channels\Buyer;
 use models\channels\Tracking;
 use models\ModelDB as MDB;
 
 class Order
 {
+
+    private $storeID;
+    private $buyer;
+    private $orderNum;
+    private $orderID;
+    private $shippingCode;
+    private $shippingPrice;
+    private $tax;
+    private $fee;
+    private $channelOrderID;
+
+    public function __construct($storeID, Buyer $buyer, $orderNum, $shippingCode, $shippingPrice, $tax, $fee = null, $channelOrderID = null)
+    {
+        $this->setStoreId($storeID);
+        $this->setBuyer($buyer);
+        $this->setOrderNum($orderNum);
+        $this->setOrderId();
+        $this->setShippingCode($shippingCode);
+        $this->setShippingPrice($shippingPrice);
+        $this->setTax($tax);
+        $this->setFee($fee);
+        $this->setChannelOrderId($channelOrderID);
+    }
+
+    private function setStoreId($storeID)
+    {
+        $this->storeID = $storeID;
+    }
+
+    private function setBuyer(Buyer $buyer)
+    {
+        $this->buyer = $buyer;
+    }
+
+    private function setOrderNum($orderNum)
+    {
+        $this->orderNum = $orderNum;
+    }
+
+    private function setOrderId()
+    {
+        $this->orderID = Order::getIdByOrder($this->orderNum);
+    }
+
+    private function setShippingCode($shippingCode)
+    {
+        $this->shippingCode = $shippingCode;
+    }
+
+    private function setShippingPrice($shippingPrice)
+    {
+        $this->shippingPrice = $shippingPrice;
+    }
+
+    private function setTax($tax)
+    {
+        $this->tax = $tax;
+    }
+
+    private function setFee($fee)
+    {
+        $this->fee = $fee;
+    }
+
+    private function setChannelOrderId($channelOrderId)
+    {
+        $this->channelOrderID = $channelOrderId;
+    }
+
+    public function getStoreId(): int
+    {
+        return $this->storeID;
+    }
+
+    public function getBuyer(): Buyer
+    {
+        return $this->buyer;
+    }
+
+    public function getOrderNum(): string
+    {
+        return $this->orderNum;
+    }
+
+    public function getOrderId(): int
+    {
+        return $this->orderID;
+    }
+
+    public function getShippingCode(): string
+    {
+        return $this->shippingCode;
+    }
+
+    public function getShippingPrice()
+    {
+        return $this->shippingPrice;
+    }
+
+    public function getTax()
+    {
+        return $this->tax;
+    }
+
+    public function getFee()
+    {
+        return $this->fee;
+    }
+
+    public function getChannelOrderId()
+    {
+        return $this->channelOrderID;
+    }
+
     public static function cancel($orderNum)
     {
         $sql = "UPDATE sync.order 
@@ -20,7 +135,7 @@ class Order
         MDB::query($sql, $queryParams);
     }
 
-    public static function getId($orderNum)
+    public static function getIdByOrder($orderNum)
     {
         $sql = "SELECT id 
                 FROM sync.order 
@@ -99,33 +214,25 @@ class Order
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    public static function save(
-        $storeID,
-        $buyerID,
-        $orderNum,
-        $shipMethod,
-        $shippingAmount,
-        $taxAmount = 0,
-        $fee = 0,
-        $channelOrderID = null
-    ) {
-        $order_id = Order::getIdByStoreId($storeID, $orderNum);
-        if (empty($order_id)) {
+    public function save($storeID)
+    {
+        $orderID = Order::getIdByStoreId($storeID, $this->getOrderNum());
+        if (empty($orderID)) {
             $sql = "INSERT INTO sync.order (store_id, cust_id, order_num, ship_method, shipping_amount, taxes, fee, channel_order_id) 
                     VALUES (:store_id, :cust_id, :order_num, :ship_method, :shipping_amount, :taxes, :fee, :channel_order_id)";
             $queryParams = [
-                ":store_id" => $storeID,
-                ":cust_id" => $buyerID,
-                ":order_num" => $orderNum,
-                ":ship_method" => $shipMethod,
-                ":shipping_amount" => $shippingAmount,
-                ":taxes" => $taxAmount,
-                ':fee' => $fee,
-                ':channel_order_id' => $channelOrderID
+                ":store_id" => $this->getStoreId(),
+                ":cust_id" => $this->getBuyer()->getId(),
+                ":order_num" => $this->getOrderNum(),
+                ":ship_method" => $this->getShippingCode(),
+                ":shipping_amount" => $this->getShippingPrice(),
+                ":taxes" => $this->getTax(),
+                ':fee' => $this->getFee(),
+                ':channel_order_id' => $this->getChannelOrderId()
             ];
-            $order_id = MDB::query($sql, $queryParams, 'id');
+            $orderID = MDB::query($sql, $queryParams, 'id');
         }
-        return $order_id;
+        return $orderID;
     }
 
     public static function saveTax($orderID, $tax)

@@ -67,9 +67,9 @@ class WalmartOrder extends Walmart
         $orderNum = $order['purchaseOrderId'];
 
 
-        $totalTax = 0;
-        $shippingTotal = 0;
-        $shippingMethod = 'ZSTD';
+        $tax = 0;
+        $shippingPrice = 0;
+        $shippingCode = 'ZSTD';
         $orderTotal = 0;
 
         echo "<br><br>Order: $orderNum<br><pre>";
@@ -77,24 +77,24 @@ class WalmartOrder extends Walmart
         echo '</pre><br><br>';
 
         if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
-            $orderInfo = $this->process_orders($order['orderLines']['orderLine'], $totalTax, $shippingTotal, $orderTotal);
-            $totalTax += $orderInfo['total_tax'];
-            $shippingTotal += $orderInfo['shipping_total'];
+            $orderInfo = $this->process_orders($order['orderLines']['orderLine'], $tax, $shippingPrice, $orderTotal);
+            $tax += $orderInfo['total_tax'];
+            $shippingPrice += $orderInfo['shipping_total'];
             $orderTotal += $orderInfo['order_total'];
 
             $orderItems = $order['orderLines'];
         } else {
             foreach ($order['orderLines']['orderLine'] as $o) {
-                $orderInfo = $this->process_orders($o, $totalTax, $shippingTotal, $orderTotal);
-                $totalTax += $orderInfo['total_tax'];
-                $shippingTotal += $orderInfo['shipping_total'];
+                $orderInfo = $this->process_orders($o, $tax, $shippingPrice, $orderTotal);
+                $tax += $orderInfo['total_tax'];
+                $shippingPrice += $orderInfo['shipping_total'];
                 $orderTotal += $orderInfo['order_total'];
             }
             $orderItems = $order['orderLines']['orderLine'];
         }
 
         if ($orderTotal > 299) {
-            $shippingMethod = 'URIP';
+            $shippingCode = 'URIP';
         }
 
         //Address
@@ -110,17 +110,18 @@ class WalmartOrder extends Walmart
         $shipToName = (string)$order['shippingInfo']['postalAddress']['name'];
         $buyerPhone = (string)$order['shippingInfo']['phone'];
         list($lastName, $firstName) = BuyerController::splitName($shipToName);
-        $custID = (new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country))->getBuyerId();
+        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
 
+        $Order = new Order(WalmartClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
 
         //Save Orders
         if (!LOCAL) {
-            $orderID = Order::save(WalmartClient::getStoreID(), $custID, $orderNum, $shippingMethod,
-                $shippingTotal, $totalTax);
+//            $orderID = Order::save(WalmartClient::getStoreID(), $buyerID, $orderNum, $shippingCode, $shippingPrice, $tax);
+            $Order->save(WalmartClient::getStoreID());
         }
-        $infoArray = $this->get_wm_order_items($orderNum, $orderItems, $state, $totalTax, $orderID);
+        $infoArray = $this->get_wm_order_items($orderItems, $state, $tax, $Order);
         $itemXml = $infoArray['item_xml'];
-        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $firstName, $lastName, $shippingMethod, $buyerPhone, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $shippingTotal);
+        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $firstName, $lastName, $shippingCode, $buyerPhone, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $shippingPrice);
         $channelName = 'Walmart';
         if (!LOCAL) {
             FTPController::saveXml($orderNum, $orderXml, $channelName);
@@ -165,14 +166,14 @@ class WalmartOrder extends Walmart
      * @param $order_items
      * @param $state_code
      * @param $total_tax
-     * @param $order_id
+     * @param $orderID
      * @return array
      */
-    public function get_wm_order_items($order_num, $order_items, $state_code, $total_tax, $order_id)
+    public function get_wm_order_items($order_items, $state_code, $total_tax, $Order)
     {
         $wminv = new WalmartInventory();
         $item_xml = '';
-        $ponumber = 1;
+        $poNumber = 1;
 
         foreach ($order_items as $i) {
 //            echo '<br><br><pre>';
@@ -180,25 +181,27 @@ class WalmartOrder extends Walmart
 //            echo '</pre><br><br>';
             $quantity = $i['orderLineQuantity']['amount'];
             $title = $i['item']['productName'];
-            $principle = 0;
+            $price = 0;
             foreach ($i['charges'] as $p) {
                 if ($p['chargeType'] == 'PRODUCT') {
-                    $principle += $p['chargeAmount']['amount'];
+                    $price += $p['chargeAmount']['amount'];
                 }
             }
-            $item_total = sprintf("%01.2f", number_format($principle, 2, '.', '') / $quantity);
-            echo "Item Total: $item_total";
+            $price = sprintf("%01.2f", number_format($price, 2, '.', '') / $quantity);
+            echo "Item Total: $price";
             $sku = $i['item']['sku'];
             $item = $wminv->getItem($sku);
             $upc = $item['MPItemView']['upc'];
-            $sku_id = SKU::searchOrInsert($sku);
+            $skuID = SKU::searchOrInsert($sku);
+            $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
             if (!LOCAL) {
-                OrderItem::save($order_id, $sku_id, $item_total, $quantity);
+//                OrderItem::save($orderID, $skuID, $price, $quantity);
+                $orderItem->save($Order);
             }
-            $item_xml .= OrderItemXMLController::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
-            $ponumber++;
+            $item_xml .= OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
+            $poNumber++;
         }
-        $item_xml .= TaxXMLController::getItemXml($state_code, $ponumber, $total_tax);
+        $item_xml .= TaxXMLController::getItemXml($state_code, $poNumber, $total_tax);
         $info_array = [
             'item_xml' => $item_xml
         ];

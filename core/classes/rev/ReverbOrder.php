@@ -56,8 +56,8 @@ class ReverbOrder extends Reverb
         if (!empty($orders)) {
             foreach ($orders as $o) {
                 foreach ($o as $order) {
-                    $order_num = $order->order_number;
-                    $found = Order::get($order_num);
+                    $orderNum = $order->order_number;
+                    $found = Order::get($orderNum);
                     if (LOCAL || !$found) {
 
                         $timestamp = $order->created_at;
@@ -76,62 +76,63 @@ class ReverbOrder extends Reverb
                         $shipToName = (string)$order->buyer_name;
                         $buyer_phone = $order->shipping_address->phone;
                         list($lastName, $firstName) = BuyerController::splitName($shipToName);
-                        $custID = (new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state,
-                            $zipCode, $country))->getBuyerId();
-
+                        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
 
                         //Order Items
-                        $shipping = 'ZSTD';
+                        $shippingCode = 'ZSTD';
                         $sku = (string)$order->sku;
                         $sku = ReverbOrder::clean_sku($sku);
-                        $title = $order->title;
-                        $quantity = $order->quantity;
+                        $title = (string)$order->title;
+                        $quantity = (int)$order->quantity;
                         $upc = '';
-                        $principle = $order->amount_product_subtotal->amount;
-                        $principle = number_format($principle / $quantity, 2, '.', '');
-                        $shipping_amount = $order->shipping->amount;
-                        $ponumber = 1;
+                        $price = (float)$order->amount_product_subtotal->amount;
+                        $price = number_format($price / $quantity, 2, '.', '');
+                        $shippingPrice = (float)$order->shipping->amount;
+                        $poNumber = 1;
                         $channelName = 'Reverb';
                         $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
                         $tax = 0;
                         if (strcasecmp($state, 'ID') == 0) {
                             //Subtract 6% from sub-total, add as sales tax; adjust sub-total
-                            $tax = $principle * .06;
-                            $principle -= $tax;
+                            $tax = $price * .06;
+                            $price -= $tax;
                         } elseif (strcasecmp($state, 'CA') == 0) {
                             //Subtract 6% from sub-total, add as sales tax; adjust sub-total
-                            $tax = $principle * .09;
-                            $principle -= $tax;
+                            $tax = $price * .09;
+                            $price -= $tax;
                         } elseif (strcasecmp($state, 'WA') == 0) {
                             //Subtract 6% from sub-total, add as sales tax; adjust sub-total
-                            $tax = $principle * .09;
-                            $principle -= $tax;
+                            $tax = $price * .09;
+                            $price -= $tax;
                         }
-                        $item_xml = OrderItemXMLController::create($sku, $title, $ponumber, $quantity, $principle, $upc);
-                        $ponumber++;
-                        $item_xml .= TaxXMLController::getItemXml($state, $ponumber, $tax);
-                        $total = number_format($principle / $quantity, 2);
+                        $item_xml = OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
+                        $poNumber++;
+                        $item_xml .= TaxXMLController::getItemXml($state, $poNumber, $tax);
+                        $total = number_format($price / $quantity, 2);
                         if ($total >= 250) {
-                            $shipping = 'URIP';
+                            $shippingCode = 'URIP';
                         }
 
+                        $Order = new Order(ReverbClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
 
                         //Save Order
                         if (!LOCAL) {
-                            $order_id = Order::save(ReverbClient::getStoreID(), $custID, $order_num,
-                                $shipping, $shipping_amount, $tax);
+//                            $order_id = Order::save(ReverbClient::getStoreID(), $buyerID, $orderNum, $shippingCode, $shippingPrice, $tax);
+                            $Order->save(ReverbClient::getStoreID());
                         }
 
                         $sku_id = SKU::searchOrInsert($sku);
+                        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
                         if (!LOCAL) {
-                            OrderItem::save($order_id, $sku_id, $total, $quantity);
+//                            OrderItem::save($order_id, $sku_id, $total, $quantity);
+                            $orderItem->save($Order);
                         }
-                        $xml = OrderXMLController::create($channel_num, $channelName, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $item_xml);
+                        $xml = OrderXMLController::create($channel_num, $channelName, $orderNum, $timestamp, $shippingPrice, $shippingCode, $buyer_phone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $item_xml);
                         if (!LOCAL) {
-                            FTPController::saveXml($order_num, $xml, $channelName);
+                            FTPController::saveXml($orderNum, $xml, $channelName);
                         }
                     } else {
-                        echo 'Order ' . $order_num . ' is already in the database.<br>';
+                        echo 'Order ' . $orderNum . ' is already in the database.<br>';
                     }
                 }
             }

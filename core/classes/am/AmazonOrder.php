@@ -148,22 +148,22 @@ class AmazonOrder extends Amazon
         return $response;
     }
 
-    protected function ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping)
+    protected function ifItemsExist($orderNum, $totalTax, $totalShipping, $Order)
     {
         $orderItems = simplexml_load_string($this->getOrderItems($orderNum));
 //        Ecommerce::dd($orderItems);
 
         if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
-            $items = $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $orderId, $totalTax,
-                $totalShipping);
+            $items = $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $totalTax,
+                $totalShipping, $Order);
             return $items;
         } else {
             sleep(2);
-            $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping);
+            $this->ifItemsExist($orderNum, $totalTax, $totalShipping, $Order);
         }
     }
 
-    protected function parseItems($items, $orderId, $totalTax, $totalShipping)
+    protected function parseItems($items, $totalTax, $totalShipping, $Order)
     {
         $totalWithoutTax = 0.00;
         $poNumber = 1;
@@ -187,7 +187,7 @@ class AmazonOrder extends Amazon
             $itemPrice += (float)$giftWrapPrice;
 
             $totalWithoutTax += (float)$itemPrice;
-            $principle = Ecommerce::formatMoney((float)$itemPrice / $quantity);
+            $price = Ecommerce::formatMoney((float)$itemPrice / $quantity);
 
             $shippingPrice = (float)$item->ShippingPrice->Amount;
             $shippingDiscount = (float)$item->ShippingDiscount->Amount;
@@ -206,10 +206,12 @@ class AmazonOrder extends Amazon
             Ecommerce::dd("Total Tax: $totalTax");
 
             $skuId = SKU::searchOrInsert($sku);
+            $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
             if (!LOCAL) {
-                OrderItem::save($orderId, $skuId, $itemPrice, $quantity);
+//                OrderItem::save($orderId, $skuId, $principle, $quantity);
+                $orderItem->save($Order);
             }
-            $itemXml .= OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $principle, $upc);
+            $itemXml .= OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
             $poNumber++;
         }
         $itemObject['poNumber'] = $poNumber;
@@ -271,10 +273,10 @@ class AmazonOrder extends Amazon
 
                 $shipmentMethod = (string)$order->ShipmentServiceLevelCategory;
 
-                $shipping = ShippingController::code($orderTotalAmount, [], $shipmentMethod);
+                $shippingCode = ShippingController::code($orderTotalAmount, [], $shipmentMethod);
 
-                $totalTax = 0.00;
-                $totalShipping = 0.00;
+                $tax = 0.00;
+                $shippingPrice = 0.00;
 
 
                 //Address
@@ -294,47 +296,47 @@ class AmazonOrder extends Amazon
                 $buyerEmail = (string)$order->BuyerEmail;
                 list($lastName, $firstName) = BuyerController::splitName($shipToName);
                 $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $buyerEmail);
-                $buyerID = $buyer->getBuyerId();
 
+                $Order = new Order(AmazonClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
 
                 //Save Order
                 if (!LOCAL) {
-                    $orderId = Order::save(AmazonClient::getStoreID(), $buyerID, $orderNum, $shipping,
-                        $totalShipping, $totalTax);
+//                    $orderId = Order::save(AmazonClient::getStoreID(), $buyerID, $orderNum, $shippingCode, $shippingPrice, $tax);
+                    $Order->save(AmazonClient::getStoreID());
                 }
 
-                $items = $this->ifItemsExist($orderNum, $orderId, $totalTax, $totalShipping);
+                $items = $this->ifItemsExist($orderNum, $tax, $shippingPrice, $Order);
 
                 $poNumber = (string)$items->poNumber;
-                $totalTax = Ecommerce::formatMoney((float)$items->totalTax);
+                $tax = Ecommerce::formatMoney((float)$items->totalTax);
                 $totalWithoutTax = (float)$items->totalWithoutTax;
-                $totalShipping = Ecommerce::formatMoney((float)$items->totalShipping);
+                $shippingPrice = Ecommerce::formatMoney((float)$items->totalShipping);
                 $sku = (string)$items->sku;
                 $itemXml = (string)$items->itemXml;
 
                 if (TaxController::state($taxableStates, $state)) {
                     echo 'Should be taxed<br>';
-                    if ($totalTax == 0) {
+                    if ($tax == 0) {
                         // No tax collected, but tax is required to remit.
                         // Need to calculate taxes and subtract from sales price of item(s)
-                        $totalTax = TaxController::calculate($taxableStates[$state], $totalWithoutTax,
-                            $totalShipping);
+                        $tax = TaxController::calculate($taxableStates[$state], $totalWithoutTax,
+                            $shippingPrice);
                     }
                     $itemXml .= TaxXMLController::getItemXml(
                         $state,
                         $poNumber,
-                        $totalTax,
+                        $tax,
                         $taxableStates[$state]['tax_line_name']
                     );
                 }
 
                 Ecommerce::dd($itemXml);
 
-                $orderId = Order::updateShippingAndTaxes($orderId, $totalShipping, $totalTax);
+                $orderId = Order::updateShippingAndTaxes($orderId, $shippingPrice, $tax);
                 $channelName = 'Amazon';
                 $channelNum = Channel::getAccountNumbersBySku($channelName, $sku);
 
-                $orderXml = OrderXMLController::create($channelNum, $channelName, $orderNum, $purchaseDate, $totalShipping, $shipping, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
+                $orderXml = OrderXMLController::create($channelNum, $channelName, $orderNum, $purchaseDate, $shippingPrice, $shippingCode, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
                 if (!LOCAL) {
                     FTPController::saveXml($orderNum, $orderXml, $channelName);
                 }

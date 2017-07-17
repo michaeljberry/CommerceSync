@@ -29,21 +29,21 @@ class BigCommerceOrder extends BigCommerce
                 $found = Order::get($orderNum);
                 if (LOCAL || !$found) {
                     $state_code = $o->shipping_addresses[0]->state;
-                    $total_tax = $o->total_tax;
+                    $tax = $o->total_tax;
                     $ship_info = $this->get_bc_order_ship_info($orderNum);
-                    $shipping = 'ZSTD';
+                    $shippingCode = 'ZSTD';
                     $total_order = $o->total_ex_tax;
                     if ($total_order > 299) {
-                        $shipping = 'URIP';
+                        $shippingCode = 'URIP';
                     }
 
 
-                    $shipping_amount = number_format($o->shipping_cost_inc_tax, 2);
+                    $shippingPrice = number_format($o->shipping_cost_inc_tax, 2);
 
 
                     //Address
-                    $address = (string)$ship_info[0]->street_1;
-                    $address2 = (string)$ship_info[0]->street_2;
+                    $streetAddress = (string)$ship_info[0]->street_1;
+                    $streetAddress2 = (string)$ship_info[0]->street_2;
                     $city = (string)$ship_info[0]->city;
                     $state = (string)$ship_info[0]->state;
                     $zipCode = (string)$ship_info[0]->zip;
@@ -54,18 +54,20 @@ class BigCommerceOrder extends BigCommerce
                     $firstName = (string)$ship_info[0]->first_name;
                     $lastName = (string)$ship_info[0]->last_name;
                     $buyerPhone = (string)$ship_info[0]->phone;
-                    $custID = (new Buyer($firstName, $lastName, $address, $address2, $city, $state, $zipCode, $country))->getBuyerId();
+                    $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
+
+                    $Order = new Order(BigCommerceClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
 
                     //Save Orders
                     if (!LOCAL) {
-                        $order_id = Order::save(BigCommerceClient::getStoreID(), $custID, $orderNum,
-                            $shipping, $shipping_amount, $total_tax);
+//                        $order_id = Order::save(BigCommerceClient::getStoreID(), $buyerID, $orderNum, $shipping, $shipping_amount, $total_tax);
+                        $Order->save(BigCommerceClient::getStoreID());
                     }
                     $response = $this->getOrderItems($orderNum);
-                    $info_array = $this->parseItems($response, $state_code, $total_tax, $order_id);
+                    $info_array = $this->parseItems($response, $state_code, $tax, $Order);
                     $item_xml = $info_array['item_xml'];
                     $channelName = 'BigCommerce';
-                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $firstName, $lastName, $shipping, $buyerPhone, $address, $address2, $city, $state, $zipCode, $country);
+                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $firstName, $lastName, $shippingCode, $buyerPhone, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
                     if (!LOCAL) {
                         FTPController::saveXml($orderNum, $xml, $channelName);
                     }
@@ -184,28 +186,30 @@ class BigCommerceOrder extends BigCommerce
         return BigCommerceClient::bigcommerceCurl($api_url, 'GET');
     }
 
-    public function parseItems($response, $state_code, $total_tax, $order_id)
+    public function parseItems($response, $state_code, $total_tax, $Order)
     {
         $items = json_decode($response);
         $item_xml = '';
-        $ponumber = 1;
+        $poNumber = 1;
         foreach ($items as $i) {
             Ecommerce::dd($i);
             $product_id = (string)$i->product_id;
             $quantity = (integer)$i->quantity;
             $title = (string)$i->name;
             $principle = (float)$i->total_ex_tax;
-            $item_total = Ecommerce::removeCommasInNumber($principle) / $quantity;
+            $price = Ecommerce::removeCommasInNumber($principle) / $quantity;
             $sku = (string)$i->sku;
             $upc = $this->get_bc_product_upc($product_id);
-            $sku_id = SKU::searchOrInsert($sku);
+            $skuID = SKU::searchOrInsert($sku);
+            $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
             if (!LOCAL) {
-                OrderItem::save($order_id, $sku_id, $item_total, $quantity);
+//                OrderItem::save($orderID, $skuID, $price, $quantity);
+                $orderItem->save($Order);
             }
-            $item_xml .= OrderItemXMLController::create($sku, $title, $ponumber, $quantity, $item_total, $upc);
-            $ponumber++;
+            $item_xml .= OrderItemXMLController::create($sku, $title, $poNumber, $quantity, $price, $upc);
+            $poNumber++;
         }
-        $item_xml .= TaxXMLController::getItemXml($state_code, $ponumber, $total_tax);
+        $item_xml .= TaxXMLController::getItemXml($state_code, $poNumber, $total_tax);
         $info_array = [
             'item_xml' => $item_xml
         ];

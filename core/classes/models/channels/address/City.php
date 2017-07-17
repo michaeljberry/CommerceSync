@@ -8,14 +8,12 @@ class City
 {
 
     private $city;
-    private $stateID;
     public $cityID;
 
     public function __construct($city, State $state)
     {
         $this->setCity($city);
-        $this->setStateId($state);
-        $this->cityID = City::searchOrInsert($this->city, $this->stateID);
+        $this->setCityId($state);
     }
 
     private function setCity($city)
@@ -23,9 +21,9 @@ class City
         $this->city = standardCase($city);
     }
 
-    private function setStateId(State $state)
+    private function setCityId(State $state)
     {
-        $this->stateID = $state->getId();
+        $this->cityID = City::searchOrInsert($this->getId(), $state->getId());
     }
 
     public function getId(): int

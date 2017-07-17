@@ -8,15 +8,13 @@ class ZipCode
 {
 
     private $zipCode;
-    private $stateID;
     private $zipCodeID;
 
     public function __construct($zipCode, State $state)
     {
 
         $this->setZipCode($zipCode);
-        $this->setStateId($state);
-        $this->zipCodeID = ZipCode::searchOrInsert($this->zipCode, $this->stateID);
+        $this->setZipCodeId($state);
     }
 
     private function setZipCode($zipCode)
@@ -24,9 +22,9 @@ class ZipCode
         $this->zipCode = $zipCode;
     }
 
-    private function setStateId(State $state)
+    private function setZipCodeId(State $state)
     {
-        $this->stateID = $state->getId();
+        $this->zipCodeID = ZipCode::searchOrInsert($this->getId(), $state->getId());
     }
 
     public function getId(): int

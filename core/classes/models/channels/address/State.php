@@ -9,18 +9,24 @@ class State
 {
 
     private $state;
+    private $stateAbbr;
     private $stateID;
 
     public function __construct($state)
     {
         $this->setState($state);
-        $this->stateID = State::getIdByAbbr($state);
+        $this->setStateId($state);
     }
 
     private function setState($state)
     {
         $state = $this->longName($state);
         $this->state = strtoupper($state);
+    }
+
+    private function setStateId($state)
+    {
+        $this->stateID = State::getIdByAbbr($state);
     }
 
     public function getId(): int

@@ -17,13 +17,13 @@ class TaxXMLController
                 <POLineNumber>{$order->getPoNumber()}</POLineNumber>
                 <UOM>EACH</UOM>
                 <Qty>1</Qty>
-                <UCValue>$totalTax</UCValue>
+                <UCValue>{$order->getTax()->get()}</UCValue>
                 <UCCurrencyCode></UCCurrencyCode>
                 <RetailValue></RetailValue>
                 <RetailCurrencyCode></RetailCurrencyCode>
                 <StdPackQty></StdPackQty>
                 <StdContainerQty></StdContainerQty>
-                <SupplierItemId>$itemName</SupplierItemId>
+                <SupplierItemId>$stateTaxItemName</SupplierItemId>
                 <BarcodeId></BarcodeId>
                 <BarcodeType>UPC</BarcodeType>
                 <ItemNote></ItemNote>

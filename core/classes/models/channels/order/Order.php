@@ -234,11 +234,6 @@ class Order
         $this->shippingPrice += Ecommerce::formatMoney($shippingPrice);
     }
 
-    public function updateTax($tax)
-    {
-        $this->tax += Ecommerce::formatMoney($tax);
-    }
-
     public static function cancel($orderNum)
     {
         $sql = "UPDATE sync.order 

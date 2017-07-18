@@ -191,7 +191,7 @@ class AmazonOrder extends Amazon
             $giftWrapTax = (float)$item->GiftWrapTax->Amount;
             $totalTax += (float)$giftWrapTax;
             $totalTax = Ecommerce::formatMoney($totalTax);
-            $Order->updateTax($totalTax);
+            $Order->getTax()->updateTax($totalTax);
             Ecommerce::dd("Total Tax: $totalTax");
 
             $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
@@ -277,8 +277,7 @@ class AmazonOrder extends Amazon
                 list($lastName, $firstName) = BuyerController::splitName($shipToName);
                 $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-                $Order = new Order(1, $channelName, AmazonClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
-                    $shippingCode, $shippingPrice, $tax);
+                $Order = new Order(1, $channelName, AmazonClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax);
 
                 //Save Order
                 if (!LOCAL) {

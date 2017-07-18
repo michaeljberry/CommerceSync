@@ -28,7 +28,7 @@ class OrderItem
         $this->setPoNumber($poNumber);
         $this->setUpc($upc);
         $this->setChannelOrderItemId($channelOrderItemID);
-//        $this->setItemXml();
+        $this->setItemXml();
     }
 
     private function setSku($sku)
@@ -104,6 +104,11 @@ class OrderItem
     public function getChannelOrderItemId(): string
     {
         return $this->channelOrderItemID;
+    }
+
+    public function getItemXml()
+    {
+        return $this->itemXML;
     }
 
     public static function getByOrderId($orderID)

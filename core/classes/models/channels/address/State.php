@@ -29,6 +29,11 @@ class State
         $this->stateID = State::getIdByAbbr($state);
     }
 
+    public function get()
+    {
+        return $this->state;
+    }
+
     public function getId(): int
     {
         return $this->stateID;

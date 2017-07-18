@@ -251,11 +251,11 @@ class BigCommerceOrder extends BigCommerce
         return $order;
     }
 
-    public function save_bc_order_to_xml($itemXML, Order $Order, Buyer $buyer)
+    public function save_bc_order_to_xml($itemXML, Order $Order)
     {
         $sku = Ecommerce::substring_between($itemXML, '<ItemId>', '</ItemId>');
         $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
-        $xml = OrderXMLController::create($channelNumber, $Order, $buyer, $itemXML);
+        $xml = OrderXMLController::create($channelNumber, $Order, $itemXML);
         return $xml;
     }
 

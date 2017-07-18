@@ -62,7 +62,7 @@ class EbayOrder extends Ebay
         return $response;
     }
 
-    protected function saveItems($item, $poNumber, $itemObject, $Order)
+    protected function saveItems($item, $poNumber, $itemObject, Order $Order)
     {
         $sku = (string)$item->Item->SKU;
         $title = (string)$item->Item->Title;
@@ -73,7 +73,6 @@ class EbayOrder extends Ebay
         $skuID = SKU::searchOrInsert($sku);
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber, $itemID);
         if (!LOCAL) {
-//            OrderItem::save($orderID, $skuID, $principle, $quantity, $itemID);
             $orderItem->save($Order);
         }
         $itemXml = OrderItemXMLController::create($orderItem);
@@ -84,7 +83,7 @@ class EbayOrder extends Ebay
         return $itemObject;
     }
 
-    protected function getItems($items, $Order)
+    protected function getItems($items, Order $Order)
     {
         $poNumber = 1;
 
@@ -195,7 +194,7 @@ class EbayOrder extends Ebay
 
                     $channelNumber = Channel::getAccountNumbersBySku($channelName, $sku);
 
-                    $orderXml = OrderXMLController::create($channelNumber, $Order, $buyer, $itemXML);
+                    $orderXml = OrderXMLController::create($channelNumber, $Order, $itemXML);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
                         FTPController::saveXml($orderNum, $orderXml, $channelName);

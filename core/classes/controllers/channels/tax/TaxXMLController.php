@@ -3,6 +3,8 @@
 namespace controllers\channels\tax;
 
 
+use models\channels\order\Order;
+
 class TaxXMLController
 {
 
@@ -40,20 +42,20 @@ class TaxXMLController
         return $itemXml;
     }
 
-    public static function getItemXml($stateCode, $poNumber, $totalTax, $stateTaxItemName = '')
+    public static function getItemXml($stateCode, $poNumber, $totalTax, $stateTaxItemName = '', Order $Order)
     {
-        $itemXml = '';
+        $taxXML = '';
         if (!empty($stateTaxItemName)) {
-            $itemXml .= TaxXMLController::create($poNumber, $totalTax, '', $stateTaxItemName);
+            $taxXML .= TaxXMLController::create($poNumber, $totalTax, '', $stateTaxItemName);
         } else {
             if (strtolower($stateCode) == 'id' || strtolower($stateCode) == 'idaho') {
-                $itemXml .= TaxXMLController::create($poNumber, number_format($totalTax, 2), 'ID');
+                $taxXML .= TaxXMLController::create($poNumber, number_format($totalTax, 2), 'ID');
             } elseif (strtolower($stateCode) == 'ca' || strtolower($stateCode) == 'california') {
-                $itemXml .= TaxXMLController::create($poNumber, number_format($totalTax, 2), 'CA');
+                $taxXML .= TaxXMLController::create($poNumber, number_format($totalTax, 2), 'CA');
             } elseif (strtolower($stateCode) == 'wa' || strtolower($stateCode) == 'washington') {
-                $itemXml .= TaxXMLController::create($poNumber, number_format($totalTax, 2), 'WA');
+                $taxXML .= TaxXMLController::create($poNumber, number_format($totalTax, 2), 'WA');
             }
         }
-        return $itemXml;
+        $Order->setTaxXml($taxXML);
     }
 }

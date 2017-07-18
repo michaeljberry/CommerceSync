@@ -13,17 +13,22 @@ class Order
 {
 
     private $channelName;
+    private $channelAccount;
     private $storeID;
     private $buyer;
     private $orderNum;
     private $orderID;
+    private $poNumber;
     private $purchaseDate;
     private $shippingCode;
     private $shippingPrice;
     private $tax;
     private $fee;
     private $channelOrderID;
+    private $totalNoTax = 0.00;
     private $orderItems;
+    private $taxXML;
+    private $orderXML;
 
     public function __construct($channelName, $storeID, Buyer $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax, $fee = null, $channelOrderID = null)
     {
@@ -32,6 +37,7 @@ class Order
         $this->setBuyer($buyer);
         $this->setOrderNum($orderNum);
         $this->setOrderId();
+        $this->setPoNumber();
         $this->setPurchaseDate($purchaseDate);
         $this->setShippingCode($shippingCode);
         $this->setShippingPrice($shippingPrice);
@@ -43,6 +49,11 @@ class Order
     private function setChannelName($channelName)
     {
         $this->channelName = $channelName;
+    }
+
+    public function setChannelAccount($channelAccount)
+    {
+        $this->channelAccount = $channelAccount;
     }
 
     private function setStoreId($storeID)
@@ -65,6 +76,11 @@ class Order
         $this->orderID = Order::getIdByOrder($this->orderNum);
     }
 
+    private function setPoNumber()
+    {
+        $this->poNumber = 0;
+    }
+
     private function setPurchaseDate($purchaseDate)
     {
         $purchaseDate = date("Y-m-d H:i:s", strtotime($purchaseDate));
@@ -80,12 +96,12 @@ class Order
 
     private function setShippingPrice($shippingPrice)
     {
-        $this->shippingPrice = $shippingPrice;
+        $this->shippingPrice = Ecommerce::formatMoney($shippingPrice);
     }
 
     private function setTax($tax)
     {
-        $this->tax = $tax;
+        $this->tax = Ecommerce::formatMoney($tax);
     }
 
     private function setFee($fee)
@@ -98,9 +114,29 @@ class Order
         $this->channelOrderID = $channelOrderId;
     }
 
+    public function setOrderItems(OrderItem $orderItem)
+    {
+        $this->orderItems[] = $orderItem;
+    }
+
+    public function setTaxXml($taxXML)
+    {
+        $this->taxXML = $taxXML;
+    }
+
+    public function setOrderXml($orderXML)
+    {
+        $this->orderXML = $orderXML;
+    }
+
     public function getChannelName(): string
     {
         return $this->channelName;
+    }
+
+    public function getChannelAccount(): string
+    {
+        return $this->channelAccount;
     }
 
     public function getStoreId(): int
@@ -121,6 +157,12 @@ class Order
     public function getOrderId(): int
     {
         return $this->orderID;
+    }
+
+    public function getPoNumber()
+    {
+        $this->updatePoNumber();
+        return $this->poNumber;
     }
 
     public function getPurchaseDate()
@@ -151,6 +193,46 @@ class Order
     public function getChannelOrderId()
     {
         return $this->channelOrderID;
+    }
+
+    public function getTotalNoTax()
+    {
+        return $this->totalNoTax;
+    }
+
+    public function getOrderItems()
+    {
+        return $this->orderItems;
+    }
+
+    public function getTaxXml()
+    {
+        return $this->taxXML;
+    }
+
+    public function getOrderXml()
+    {
+        return $this->orderXML;
+    }
+
+    public function updatePoNumber()
+    {
+        $this->poNumber++;
+    }
+
+    public function updateTotalNoTax($totalNoTax)
+    {
+        $this->totalNoTax += $totalNoTax;
+    }
+
+    public function updateShippingPrice($shippingPrice)
+    {
+        $this->shippingPrice += Ecommerce::formatMoney($shippingPrice);
+    }
+
+    public function updateTax($tax)
+    {
+        $this->tax += Ecommerce::formatMoney($tax);
     }
 
     public static function cancel($orderNum)

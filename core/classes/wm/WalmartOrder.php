@@ -97,7 +97,6 @@ class WalmartOrder extends Walmart
 
         //Save Orders
         if (!LOCAL) {
-//            $orderID = Order::save(WalmartClient::getStoreID(), $buyerID, $orderNum, $shippingCode, $shippingPrice, $tax);
             $Order->save(WalmartClient::getStoreID());
         }
         $infoArray = $this->get_wm_order_items($orderItems, $state, $tax, $Order);
@@ -150,16 +149,13 @@ class WalmartOrder extends Walmart
      * @param $orderID
      * @return array
      */
-    public function get_wm_order_items($order_items, $state_code, $total_tax, $Order)
+    public function get_wm_order_items($order_items, $state_code, $total_tax, Order $Order)
     {
         $wminv = new WalmartInventory();
         $item_xml = '';
         $poNumber = 1;
 
         foreach ($order_items as $i) {
-//            echo '<br><br><pre>';
-//            print_r($i);
-//            echo '</pre><br><br>';
             $quantity = $i['orderLineQuantity']['amount'];
             $title = $i['item']['productName'];
             $price = 0;
@@ -173,10 +169,8 @@ class WalmartOrder extends Walmart
             $sku = $i['item']['sku'];
             $item = $wminv->getItem($sku);
             $upc = $item['MPItemView']['upc'];
-            $skuID = SKU::searchOrInsert($sku);
             $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
             if (!LOCAL) {
-//                OrderItem::save($orderID, $skuID, $price, $quantity);
                 $orderItem->save($Order);
             }
             $item_xml .= OrderItemXMLController::create($orderItem);
@@ -189,11 +183,11 @@ class WalmartOrder extends Walmart
         return $info_array;
     }
 
-    public function save_wm_order_to_xml($order, $itemXML, Order $Order, Buyer $buyer)
+    public function save_wm_order_to_xml($order, $itemXML, Order $Order)
     {
         $sku = $order['orderLines']['orderLine']['item']['sku'];
         $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
-        $xml = OrderXMLController::create($channelNumber, $Order, $buyer, $itemXML);
+        $xml = OrderXMLController::create($channelNumber, $Order, $itemXML);
         return $xml;
     }
 

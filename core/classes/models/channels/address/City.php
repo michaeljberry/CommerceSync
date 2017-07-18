@@ -26,6 +26,11 @@ class City
         $this->cityID = City::searchOrInsert($this->getId(), $state->getId());
     }
 
+    public function get()
+    {
+        return $this->city;
+    }
+
     public function getId()
     {
         return $this->cityID;

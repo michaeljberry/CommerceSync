@@ -10,7 +10,8 @@ class OrderItemXMLController
 
     public static function create(OrderItem $orderItem)
     {
-        return "<Item>
+        return "
+        <Item>
             <ItemId>{$orderItem->getSku()->getSku()}</ItemId>
             <ItemDesc><![CDATA[ {$orderItem->getTitle()} ]]></ItemDesc>
             <POLineNumber>{$orderItem->getPoNumber()}</POLineNumber>

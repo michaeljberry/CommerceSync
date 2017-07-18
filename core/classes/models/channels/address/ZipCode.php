@@ -27,6 +27,11 @@ class ZipCode
         $this->zipCodeID = ZipCode::searchOrInsert($this->getId(), $state->getId());
     }
 
+    public function get()
+    {
+        return $this->zipCode;
+    }
+
     public function getId()
     {
         return $this->zipCodeID;

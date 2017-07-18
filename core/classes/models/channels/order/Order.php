@@ -3,6 +3,7 @@
 namespace models\channels\order;
 
 use controllers\channels\ChannelHelperController as CHC;
+use controllers\channels\order\OrderXMLController;
 use controllers\channels\ShippingController;
 use ecommerce\Ecommerce;
 use models\channels\Buyer;
@@ -133,9 +134,9 @@ class Order
         $this->orderItems[] = $orderItem;
     }
 
-    public function setOrderXml($orderXML)
+    public function setOrderXml(Order $order)
     {
-        $this->orderXML = $orderXML;
+        $this->orderXML = OrderXMLController::create($order);
     }
 
     public function getChannelName(): string
@@ -393,14 +394,14 @@ class Order
         return false;
     }
 
-    public static function saveToSync($orderNum, $success = 1, $channel = 'Amazon')
+    public static function saveToSync($orderNum, $success = 1, $channelName = 'Amazon')
     {
         $sql = "INSERT INTO order_sync (order_num, success, type) 
                 VALUES (:order_num, :success, :channel)";
         $queryParams = [
             ":order_num" => $orderNum,
             ":success" => $success,
-            ":channel" => $channel
+            ":channel" => $channelName
         ];
         return MDB::query($sql, $queryParams, 'boolean');
     }

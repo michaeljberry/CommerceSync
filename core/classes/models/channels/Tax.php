@@ -26,7 +26,6 @@ class Tax
     private function setTaxableStates($companyID)
     {
         $this->taxableStates = Tax::getCompanyInfo($companyID);
-        Ecommerce::dd($this->taxableStates);
     }
 
     private function setTax($totalTax)

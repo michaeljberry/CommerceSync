@@ -20,7 +20,7 @@ class Tax
     public function __construct($tax, $companyID, Order $order)
     {
         $this->setTaxableStates($companyID);
-        $this->setTax($tax, $order);
+        $this->setTax($tax);
     }
 
     private function setTaxableStates($companyID)
@@ -56,12 +56,15 @@ class Tax
 
     public function settleTax(Order $order)
     {
-        $state = $order->getBuyer()->getState()->get();
 
         if ($this->isTaxable($order)) {
             echo 'Should be taxed<br>';
             if($order->getTax()->get() == 0) {
-                $totalTax = TaxController::calculate($this->taxableStates[$state], $order->getTotalNoTax(), $order->getShippingPrice());
+                $totalTax = TaxController::calculate(
+                    $this->taxableStates[$order->getBuyer()->getState()->get()],
+                    $order->getTotalNoTax(),
+                    $order->getShippingPrice()
+                );
                 $this->updateTax($totalTax);
             }
             $this->setTaxXml($order);

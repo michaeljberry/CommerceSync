@@ -177,7 +177,8 @@ class EbayOrder extends Ebay
                     list($lastName, $firstName) = BuyerController::splitName($shipToName);
                     $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-                    $Order = new Order($channelName, EbayClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
+                    $Order = new Order(1, $channelName, EbayClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
+                        $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
                     //Save Order
                     if (!LOCAL) {
                         $Order->save(EbayClient::getStoreID());

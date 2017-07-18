@@ -93,7 +93,8 @@ class WalmartOrder extends Walmart
         list($lastName, $firstName) = BuyerController::splitName($shipToName);
         $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-        $Order = new Order($channelName, WalmartClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax);
+        $Order = new Order(1, $channelName, WalmartClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
+            $shippingCode, $shippingPrice, $tax);
 
         //Save Orders
         if (!LOCAL) {

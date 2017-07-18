@@ -61,7 +61,8 @@ class BigCommerceOrder extends BigCommerce
                     $phone = (string)$ship_info[0]->phone;
                     $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-                    $Order = new Order($channelName, BigCommerceClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax);
+                    $Order = new Order(1, $channelName, BigCommerceClient::getStoreID(), $buyer, $orderNum,
+                        $purchaseDate, $shippingCode, $shippingPrice, $tax);
 
                     //Save Orders
                     if (!LOCAL) {

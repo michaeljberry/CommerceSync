@@ -13,6 +13,6 @@ $companyId = 1;
 
 $orders = AmazonOrder::getOrders();
 
-$amord->parseOrders($orders, $companyId);
+$amord->parseOrders($orders);
 
 endClock($start);

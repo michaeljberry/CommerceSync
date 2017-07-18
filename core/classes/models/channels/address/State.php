@@ -9,7 +9,6 @@ class State
 {
 
     private $state;
-    private $stateAbbr;
     private $stateID;
 
     public function __construct($state)
@@ -61,10 +60,6 @@ class State
         return MDB::query($sql, $queryParams, 'fetchColumn');
     }
 
-    /**
-     * @param $state
-     * @return bool|string
-     */
     public function longName($state): string
     {
         if (strlen($state) > 2) {

@@ -118,7 +118,8 @@ class ReverbOrder extends Reverb
                         $itemXML .= TaxXMLController::getItemXml($state, $poNumber, $tax);
 
 
-                        $Order = new Order($channelName, ReverbClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax);
+                        $Order = new Order(1, $channelName, ReverbClient::getStoreID(), $buyer, $orderNum,
+                            $purchaseDate, $shippingCode, $shippingPrice, $tax);
 
                         //Save Order
                         if (!LOCAL) {

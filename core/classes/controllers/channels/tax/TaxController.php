@@ -2,27 +2,25 @@
 
 namespace controllers\channels\tax;
 
+use ecommerce\Ecommerce;
 
 class TaxController
 {
 
-    public static function state($stateArray, $state)
+    public static function stateIsTaxable($stateArray, $state)
     {
-        $taxable = false;
-        foreach ($stateArray as $s => $value) {
-            if ($s == $state) {
-                $taxable = true;
-            }
+        if(array_key_exists($state, $stateArray)){
+            return true;
         }
-        return $taxable;
+        return false;
     }
 
     public static function calculate($stateTaxArray, $totalWithoutTax, $totalShipping)
     {
         $taxRate = $stateTaxArray['tax_rate'] / 100;
-        $totalTax = number_format($totalWithoutTax * $taxRate, 2);
+        $totalTax = Ecommerce::formatMoney($totalWithoutTax * $taxRate);
         if ($stateTaxArray['shipping_taxed']) {
-            $totalTax += number_format($totalShipping * $taxRate, 2);
+            $totalTax += Ecommerce::formatMoney($totalShipping * $taxRate);
         }
         return $totalTax;
     }

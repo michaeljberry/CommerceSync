@@ -202,9 +202,8 @@ class AmazonOrder extends Amazon
         }
     }
 
-    public function parseOrders($orders, $companyId, $nextPage = null)
+    public function parseOrders($orders, $nextPage = null)
     {
-        $taxableStates = Tax::getCompanyInfo($companyId);
 
         $xmlOrders = simplexml_load_string($orders);
 
@@ -278,7 +277,8 @@ class AmazonOrder extends Amazon
                 list($lastName, $firstName) = BuyerController::splitName($shipToName);
                 $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-                $Order = new Order($channelName, AmazonClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax);
+                $Order = new Order(1, $channelName, AmazonClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
+                    $shippingCode, $shippingPrice, $tax);
 
                 //Save Order
                 if (!LOCAL) {
@@ -287,26 +287,9 @@ class AmazonOrder extends Amazon
 
                 $this->ifItemsExist($Order);
 
-                $tax = $Order->getTax();
+                $tax = $Order->getTax()->get();
 
-                if (TaxController::state($taxableStates, $Order->getBuyer()->getState()->get())) {
-                    echo 'Should be taxed<br>';
-                    if ($tax == 0) {
-                        // No tax collected, but tax is required to remit.
-                        // Need to calculate taxes and subtract from sales price of item(s)
-                        $tax = TaxController::calculate($taxableStates[$state], $Order->getTotalNoTax(),
-                            $Order->getShippingPrice());
-                    }
-                    TaxXMLController::getItemXml(
-                        $Order->getBuyer()->getState()->get(),
-                        $Order->getPoNumber(),
-                        $tax,
-                        $taxableStates[$state]['tax_line_name'],
-                        $Order
-                    );
-                }
-
-                Ecommerce::dd($Order->getTaxXml());
+                Ecommerce::dd($Order->getTax()->getTaxXml());
 
                 Order::updateShippingAndTaxes($Order->getOrderId(), $Order->getShippingPrice(), $tax);
 
@@ -325,7 +308,7 @@ class AmazonOrder extends Amazon
         if (isset($nextToken)) {
             $orders = $this->getMoreOrders($nextToken);
 
-            $this->parseOrders($orders, $companyId, true);
+            $this->parseOrders($orders, true);
         }
     }
 

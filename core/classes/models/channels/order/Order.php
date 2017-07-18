@@ -6,12 +6,14 @@ use controllers\channels\ChannelHelperController as CHC;
 use controllers\channels\ShippingController;
 use ecommerce\Ecommerce;
 use models\channels\Buyer;
+use models\channels\Tax;
 use models\channels\Tracking;
 use models\ModelDB as MDB;
 
 class Order
 {
 
+    private $companyID;
     private $channelName;
     private $channelAccount;
     private $storeID;
@@ -27,10 +29,21 @@ class Order
     private $channelOrderID;
     private $totalNoTax = 0.00;
     private $orderItems;
-    private $taxXML;
     private $orderXML;
 
-    public function __construct($channelName, $storeID, Buyer $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax, $fee = null, $channelOrderID = null)
+    public function __construct(
+        $companyID,
+        $channelName,
+        $storeID,
+        Buyer $buyer,
+        $orderNum,
+        $purchaseDate,
+        $shippingCode,
+        $shippingPrice,
+        $tax,
+        $fee = null,
+        $channelOrderID = null
+    )
     {
         $this->setChannelName($channelName);
         $this->setStoreId($storeID);
@@ -41,9 +54,10 @@ class Order
         $this->setPurchaseDate($purchaseDate);
         $this->setShippingCode($shippingCode);
         $this->setShippingPrice($shippingPrice);
-        $this->setTax($tax);
+        $this->setTax($tax, $companyID);
         $this->setFee($fee);
         $this->setChannelOrderId($channelOrderID);
+        $this->companyID = $companyID;
     }
 
     private function setChannelName($channelName)
@@ -99,9 +113,9 @@ class Order
         $this->shippingPrice = Ecommerce::formatMoney($shippingPrice);
     }
 
-    private function setTax($tax)
+    private function setTax($tax, $companyID)
     {
-        $this->tax = Ecommerce::formatMoney($tax);
+        $this->tax = new Tax($tax, $companyID, $this);
     }
 
     private function setFee($fee)
@@ -117,11 +131,6 @@ class Order
     public function setOrderItems(OrderItem $orderItem)
     {
         $this->orderItems[] = $orderItem;
-    }
-
-    public function setTaxXml($taxXML)
-    {
-        $this->taxXML = $taxXML;
     }
 
     public function setOrderXml($orderXML)
@@ -180,7 +189,7 @@ class Order
         return $this->shippingPrice;
     }
 
-    public function getTax()
+    public function getTax(): Tax
     {
         return $this->tax;
     }
@@ -200,14 +209,9 @@ class Order
         return $this->totalNoTax;
     }
 
-    public function getOrderItems()
+    public function getOrderItems(): array
     {
         return $this->orderItems;
-    }
-
-    public function getTaxXml()
-    {
-        return $this->taxXML;
     }
 
     public function getOrderXml()

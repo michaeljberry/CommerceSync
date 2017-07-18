@@ -46,10 +46,10 @@ class ShippingController
         return $shipping;
     }
 
-    public static function code($total, $address = [], $shipmentMethod = null)
+    public static function code($orderTotal, $address = [], $shipmentMethod = null)
     {
         $shipping = 'ZSTD';
-        if ($total >= 250) {
+        if ($orderTotal >= 250) {
             $shipping = 'URIP';
         }
         $shipping = ShippingController::determineErlanger($shipping, $address);

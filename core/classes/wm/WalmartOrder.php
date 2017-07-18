@@ -45,7 +45,8 @@ class WalmartOrder extends Walmart
     public function get_wm_order($order)
     {
         $orderNum = $order['purchaseOrderId'];
-
+        $channelName = 'Walmart';
+        $purchaseDate = (string)$order['orderDate'];
 
         $tax = 0;
         $shippingPrice = 0;
@@ -88,11 +89,11 @@ class WalmartOrder extends Walmart
 
         //Buyer
         $shipToName = (string)$order['shippingInfo']['postalAddress']['name'];
-        $buyerPhone = (string)$order['shippingInfo']['phone'];
+        $phone = (string)$order['shippingInfo']['phone'];
         list($lastName, $firstName) = BuyerController::splitName($shipToName);
-        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
+        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-        $Order = new Order(WalmartClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
+        $Order = new Order($channelName, WalmartClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax);
 
         //Save Orders
         if (!LOCAL) {
@@ -101,8 +102,8 @@ class WalmartOrder extends Walmart
         }
         $infoArray = $this->get_wm_order_items($orderItems, $state, $tax, $Order);
         $itemXml = $infoArray['item_xml'];
-        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $firstName, $lastName, $shippingCode, $buyerPhone, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $shippingPrice);
-        $channelName = 'Walmart';
+        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $Order, $buyer);
+
         if (!LOCAL) {
             FTPController::saveXml($orderNum, $orderXml, $channelName);
         }
@@ -188,48 +189,14 @@ class WalmartOrder extends Walmart
         return $info_array;
     }
 
-    /**
-     * @param $order
-     * @param $item_xml
-     * @param $first_name
-     * @param $last_name
-     * @param $shipping
-     * @param $buyer_phone
-     * @param $address
-     * @param $address2
-     * @param $city
-     * @param $state
-     * @param $zip
-     * @param $country
-     * @param $shipping_amount
-     * @param $ibmdata
-     * @return mixed
-     */
-    public function save_wm_order_to_xml($order, $item_xml, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country, $shipping_amount)
+    public function save_wm_order_to_xml($order, $itemXML, Order $Order, Buyer $buyer)
     {
         $sku = $order['orderLines']['orderLine']['item']['sku'];
-        $channel_name = 'Walmart';
-        $channel_num = Channel::getAccountNumbersBySku($channel_name, $sku);
-        $order_num = $order['purchaseOrderId'];
-        $timestamp = $order['orderDate'];
-        $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));
-        $timestamp = str_replace(' ', 'T', $timestamp);
-        $timestamp = $timestamp . '.000Z';
-        $order_date = $timestamp;
-        $ship_to_name = $first_name . ' ' . $last_name;
-        $xml = OrderXMLController::create($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+        $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
+        $xml = OrderXMLController::create($channelNumber, $Order, $buyer, $itemXML);
         return $xml;
     }
 
-    /**
-     * @param $order_num
-     * @param $tracking_id
-     * @param $carrier
-     * @return array
-     * @internal param $wm_consumer_key
-     * @internal param $wm_secret_key
-     * @internal param $wm_api_header
-     */
     public function updateWalmartTracking($order_num, $tracking_id, $carrier)
     {
         $wmorder = $this->configure();

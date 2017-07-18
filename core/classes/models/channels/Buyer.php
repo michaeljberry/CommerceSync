@@ -19,8 +19,9 @@ class Buyer
     private $state;
     private $zipCode;
     private $buyerID;
-    private $email;
     private $country;
+    private $phone;
+    private $email;
 
     public function __construct(
         $firstName,
@@ -31,6 +32,7 @@ class Buyer
         $state,
         $zipCode,
         $country,
+        $phone,
         $email = null
     ) {
 
@@ -42,6 +44,7 @@ class Buyer
         $this->setCity($city, $this->getState());
         $this->setZipCode($zipCode, $this->getState());
         $this->setCountry($country);
+        $this->setPhone($phone);
         $this->setEmail($email);
         $this->setId();
     }
@@ -84,6 +87,11 @@ class Buyer
     private function setCountry($country)
     {
         $this->country = Address::countryCode($country);
+    }
+
+    private function setPhone($phone)
+    {
+        $this->phone = $phone;
     }
 
     private function setEmail($email)
@@ -136,6 +144,11 @@ class Buyer
     public function getCountry(): string
     {
         return $this->country;
+    }
+
+    public function getPhone(): string
+    {
+        return $this->phone;
     }
 
     public function getEmail(): string

@@ -3,6 +3,7 @@
 namespace models\channels\order;
 
 use controllers\channels\ChannelHelperController as CHC;
+use controllers\channels\ShippingController;
 use ecommerce\Ecommerce;
 use models\channels\Buyer;
 use models\channels\Tracking;
@@ -11,27 +12,37 @@ use models\ModelDB as MDB;
 class Order
 {
 
+    private $channelName;
     private $storeID;
     private $buyer;
     private $orderNum;
     private $orderID;
+    private $purchaseDate;
     private $shippingCode;
     private $shippingPrice;
     private $tax;
     private $fee;
     private $channelOrderID;
+    private $orderItems;
 
-    public function __construct($storeID, Buyer $buyer, $orderNum, $shippingCode, $shippingPrice, $tax, $fee = null, $channelOrderID = null)
+    public function __construct($channelName, $storeID, Buyer $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax, $fee = null, $channelOrderID = null)
     {
+        $this->setChannelName($channelName);
         $this->setStoreId($storeID);
         $this->setBuyer($buyer);
         $this->setOrderNum($orderNum);
         $this->setOrderId();
+        $this->setPurchaseDate($purchaseDate);
         $this->setShippingCode($shippingCode);
         $this->setShippingPrice($shippingPrice);
         $this->setTax($tax);
         $this->setFee($fee);
         $this->setChannelOrderId($channelOrderID);
+    }
+
+    private function setChannelName($channelName)
+    {
+        $this->channelName = $channelName;
     }
 
     private function setStoreId($storeID)
@@ -52,6 +63,14 @@ class Order
     private function setOrderId()
     {
         $this->orderID = Order::getIdByOrder($this->orderNum);
+    }
+
+    private function setPurchaseDate($purchaseDate)
+    {
+        $purchaseDate = date("Y-m-d H:i:s", strtotime($purchaseDate));
+        $purchaseDate = str_replace(' ', 'T', $purchaseDate);
+        $purchaseDate = $purchaseDate . '.000Z';
+        $this->purchaseDate = $purchaseDate;
     }
 
     private function setShippingCode($shippingCode)
@@ -79,6 +98,11 @@ class Order
         $this->channelOrderID = $channelOrderId;
     }
 
+    public function getChannelName(): string
+    {
+        return $this->channelName;
+    }
+
     public function getStoreId(): int
     {
         return $this->storeID;
@@ -97,6 +121,11 @@ class Order
     public function getOrderId(): int
     {
         return $this->orderID;
+    }
+
+    public function getPurchaseDate()
+    {
+        return $this->purchaseDate;
     }
 
     public function getShippingCode(): string
@@ -293,5 +322,24 @@ class Order
             ":channel" => $channel
         ];
         return MDB::query($sql, $queryParams, 'boolean');
+    }
+
+    public static function shippingCode($orderTotal, $address, $shipmentMethod)
+    {
+        return ShippingController::code($orderTotal, $address, $shipmentMethod);
+    }
+
+    public static function buyer(
+        $firstName,
+        $lastName,
+        $streetAddress,
+        $streetAddress2,
+        $city,
+        $state,
+        $zipCode,
+        $country,
+        $email
+    ) {
+        return new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $email);
     }
 }

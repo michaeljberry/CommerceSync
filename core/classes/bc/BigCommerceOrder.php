@@ -24,21 +24,26 @@ class BigCommerceOrder extends BigCommerce
     {
         $orders = $BC::getOrders($filter);
         if ($orders) {
-            foreach ($orders as $o) {
-                $orderNum = $o->id;
+            foreach ($orders as $order) {
+                $orderNum = $order->id;
                 $found = Order::get($orderNum);
                 if (LOCAL || !$found) {
-                    $state_code = $o->shipping_addresses[0]->state;
-                    $tax = $o->total_tax;
+
+                    Ecommerce::dd($order);
+                    $channelName = 'BigCommerce';
+                    $purchaseDate = (string)$order->date_created;
+
+                    $state_code = $order->shipping_addresses[0]->state;
+                    $tax = $order->total_tax;
                     $ship_info = $this->get_bc_order_ship_info($orderNum);
                     $shippingCode = 'ZSTD';
-                    $total_order = $o->total_ex_tax;
+                    $total_order = $order->total_ex_tax;
                     if ($total_order > 299) {
                         $shippingCode = 'URIP';
                     }
 
 
-                    $shippingPrice = number_format($o->shipping_cost_inc_tax, 2);
+                    $shippingPrice = number_format($order->shipping_cost_inc_tax, 2);
 
 
                     //Address
@@ -53,10 +58,10 @@ class BigCommerceOrder extends BigCommerce
                     //Buyer
                     $firstName = (string)$ship_info[0]->first_name;
                     $lastName = (string)$ship_info[0]->last_name;
-                    $buyerPhone = (string)$ship_info[0]->phone;
-                    $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
+                    $phone = (string)$ship_info[0]->phone;
+                    $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-                    $Order = new Order(BigCommerceClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
+                    $Order = new Order($channelName, BigCommerceClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax);
 
                     //Save Orders
                     if (!LOCAL) {
@@ -66,8 +71,8 @@ class BigCommerceOrder extends BigCommerce
                     $response = $this->getOrderItems($orderNum);
                     $info_array = $this->parseItems($response, $state_code, $tax, $Order);
                     $item_xml = $info_array['item_xml'];
-                    $channelName = 'BigCommerce';
-                    $xml = $this->save_bc_order_to_xml($o, $item_xml, $firstName, $lastName, $shippingCode, $buyerPhone, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
+
+                    $xml = $this->save_bc_order_to_xml($item_xml, $Order, $buyer);
                     if (!LOCAL) {
                         FTPController::saveXml($orderNum, $xml, $channelName);
                     }
@@ -246,21 +251,11 @@ class BigCommerceOrder extends BigCommerce
         return $order;
     }
 
-    public function save_bc_order_to_xml($o, $item_xml, $first_name, $last_name, $shipping, $buyer_phone, $address, $address2, $city, $state, $zip, $country)
+    public function save_bc_order_to_xml($itemXML, Order $Order, Buyer $buyer)
     {
-        $sku = Ecommerce::substring_between($item_xml, '<ItemId>', '</ItemId>');
-        $channel_name = 'Store';
-        $channel = "BigCommerce";
-        $channel_num = Channel::getAccountNumbersBySku($channel, $sku);
-        $orderNum = $o->id;
-        $timestamp = $o->date_created;
-        $timestamp = date("Y-m-d H:i:s", strtotime($timestamp));
-        $timestamp = str_replace(' ', 'T', $timestamp);
-        $timestamp = $timestamp . '.000Z';
-        $shipping_amount = number_format($o->shipping_cost_inc_tax, 2);
-        $order_date = $timestamp;
-        $ship_to_name = $first_name . ' ' . $last_name;
-        $xml = OrderXMLController::create($channel_num, $channel_name, $orderNum, $timestamp, $shipping_amount, $shipping, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+        $sku = Ecommerce::substring_between($itemXML, '<ItemId>', '</ItemId>');
+        $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
+        $xml = OrderXMLController::create($channelNumber, $Order, $buyer, $itemXML);
         return $xml;
     }
 

@@ -125,8 +125,11 @@ class EbayOrder extends Ebay
                 $found = Order::get($orderNum);
 
                 if (LOCAL || !$found) {
+
                     Ecommerce::dd($order);
-                    $timestamp = (string)$order->CreatedTime;
+                    $channelName = 'Ebay';
+
+                    $purchaseDate = (string)$order->CreatedTime;
                     $ismultilegshipping = (string)$order->IsMultiLegShipping;
 
                     $shippingPrice = Ecommerce::formatMoney((float)$order->ShippingDetails->ShippingServiceOptions->ShippingServiceCost);
@@ -171,14 +174,13 @@ class EbayOrder extends Ebay
 
                     //Buyer
                     $shipToName = (string)$shippinginfo->Name;
-                    $buyerPhone = (string)$shippinginfo->Phone;
+                    $phone = (string)$shippinginfo->Phone;
                     list($lastName, $firstName) = BuyerController::splitName($shipToName);
-                    $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country);
+                    $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-                    $Order = new Order(EbayClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
+                    $Order = new Order($channelName, EbayClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
                     //Save Order
                     if (!LOCAL) {
-//                        $order_id = Order::save(EbayClient::getStoreID(), $buyerID, $orderNum, $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
                         $Order->save(EbayClient::getStoreID());
                     }
 
@@ -187,12 +189,13 @@ class EbayOrder extends Ebay
 
                     $poNumber = (string)$items->poNumber;
                     $sku = (string)$items->sku;
-                    $itemXml = (string)$items->itemXml;
+                    $itemXML = (string)$items->itemXml;
 
-                    $itemXml .= TaxXMLController::getItemXml($state, $poNumber, $tax);
-                    $channelName = 'Ebay';
-                    $channel_num = Channel::getAccountNumbersBySku($channelName, $sku);
-                    $orderXml = OrderXMLController::create($channel_num, $channelName, $orderNum, $timestamp, $shippingPrice, $shippingCode, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
+                    $itemXML .= TaxXMLController::getItemXml($state, $poNumber, $tax);
+
+                    $channelNumber = Channel::getAccountNumbersBySku($channelName, $sku);
+
+                    $orderXml = OrderXMLController::create($channelNumber, $Order, $buyer, $itemXML);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
                         FTPController::saveXml($orderNum, $orderXml, $channelName);

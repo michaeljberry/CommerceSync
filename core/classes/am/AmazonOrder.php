@@ -8,17 +8,11 @@ use controllers\channels\tax\TaxController;
 use ecommerce\Ecommerce;
 use \DateTime;
 use \DateTimeZone;
-use models\channels\address\Address;
-use models\channels\address\City;
-use models\channels\address\State;
-use models\channels\address\ZipCode;
-use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\order\OrderItemXMLController;
 use controllers\channels\order\OrderXMLController;
-use controllers\channels\ShippingController;
 use models\channels\SKU;
 use models\channels\Tax;
 use controllers\channels\tax\TaxXMLController;
@@ -241,6 +235,7 @@ class AmazonOrder extends Amazon
             if (LOCAL || !$found) {
 
                 Ecommerce::dd($order);
+                $channelName = 'Amazon';
 
                 $latestDeliveryDate = (string)$order->LatestDeliveryDate;
                 $orderType = (string)$order->OrderType;
@@ -273,7 +268,7 @@ class AmazonOrder extends Amazon
 
                 $shipmentMethod = (string)$order->ShipmentServiceLevelCategory;
 
-                $shippingCode = ShippingController::code($orderTotalAmount, [], $shipmentMethod);
+                $shippingCode = Order::shippingCode($orderTotalAmount, [], $shipmentMethod);
 
                 $tax = 0.00;
                 $shippingPrice = 0.00;
@@ -292,12 +287,12 @@ class AmazonOrder extends Amazon
 
                 //Buyer
                 $shipToName = (string)$order->ShippingAddress->Name;
-                $buyerPhone = (string)$order->ShippingAddress->Phone;
+                $phone = (string)$order->ShippingAddress->Phone;
                 $email = (string)$order->BuyerEmail;
                 list($lastName, $firstName) = BuyerController::splitName($shipToName);
-                $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $email);
+                $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
-                $Order = new Order(AmazonClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
+                $Order = new Order($channelName, AmazonClient::getStoreID(), $buyer, $orderNum, $purchaseDate, $shippingCode, $shippingPrice, $tax);
 
                 //Save Order
                 if (!LOCAL) {
@@ -312,7 +307,7 @@ class AmazonOrder extends Amazon
                 $totalWithoutTax = (float)$items->totalWithoutTax;
                 $shippingPrice = Ecommerce::formatMoney((float)$items->totalShipping);
                 $sku = (string)$items->sku;
-                $itemXml = (string)$items->itemXml;
+                $itemXML = (string)$items->itemXml;
 
                 if (TaxController::state($taxableStates, $state)) {
                     echo 'Should be taxed<br>';
@@ -322,7 +317,7 @@ class AmazonOrder extends Amazon
                         $tax = TaxController::calculate($taxableStates[$state], $totalWithoutTax,
                             $shippingPrice);
                     }
-                    $itemXml .= TaxXMLController::getItemXml(
+                    $itemXML .= TaxXMLController::getItemXml(
                         $state,
                         $poNumber,
                         $tax,
@@ -330,13 +325,13 @@ class AmazonOrder extends Amazon
                     );
                 }
 
-                Ecommerce::dd($itemXml);
+                Ecommerce::dd($itemXML);
 
                 $orderId = Order::updateShippingAndTaxes($orderId, $shippingPrice, $tax);
-                $channelName = 'Amazon';
-                $channelNum = Channel::getAccountNumbersBySku($channelName, $sku);
 
-                $orderXml = OrderXMLController::create($channelNum, $channelName, $orderNum, $purchaseDate, $shippingPrice, $shippingCode, $buyerPhone, $shipToName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $itemXml);
+                $channelNumber = Channel::getAccountNumbersBySku($channelName, $sku);
+
+                $orderXml = OrderXMLController::create($channelNumber, $Order, $buyer, $itemXML);
                 if (!LOCAL) {
                     FTPController::saveXml($orderNum, $orderXml, $channelName);
                 }

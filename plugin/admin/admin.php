@@ -1,4 +1,7 @@
 <?php
+use am\Amazon;
+use eb\Ebay;
+
 include 'header-admin.php';
 require WEBPLUGIN . 'am/amvar.php';
 require WEBPLUGIN . 'bc/bcvar.php';
@@ -6,11 +9,11 @@ require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
-$days = $amazon->get_order_dates($amazon->am_store_id);
+$days = Amazon::get_order_dates();
 $from = $days['api_pullfrom'];
 $to = $days['api_pullto'];
 
-$ebayDays = $ebay->get_order_days($ebay->eb_store_id);
+$ebayDays = Ebay::get_order_days();
 
 
 ?>

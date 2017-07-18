@@ -5,12 +5,12 @@ include __DIR__ . '/../../core/init.php';
 include WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 
-use eb\EbayClient;
+use eb\Ebay;
 
 $start = startClock();
 $user_id = 838;
 
-$ebayDays = $ebord->get_order_days(EbayClient::getStoreID());
+$ebayDays = Ebay::get_order_days();
 
 $pagenumber = 1;
 $requestName = 'GetOrders';

@@ -67,20 +67,20 @@ class Amazon
         MDB::query($sql, $query_params);
     }
 
-    public function get_order_dates($store_id)
+    public static function get_order_dates()
     {
         $sql = "SELECT api_pullfrom, api_pullto FROM api_amazon WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => $store_id
+            ':store_id' => AmazonClient::getStoreID()
         ];
         return MDB::query($sql, $query_params, 'fetch');
     }
 
-    public function set_order_dates($store_id, $from, $to)
+    public static function set_order_dates($from, $to)
     {
         $sql = "UPDATE api_amazon SET api_pullfrom = :api_pullfrom, api_pullto = :api_pullto WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => $store_id,
+            ':store_id' => AmazonClient::getStoreID(),
             ':api_pullfrom' => $from,
             ':api_pullto' => $to
         ];

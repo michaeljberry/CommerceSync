@@ -22,12 +22,6 @@ use \Walmart\Order as WMOrder;
 
 class WalmartOrder extends Walmart
 {
-    /**
-     * @return WalmartOrder
-     * @internal param $wm_consumer_key
-     * @internal param $wm_secret_key
-     * @internal param $wm_api_header
-     */
     public function configure()
     {
         $wmorder = new WMOrder([
@@ -38,13 +32,6 @@ class WalmartOrder extends Walmart
         return $wmorder;
     }
 
-    /**
-     * @param $order
-     * @return array
-     * @internal param $wm_consumer_key
-     * @internal param $wm_secret_key
-     * @internal param $wm_api_header
-     */
     public function acknowledge_order($order_num)
     {
         $wmorder = $this->configure();
@@ -55,14 +42,7 @@ class WalmartOrder extends Walmart
         return $orderAcknowledge;
     }
 
-    /**
-     * @param $order
-     * @internal param $wm_store_id
-     * @internal param $ibmdata
-     * @internal param $wm_consumer_key
-     * @internal param $wm_secret_key
-     */
-    public function get_wm_order($folder, $order)
+    public function get_wm_order($order)
     {
         $orderNum = $order['purchaseOrderId'];
 

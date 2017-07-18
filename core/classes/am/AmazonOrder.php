@@ -71,7 +71,7 @@ class AmazonOrder extends Amazon
         return $response;
     }
 
-    public function getOrders()
+    public static function getOrders()
     {
         $action = 'ListOrders';
         $feedtype = '';
@@ -89,7 +89,7 @@ class AmazonOrder extends Amazon
         $param['OrderStatus.Status.2'] = 'PartiallyShipped';
 //        $param['OrderStatus.Status.1'] = 'Shipped';
 //        $param['FulfillmentChannel.Channel.1'] = 'MFN';
-        $from = $this->get_order_dates(AmazonClient::getStoreID());
+        $from = Amazon::get_order_dates(AmazonClient::getStoreID());
         $from = $from['api_pullfrom'];
 //        $from = "-1";
         $from .= ' days';
@@ -293,9 +293,9 @@ class AmazonOrder extends Amazon
                 //Buyer
                 $shipToName = (string)$order->ShippingAddress->Name;
                 $buyerPhone = (string)$order->ShippingAddress->Phone;
-                $buyerEmail = (string)$order->BuyerEmail;
+                $email = (string)$order->BuyerEmail;
                 list($lastName, $firstName) = BuyerController::splitName($shipToName);
-                $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $buyerEmail);
+                $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $email);
 
                 $Order = new Order(AmazonClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
 

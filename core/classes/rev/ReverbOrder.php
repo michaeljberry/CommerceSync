@@ -105,14 +105,16 @@ class ReverbOrder extends Reverb
                             $tax = $price * .09;
                             $price -= $tax;
                         }
-                        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
-                        $item_xml = OrderItemXMLController::create($orderItem);
-                        $poNumber++;
-                        $item_xml .= TaxXMLController::getItemXml($state, $poNumber, $tax);
                         $total = number_format($price / $quantity, 2);
                         if ($total >= 250) {
                             $shippingCode = 'URIP';
                         }
+
+                        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
+                        $item_xml = OrderItemXMLController::create($orderItem);
+                        $poNumber++;
+                        $item_xml .= TaxXMLController::getItemXml($state, $poNumber, $tax);
+
 
                         $Order = new Order(ReverbClient::getStoreID(), $buyer, $orderNum, $shippingCode, $shippingPrice, $tax);
 

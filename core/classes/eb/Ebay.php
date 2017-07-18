@@ -211,20 +211,20 @@ class Ebay
         return $tableArray;
     }
 
-    public function get_order_days($store_id)
+    public static function get_order_days()
     {
         $sql = "SELECT api_days FROM api_ebay WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => $store_id
+            ':store_id' => EbayClient::getStoreID()
         ];
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public function set_order_days($store_id, $days)
+    public static function set_order_days($days)
     {
         $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => $store_id,
+            ':store_id' => EbayClient::getStoreID(),
             ':api_days' => $days
         ];
         MDB::query($sql, $query_params);

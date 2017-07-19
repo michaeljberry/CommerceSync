@@ -92,7 +92,6 @@ class OrderXMLController
         foreach ($order->getOrderItems() as $item) {
             $xml .= XMLController::makeXML($item->getItemXml());
         }
-//        Ecommerce::dd($xml);
         return $xml;
     }
 

@@ -3,6 +3,7 @@
 namespace controllers\channels\tax;
 
 
+use controllers\channels\order\OrderController;
 use models\channels\order\Order;
 
 class TaxXMLController
@@ -10,25 +11,15 @@ class TaxXMLController
 
     public static function create($stateTaxItemName, Order $order)
     {
-        return [
-            'Item' => [
-                'ItemId' => $stateTaxItemName,
-                'ItemDesc' => "<![CDATA[ $stateTaxItemName ]]>",
-                'POLineNumber' => $order->getPoNumber(),
-                'UOM' => 'EACH',
-                'Qty' => '1',
-                'UCValue' => $order->getTax()->get(),
-                'UCCurrencyCode' => '',
-                'RetailValue' => '',
-                'RetailCurrencyCode' => '',
-                'StdPackQty' => '',
-                'StdContainerQty' => '',
-                'SupplierItemId' => $stateTaxItemName,
-                'BarcodeId' => '',
-                'BarcodeType' => 'UPC',
-                'ItemNote' => ''
-            ]
-        ];
+        return OrderController::createItemXmlArray(
+            $stateTaxItemName,
+            $stateTaxItemName,
+            $order->getPoNumber(),
+            '1',
+            $order->getTax()->get(),
+            $stateTaxItemName,
+            ''
+        );
     }
 
     public static function getItemXml($stateTaxItemName, Order $order)

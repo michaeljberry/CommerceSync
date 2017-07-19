@@ -33,117 +33,6 @@ class ReverbOrder extends Reverb
         return $sku;
     }
 
-    public function getOrders()
-    {
-        $url = 'https://api.reverb.com/api/my/orders/selling/awaiting_shipment/';
-        $response = ReverbClient::reverbCurl($url, 'GET');
-        return $response;
-    }
-
-    public function getOrder($order)
-    {
-        $url = 'https://reverb.com/api/my/orders/selling/' . $order;
-        $response = ReverbClient::reverbCurl($url, 'GET');
-        return $response;
-    }
-
-    public function saveOrders($request)
-    {
-        $orders = substr($request, strpos($request, '"orders":'), -1);
-        $orders = '{' . $orders . '}';
-        $orders = json_decode($orders);
-
-        if (!empty($orders)) {
-            foreach ($orders as $o) {
-                foreach ($o as $order) {
-                    $orderNum = $order->order_number;
-                    $found = Order::get($orderNum);
-                    if (LOCAL || !$found) {
-
-                        Ecommerce::dd($order);
-                        $channelName = 'Reverb';
-
-                        $purchaseDate = (string)$order->created_at;
-
-                        //Address
-                        $streetAddress = (string)$order->shipping_address->street_address;
-                        $streetAddress2 = (string)$order->shipping_address->extended_address;
-                        $city = (string)$order->shipping_address->locality;
-                        $state = (string)$order->shipping_address->region;
-                        $zipCode = (string)$order->shipping_address->postal_code;
-                        $country = (string)$order->shipping_address->country_code;
-
-
-                        //Buyer
-                        $shipToName = (string)$order->buyer_name;
-                        $phone = (string)$order->shipping_address->phone;
-                        list($lastName, $firstName) = BuyerController::splitName($shipToName);
-                        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
-
-                        //Order Items
-                        $shippingCode = 'ZSTD';
-                        $sku = (string)$order->sku;
-                        $sku = ReverbOrder::clean_sku($sku);
-                        $title = (string)$order->title;
-                        $quantity = (int)$order->quantity;
-                        $upc = '';
-                        $price = (float)$order->amount_product_subtotal->amount;
-                        $price = number_format($price / $quantity, 2, '.', '');
-                        $shippingPrice = (float)$order->shipping->amount;
-                        $poNumber = 1;
-
-                        $channelNumber = Channel::getAccountNumbersBySku($channelName, $sku);
-                        $tax = 0;
-                        if (strcasecmp($state, 'ID') == 0) {
-                            //Subtract 6% from sub-total, add as sales tax; adjust sub-total
-                            $tax = $price * .06;
-                            $price -= $tax;
-                        } elseif (strcasecmp($state, 'CA') == 0) {
-                            //Subtract 6% from sub-total, add as sales tax; adjust sub-total
-                            $tax = $price * .09;
-                            $price -= $tax;
-                        } elseif (strcasecmp($state, 'WA') == 0) {
-                            //Subtract 6% from sub-total, add as sales tax; adjust sub-total
-                            $tax = $price * .09;
-                            $price -= $tax;
-                        }
-                        $total = number_format($price / $quantity, 2);
-                        if ($total >= 250) {
-                            $shippingCode = 'URIP';
-                        }
-
-                        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
-                        $itemXML = OrderItemXMLController::create($orderItem);
-                        $poNumber++;
-                        $itemXML .= TaxXMLController::getItemXml($state, $poNumber, $tax);
-
-
-                        $Order = new Order(1, $channelName, ReverbClient::getStoreID(), $buyer, $orderNum,
-                            $purchaseDate, $shippingCode, $shippingPrice, $tax);
-
-                        //Save Order
-                        if (!LOCAL) {
-                            $Order->save(ReverbClient::getStoreID());
-                        }
-
-                        $sku_id = SKU::searchOrInsert($sku);
-
-                        if (!LOCAL) {
-//                            OrderItem::save($order_id, $sku_id, $total, $quantity);
-                            $orderItem->save($Order);
-                        }
-                        $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
-                        if (!LOCAL) {
-                            FTPController::saveXml($orderNum, $xml, $channelName);
-                        }
-                    } else {
-                        echo 'Order ' . $orderNum . ' is already in the database.<br>';
-                    }
-                }
-            }
-        }
-    }
-
     public function update_reverb_tracking($order_num, $tracking_id, $carrier, $notification = true)
     {
         $url = 'https://reverb.com/api/my/orders/selling/' . $order_num . '/ship';
@@ -159,5 +48,118 @@ class ReverbOrder extends Reverb
             json_encode($postString)
         );
         return $response;
+    }
+
+    public static function getOrders()
+    {
+        $url = 'https://api.reverb.com/api/my/orders/selling/all?created_start_date=2017-07-18T12:00-00:00&created_end_date=2017-07-19T12:00-00:00'; //awaiting_shipment
+        return ReverbClient::reverbCurl($url, 'GET');
+    }
+
+    public function getOrder($order)
+    {
+        $url = 'https://reverb.com/api/my/orders/selling/' . $order;
+        $response = ReverbClient::reverbCurl($url, 'GET');
+        return $response;
+    }
+
+    public function parseOrders($orders)
+    {
+        $jsonOrders = substr($orders, strpos($orders, '"orders":'), -1);
+        $jsonOrders = '{' . $jsonOrders . '}';
+        $jsonOrders = json_decode($jsonOrders);
+
+        foreach ($jsonOrders->orders as $order) {
+            $this->parseOrder($order);
+        }
+    }
+
+    protected function parseOrder($order)
+    {
+        $orderNum = $order->order_number;
+        $found = Order::get($orderNum);
+        if (LOCAL || !$found) {
+            $this->orderFound($order, $orderNum);
+        }
+    }
+
+    protected function orderFound($order, $orderNum)
+    {
+        Ecommerce::dd($order);
+        $channelName = 'Reverb';
+
+        $purchaseDate = (string)$order->created_at;
+
+        $total = (float)$order->total->amount;
+
+        //Address
+        $streetAddress = (string)$order->shipping_address->street_address;
+        $streetAddress2 = (string)$order->shipping_address->extended_address;
+        $city = (string)$order->shipping_address->locality;
+        $state = (string)$order->shipping_address->region;
+        $zipCode = (string)$order->shipping_address->postal_code;
+        $country = (string)$order->shipping_address->country_code;
+
+        $shippingCode = Order::shippingCode($total);
+        $shippingPrice = (float)$order->shipping->amount;
+
+        $sellingFee = (float)$order->selling_fee->amount;
+        $directCheckoutFee = (float)$order->direct_checkout_fee->amount;
+        $fee = $sellingFee + $directCheckoutFee;
+        $tax = (float)$order->amount_tax->amount;
+
+        //Buyer
+        $lastName = (string)$order->buyer_last_name;
+        $firstName = (string)$order->buyer_first_name;
+        $phone = (string)$order->shipping_address->phone;
+        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
+            $country, $phone);
+
+        $Order = new Order(1, $channelName, ReverbClient::getStoreID(), $buyer, $orderNum,
+            $purchaseDate, $shippingCode, $shippingPrice, $tax, $fee);
+
+        //Save Order
+        if (!LOCAL) {
+            $Order->save(ReverbClient::getStoreID());
+        }
+
+        $this->getItems($Order, $order);
+
+        $tax = $Order->getTax()->get();
+
+        Order::updateShippingAndTaxes($Order->getOrderId(), $Order->getShippingPrice(), $tax);
+
+        $Order->setOrderXml($Order);
+
+        if (!LOCAL) {
+            FTPController::saveXml($Order);
+        }
+    }
+
+    protected function getItems(Order $Order, $item)
+    {
+        $this->parseItems($Order, $item);
+    }
+
+    protected function parseItems(Order $Order, $item)
+    {
+        $sku = '';
+        if(isset($item->sku)) {
+            $sku = (string)$item->sku;
+            $sku = ReverbOrder::clean_sku($sku);
+        }
+        $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
+
+        $title = (string)$item->title;
+        $quantity = (int)$item->quantity;
+        $upc = '';
+
+        $price = (float)$item->amount_product_subtotal->amount;
+
+        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
+        $Order->setOrderItems($orderItem);
+        if (!LOCAL) {
+            $orderItem->save($Order);
+        }
     }
 }

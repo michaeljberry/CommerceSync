@@ -99,7 +99,7 @@ $config = array (
 //$idList = new MarketplaceWebService_Model_IdList();
 //$request->setFeedSubmissionIdList($idList->withId('<Feed Submission Id>'));
 // 
-invokeCancelFeedSubmissions($service, $request);
+invokeCancelFeedSubmissions($service, $orders);
                                                     
 /**
   * Cancel Feed Submissions Action Sample

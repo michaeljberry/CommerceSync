@@ -24,7 +24,7 @@ class OrderXMLController
                 'TermsCode' => 'P999',
                 'TermsDays' => '0',
                 'TermsDate' => '12/31/1899',
-                'TermsPercent' => $order->getShippingPrice(),
+                'TermsPercent' => Ecommerce::formatMoneyNoComma($order->getShippingPrice()),
                 'TermsPercentDays' => '0',
                 'ShipInstructions' => '',
                 'TranspCode' => $order->getShippingCode(),

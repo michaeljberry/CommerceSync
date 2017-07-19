@@ -111,7 +111,7 @@ class Order
 
     private function setShippingPrice($shippingPrice)
     {
-        $this->shippingPrice = Ecommerce::formatMoneyNoComma($shippingPrice);
+        $this->shippingPrice = $shippingPrice;
     }
 
     private function setTax($tax, $companyID)
@@ -121,7 +121,7 @@ class Order
 
     private function setFee($fee)
     {
-        $this->fee = Ecommerce::formatMoneyNoComma($fee);
+        $this->fee = $fee;
     }
 
     private function setChannelOrderId($channelOrderId)
@@ -232,7 +232,7 @@ class Order
 
     public function updateShippingPrice($shippingPrice)
     {
-        $this->shippingPrice += Ecommerce::formatMoney($shippingPrice);
+        $this->shippingPrice += $shippingPrice;
     }
 
     public static function cancel($orderNum)
@@ -406,7 +406,7 @@ class Order
         return MDB::query($sql, $queryParams, 'boolean');
     }
 
-    public static function shippingCode($orderTotal, $address, $shipmentMethod)
+    public static function shippingCode($orderTotal, $address = [], $shipmentMethod = null)
     {
         return ShippingController::code($orderTotal, $address, $shipmentMethod);
     }

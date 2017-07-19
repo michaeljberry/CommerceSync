@@ -98,7 +98,7 @@ $config = array (
 //$request->setReport(@fopen('php://memory', 'rw+'));
 //$request->setReportId($reportId);
  
-invokeGetReport($service, $request);
+invokeGetReport($service, $orders);
 
 /**
   * Get Report Action Sample

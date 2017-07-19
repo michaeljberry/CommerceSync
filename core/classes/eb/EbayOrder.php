@@ -70,12 +70,12 @@ class EbayOrder extends Ebay
 
     public function parseOrders($orders, $pageNumber, $requestName)
     {
-        $xml_orders = simplexml_load_string($orders);
+        $xmlOrders = simplexml_load_string($orders);
 
-        $orderCount = count($xml_orders->OrderArray->Order);
+        $orderCount = count($xmlOrders->OrderArray->Order);
         echo "Order Count: $orderCount<br>";
 
-        foreach ($xml_orders->OrderArray->Order as $order) {
+        foreach ($xmlOrders->OrderArray->Order as $order) {
             $this->parseOrder($order);
         }
 
@@ -104,10 +104,6 @@ class EbayOrder extends Ebay
         }
     }
 
-    /**
-     * @param $order
-     * @param $orderNum
-     */
     protected function orderFound($order, $orderNum)
     {
         Ecommerce::dd($order);
@@ -147,8 +143,7 @@ class EbayOrder extends Ebay
             'state' => $state,
             'zip' => $zipCode
         ];
-        $shippingCode = ShippingController::code($total, $address);
-
+        $shippingCode = Order::shippingCode($total, $address);
         $shippingPrice = (float)$order->ShippingDetails->ShippingServiceOptions->ShippingServiceCost;
 
         $fee = (float)$order->ExternalTransaction->FeeOrCreditAmount;
@@ -163,6 +158,7 @@ class EbayOrder extends Ebay
         list($lastName, $firstName) = BuyerController::splitName($shipToName);
         $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
+
 
         $Order = new Order(1, $channelName, EbayClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
             $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
@@ -211,7 +207,9 @@ class EbayOrder extends Ebay
         $upc = '';
 
         $price = (float)$item->TransactionPrice;
+
         $itemID = (string)$item->Item->ItemID . '-' . (string)$item->TransactionID;
+
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber(), $itemID);
         $Order->setOrderItems($orderItem);
         if (!LOCAL) {

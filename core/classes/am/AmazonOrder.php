@@ -177,10 +177,13 @@ class AmazonOrder extends Amazon
         Ecommerce::dd($order);
         $channelName = 'Amazon';
 
-        $latestDeliveryDate = (string)$order->LatestDeliveryDate;
-        $orderType = (string)$order->OrderType;
         $purchaseDate = rtrim((string)$order->PurchaseDate, 'Z');
 
+        $orderTotal = (object)$order->OrderTotal;
+        $total = (float)$orderTotal->Amount;
+
+        $latestDeliveryDate = (string)$order->LatestDeliveryDate;
+        $orderType = (string)$order->OrderType;
         $isReplacementOrder = (string)$order->IsReplacementOrder;
         $numberOfItemsShipped = (int)$order->NumberOfItemsShipped;
         $numberOfItemsUnshipped = (int)$order->NumberOfItemsUnshipped;
@@ -201,17 +204,15 @@ class AmazonOrder extends Amazon
         $isPrime = (string)$order->IsPrime;
         $buyer = (string)$order->BuyerName;
 
-        $orderTotal = (object)$order->OrderTotal;
-        $orderTotalAmount = (float)$orderTotal->Amount;
+
 
         $shipByDate = (string)$order->LatestShipDate;
 
         $shipmentMethod = (string)$order->ShipmentServiceLevelCategory;
-
-        $shippingCode = Order::shippingCode($orderTotalAmount, [], $shipmentMethod);
+        $shippingCode = Order::shippingCode($total, [], $shipmentMethod);
+        $shippingPrice = 0.00;
 
         $tax = 0.00;
-        $shippingPrice = 0.00;
 
 
         //Address
@@ -230,9 +231,9 @@ class AmazonOrder extends Amazon
         $phone = (string)$order->ShippingAddress->Phone;
         $email = (string)$order->BuyerEmail;
         list($lastName, $firstName) = BuyerController::splitName($shipToName);
-
         $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
+
 
         $Order = new Order(1, $channelName, AmazonClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
             $shippingCode, $shippingPrice, $tax);
@@ -311,7 +312,6 @@ class AmazonOrder extends Amazon
         $totalTax += (float)$giftWrapTax;
         $totalTax = Ecommerce::formatMoney($totalTax);
         $Order->getTax()->updateTax($totalTax);
-        Ecommerce::dd("Total Tax: $totalTax");
 
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
         $Order->setOrderItems($orderItem);

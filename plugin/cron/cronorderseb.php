@@ -3,7 +3,7 @@ use eb\EbayOrder;
 
 error_reporting(-1);
 
-include __DIR__ . '/../../core/init.php';
+require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 

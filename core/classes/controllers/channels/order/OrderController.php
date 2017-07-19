@@ -3,6 +3,8 @@
 namespace controllers\channels\order;
 
 
+use ecommerce\Ecommerce;
+
 class OrderController
 {
     public static function createItemXmlArray($itemID, $itemDesc, $poNumber, $qty, $amount, $sku, $upc)
@@ -14,7 +16,7 @@ class OrderController
                 'POLineNumber' => $poNumber,
                 'UOM' => 'EACH',
                 'Qty' => $qty,
-                'UCValue' => $amount,
+                'UCValue' => Ecommerce::formatMoneyNoComma($amount),
                 'UCCurrencyCode' => '',
                 'RetailValue' => '',
                 'RetailCurrencyCode' => '',

@@ -135,32 +135,27 @@ class Ecommerce
     public static function toDollars($cents)
     {
         $dollars = $cents / 100;
-        $dollars = Ecommerce::formatMoney($dollars);
-        return $dollars;
+        return Ecommerce::formatMoney($dollars);
     }
 
     public static function toCents($dollars)
     {
-        $cents = $dollars * 100;
-        return $cents;
+        return $dollars * 100;
     }
 
     public static function roundMoney($number, $places = 2)
     {
-        $number = round($number, $places);
-        return $number;
+        return round($number, $places);
     }
 
     public static function formatMoney($number, $places = 2)
     {
-        $number = number_format($number, $places);
-        return $number;
+        return number_format($number, $places);
     }
 
     public static function formatMoneyNoComma($number)
     {
-        $number = number_format((float)$number, '2', '.', '');
-        return $number;
+        return number_format((float)$number, '2', '.', '');
     }
 
     public static function createFormattedDate($date, $format = 'Y/m/d')

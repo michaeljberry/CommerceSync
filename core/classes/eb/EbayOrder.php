@@ -2,23 +2,12 @@
 
 namespace eb;
 
-use controllers\channels\BuyerController;
-use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
-use models\channels\address\Address;
-use models\channels\address\City;
-use models\channels\address\State;
-use models\channels\address\ZipCode;
-use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
-use controllers\channels\order\OrderItemXMLController;
-use controllers\channels\order\OrderXMLController;
-use controllers\channels\ShippingController;
-use models\channels\SKU;
-use models\channels\Tax;
-use controllers\channels\tax\TaxXMLController;
+use controllers\channels\FTPController;
+use controllers\channels\BuyerController;
 
 class EbayOrder extends Ebay
 {
@@ -156,7 +145,7 @@ class EbayOrder extends Ebay
         $buyerUserID = (string)$order->BuyerUserID;
         $phone = (string)$shippingAddress->Phone;
         list($lastName, $firstName) = BuyerController::splitName($shipToName);
-        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
+        $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
 
 

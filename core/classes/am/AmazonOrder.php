@@ -2,15 +2,15 @@
 
 namespace am;
 
-use controllers\channels\BuyerController;
-use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
-use \DateTime;
-use \DateTimeZone;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
+use controllers\channels\FTPController;
+use controllers\channels\BuyerController;
 use controllers\channels\XMLController;
+use \DateTime;
+use \DateTimeZone;
 
 class AmazonOrder extends Amazon
 {
@@ -30,8 +30,7 @@ class AmazonOrder extends Amazon
                 ]
             ]
         ];
-        $amazonFeed = XMLController::makeXML($xml);
-        return $amazonFeed;
+        return XMLController::makeXML($xml);
     }
 
     public function update_amazon_tracking($xml1)
@@ -54,9 +53,7 @@ class AmazonOrder extends Amazon
         $xml = XMLController::makeXML($xml);
         $xml .= $xml1;
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
-
-        return $response;
+        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
     }
 
     public function getMoreOrders($nextToken)
@@ -77,9 +74,7 @@ class AmazonOrder extends Amazon
 
         $xml = '';
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
-
-        return $response;
+        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
     }
 
     public function getOrderItems($orderNum)
@@ -98,9 +93,7 @@ class AmazonOrder extends Amazon
 
         $xml = '';
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
-
-        return $response;
+        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
     }
 
     public static function getOrders()
@@ -131,14 +124,11 @@ class AmazonOrder extends Amazon
 
         $xml = '';
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
-
-        return $response;
+        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
     }
 
     public function parseOrders($orders, $nextPage = null)
     {
-
         $xmlOrders = simplexml_load_string($orders);
 
         $page = "ListOrdersResult";
@@ -259,7 +249,6 @@ class AmazonOrder extends Amazon
     protected function getItems(Order $Order)
     {
         $orderItems = simplexml_load_string($this->getOrderItems($Order->getOrderNum()));
-//        Ecommerce::dd($orderItems);
 
         if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
             $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $Order);

@@ -2,22 +2,11 @@
 
 namespace rev;
 
-use controllers\channels\BuyerController;
-use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
-use models\channels\address\Address;
-use models\channels\address\City;
-use models\channels\address\State;
-use models\channels\address\ZipCode;
-use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
-use controllers\channels\order\OrderItemXMLController;
-use controllers\channels\order\OrderXMLController;
-use models\channels\SKU;
-use models\channels\Tax;
-use controllers\channels\tax\TaxXMLController;
+use controllers\channels\FTPController;
 
 class ReverbOrder extends Reverb
 {
@@ -112,7 +101,7 @@ class ReverbOrder extends Reverb
         $lastName = (string)$order->buyer_last_name;
         $firstName = (string)$order->buyer_first_name;
         $phone = (string)$order->shipping_address->phone;
-        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
+        $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
 
         $Order = new Order(1, $channelName, ReverbClient::getStoreID(), $buyer, $orderNum,

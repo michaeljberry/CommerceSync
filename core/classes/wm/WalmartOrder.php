@@ -2,21 +2,14 @@
 
 namespace wm;
 
-use controllers\channels\BuyerController;
-use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
-use models\channels\address\Address;
-use models\channels\address\City;
-use models\channels\address\State;
-use models\channels\address\ZipCode;
-use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
+use controllers\channels\FTPController;
+use controllers\channels\BuyerController;
 use controllers\channels\order\OrderItemXMLController;
 use controllers\channels\order\OrderXMLController;
-use models\channels\SKU;
-use models\channels\Tax;
 use controllers\channels\tax\TaxXMLController;
 use \Walmart\Order as WMOrder;
 
@@ -32,12 +25,11 @@ class WalmartOrder extends Walmart
         return $wmorder;
     }
 
-    public function acknowledge_order($order_num)
+    public function acknowledge_order($orderNum)
     {
         $wmorder = $this->configure();
-        $poId = $order_num;
         $orderAcknowledge = $wmorder->acknowledge([
-            'purchaseOrderId' => $poId,
+            'purchaseOrderId' => $orderNum,
         ]);
         return $orderAcknowledge;
     }
@@ -91,7 +83,8 @@ class WalmartOrder extends Walmart
         $shipToName = (string)$order['shippingInfo']['postalAddress']['name'];
         $phone = (string)$order['shippingInfo']['phone'];
         list($lastName, $firstName) = BuyerController::splitName($shipToName);
-        $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
+        $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
+            $country, $phone);
 
         $Order = new Order(1, $channelName, WalmartClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
             $shippingCode, $shippingPrice, $tax);

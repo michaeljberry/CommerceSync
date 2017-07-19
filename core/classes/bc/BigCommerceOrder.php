@@ -2,20 +2,14 @@
 
 namespace bc;
 
-use controllers\channels\FTPController;
 use ecommerce\Ecommerce;
-use models\channels\address\Address;
-use models\channels\address\City;
-use models\channels\address\State;
-use models\channels\address\ZipCode;
-use models\channels\Buyer;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
+use controllers\channels\FTPController;
 use controllers\channels\order\OrderItemXMLController;
 use controllers\channels\order\OrderXMLController;
 use models\channels\SKU;
-use models\channels\Tax;
 use controllers\channels\tax\TaxXMLController;
 
 class BigCommerceOrder extends BigCommerce
@@ -59,7 +53,7 @@ class BigCommerceOrder extends BigCommerce
                     $firstName = (string)$ship_info[0]->first_name;
                     $lastName = (string)$ship_info[0]->last_name;
                     $phone = (string)$ship_info[0]->phone;
-                    $buyer = new Buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
+                    $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
 
                     $Order = new Order(1, $channelName, BigCommerceClient::getStoreID(), $buyer, $orderNum,
                         $purchaseDate, $shippingCode, $shippingPrice, $tax);

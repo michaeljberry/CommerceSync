@@ -14,7 +14,7 @@ class XMLController
         return $openTag;
     }
 
-    public static function openXMLParentTag($tagName, $parameters = null)
+    public static function openingXMLTag($tagName, $parameters = null)
     {
         $parentTag = "<$tagName ";
         if ($parameters) {
@@ -24,7 +24,7 @@ class XMLController
         return $parentTag;
     }
 
-    public static function closeXMLParentTag($tagname)
+    public static function closingXMLTag($tagname)
     {
         return "</$tagname>";
     }
@@ -37,13 +37,9 @@ class XMLController
      */
     public static function xmlTag($tagName, $tagContents, $parameters = null)
     {
-        $tag = "<$tagName ";
-        if ($parameters) {
-            $tag .= XMLController::xmlParameters($parameters);
-        }
-        $tag .= ">";
+        $tag = XMLController::openingXMLTag($tagName, $parameters);
         $tag .= htmlspecialchars($tagContents);
-        $tag .= "</$tagName>";
+        $tag .= XMLController::closingXMLTag($tagName);
         return $tag;
     }
 
@@ -55,11 +51,10 @@ class XMLController
      */
     public static function generateXML($key, $value, $parentKey)
     {
-        $parameters = null;
-        list($parameters, $parentKey) = XMLController::parameterized($parentKey, $parameters);
-        $generatedXML = XMLController::openXMLParentTag($parentKey, $parameters);
+        list($parameters, $parentKey) = XMLController::parameterized($parentKey);
+        $generatedXML = XMLController::openingXMLTag($parentKey, $parameters);
         $generatedXML .= XMLController::makeXML($value, $key);
-        $generatedXML .= XMLController::closeXMLParentTag($parentKey);
+        $generatedXML .= XMLController::closingXMLTag($parentKey);
         return $generatedXML;
     }
 
@@ -164,12 +159,13 @@ class XMLController
 
     /**
      * @param $key
-     * @param $parameters
      * @return array
+     * @internal param $parameters
      * @internal param $delimiter
      */
-    public static function parameterized($key, $parameters): array
+    public static function parameterized($key): array
     {
+        $parameters = null;
         if (XMLController::stringContains($key)) {
             $param = substr($key, strpos($key, XMLController::$delimiter) + 1);
             $attribute = strstr($param, '=', true);
@@ -191,8 +187,7 @@ class XMLController
     public static function generate($key, $value, $parentKey): string
     {
         if (!is_array($value)) {
-            $parameters = null;
-            list($parameters, $key) = XMLController::parameterized($key, $parameters);
+            list($parameters, $key) = XMLController::parameterized($key);
             return XMLController::xmlTag($key, $value, $parameters);
         }
         return XMLController::parent($key, $value, $parentKey);

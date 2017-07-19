@@ -94,9 +94,9 @@ trait EbayClientCurl
     protected static function eBayCredentialsXML()
     {
         $credentialTag = 'RequesterCredentials';
-        $credentials = XMLController::openXMLParentTag($credentialTag);
+        $credentials = XMLController::openingXMLTag($credentialTag);
         $credentials .= XMLController::xmlTag('eBayAuthToken', EbayClient::getToken());
-        $credentials .= XMLController::closeXMLParentTag($credentialTag);
+        $credentials .= XMLController::closingXMLTag($credentialTag);
         return $credentials;
     }
 
@@ -105,7 +105,7 @@ trait EbayClientCurl
         $header = XMLController::xmlOpenTag();
         $request = $requestName . 'Request';
         $param = EbayClient::headerParameter($callType);
-        $header .= XMLController::openXMLParentTag($request, $param);
+        $header .= XMLController::openingXMLTag($request, $param);
         if ($callType !== 'finding' && $callType !== 'shopping') {
             $header .= EbayClient::eBayCredentialsXML();
         }
@@ -115,7 +115,7 @@ trait EbayClientCurl
     protected static function xmlFooter($requestName)
     {
         $request = $requestName . 'Request';
-        $footer = XMLController::closeXMLParentTag($request);
+        $footer = XMLController::closingXMLTag($request);
         return $footer;
     }
 

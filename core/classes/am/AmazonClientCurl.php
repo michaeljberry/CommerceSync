@@ -158,7 +158,7 @@ trait AmazonClientCurl
 
         $request = 'AmazonEnvelope';
         $param = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd"';
-        $header = XMLController::openXMLParentTag($request, $param);
+        $header = XMLController::openingXMLTag($request, $param);
         $header .= XMLController::makeXML($xml);
 
         return $header;
@@ -170,7 +170,7 @@ trait AmazonClientCurl
     protected static function xmlAmazonEnvelopeFooter()
     {
         $request = 'AmazonEnvelope';
-        $footer = XMLController::closeXMLParentTag($request);
+        $footer = XMLController::closingXMLTag($request);
         return $footer;
     }
 

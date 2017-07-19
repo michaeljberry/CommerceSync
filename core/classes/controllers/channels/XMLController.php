@@ -16,12 +16,13 @@ class XMLController
 
     public static function openingXMLTag($tagName, $parameters = null)
     {
-        $parentTag = "<$tagName ";
+        $openingTag = "<$tagName";
         if ($parameters) {
-            $parentTag .= XMLController::xmlParameters($parameters);
+            $openingTag .= " ";
+            $openingTag .= XMLController::xmlParameters($parameters);
         }
-        $parentTag .= ">";
-        return $parentTag;
+        $openingTag .= ">";
+        return $openingTag;
     }
 
     public static function closingXMLTag($tagname)

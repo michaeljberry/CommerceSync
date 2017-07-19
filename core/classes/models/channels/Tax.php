@@ -30,7 +30,7 @@ class Tax
 
     private function setTax($totalTax)
     {
-        $this->tax = $totalTax; //Still need to format to two decimal places
+        $this->tax = Ecommerce::formatMoney($totalTax); //Still need to format to two decimal places
     }
 
     private function setTaxXml(Order $order)
@@ -55,7 +55,6 @@ class Tax
 
     public function settleTax(Order $order)
     {
-
         if ($this->isTaxable($order)) {
             echo 'Should be taxed<br>';
             if($order->getTax()->get() == 0) {

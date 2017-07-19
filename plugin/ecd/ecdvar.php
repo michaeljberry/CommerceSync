@@ -2,7 +2,7 @@
 include_once '../../core/config.php';
 
 //Declare EcomDash Variables
-$ecdinfo = $ecd->get_ecd_app_info($user_id);
+$ecdinfo = $ecd->get_ecd_app_info($userID);
 $ecd_id = $ecdinfo['id'];
 $ecd_ocp_key = Crypt::decrypt($ecdinfo['ocp_apim_sub_key']);
 $ecd_sub_key = Crypt::decrypt($ecdinfo['ecd_sub_key']);

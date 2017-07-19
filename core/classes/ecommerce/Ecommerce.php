@@ -157,7 +157,7 @@ class Ecommerce
         return $number;
     }
 
-    public static function removeCommasInNumber($number)
+    public static function formatMoneyNoComma($number)
     {
         $number = number_format($number, '2', '.', '');
         return $number;

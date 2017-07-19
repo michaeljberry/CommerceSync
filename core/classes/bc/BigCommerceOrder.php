@@ -203,7 +203,7 @@ class BigCommerceOrder extends BigCommerce
             $quantity = (integer)$i->quantity;
             $title = (string)$i->name;
             $principle = (float)$i->total_ex_tax;
-            $price = Ecommerce::removeCommasInNumber($principle) / $quantity;
+            $price = Ecommerce::formatMoneyNoComma($principle) / $quantity;
             $sku = (string)$i->sku;
             $upc = $this->get_bc_product_upc($product_id);
             $skuID = SKU::searchOrInsert($sku);

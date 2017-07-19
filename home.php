@@ -2,11 +2,11 @@
 
 include_once 'core/init.php';
 
-if ($user_id) {
+if ($userID) {
     $template->get_header();
-    if ($rbac->check('management', $user_id)) {
+    if ($rbac->check('management', $userID)) {
         echo 'Hey Howdy Hey, ' . $firstname . '!';
-    } elseif ($rbac->check('musikey', $user_id)) {
+    } elseif ($rbac->check('musikey', $userID)) {
         include 'plugin/musikey/musikey.php';
     }
     echo "<br>";

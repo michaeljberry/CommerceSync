@@ -2,7 +2,7 @@
 //require PORTALFOLDER . 'plugin/eb/ebvar-sand.php';
 
 //Declare eBay Sand-box Variables
-$ebayappid = $ebay->get_ebay_app_id($user_id, true);
+$ebayappid = $ebay->get_ebay_app_id($userID, true);
 $eb_dev_id = $crypt->decrypt($ebayappid['devid']);
 $eb_app_id = $crypt->decrypt($ebayappid['appid']);
 $eb_cert_id = $crypt->decrypt($ebayappid['certid']);

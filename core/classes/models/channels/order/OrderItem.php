@@ -48,7 +48,7 @@ class OrderItem
 
     private function setPrice($price)
     {
-        $this->price = Ecommerce::formatMoney($price);
+        $this->price = Ecommerce::formatMoneyNoComma($price);
     }
 
     private function setPoNumber($poNumber)

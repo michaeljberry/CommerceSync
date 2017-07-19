@@ -1,7 +1,7 @@
 <?php
 session_start();
 error_reporting(-1);
-$user_id = 838;
+$userID = 838;
 require 'config.php';
 require WEBVENDOR . 'autoload.php';
 
@@ -37,8 +37,8 @@ use PhpRbac\Rbac;
 
 $rbac = new Rbac();
 if ($general->logged_in() === true) {
-    $user_id = $_SESSION['id'];
-    $user = $users->userdata($user_id);
+    $userID = $_SESSION['id'];
+    $user = $users->userdata($userID);
     $firstname = $user['first_name'];
     $lastname = $user['last_name'];
     $useremail = $user['email'];

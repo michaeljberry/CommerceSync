@@ -111,7 +111,7 @@ class Order
 
     private function setShippingPrice($shippingPrice)
     {
-        $this->shippingPrice = Ecommerce::formatMoney($shippingPrice);
+        $this->shippingPrice = Ecommerce::formatMoneyNoComma($shippingPrice);
     }
 
     private function setTax($tax, $companyID)
@@ -121,7 +121,7 @@ class Order
 
     private function setFee($fee)
     {
-        $this->fee = $fee;
+        $this->fee = Ecommerce::formatMoneyNoComma($fee);
     }
 
     private function setChannelOrderId($channelOrderId)

@@ -10,7 +10,6 @@ use \DateTimeZone;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
-use controllers\channels\order\OrderXMLController;
 use controllers\channels\XMLController;
 
 class AmazonOrder extends Amazon
@@ -54,39 +53,6 @@ class AmazonOrder extends Amazon
         ];
         $xml = XMLController::makeXML($xml);
         $xml .= $xml1;
-
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
-
-        return $response;
-    }
-
-    public static function getOrders()
-    {
-        $action = 'ListOrders';
-        $feedtype = '';
-        $feed = 'Orders';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
-        $whatToDo = 'POST';
-        $paramAdditionalConfig = [
-            'MarketplaceId.Id.1',
-            'SellerId',
-        ];
-
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
-
-        $param['OrderStatus.Status.1'] = 'Unshipped';
-        $param['OrderStatus.Status.2'] = 'PartiallyShipped';
-//        $param['OrderStatus.Status.1'] = 'Shipped';
-//        $param['FulfillmentChannel.Channel.1'] = 'MFN';
-        $from = Amazon::get_order_dates(AmazonClient::getStoreID());
-        $from = $from['api_pullfrom'];
-//        $from = "-1";
-        $from .= ' days';
-        $createdAfter = new DateTime($from, new DateTimeZone('America/Boise'));
-        $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");
-        $param['CreatedAfter'] = $createdAfter;
-
-        $xml = '';
 
         $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
@@ -137,69 +103,37 @@ class AmazonOrder extends Amazon
         return $response;
     }
 
-    protected function ifItemsExist(Order $Order)
+    public static function getOrders()
     {
-        $orderItems = simplexml_load_string($this->getOrderItems($Order->getOrderNum()));
-//        Ecommerce::dd($orderItems);
+        $action = 'ListOrders';
+        $feedtype = '';
+        $feed = 'Orders';
+        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
+        $whatToDo = 'POST';
+        $paramAdditionalConfig = [
+            'MarketplaceId.Id.1',
+            'SellerId',
+        ];
 
-        if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
-            $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $Order);
-        } else {
-            sleep(2);
-            $this->ifItemsExist($Order);
-        }
-    }
+        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
 
-    protected function parseItems($items, Order $Order)
-    {
-        foreach ($items as $item) {
-            $this->parseItem($Order, $item);
-        }
-    }
+        $param['OrderStatus.Status.1'] = 'Unshipped';
+        $param['OrderStatus.Status.2'] = 'PartiallyShipped';
+//        $param['OrderStatus.Status.1'] = 'Shipped';
+//        $param['FulfillmentChannel.Channel.1'] = 'MFN';
+        $from = Amazon::get_order_dates();
+        $from = $from['api_pullfrom'];
+//        $from = "-1";
+        $from .= ' days';
+        $createdAfter = new DateTime($from, new DateTimeZone('America/Boise'));
+        $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");
+        $param['CreatedAfter'] = $createdAfter;
 
-    protected function parseItem(Order $Order, $item)
-    {
-        $quantity = (int)$item->QuantityOrdered;
+        $xml = '';
 
-        $title = $item->Title;
-        $sku = $item->SellerSKU;
-        $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
-        $upc = '';
+        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
 
-        $itemPrice = (float)$item->ItemPrice->Amount;
-        $promotionDiscount = (float)$item->PromotionDiscount->Amount;
-        $itemPrice += (float)$promotionDiscount;
-
-        $giftWrapPrice = (float)$item->GiftWrapPrice->Amount;
-        $itemPrice += (float)$giftWrapPrice;
-
-        $totalNoTax = (float)$itemPrice;
-        $Order->updateTotalNoTax($totalNoTax);
-        $price = Ecommerce::formatMoney((float)$itemPrice / $quantity);
-
-        $shippingPrice = (float)$item->ShippingPrice->Amount;
-        $shippingDiscount = (float)$item->ShippingDiscount->Amount;
-        $shippingPrice += (float)$shippingDiscount;
-        $totalShipping = (float)$shippingPrice;
-        $Order->updateShippingPrice($totalShipping);
-
-        $itemTax = Ecommerce::formatMoney((float)$item->ItemTax->Amount);
-        $totalTax = (float)$itemTax;
-
-        $shippingTax = (float)$item->ShippingTax->Amount;
-        $totalTax += (float)$shippingTax;
-
-        $giftWrapTax = (float)$item->GiftWrapTax->Amount;
-        $totalTax += (float)$giftWrapTax;
-        $totalTax = Ecommerce::formatMoney($totalTax);
-        $Order->getTax()->updateTax($totalTax);
-        Ecommerce::dd("Total Tax: $totalTax");
-
-        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
-        $Order->setOrderItems($orderItem);
-        if (!LOCAL) {
-            $orderItem->save($Order);
-        }
+        return $response;
     }
 
     public function parseOrders($orders, $nextPage = null)
@@ -308,7 +242,7 @@ class AmazonOrder extends Amazon
             $Order->save(AmazonClient::getStoreID());
         }
 
-        $this->ifItemsExist($Order);
+        $this->getItems($Order);
 
         $tax = $Order->getTax()->get();
 
@@ -321,7 +255,69 @@ class AmazonOrder extends Amazon
         }
     }
 
+    protected function getItems(Order $Order)
+    {
+        $orderItems = simplexml_load_string($this->getOrderItems($Order->getOrderNum()));
+//        Ecommerce::dd($orderItems);
 
+        if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
+            $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $Order);
+        } else {
+            sleep(2);
+            $this->getItems($Order);
+        }
+    }
 
+    protected function parseItems($items, Order $Order)
+    {
+        foreach ($items as $item) {
+            $this->parseItem($Order, $item);
+        }
+    }
+
+    protected function parseItem(Order $Order, $item)
+    {
+        $sku = (string)$item->SellerSKU;
+        $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
+
+        $title = (string)$item->Title;
+        $quantity = (int)$item->QuantityOrdered;
+        $upc = '';
+
+        $itemPrice = (float)$item->ItemPrice->Amount;
+        $promotionDiscount = (float)$item->PromotionDiscount->Amount;
+        $itemPrice += (float)$promotionDiscount;
+
+        $giftWrapPrice = (float)$item->GiftWrapPrice->Amount;
+        $itemPrice += (float)$giftWrapPrice;
+
+        $totalNoTax = (float)$itemPrice;
+        $Order->updateTotalNoTax($totalNoTax);
+        $price = (float)$itemPrice / $quantity;
+
+        $shippingPrice = (float)$item->ShippingPrice->Amount;
+        $shippingDiscount = (float)$item->ShippingDiscount->Amount;
+        $shippingPrice += (float)$shippingDiscount;
+        $totalShipping = (float)$shippingPrice;
+        $Order->updateShippingPrice($totalShipping);
+
+        $itemTax = Ecommerce::formatMoney((float)$item->ItemTax->Amount);
+        $totalTax = (float)$itemTax;
+
+        $shippingTax = (float)$item->ShippingTax->Amount;
+        $totalTax += (float)$shippingTax;
+
+        $giftWrapTax = (float)$item->GiftWrapTax->Amount;
+        $totalTax += (float)$giftWrapTax;
+        $totalTax = Ecommerce::formatMoney($totalTax);
+        $Order->getTax()->updateTax($totalTax);
+        Ecommerce::dd("Total Tax: $totalTax");
+
+        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
+        $Order->setOrderItems($orderItem);
+        if (!LOCAL) {
+            $orderItem->save($Order);
+        }
+    }
 
 }

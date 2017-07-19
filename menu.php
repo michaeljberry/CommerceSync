@@ -1,6 +1,6 @@
 <?php
 $plugin = $_SERVER['REQUEST_URI'];
-global $user_id;
+global $userID;
 global $rbac;
 
 $current_page = "";
@@ -59,7 +59,7 @@ foreach ($menu as $m) {
     }
     if (!empty($m[1])) {
         $permission = $m[1];
-        if ($rbac->check($permission, $user_id)) {
+        if ($rbac->check($permission, $userID)) {
             $links .= "<li class='has-sub'><i class='fa fa-$m[2] fa-fw'></i><a class='plugin' href='$m[0]/$m[0]'>$m[0]</a>";
             if ($hassubmenu) {
                 $links = set_subs($m[3], $links);

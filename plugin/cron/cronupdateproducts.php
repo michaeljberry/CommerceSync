@@ -72,20 +72,15 @@ if (!$debug) {
 
     $sku = str_replace("'", "''", $sku);
     $money = IBM::syncVAIPrices($sku, '1');
-    if (isset($money[0])) {
-        $msrp = Ecommerce::removeCommasInNumber($money[0]['J6LPRC']);
-        $pl1 = Ecommerce::removeCommasInNumber($money[0]['J6PL01']);
-        $map = Ecommerce::removeCommasInNumber($money[0]['J6PL09']);
-        $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
-        $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
-    } else {
+    if (!isset($money[0])) {
         $money = IBM::syncVAIPrices($sku, '2');
-        $msrp = Ecommerce::removeCommasInNumber($money[0]['J6LPRC']);
-        $pl1 = Ecommerce::removeCommasInNumber($money[0]['J6PL01']);
-        $map = Ecommerce::removeCommasInNumber($money[0]['J6PL09']);
-        $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
-        $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
     }
+    $msrp = Ecommerce::removeCommasInNumber($money[0]['J6LPRC']);
+    $pl1 = Ecommerce::removeCommasInNumber($money[0]['J6PL01']);
+    $map = Ecommerce::removeCommasInNumber($money[0]['J6PL09']);
+    $pl10 = Ecommerce::removeCommasInNumber($money[0]['J6PL10']);
+    $cost = Ecommerce::removeCommasInNumber($money[0]['FIFOCOST']);
+
     $result = ProductPrice::update($sku_id, $msrp, $pl1, $map, $pl10, $cost);
 
     if ($sku_id) {

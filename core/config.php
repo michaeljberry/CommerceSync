@@ -26,10 +26,13 @@ if (file_exists(ROOT . '.env')) {
 
 $iniArray = parse_ini_file(WEBROOT . '.env');
 define('CRYPTKEY', $iniArray['CRYPT_KEY']);
-define('EMAILUSER', $iniArray['EMAIL_USER']);
-define('EMAILPASSWORD', $iniArray['EMAIL_PASSWORD']);
-define('EMAILHOST', $iniArray['EMAIL_HOST']);
-define('EMAILPORT', $iniArray['EMAIL_PORT']);
+
+define('EMAIL_USER', $iniArray['EMAIL_USER']);
+define('EMAIL_USERNAME', $iniArray['EMAIL_USERNAME']);
+define('EMAIL_PASSWORD', $iniArray['EMAIL_PASSWORD']);
+define('EMAIL_HOST', $iniArray['EMAIL_HOST']);
+define('EMAIL_PORT', $iniArray['EMAIL_PORT']);
+
 define('WEBCORE', WEBROOT . 'core/');
 define('WEBCLASSES', WEBCORE . 'classes/');
 define('WEBVENDOR', WEBROOT . 'vendor/');
@@ -47,3 +50,15 @@ define('IBM_HOST', $iniArray['IBM_HOST']);
 define('IBM_NAME', $iniArray['IBM_NAME']);
 define('IBM_USER', $iniArray['IBM_USER']);
 define('IBM_PASS', $iniArray['IBM_PASS']);
+
+define('WOO_STORE', $iniArray['WOO_STORE']);
+define('SUPPLIER', $iniArray['SUPPLIER']);
+define('SELLER_NAME', $iniArray['SELLER_NAME']);
+define('SELLER_ADDRESS', $iniArray['SELLER_ADDRESS']);
+define('SELLER_CITY', $iniArray['SELLER_CITY']);
+define('SELLER_STATE', $iniArray['SELLER_STATE']);
+define('SELLER_ZIPCODE', $iniArray['SELLER_ZIPCODE']);
+
+define('FTP_FOLDER', $iniArray['FTP_FOLDER']);
+define('APP_URL', $iniArray['APP_URL']);
+define('APP_NAME', $iniArray['APP_NAME']);

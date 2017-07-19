@@ -216,6 +216,7 @@ trait AmazonClientCurl
     public static function amazonCurl($xml, $feed, $version, $param, $whatToDo)
     {
         $amazon_feed = AmazonClient::parseAmazonXML($xml);
+        Ecommerce::dd($amazon_feed);
         $link = AmazonClient::createLink($feed, $version, $param, $whatToDo);
         $httpHeader = AmazonClient::buildHeader($amazon_feed);
         $request = AmazonClient::setCurlOptions($link, $httpHeader, $amazon_feed);

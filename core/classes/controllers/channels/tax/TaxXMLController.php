@@ -10,25 +10,25 @@ class TaxXMLController
 
     public static function create($stateTaxItemName, Order $order)
     {
-        $itemXml = "
-            <Item>
-                <ItemId>$stateTaxItemName</ItemId>
-                <ItemDesc><![CDATA[ $stateTaxItemName ]]></ItemDesc>
-                <POLineNumber>{$order->getPoNumber()}</POLineNumber>
-                <UOM>EACH</UOM>
-                <Qty>1</Qty>
-                <UCValue>{$order->getTax()->get()}</UCValue>
-                <UCCurrencyCode></UCCurrencyCode>
-                <RetailValue></RetailValue>
-                <RetailCurrencyCode></RetailCurrencyCode>
-                <StdPackQty></StdPackQty>
-                <StdContainerQty></StdContainerQty>
-                <SupplierItemId>$stateTaxItemName</SupplierItemId>
-                <BarcodeId></BarcodeId>
-                <BarcodeType>UPC</BarcodeType>
-                <ItemNote></ItemNote>
-            </Item>";
-        return $itemXml;
+        return [
+            'Item' => [
+                'ItemId' => $stateTaxItemName,
+                'ItemDesc' => "<![CDATA[ $stateTaxItemName ]]>",
+                'POLineNumber' => $order->getPoNumber(),
+                'UOM' => 'EACH',
+                'Qty' => '1',
+                'UCValue' => $order->getTax()->get(),
+                'UCCurrencyCode' => '',
+                'RetailValue' => '',
+                'RetailCurrencyCode' => '',
+                'StdPackQty' => '',
+                'StdContainerQty' => '',
+                'SupplierItemId' => $stateTaxItemName,
+                'BarcodeId' => '',
+                'BarcodeType' => 'UPC',
+                'ItemNote' => ''
+            ]
+        ];
     }
 
     public static function getItemXml($stateTaxItemName, Order $order)

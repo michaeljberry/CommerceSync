@@ -136,7 +136,7 @@ class Order
 
     public function setOrderXml(Order $order)
     {
-        $this->orderXML = OrderXMLController::create($order);
+        $this->orderXML = OrderXMLController::compile($order);
     }
 
     public function getChannelName(): string

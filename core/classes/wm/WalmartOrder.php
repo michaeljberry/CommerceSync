@@ -188,7 +188,7 @@ class WalmartOrder extends Walmart
     {
         $sku = $order['orderLines']['orderLine']['item']['sku'];
         $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
-        $xml = OrderXMLController::create($channelNumber, $Order, $itemXML);
+        $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
         return $xml;
     }
 

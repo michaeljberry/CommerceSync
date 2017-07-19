@@ -48,7 +48,7 @@ class OrderItem
 
     private function setPrice($price)
     {
-        $this->price = $price;
+        $this->price = Ecommerce::formatMoney($price);
     }
 
     private function setPoNumber($poNumber)

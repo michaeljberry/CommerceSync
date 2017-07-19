@@ -30,12 +30,12 @@ class Tax
 
     private function setTax($totalTax)
     {
-        $this->tax = $totalTax;
+        $this->tax = $totalTax; //Still need to format to two decimal places
     }
 
     private function setTaxXml(Order $order)
     {
-        $this->taxXML = TaxXMLController::getItemXml($this->taxableStates[$order->getBuyer()->getState()->get()], $order);
+        $this->taxXML = TaxXMLController::create($this->taxableStates[$order->getBuyer()->getState()->get()]['tax_line_name'], $order);
     }
 
     public function get()

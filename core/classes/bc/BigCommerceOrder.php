@@ -256,7 +256,7 @@ class BigCommerceOrder extends BigCommerce
     {
         $sku = Ecommerce::substring_between($itemXML, '<ItemId>', '</ItemId>');
         $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
-        $xml = OrderXMLController::create($channelNumber, $Order, $itemXML);
+        $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
         return $xml;
     }
 

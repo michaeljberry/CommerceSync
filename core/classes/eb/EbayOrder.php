@@ -195,7 +195,7 @@ class EbayOrder extends Ebay
 
                     $channelNumber = Channel::getAccountNumbersBySku($channelName, $sku);
 
-                    $orderXml = OrderXMLController::create($channelNumber, $Order, $itemXML);
+                    $orderXml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
                     Ecommerce::dd($orderXml);
                     if (!LOCAL) {
                         FTPController::saveXml($orderNum, $orderXml, $channelName);

@@ -10,24 +10,25 @@ class OrderItemXMLController
 
     public static function create(OrderItem $orderItem)
     {
-        return "
-        <Item>
-            <ItemId>{$orderItem->getSku()->getSku()}</ItemId>
-            <ItemDesc><![CDATA[ {$orderItem->getTitle()} ]]></ItemDesc>
-            <POLineNumber>{$orderItem->getPoNumber()}</POLineNumber>
-            <UOM>EACH</UOM>
-            <Qty>{$orderItem->getQuantity()}</Qty>
-            <UCValue>{$orderItem->getPrice()}</UCValue>
-            <UCCurrencyCode></UCCurrencyCode>
-            <RetailValue></RetailValue>
-            <RetailCurrencyCode></RetailCurrencyCode>
-            <StdPackQty></StdPackQty>
-            <StdContainerQty></StdContainerQty>
-            <SupplierItemId>{$orderItem->getSku()->getSku()}</SupplierItemId>
-            <BarcodeId>{$orderItem->getUpc()}</BarcodeId>
-            <BarcodeType>UPC</BarcodeType>
-            <ItemNote></ItemNote>
-        </Item>";
+        return [
+            'Item' => [
+                'ItemId' => $orderItem->getSku()->getSku(),
+                'ItemDesc' => "<![CDATA[ {$orderItem->getTitle()} ]]>",
+                'POLineNumber' => $orderItem->getPoNumber(),
+                'UOM' => 'EACH',
+                'Qty' => $orderItem->getQuantity(),
+                'UCValue' => $orderItem->getPrice(),
+                'UCCurrencyCode' => '',
+                'RetailValue' => '',
+                'RetailCurrencyCode' => '',
+                'StdPackQty' => '',
+                'StdContainerQty' => '',
+                'SupplierItemId' => $orderItem->getSku()->getSku(),
+                'BarcodeId' => $orderItem->getUpc(),
+                'BarcodeType' => 'UPC',
+                'ItemNote' => ''
+            ]
+        ];
     }
 
 }

@@ -132,7 +132,7 @@ class ReverbOrder extends Reverb
 //                            OrderItem::save($order_id, $sku_id, $total, $quantity);
                             $orderItem->save($Order);
                         }
-                        $xml = OrderXMLController::create($channelNumber, $Order, $itemXML);
+                        $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
                         if (!LOCAL) {
                             FTPController::saveXml($orderNum, $xml, $channelName);
                         }

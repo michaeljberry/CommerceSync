@@ -1,0 +1,13 @@
+/log/
+index*
+/amazonimages
+/.idea/
+/portal/.idea/
+.env
+.local
+/Backup/
+/*.txt
+*.csv
+*.iml
+/vendor/
+*.log

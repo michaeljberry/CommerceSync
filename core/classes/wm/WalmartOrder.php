@@ -138,7 +138,6 @@ class WalmartOrder extends Walmart
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
 //                'limit' => 200
             ]);
-            Ecommerce::dd($orders);
             return $orders;
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
@@ -171,6 +170,13 @@ class WalmartOrder extends Walmart
         $orderNum = $order['purchaseOrderId'];
 
         $found = Order::get($orderNum);
+        Ecommerce::dd($order);
+        if ((array_key_exists('orderLineStatuses', $order['orderLines']['orderLine']) &&
+                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
+            || $order['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
+        ) {
+            Ecommerce::dd('This order has been acknowledged.');
+        }
         if (LOCAL || !$found) {
             $this->orderFound($order, $orderNum);
         }
@@ -178,16 +184,16 @@ class WalmartOrder extends Walmart
 
     protected function orderFound($order, $orderNum)
     {
-//        if (!LOCAL) {
+        if (!LOCAL) {
             $acknowledged = $this->acknowledgeOrder($orderNum);
             Ecommerce::dd($acknowledged);
-            if ((array_key_exists('orderLineStatuses', $acknowledged['orderLines']['orderLine']) &&
-                    $acknowledged['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
-                || $acknowledged['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
-            ) {
+        }
+        if ((array_key_exists('orderLineStatuses', $order['orderLines']['orderLine']) &&
+                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
+            || $order['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
+        ) {
 //                $this->get_wm_order($order);
-            }
-//        }
+        }
     }
 
     public function get_wm_order($order)

@@ -119,15 +119,28 @@ class WalmartOrder extends Walmart
         ]);
     }
 
-    protected function isAcknowledged($order): bool
+    protected function isMultiLine($orderLine): bool
     {
-        if (count($order['orderLines']['orderLine']) == count($order['orderLines']['orderLine'], COUNT_RECURSIVE)) {
-
+        if (count($orderLine) != count($orderLine, COUNT_RECURSIVE)) {
+            return false;
         }
-        return ((array_key_exists('orderLineStatuses', $order['orderLines']['orderLine']) &&
-                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
-            || (array_key_exists('orderLineStatuses',
-                    $order['orderLines']['orderLine'][0]) && $order['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'));
+        return true;
+    }
+
+    protected function isAcknowledged($orderLine): bool
+    {
+        if (!$this->isMultiLine($orderLine)) {
+            return (array_key_exists(
+                'orderLineStatuses',
+                $orderLine) &&
+                $orderLine['orderLineStatuses']['orderLineStatus']['status']
+                == 'Acknowledged') ? true : false;
+        }
+        return (array_key_exists(
+            'orderLineStatuses',
+            $orderLine[0]) &&
+            $orderLine[0]['orderLineStatuses']['orderLineStatus']['status']
+            == 'Acknowledged') ? true : false;
     }
 
     public function getMoreOrders(WMOrder $wmorder, $next)
@@ -194,13 +207,13 @@ class WalmartOrder extends Walmart
         }
     }
 
-    protected function parseOrder($order)
+    public function parseOrder($order)
     {
         $orderNum = $order['purchaseOrderId'];
 
         $found = Order::get($orderNum);
         Ecommerce::dd($order);
-        if ($this->isAcknowledged($order)) {
+        if ($this->isAcknowledged($order['orderLines']['orderLine'])) {
             Ecommerce::dd('This order has been acknowledged.');
         }
         if (LOCAL || !$found) {
@@ -214,10 +227,7 @@ class WalmartOrder extends Walmart
             $acknowledged = $this->acknowledgeOrder($orderNum);
             Ecommerce::dd($acknowledged);
         }
-        if ((array_key_exists('orderLineStatuses', $order['orderLines']['orderLine']) &&
-                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
-            || $order['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
-        ) {
+        if ($this->isAcknowledged($order['orderLines']['orderLine'])) {
 //                $this->get_wm_order($order);
         }
     }
@@ -292,9 +302,6 @@ class WalmartOrder extends Walmart
 
     public function process_orders($order, $totalTax, $shippingTotal, $orderTotal)
     {
-//        echo '<br><br>Order Items:<br><pre>';
-//        print_r($order);
-//        echo '</pre><br><br>';
         if (array_key_exists('tax', $order['charges']['charge'])) {
             foreach ($order['charges'] as $t) {
                 $totalTax += number_format($t['tax']['taxAmount']['amount'], 2, '.', '');

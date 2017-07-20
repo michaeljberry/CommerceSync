@@ -124,8 +124,8 @@ class WalmartOrder extends Walmart
 
     protected function isMulti($array): bool
     {
-        foreach ($array as $key => $value){
-            if(is_numeric($key)){
+        foreach ($array as $key => $value) {
+            if (is_numeric($key)) {
                 return true;
             }
         }
@@ -136,14 +136,14 @@ class WalmartOrder extends Walmart
     {
         if (!$this->isMulti($orderLine)) {
             return (array_key_exists(
-                'orderLineStatuses',
-                $orderLine) &&
+                    'orderLineStatuses',
+                    $orderLine) &&
                 $orderLine['orderLineStatuses']['orderLineStatus']['status']
                 == 'Acknowledged') ? true : false;
         }
         return (array_key_exists(
-            'orderLineStatuses',
-            $orderLine[0]) &&
+                'orderLineStatuses',
+                $orderLine[0]) &&
             $orderLine[0]['orderLineStatuses']['orderLineStatus']['status']
             == 'Acknowledged') ? true : false;
     }
@@ -156,7 +156,6 @@ class WalmartOrder extends Walmart
             $orders = $wmorder->listAll([
                 'nextCursor' => $next
             ]);
-            Ecommerce::dd($orders);
             $this->parseOrders($wmorder, $orders);
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
@@ -187,23 +186,15 @@ class WalmartOrder extends Walmart
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
                 'limit' => WalmartOrder::$limit
             ]);
-            Ecommerce::dd($orders);
             $this->parseOrders($wmorder, $orders);
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
         }
     }
 
-    /**
-     * @param $wmorder
-     * @param $orders
-     * @internal param $wmord
-     */
     public function parseOrders(WMOrder $wmorder, $orders)
     {
-        $totalCount = $orders['meta']['totalCount'];
-
-        if ($this->isMulti($orders['elements'])) { // if there are multiple orders to pull **DO NOT CHANGE**
+        if ($this->isMulti($orders['elements']['order'])) {
             echo "Multiple Orders<br>";
             foreach ($orders['elements']['order'] as $order) {
                 $this->parseOrder($order);
@@ -215,7 +206,7 @@ class WalmartOrder extends Walmart
             }
         }
 
-        if($totalCount > WalmartOrder::$limit){
+        if (isset($orders['meta']['nextCursor'])) {
             $nextCursor = $orders['meta']['nextCursor'];
             $orders = $this->getMoreOrders($nextCursor);
 
@@ -244,7 +235,7 @@ class WalmartOrder extends Walmart
             Ecommerce::dd($acknowledged);
         }
         if ($this->isAcknowledged($order['orderLines']['orderLine'])) {
-//                $this->get_wm_order($order);
+            $this->get_wm_order($order);
         }
     }
 

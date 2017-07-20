@@ -16,7 +16,7 @@ class WalmartOrder extends Walmart
 
     private static $limit = 10;
 
-    public function configure()
+    public static function configure()
     {
         return new WMOrder([
             'consumerId' => WalmartClient::getConsumerKey(),
@@ -25,9 +25,9 @@ class WalmartOrder extends Walmart
         ]);
     }
 
-    public function updateTracking($orderNumber, $trackingNumber, $carrier)
+    public static function updateTracking($orderNumber, $trackingNumber, $carrier)
     {
-        $order = $this->getOrder($orderNumber);
+        $order = WalmartOrder::getOrder($orderNumber);
 
         if (isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo',
                 $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])
@@ -46,11 +46,13 @@ class WalmartOrder extends Walmart
         }
         Ecommerce::dd($order);
         if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
-            $tracking = $this->processTracking($order['orderLines'], $orderNumber, $date, $carrier, $trackingNumber,
+            $tracking = WalmartOrder::processTracking($order['orderLines'], $orderNumber, $date, $carrier,
+                $trackingNumber,
                 $trackingURL);
         } else {
             foreach ($order['orderLines']['orderLine'] as $o) {
-                $tracking = $this->processTracking($order['orderLines']['orderLine'], $orderNumber, $date, $carrier,
+                $tracking = WalmartOrder::processTracking($order['orderLines']['orderLine'], $orderNumber, $date,
+                    $carrier,
                     $trackingNumber, $trackingURL);
             }
         }
@@ -58,16 +60,16 @@ class WalmartOrder extends Walmart
         return $tracking;
     }
 
-    public function processTracking($order, $orderNumber, $date, $carrier, $trackingNumber, $trackingURL)
+    protected static function processTracking($order, $orderNumber, $date, $carrier, $trackingNumber, $trackingURL)
     {
         foreach ($order as $o) {
             $lineNumber = $o['lineNumber'];
             $quantity = $o['orderLineQuantity']['amount'];
-            $wmorder = $this->configure();
             try {
-                $tracking = $wmorder->ship(
+                $tracking = WalmartOrder::configure()->ship(
                     $orderNumber,
-                    $this->createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber, $trackingURL)
+                    WalmartOrder::createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber,
+                        $trackingURL)
                 );
             } catch (Exception $e) {
                 die("There was a problem requesting the data: " . $e->getMessage());
@@ -77,7 +79,7 @@ class WalmartOrder extends Walmart
         return $tracking;
     }
 
-    public function createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber, $trackingURL)
+    protected static function createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber, $trackingURL)
     {
         $tracking = [
             'orderShipment' => [
@@ -109,14 +111,14 @@ class WalmartOrder extends Walmart
         return $tracking;
     }
 
-    public function acknowledgeOrder($orderNum)
+    protected static function acknowledgeOrder($orderNum)
     {
-        $this->configure()->acknowledge([
+        WalmartOrder::configure()->acknowledge([
             'purchaseOrderId' => $orderNum,
         ]);
     }
 
-    protected function isMulti($array): bool
+    protected static function isMulti($array): bool
     {
         foreach ($array as $key => $value) {
             if (is_numeric($key)) {
@@ -126,9 +128,9 @@ class WalmartOrder extends Walmart
         return false;
     }
 
-    protected function isAcknowledged($orderLine): bool
+    protected static function isAcknowledged($orderLine): bool
     {
-        if (!$this->isMulti($orderLine)) {
+        if (!WalmartOrder::isMulti($orderLine)) {
             return (array_key_exists(
                     'orderLineStatuses',
                     $orderLine) &&
@@ -145,7 +147,7 @@ class WalmartOrder extends Walmart
     public function getMoreOrders($next)
     {
         try {
-            $orders = $this->configure()->listAll([
+            $orders = WalmartOrder::configure()->listAll([
                 'nextCursor' => $next
             ]);
             $this->parseOrders($orders);
@@ -154,10 +156,10 @@ class WalmartOrder extends Walmart
         }
     }
 
-    public function getOrder($orderNum)
+    public static function getOrder($orderNum)
     {
         try {
-            $order = $this->configure()->get([
+            $order = WalmartOrder::configure()->get([
                 'purchaseOrderId' => $orderNum
             ]);
             return $order;
@@ -171,7 +173,7 @@ class WalmartOrder extends Walmart
         try {
             $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
 
-            return $this->configure()->listAll([
+            return WalmartOrder::configure()->listAll([
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
                 'limit' => WalmartOrder::$limit
             ]);
@@ -182,7 +184,7 @@ class WalmartOrder extends Walmart
 
     public function parseOrders($orders)
     {
-        if ($this->isMulti($orders['elements']['order'])) {
+        if (WalmartOrder::isMulti($orders['elements']['order'])) {
             echo "Multiple Orders<br>";
             foreach ($orders['elements']['order'] as $order) {
                 $this->parseOrder($order);
@@ -216,9 +218,9 @@ class WalmartOrder extends Walmart
     protected function orderFound($order, $orderNum)
     {
         if (!LOCAL) {
-            $this->acknowledgeOrder($orderNum);
+            WalmartOrder::acknowledgeOrder($orderNum);
         }
-        if ($this->isAcknowledged($order['orderLines']['orderLine'])) {
+        if (WalmartOrder::isAcknowledged($order['orderLines']['orderLine'])) {
             Ecommerce::dd($order);
             $channelName = 'Walmart';
 
@@ -228,7 +230,7 @@ class WalmartOrder extends Walmart
             $shippingPrice = 0.00;
             $orderTotal = 0.00;
 
-            if (!$this->isMulti($order['orderLines']['orderLine'])) {
+            if (!WalmartOrder::isMulti($order['orderLines']['orderLine'])) {
                 $orderTotal = $this->getOrderTotal($order['orderLines']['orderLine'], $orderTotal);
 
                 $orderItems = $order['orderLines'];

@@ -24,7 +24,7 @@ class EbayOrder extends Ebay
         return $xml;
     }
 
-    public function updateTracking($trackingNumber, $carrier, $itemID, $transID)
+    public static function updateTracking($trackingNumber, $carrier, $itemID, $transID)
     {
         $requestName = 'CompleteSale';
 

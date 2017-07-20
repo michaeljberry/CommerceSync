@@ -22,7 +22,7 @@ class ReverbOrder extends Reverb
         return $sku;
     }
 
-    public function updateTracking($orderNumber, $trackingNumber, $carrier, $notification = true)
+    public static function updateTracking($orderNumber, $trackingNumber, $carrier, $notification = true)
     {
         $url = 'https://reverb.com/api/my/orders/selling/' . $orderNumber . '/ship';
         $postString = [

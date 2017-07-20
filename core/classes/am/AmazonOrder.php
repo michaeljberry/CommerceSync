@@ -14,7 +14,7 @@ use \DateTimeZone;
 
 class AmazonOrder extends Amazon
 {
-    public function updateTrackingInfo($orderNumber, $trackingID, $carrier, $num)
+    public static function updateTrackingInfo($orderNumber, $trackingID, $carrier, $num)
     {
         $xml = [
             'Message' => [
@@ -32,7 +32,7 @@ class AmazonOrder extends Amazon
         return XMLController::makeXML($xml);
     }
 
-    public function updateTracking($xml1)
+    public static function updateTracking($xml1)
     {
         $action = 'SubmitFeed';
         $feedtype = '_POST_ORDER_FULFILLMENT_DATA_';

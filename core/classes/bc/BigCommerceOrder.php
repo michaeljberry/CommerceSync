@@ -7,14 +7,11 @@ use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\FTPController;
-use controllers\channels\order\OrderItemXMLController;
-use controllers\channels\order\OrderXMLController;
-use models\channels\SKU;
-use controllers\channels\tax\TaxXMLController;
+use Bigcommerce\Api\Client;
 
 class BigCommerceOrder extends BigCommerce
 {
-    public function test_get_bc_orders($BC, $filter = '')
+    public function test_get_bc_orders(Client $BC, $filter = '')
     {
         $orders = $BC::getOrders($filter);
         print_r($orders);
@@ -107,38 +104,29 @@ class BigCommerceOrder extends BigCommerce
         }
     }
 
-    public function get_bc_order_product($orderNum)
+    public static function getOrderProducts($orderNum)
     {
-        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $orderNum . '/products.json';
-        $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
+        $apiURL = 'https://mymusiclife.com/api/v2/orders/' . $orderNum . '/products.json';
+        $response = BigCommerceClient::bigcommerceCurl($apiURL, 'GET');
 
         $items = json_decode($response);
         return $items;
     }
 
-    public function get_bc_order_ship_info($order_id)
+    public static function getShippingInfo($orderNumber)
     {
-        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_id . '/shippingaddresses.json';
-        $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
+        $apiURL = 'https://mymusiclife.com/api/v2/orders/' . $orderNumber . '/shippingaddresses.json';
+        $response = BigCommerceClient::bigcommerceCurl($apiURL, 'GET');
 
         $shipping = json_decode($response);
         return $shipping;
     }
 
-    public function get_bc_order_info($order_id)
-    {
-        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_id;
-        $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
-
-        $order = json_decode($response);
-        return $order;
-    }
-
-    public function post_bc_tracking_info($order_id, $shipment_id, $filter)
+    public static function postTrackingInfo($orderNumber, $shipmentID, $filter)
     {
         $post_string = json_encode($filter);
-        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_id . '/shipments';
-        $response = BigCommerceClient::bigcommerceCurl($api_url, 'POST', $post_string);
+        $apiURL = 'https://mymusiclife.com/api/v2/orders/' . $orderNumber . '/shipments';
+        $response = BigCommerceClient::bigcommerceCurl($apiURL, 'POST', $post_string);
         Ecommerce::dd('Post BC Tracking Info');
         Ecommerce::dd($response);
 
@@ -146,44 +134,35 @@ class BigCommerceOrder extends BigCommerce
         return $order;
     }
 
-    public function update_bc_tracking($order_id, $tracking_num, $carrier)
+    public static function updateTracking($orderNumber, $trackingNumber, $carrier)
     {
-        $shipment = $this->get_bc_order_ship_info($order_id);
-        $shipment_id = $shipment[0]->id;
-        $products = $this->get_bc_order_product($order_id);
+        $shipment = BigCommerceOrder::getShippingInfo($orderNumber);
+        $shipmentID = (string)$shipment[0]->id;
+        $products = BigCommerceOrder::getOrderProducts($orderNumber);
         $filter = array(
-            'order_address_id' => $shipment_id,
-            'tracking_number' => $tracking_num,
+            'order_address_id' => $shipmentID,
+            'tracking_number' => $trackingNumber,
             'shipping_method' => $carrier
         );
+        $items = [];
         foreach ($products as $product) {
             $items[] = array(
-                'order_product_id' => $product->id,
-                'quantity' => $product->quantity
+                'order_product_id' => (string)$product->id,
+                'quantity' => (string)$product->quantity
             );
         }
         $filter['items'] = $items;
-        $add_tracking = $this->post_bc_tracking_info($order_id, $shipment_id, $filter);
+        $add_tracking = BigCommerceOrder::postTrackingInfo($orderNumber, $shipmentID, $filter);
         print_r($add_tracking);
         return $add_tracking;
     }
 
-    public function save_bc_order_to_xml($itemXML, Order $Order)
-    {
-        $sku = Ecommerce::substring_between($itemXML, '<ItemId>', '</ItemId>');
-        $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
-        $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
-        return $xml;
-    }
-
-
-    public static function getOrders($BC)
+    public static function getOrders(Client $BC)
     {
         $fromDate = "-" . BigCommerce::getApiOrderDays() . " days";
-        $fromDate = "-20 days";
         $filter = array(
             'min_date_created' => date('r', strtotime($fromDate)),
-            'status_id' => 2
+            'status_id' => 11
         );
 
         return $BC::getOrders($filter);
@@ -221,7 +200,7 @@ class BigCommerceOrder extends BigCommerce
         $tax = (float)$order->total_tax;
 
         //Address
-        $ship_info = $this->get_bc_order_ship_info($orderNum);
+        $ship_info = BigCommerceOrder::getShippingInfo($orderNum);
         $streetAddress = (string)$ship_info[0]->street_1;
         $streetAddress2 = (string)$ship_info[0]->street_2;
         $city = (string)$ship_info[0]->city;

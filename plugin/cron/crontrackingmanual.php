@@ -9,10 +9,15 @@ require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
+use am\AmazonOrder;
+use bc\BigCommerceOrder;
+use eb\EbayOrder;
 use ecommerce\Ecommerce;
 use models\channels\Channel;
 use models\channels\Tracking;
 use models\channels\order\Order;
+use rev\ReverbOrder;
+use wm\WalmartOrder;
 
 //ob_start();
 
@@ -63,13 +68,13 @@ foreach ($unshippedOrders as $o) {
         echo $result . '<br>';
         if (strtolower($channel) == 'bigcommerce') {
             //update BC
-//            $response = $bcord->update_bc_tracking($order_num, $tracking_id, $carrier);
+            $response = BigCommerceOrder::updateTracking($order_num, $tracking_id, $carrier);
             if ($response) {
                 $shipped = true;
             }
         } elseif (strtolower($channel) == 'ebay') {
             //update Ebay
-            $response = $ebord->updateTracking($tracking_id, $carrier, $item_id, $trans_id);
+            $response = EbayOrder::updateTracking($tracking_id, $carrier, $item_id, $trans_id);
             $successMessage = 'Success';
             if (strpos($response, $successMessage)) {
                 $success = true;
@@ -81,19 +86,20 @@ foreach ($unshippedOrders as $o) {
             } else {
                 //Update Amazon
                 $amazonOrdersThatHaveShipped[] = $order_num;
-                $amazonTrackingXML .= $amord->updateTrackingInfo($order_num, $tracking_id, $carrier, $amazonOrderCount);
+                $amazonTrackingXML .= AmazonOrder::updateTrackingInfo($order_num, $tracking_id, $carrier,
+                    $amazonOrderCount);
             }
             $amazonOrderCount++;
         } elseif (strtolower($channel) == 'reverb') {
             //Update Reverb
-            $response = $revord->updateTracking($order_num, $tracking_id, $carrier, 'false');
+            $response = ReverbOrder::updateTracking($order_num, $tracking_id, $carrier, 'false');
             $successMessage = '"shipped"';
             if (strpos($response, $successMessage)) {
                 $success = true;
             }
         } elseif (strtolower($channel) == 'walmart') {
             //Update Walmart
-            $response = $wmord->updateTracking($order_num, $tracking_id, $carrier);
+            $response = WalmartOrder::updateTracking($order_num, $tracking_id, $carrier);
             if (array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
                 if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
                     $shipped = true;
@@ -114,7 +120,7 @@ foreach ($unshippedOrders as $o) {
 
 if (!empty($amazonTrackingXML)) {
     Ecommerce::dd($amazonTrackingXML);
-    $response = $amord->updateTracking($amazonTrackingXML);
+    $response = AmazonOrder::updateTracking($amazonTrackingXML);
     print_r($response);
     echo '<br>';
     $successMessage = 'SUBMITTED';

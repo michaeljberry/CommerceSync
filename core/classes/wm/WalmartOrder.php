@@ -146,24 +146,25 @@ class WalmartOrder extends Walmart
             == 'Acknowledged') ? true : false;
     }
 
-    public function getMoreOrders(WMOrder $wmorder, $next)
+    public function getMoreOrders($next)
     {
         try {
-            $fromDate = Walmart::getApiOrderDays() . ' days';
+            $wmorder = $this->configure();
 
-            $orders = $wmorder->list([
-                'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
+            $orders = $wmorder->listAll([
                 'nextCursor' => $next
             ]);
-            return $orders;
+            Ecommerce::dd($orders);
+            $this->parseOrders($wmorder, $orders);
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
         }
     }
 
-    public function getOrder(WMOrder $wmorder, $orderNum)
+    public function getOrder($orderNum)
     {
         try {
+            $wmorder = $this->configure();
             $order = $wmorder->get([
                 'purchaseOrderId' => $orderNum
             ]);
@@ -174,16 +175,18 @@ class WalmartOrder extends Walmart
 
     }
 
-    public function getOrders(WMOrder $wmorder)
+    public function getOrders()
     {
         try {
+            $wmorder = $this->configure();
             $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
 
             $orders = $wmorder->listAll([
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
                 'limit' => WalmartOrder::$limit
             ]);
-            return $orders;
+            Ecommerce::dd($orders);
+            $this->parseOrders($wmorder, $orders);
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
         }
@@ -212,7 +215,7 @@ class WalmartOrder extends Walmart
 
         if($totalCount > WalmartOrder::$limit){
             $nextCursor = $orders['meta']['nextCursor'];
-            $orders = $this->getMoreOrders($wmorder, $nextCursor);
+            $orders = $this->getMoreOrders($nextCursor);
 
             $this->parseOrders($wmorder, $orders);
         }

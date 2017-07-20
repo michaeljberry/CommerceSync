@@ -153,11 +153,9 @@ class AmazonOrder extends Amazon
     public function parseOrder($order)
     {
         $orderNum = $order->AmazonOrderId;
-
         $found = Order::get($orderNum);
 
         if (LOCAL || !$found) {
-
             $this->orderFound($order, $orderNum);
         }
     }
@@ -195,7 +193,6 @@ class AmazonOrder extends Amazon
         $buyer = (string)$order->BuyerName;
 
 
-
         $shipByDate = (string)$order->LatestShipDate;
 
         $shipmentMethod = (string)$order->ShipmentServiceLevelCategory;
@@ -203,7 +200,6 @@ class AmazonOrder extends Amazon
         $shippingPrice = 0.00;
 
         $tax = 0.00;
-
 
         //Address
         $shippingAddress = (object)$order->ShippingAddress;

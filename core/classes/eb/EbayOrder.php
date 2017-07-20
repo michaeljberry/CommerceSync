@@ -79,15 +79,12 @@ class EbayOrder extends Ebay
     protected function parseOrder($order)
     {
         $orderNum = (string)$order->ExternalTransaction->ExternalTransactionID;
-
         $orderStatus = trim((string)$order->OrderStatus);
 
         if ($orderStatus !== 'Cancelled') {
-
             $found = Order::get($orderNum);
 
             if (LOCAL || !$found) {
-
                 $this->orderFound($order, $orderNum);
             }
         }

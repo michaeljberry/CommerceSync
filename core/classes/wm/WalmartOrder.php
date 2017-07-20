@@ -117,7 +117,7 @@ class WalmartOrder extends Walmart
 
     public function acknowledgeOrder($orderNum)
     {
-        return $this->configure()->acknowledge([
+        $this->configure()->acknowledge([
             'purchaseOrderId' => $orderNum,
         ]);
     }
@@ -156,7 +156,7 @@ class WalmartOrder extends Walmart
             $orders = $wmorder->listAll([
                 'nextCursor' => $next
             ]);
-            $this->parseOrders($wmorder, $orders);
+            $this->parseOrders($orders);
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
         }
@@ -165,8 +165,8 @@ class WalmartOrder extends Walmart
     public function getOrder($orderNum)
     {
         try {
-            $wmorder = $this->configure();
-            $order = $wmorder->get([
+            $wmOrder = $this->configure();
+            $order = $wmOrder->get([
                 'purchaseOrderId' => $orderNum
             ]);
             return $order;
@@ -179,20 +179,20 @@ class WalmartOrder extends Walmart
     public function getOrders()
     {
         try {
-            $wmorder = $this->configure();
+            $wmOrder = $this->configure();
             $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
 
-            $orders = $wmorder->listAll([
+            $orders = $wmOrder->listAll([
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
                 'limit' => WalmartOrder::$limit
             ]);
-            $this->parseOrders($wmorder, $orders);
+            $this->parseOrders($orders);
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
         }
     }
 
-    public function parseOrders(WMOrder $wmorder, $orders)
+    protected function parseOrders($orders)
     {
         if ($this->isMulti($orders['elements']['order'])) {
             echo "Multiple Orders<br>";
@@ -210,19 +210,16 @@ class WalmartOrder extends Walmart
             $nextCursor = $orders['meta']['nextCursor'];
             $orders = $this->getMoreOrders($nextCursor);
 
-            $this->parseOrders($wmorder, $orders);
+            $this->parseOrders($orders);
         }
     }
 
-    public function parseOrder($order)
+    protected function parseOrder($order)
     {
         $orderNum = $order['purchaseOrderId'];
 
         $found = Order::get($orderNum);
-        Ecommerce::dd($order);
-        if ($this->isAcknowledged($order['orderLines']['orderLine'])) {
-            Ecommerce::dd('This order has been acknowledged.');
-        }
+
         if (LOCAL || !$found) {
             $this->orderFound($order, $orderNum);
         }
@@ -231,150 +228,131 @@ class WalmartOrder extends Walmart
     protected function orderFound($order, $orderNum)
     {
         if (!LOCAL) {
-            $acknowledged = $this->acknowledgeOrder($orderNum);
-            Ecommerce::dd($acknowledged);
+            $this->acknowledgeOrder($orderNum);
         }
         if ($this->isAcknowledged($order['orderLines']['orderLine'])) {
-            $this->get_wm_order($order);
-        }
-    }
+            Ecommerce::dd($order);
+            $channelName = 'Walmart';
 
-    public function get_wm_order($order)
-    {
-        $orderNum = $order['purchaseOrderId'];
-        $channelName = 'Walmart';
-        $purchaseDate = (string)$order['orderDate'];
+            $purchaseDate = (string)$order['orderDate'];
 
-        $tax = 0;
-        $shippingPrice = 0;
-        $shippingCode = 'ZSTD';
-        $orderTotal = 0;
+            $tax = 0.00;
+            $shippingPrice = 0.00;
+            $orderTotal = 0.00;
 
-        echo "<br><br>Order: $orderNum<br><pre>";
-        print_r($order);
-        echo '</pre><br><br>';
+            echo "<br><br>Order: $orderNum<br><pre>";
+            print_r($order);
+            echo '</pre><br><br>';
 
-        if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
-            $orderInfo = $this->process_orders($order['orderLines']['orderLine'], $tax, $shippingPrice, $orderTotal);
-            $tax += $orderInfo['total_tax'];
-            $shippingPrice += $orderInfo['shipping_total'];
-            $orderTotal += $orderInfo['order_total'];
-
-            $orderItems = $order['orderLines'];
-        } else {
-            foreach ($order['orderLines']['orderLine'] as $o) {
-                $orderInfo = $this->process_orders($o, $tax, $shippingPrice, $orderTotal);
-                $tax += $orderInfo['total_tax'];
-                $shippingPrice += $orderInfo['shipping_total'];
+            if (!$this->isMulti($order['orderLines']['orderLine'])) {
+                $orderInfo = $this->getOrderTotal($order['orderLines']['orderLine'], $orderTotal);
                 $orderTotal += $orderInfo['order_total'];
+
+                $orderItems = $order['orderLines'];
+            } else {
+                foreach ($order['orderLines']['orderLine'] as $o) {
+                    $orderInfo = $this->getOrderTotal($o, $orderTotal);
+                    $orderTotal += $orderInfo['order_total'];
+                }
+                $orderItems = $order['orderLines']['orderLine'];
             }
-            $orderItems = $order['orderLines']['orderLine'];
-        }
 
-        if ($orderTotal > 299) {
-            $shippingCode = 'URIP';
-        }
-
-        //Address
-        $streetAddress = (string)$order['shippingInfo']['postalAddress']['address1'];
-        $streetAddress2 = (string)$order['shippingInfo']['postalAddress']['address2'] ?? '';
-        $city = (string)$order['shippingInfo']['postalAddress']['city'];
-        $state = (string)$order['shippingInfo']['postalAddress']['state'];
-        $zipCode = (string)$order['shippingInfo']['postalAddress']['postalCode'];
-        $country = (string)$order['shippingInfo']['postalAddress']['country'];
+            $shippingCode = Order::shippingCode($orderTotal);
 
 
-        //Buyer
-        $shipToName = (string)$order['shippingInfo']['postalAddress']['name'];
-        $phone = (string)$order['shippingInfo']['phone'];
-        list($lastName, $firstName) = BuyerController::splitName($shipToName);
-        $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
-            $country, $phone);
+            //Address
+            $shippingInfo = $order['shippingInfo'];
+            $postalAddress = $shippingInfo['postalAddress'];
+            $streetAddress = (string)$postalAddress['address1'];
+            $streetAddress2 = (string)$postalAddress['address2'] ?? '';
+            $city = (string)$postalAddress['city'];
+            $state = (string)$postalAddress['state'];
+            $zipCode = (string)$postalAddress['postalCode'];
+            $country = (string)$postalAddress['country'];
 
-        $Order = new Order(1, $channelName, WalmartClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
-            $shippingCode, $shippingPrice, $tax);
 
-        //Save Orders
-        if (!LOCAL) {
-            $Order->save(WalmartClient::getStoreID());
-        }
-        $infoArray = $this->get_wm_order_items($orderItems, $state, $tax, $Order);
-        $itemXml = $infoArray['item_xml'];
-        $orderXml = $this->save_wm_order_to_xml($order, $itemXml, $Order, $buyer);
+            //Buyer
+            $shipToName = (string)$postalAddress['name'];
+            $phone = (string)$shippingInfo['phone'];
+            list($lastName, $firstName) = BuyerController::splitName($shipToName);
+            $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
+                $country, $phone);
 
-        if (!LOCAL) {
-            FTPController::saveXml($orderNum, $orderXml, $channelName);
+            $Order = new Order(1, $channelName, WalmartClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
+                $shippingCode, $shippingPrice, $tax);
+
+            //Save Orders
+            if (!LOCAL) {
+                $Order->save(WalmartClient::getStoreID());
+            }
+
+            $this->getItems($Order, $orderItems);
+
+            $tax = $Order->getTax()->get();
+
+            Order::updateShippingAndTaxes($Order->getOrderId(), $Order->getShippingPrice(), $tax);
+
+            $Order->setOrderXml($Order);
+
+            if (!LOCAL) {
+                FTPController::saveXml($Order);
+            }
         }
     }
 
-    public function process_orders($order, $totalTax, $shippingTotal, $orderTotal)
+    protected function getItems(Order $Order, $order_items)
     {
-        if (array_key_exists('tax', $order['charges']['charge'])) {
-            foreach ($order['charges'] as $t) {
-                $totalTax += number_format($t['tax']['taxAmount']['amount'], 2, '.', '');
-//                echo "Taxes: $total_tax <br>";
+        $this->parseItems($Order, $order_items);
+    }
+
+    protected function parseItems(Order $Order, $order_items)
+    {
+        foreach ($order_items as $item) {
+            $this->parseItem($Order, $item);
+        }
+    }
+
+    protected function parseItem(Order $Order, $item)
+    {
+        $sku = $item['item']['sku'];
+        $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
+
+        $title = $item['item']['productName'];
+        $quantity = $item['orderLineQuantity']['amount'];
+        $upc = '';
+
+        $tax = 0.00;
+        $shipping = 0.00;
+        $price = 0.00;
+        foreach ($item['charges'] as $itemPrice) {
+            if ($itemPrice['chargeType'] == 'PRODUCT') {
+                $price += $itemPrice['chargeAmount']['amount'];
+            }
+            if ($itemPrice['chargeType'] == 'SHIPPING') {
+                $shipping += $itemPrice['chargeAmount']['amount'];
+            }
+            if (array_key_exists('tax', $itemPrice)) {
+                $tax += $itemPrice['tax']['taxAmount']['amount'];
             }
         }
+        $price = sprintf("%01.2f", number_format($price, 2, '.', '') / $quantity);
 
-        foreach ($order['charges'] as $p) {
-            $orderTotal += $p['chargeAmount']['amount'];
+
+        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
+        $Order->setOrderItems($orderItem);
+        if (!LOCAL) {
+            $orderItem->save($Order);
+        }
+    }
+
+    protected function getOrderTotal($order, $orderTotal)
+    {
+        foreach ($order['charges'] as $price) {
+            $orderTotal += $price['chargeAmount']['amount'];
         }
 
-        foreach ($order['charges'] as $s) {
-            if (in_array('SHIPPING', $s)) {
-                foreach ($s['charges'] as $sa) {
-                    if ($sa['chargeType'] == 'SHIPPING') {
-                        $shippingTotal += number_format($sa['chargeAmount']['amount'], 2, '.', '');
-                    }
-                }
-            }
-        }
         return [
-            'total_tax' => $totalTax,
-            'shipping_total' => $shippingTotal,
             'order_total' => $orderTotal
         ];
-    }
-
-    public function get_wm_order_items($order_items, $state_code, $total_tax, Order $Order)
-    {
-        $wminv = new WalmartInventory();
-        $item_xml = '';
-        $poNumber = 1;
-
-        foreach ($order_items as $i) {
-            $quantity = $i['orderLineQuantity']['amount'];
-            $title = $i['item']['productName'];
-            $price = 0;
-            foreach ($i['charges'] as $p) {
-                if ($p['chargeType'] == 'PRODUCT') {
-                    $price += $p['chargeAmount']['amount'];
-                }
-            }
-            $price = sprintf("%01.2f", number_format($price, 2, '.', '') / $quantity);
-            echo "Item Total: $price";
-            $sku = $i['item']['sku'];
-            $item = $wminv->getItem($sku);
-            $upc = $item['MPItemView']['upc'];
-            $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
-            if (!LOCAL) {
-                $orderItem->save($Order);
-            }
-            $item_xml .= OrderItemXMLController::create($orderItem);
-            $poNumber++;
-        }
-        $item_xml .= TaxXMLController::getItemXml($state_code, $poNumber, $total_tax);
-        $info_array = [
-            'item_xml' => $item_xml
-        ];
-        return $info_array;
-    }
-
-    public function save_wm_order_to_xml($order, $itemXML, Order $Order)
-    {
-        $sku = $order['orderLines']['orderLine']['item']['sku'];
-        $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
-        $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
-        return $xml;
     }
 }

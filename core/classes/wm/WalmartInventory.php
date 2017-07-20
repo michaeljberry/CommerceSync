@@ -6,7 +6,7 @@ use \Walmart\Item as WalmartItem;
 
 class WalmartInventory extends Walmart
 {
-    public function constructAuthorizationToken()
+    public function configure()
     {
         $wmitem = new WalmartItem([
             'consumerId' => WalmartClient::getConsumerKey(),
@@ -17,7 +17,7 @@ class WalmartInventory extends Walmart
 
     public function getItem($sku)
     {
-        $wmitem = $this->constructAuthorizationToken();
+        $wmitem = $this->configure();
         $item = $wmitem->get([
             'sku' => $sku
         ]);

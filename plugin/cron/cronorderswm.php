@@ -1,5 +1,7 @@
 <?php
 
+use wm\WalmartOrder;
+
 error_reporting(-1);
 
 require __DIR__ . '/../../core/init.php';
@@ -11,6 +13,8 @@ $user_id = 838;
 
 $wmorder = $wmord->configure();
 
-$wmord->getOrders($wmorder, $wmord);
+$orders = $wmord->getOrders($wmorder);
+
+$wmord->parseOrders($orders);
 
 endClock($start);

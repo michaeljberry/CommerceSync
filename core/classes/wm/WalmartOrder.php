@@ -17,21 +17,177 @@ class WalmartOrder extends Walmart
 {
     public function configure()
     {
-        $wmorder = new WMOrder([
+        return new WMOrder([
             'consumerId' => WalmartClient::getConsumerKey(),
             'privateKey' => WalmartClient::getSecretKey(),
             'wmConsumerChannelType' => WalmartClient::getAPIHeader()
         ]);
-        return $wmorder;
     }
 
-    public function acknowledge_order($orderNum)
+    public function updateWalmartTracking($order_num, $tracking_id, $carrier)
     {
         $wmorder = $this->configure();
-        $orderAcknowledge = $wmorder->acknowledge([
+        $order = $wmorder->get([
+            'purchaseOrderId' => $order_num
+        ]);
+//        print_r($order);
+        if (isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo', $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])) {
+            return $order;
+        }
+        echo '<br><br>';
+        $date = date("Y-m-d") . "T" . date("H:i:s") . "Z";
+        echo "Date: $date<br><br>";
+//        $order_num = $order['purchaseOrderId'];
+        $trackingURL = '';
+        if ($carrier == 'USPS') {
+            $trackingURL = "https://tools.usps.com/go/TrackConfirmAction.action";
+        } elseif ($carrier == 'UPS') {
+            $trackingURL = "http://wwwapps.ups.com/WebTracking/track";
+        }
+        Ecommerce::dd($order);
+        if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
+            $tracking = $this->processTracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
+        } else {
+            foreach ($order['orderLines']['orderLine'] as $o) {
+                $tracking = $this->processTracking($order['orderLines']['orderLine'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
+            }
+        }
+
+        return $tracking;
+    }
+
+    public function processTracking($order, $order_num, $date, $carrier, $tracking_id, $trackingURL)
+    {
+        foreach ($order as $o) {
+            $lineNumber = $o['lineNumber'];
+            $quantity = $o['orderLineQuantity']['amount'];
+            $wmorder = $this->configure();
+            try {
+                $tracking = $wmorder->ship(
+                    $order_num,
+                    $this->createTrackingArray($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
+                );
+            } catch (Exception $e) {
+                die("There was a problem requesting the data: " . $e->getMessage());
+            }
+            print_r($tracking);
+        }
+        return $tracking;
+    }
+
+    public function createTrackingArray($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
+    {
+        $tracking = [
+            'orderShipment' => [
+                'orderLines' => [
+                    [
+                        'lineNumber' => $lineNumber,
+                        'orderLineStatuses' => [
+                            [
+                                'status' => 'Shipped',
+                                'statusQuantity' => [
+                                    'unitOfMeasurement' => 'Each',
+                                    'amount' => $quantity
+                                ],
+                                'trackingInfo' => [
+                                    'shipDateTime' => $date,
+                                    'carrierName' => [
+                                        'carrier' => $carrier
+                                    ],
+                                    'methodCode' => 'Standard',
+                                    'trackingNumber' => $tracking_id,
+                                    'trackingURL' => $trackingURL
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        return $tracking;
+    }
+
+    public function acknowledgeOrder($orderNum)
+    {
+        return $this->configure()->acknowledge([
             'purchaseOrderId' => $orderNum,
         ]);
-        return $orderAcknowledge;
+    }
+
+    public function getMoreOrders(WMOrder $wmorder, $next)
+    {
+        try {
+            $fromDate = Walmart::getApiOrderDays() . ' days';
+
+            $orders = $wmorder->list([
+                'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
+                'nextCursor' => $next
+            ]);
+            return $orders;
+        } catch (Exception $e) {
+            die("There was a problem requesting the data: " . $e->getMessage());
+        }
+    }
+
+    public function getOrders(WMOrder $wmorder)
+    {
+        try {
+            $fromDate = Walmart::getApiOrderDays() . ' days';
+
+            $orders = $wmorder->listAll([
+                'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
+//                'limit' => 200
+            ]);
+            Ecommerce::dd($orders);
+            return $orders;
+        } catch (Exception $e) {
+            die("There was a problem requesting the data: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * @param $orders
+     * @internal param $wmord
+     */
+    public function parseOrders($orders)
+    {
+        $totalCount = $orders['meta']['totalCount'];
+
+        if ($totalCount > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
+            echo "Multiple Orders<br>";
+            foreach ($orders['elements']['order'] as $order) {
+                $this->parseOrder($order);
+            }
+        } else {
+            echo "Single Order:<br>";
+            foreach ($orders['elements'] as $order) {
+                $this->parseOrder($order);
+            }
+        }
+    }
+
+    protected function parseOrder($order)
+    {
+        $orderNum = $order['purchaseOrderId'];
+
+        $found = Order::get($orderNum);
+        if (LOCAL || !$found) {
+            $this->orderFound($order, $orderNum);
+        }
+    }
+
+    protected function orderFound($order, $orderNum)
+    {
+        if (!LOCAL) {
+            $acknowledged = $this->acknowledgeOrder($orderNum);
+            Ecommerce::dd($acknowledged);
+            if ((array_key_exists('orderLineStatuses', $acknowledged['orderLines']['orderLine']) &&
+                    $acknowledged['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
+                || $acknowledged['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
+            ) {
+//                $this->get_wm_order($order);
+            }
+        }
     }
 
     public function get_wm_order($order)
@@ -133,16 +289,6 @@ class WalmartOrder extends Walmart
             'order_total' => $orderTotal];
     }
 
-    /**
-     * @param $wm_consumer_key
-     * @param $wm_secret_key
-     * @param $order_num
-     * @param $order_items
-     * @param $state_code
-     * @param $total_tax
-     * @param $orderID
-     * @return array
-     */
     public function get_wm_order_items($order_items, $state_code, $total_tax, Order $Order)
     {
         $wminv = new WalmartInventory();
@@ -183,149 +329,5 @@ class WalmartOrder extends Walmart
         $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
         $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
         return $xml;
-    }
-
-    public function updateWalmartTracking($order_num, $tracking_id, $carrier)
-    {
-        $wmorder = $this->configure();
-        $order = $wmorder->get([
-            'purchaseOrderId' => $order_num
-        ]);
-//        print_r($order);
-        if (isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo', $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])) {
-            return $order;
-        }
-        echo '<br><br>';
-        $date = date("Y-m-d") . "T" . date("H:i:s") . "Z";
-        echo "Date: $date<br><br>";
-//        $order_num = $order['purchaseOrderId'];
-        $trackingURL = '';
-        if ($carrier == 'USPS') {
-            $trackingURL = "https://tools.usps.com/go/TrackConfirmAction.action";
-        } elseif ($carrier == 'UPS') {
-            $trackingURL = "http://wwwapps.ups.com/WebTracking/track";
-        }
-        Ecommerce::dd($order);
-        if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
-            $tracking = $this->process_tracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
-        } else {
-            foreach ($order['orderLines']['orderLine'] as $o) {
-                $tracking = $this->process_tracking($order['orderLines']['orderLine'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
-            }
-        }
-
-        return $tracking;
-    }
-
-    public function process_tracking($order, $order_num, $date, $carrier, $tracking_id, $trackingURL)
-    {
-        foreach ($order as $o) {
-            $lineNumber = $o['lineNumber'];
-            $quantity = $o['orderLineQuantity']['amount'];
-            $wmorder = $this->configure();
-            try {
-                $tracking = $wmorder->ship(
-                    $order_num,
-                    $this->create_tracking_array($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
-                );
-            } catch (Exception $e) {
-                die("There was a problem requesting the data: " . $e->getMessage());
-            }
-            print_r($tracking);
-        }
-        return $tracking;
-    }
-
-    public function create_tracking_array($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
-    {
-        $tracking = [
-            'orderShipment' => [
-                'orderLines' => [
-                    [
-                        'lineNumber' => $lineNumber,
-                        'orderLineStatuses' => [
-                            [
-                                'status' => 'Shipped',
-                                'statusQuantity' => [
-                                    'unitOfMeasurement' => 'Each',
-                                    'amount' => $quantity
-                                ],
-                                'trackingInfo' => [
-                                    'shipDateTime' => $date,
-                                    'carrierName' => [
-                                        'carrier' => $carrier
-                                    ],
-                                    'methodCode' => 'Standard',
-                                    'trackingNumber' => $tracking_id,
-                                    'trackingURL' => $trackingURL
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
-        return $tracking;
-    }
-
-    protected function parseOrder($order, WalmartOrder $wmord)
-    {
-        Ecommerce::dd($order);
-        $order_num = $order['purchaseOrderId'];
-        echo "Order: $order_num<br><br>";
-        $found = Order::get($order_num);
-        if (LOCAL || !$found) {
-            if (!LOCAL) {
-                $acknowledged = $wmord->acknowledge_order($order_num);
-            }
-//        echo 'Acknowledgement: <br><pre>';
-//        print_r($acknowledged);
-//        echo '</pre><br><br>';
-            if ((array_key_exists('orderLineStatuses', $acknowledged['orderLines']['orderLine']) &&
-                    $acknowledged['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
-                || $acknowledged['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
-            ) {
-                $wmord->get_wm_order($order);
-            }
-        }
-    }
-
-    public function getOrders($wmorder, $wmord, $next = null)
-    {
-        try {
-            $fromDate = '-3 days';
-
-            if (!empty($next)) {
-                $orders = $wmorder->list([
-                    'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
-                    'nextCursor' => $next
-                ]);
-            } else {
-                $orders = $wmorder->listAll([
-                    'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
-//                'limit' => 200
-                ]);
-            }
-            Ecommerce::dd($orders);
-
-            echo 'Orders: <br>';
-            $totalCount = $orders['meta']['totalCount'];
-            echo "Order Count: $totalCount<br><br>";
-
-
-            if ($totalCount > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
-                echo "Multiple Orders<br>";
-                foreach ($orders['elements']['order'] as $order) {
-                    $this->parseOrder($order, $wmord);
-                }
-            } else {
-                echo "Single Order:<br>";
-                foreach ($orders['elements'] as $order) {
-                    $this->parseOrder($order, $wmord);
-                }
-            }
-        } catch (Exception $e) {
-            die("There was a problem requesting the data: " . $e->getMessage());
-        }
     }
 }

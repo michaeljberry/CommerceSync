@@ -37,4 +37,23 @@ class Walmart
         ];
         MDB::query($sql, $query_params);
     }
+
+    public static function getApiOrderDays()
+    {
+        $sql = "SELECT api_days FROM api_walmart WHERE store_id = :store_id";
+        $query_params = [
+            ':store_id' => WalmartClient::getStoreID()
+        ];
+        return MDB::query($sql, $query_params, 'fetchColumn');
+    }
+
+    public static function setApiOrderDays($days)
+    {
+        $sql = "UPDATE api_walmart SET api_days = :api_days WHERE store_id = :store_id";
+        $query_params = [
+            ':store_id' => WalmartClient::getStoreID(),
+            ':api_days' => $days
+        ];
+        MDB::query($sql, $query_params);
+    }
 }

@@ -212,7 +212,7 @@ class WalmartOrder extends Walmart
 
         if($totalCount > WalmartOrder::$limit){
             $nextCursor = $orders['meta']['nextCursor'];
-            $orders = $this->getMoreOrders($orders, $nextCursor);
+            $orders = $this->getMoreOrders($wmorder, $nextCursor);
 
             $this->parseOrders($wmorder, $orders);
         }

@@ -13,7 +13,9 @@ $user_id = 838;
 
 $wmorder = $wmord->configure();
 
-$orders = $wmord->getOrders($wmorder);
+//$orders = $wmord->getOrders($wmorder);
+$orders = $wmord->getOrder($wmorder, '2578500230963');
+\ecommerce\Ecommerce::dd($orders);
 
 $wmord->parseOrders($orders);
 

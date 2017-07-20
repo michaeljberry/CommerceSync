@@ -3,6 +3,7 @@
 namespace wm;
 
 use ecommerce\Ecommerce;
+use Exception;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
@@ -31,7 +32,9 @@ class WalmartOrder extends Walmart
             'purchaseOrderId' => $order_num
         ]);
 //        print_r($order);
-        if (isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo', $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])) {
+        if (isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo',
+                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])
+        ) {
             return $order;
         }
         echo '<br><br>';
@@ -46,10 +49,12 @@ class WalmartOrder extends Walmart
         }
         Ecommerce::dd($order);
         if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
-            $tracking = $this->processTracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
+            $tracking = $this->processTracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id,
+                $trackingURL);
         } else {
             foreach ($order['orderLines']['orderLine'] as $o) {
-                $tracking = $this->processTracking($order['orderLines']['orderLine'], $order_num, $date, $carrier, $tracking_id, $trackingURL);
+                $tracking = $this->processTracking($order['orderLines']['orderLine'], $order_num, $date, $carrier,
+                    $tracking_id, $trackingURL);
             }
         }
 
@@ -114,6 +119,17 @@ class WalmartOrder extends Walmart
         ]);
     }
 
+    protected function isAcknowledged($order): bool
+    {
+        if (count($order['orderLines']['orderLine']) == count($order['orderLines']['orderLine'], COUNT_RECURSIVE)) {
+
+        }
+        return ((array_key_exists('orderLineStatuses', $order['orderLines']['orderLine']) &&
+                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
+            || (array_key_exists('orderLineStatuses',
+                    $order['orderLines']['orderLine'][0]) && $order['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'));
+    }
+
     public function getMoreOrders(WMOrder $wmorder, $next)
     {
         try {
@@ -127,6 +143,19 @@ class WalmartOrder extends Walmart
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
         }
+    }
+
+    public function getOrder(WMOrder $wmorder, $orderNum)
+    {
+        try {
+            $order = $wmorder->get([
+                'purchaseOrderId' => $orderNum
+            ]);
+            return $order;
+        } catch (Exception $e) {
+            die("There was a problem requesting the data: " . $e->getMessage());
+        }
+
     }
 
     public function getOrders(WMOrder $wmorder)
@@ -171,10 +200,7 @@ class WalmartOrder extends Walmart
 
         $found = Order::get($orderNum);
         Ecommerce::dd($order);
-        if ((array_key_exists('orderLineStatuses', $order['orderLines']['orderLine']) &&
-                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged')
-            || $order['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['status'] == 'Acknowledged'
-        ) {
+        if ($this->isAcknowledged($order)) {
             Ecommerce::dd('This order has been acknowledged.');
         }
         if (LOCAL || !$found) {
@@ -292,7 +318,8 @@ class WalmartOrder extends Walmart
         return [
             'total_tax' => $totalTax,
             'shipping_total' => $shippingTotal,
-            'order_total' => $orderTotal];
+            'order_total' => $orderTotal
+        ];
     }
 
     public function get_wm_order_items($order_items, $state_code, $total_tax, Order $Order)

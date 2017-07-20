@@ -122,17 +122,19 @@ class WalmartOrder extends Walmart
         ]);
     }
 
-    protected function isMultiLine($orderLine): bool
+    protected function isMulti($array): bool
     {
-        if (count($orderLine) != count($orderLine, COUNT_RECURSIVE)) {
-            return false;
+        foreach ($array as $key => $value){
+            if(is_numeric($key)){
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     protected function isAcknowledged($orderLine): bool
     {
-        if (!$this->isMultiLine($orderLine)) {
+        if (!$this->isMulti($orderLine)) {
             return (array_key_exists(
                 'orderLineStatuses',
                 $orderLine) &&
@@ -201,7 +203,7 @@ class WalmartOrder extends Walmart
     {
         $totalCount = $orders['meta']['totalCount'];
 
-        if ($totalCount > 1) { // if there are multiple orders to pull **DO NOT CHANGE**
+        if ($this->isMulti($orders['elements'])) { // if there are multiple orders to pull **DO NOT CHANGE**
             echo "Multiple Orders<br>";
             foreach ($orders['elements']['order'] as $order) {
                 $this->parseOrder($order);

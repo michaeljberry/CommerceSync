@@ -17,7 +17,7 @@ $orders = $wmord->getOrders($wmorder);
 //$orders = $wmord->getOrder($wmorder, '2578500230963');
 \ecommerce\Ecommerce::dd($orders);
 
-$wmord->parseOrders($orders);
+$wmord->parseOrders($wmorder, $orders);
 //$wmord->parseOrder($orders);
 
 endClock($start);

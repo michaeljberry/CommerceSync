@@ -16,6 +16,9 @@ use \Walmart\Order as WMOrder;
 
 class WalmartOrder extends Walmart
 {
+
+    private static $limit = 10;
+
     public function configure()
     {
         return new WMOrder([
@@ -178,7 +181,7 @@ class WalmartOrder extends Walmart
 
             $orders = $wmorder->listAll([
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
-//                'limit' => 200
+                'limit' => WalmartOrder::$limit
             ]);
             return $orders;
         } catch (Exception $e) {
@@ -187,10 +190,11 @@ class WalmartOrder extends Walmart
     }
 
     /**
+     * @param $wmorder
      * @param $orders
      * @internal param $wmord
      */
-    public function parseOrders($orders)
+    public function parseOrders(WMOrder $wmorder, $orders)
     {
         $totalCount = $orders['meta']['totalCount'];
 
@@ -204,6 +208,13 @@ class WalmartOrder extends Walmart
             foreach ($orders['elements'] as $order) {
                 $this->parseOrder($order);
             }
+        }
+
+        if($totalCount > WalmartOrder::$limit){
+            $nextCursor = $orders['meta']['nextCursor'];
+            $orders = $this->getMoreOrders($orders, $nextCursor);
+
+            $this->parseOrders($wmorder, $orders);
         }
     }
 

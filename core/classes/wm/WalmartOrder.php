@@ -178,7 +178,7 @@ class WalmartOrder extends Walmart
 
     protected function orderFound($order, $orderNum)
     {
-        if (!LOCAL) {
+//        if (!LOCAL) {
             $acknowledged = $this->acknowledgeOrder($orderNum);
             Ecommerce::dd($acknowledged);
             if ((array_key_exists('orderLineStatuses', $acknowledged['orderLines']['orderLine']) &&
@@ -187,7 +187,7 @@ class WalmartOrder extends Walmart
             ) {
 //                $this->get_wm_order($order);
             }
-        }
+//        }
     }
 
     public function get_wm_order($order)

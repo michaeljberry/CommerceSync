@@ -1,4 +1,5 @@
 <?php
+
 use eb\EbayOrder;
 
 error_reporting(-1);

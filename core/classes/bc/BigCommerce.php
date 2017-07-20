@@ -145,9 +145,9 @@ class BigCommerce
 
     }
 
-    public function get_bc_product_info($product_id)
+    public function get_bc_product_info($productID)
     {
-        $api_url = 'https://mymusiclife.com/api/v2/products/' . $product_id . '.json';
+        $api_url = 'https://mymusiclife.com/api/v2/products/' . $productID . '.json';
         $response = BigCommerceClient::bigcommerceCurl($api_url, 'GET');
 
         $items = json_decode($response);
@@ -422,7 +422,7 @@ class BigCommerce
     {
         $sql = "SELECT api_days FROM api_ebay WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => EbayClient::getStoreID()
+            ':store_id' => BigCommerceClient::getStoreID()
         ];
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
@@ -431,7 +431,7 @@ class BigCommerce
     {
         $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => EbayClient::getStoreID(),
+            ':store_id' => BigCommerceClient::getStoreID(),
             ':api_days' => $days
         ];
         MDB::query($sql, $query_params);

@@ -14,76 +14,6 @@ use controllers\channels\tax\TaxXMLController;
 
 class BigCommerceOrder extends BigCommerce
 {
-    public function getOrders($BC)
-    {
-        $fromDate = "-" . BigCommerce::getApiOrderDays() . " days";
-        $filter = array(
-            'min_date_created' => date('r', strtotime($fromDate)),
-            'status_id' => 11
-        );
-
-        $orders = $BC::getOrders($filter);
-        if ($orders) {
-            foreach ($orders as $order) {
-                $orderNum = $order->id;
-                $found = Order::get($orderNum);
-                if (LOCAL || !$found) {
-
-                    Ecommerce::dd($order);
-                    $channelName = 'BigCommerce';
-                    $purchaseDate = (string)$order->date_created;
-
-                    $state_code = $order->shipping_addresses[0]->state;
-                    $tax = $order->total_tax;
-                    $ship_info = $this->get_bc_order_ship_info($orderNum);
-                    $shippingCode = 'ZSTD';
-                    $total_order = $order->total_ex_tax;
-                    if ($total_order > 299) {
-                        $shippingCode = 'URIP';
-                    }
-
-
-                    $shippingPrice = number_format($order->shipping_cost_inc_tax, 2);
-
-
-                    //Address
-                    $streetAddress = (string)$ship_info[0]->street_1;
-                    $streetAddress2 = (string)$ship_info[0]->street_2;
-                    $city = (string)$ship_info[0]->city;
-                    $state = (string)$ship_info[0]->state;
-                    $zipCode = (string)$ship_info[0]->zip;
-                    $country = (string)$ship_info[0]->country;
-
-
-                    //Buyer
-                    $firstName = (string)$ship_info[0]->first_name;
-                    $lastName = (string)$ship_info[0]->last_name;
-                    $phone = (string)$ship_info[0]->phone;
-                    $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode, $country, $phone);
-
-                    $Order = new Order(1, $channelName, BigCommerceClient::getStoreID(), $buyer, $orderNum,
-                        $purchaseDate, $shippingCode, $shippingPrice, $tax);
-
-                    //Save Orders
-                    if (!LOCAL) {
-//                        $order_id = Order::save(BigCommerceClient::getStoreID(), $buyerID, $orderNum, $shipping, $shipping_amount, $total_tax);
-                        $Order->save(BigCommerceClient::getStoreID());
-                    }
-                    $response = $this->getOrderItems($orderNum);
-                    $info_array = $this->parseItems($response, $state_code, $tax, $Order);
-                    $item_xml = $info_array['item_xml'];
-
-                    $xml = $this->save_bc_order_to_xml($item_xml, $Order, $buyer);
-                    if (!LOCAL) {
-                        FTPController::saveXml($orderNum, $xml, $channelName);
-                    }
-                } else {
-                    echo 'Order ' . $orderNum . ' is already in the database.';
-                }
-            }
-        }
-    }
-
     public function test_get_bc_orders($BC, $filter = '')
     {
         $orders = $BC::getOrders($filter);
@@ -186,42 +116,6 @@ class BigCommerceOrder extends BigCommerce
         return $items;
     }
 
-    public function getOrderItems($orderNum)
-    {
-        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $orderNum . '/products.json';
-        return BigCommerceClient::bigcommerceCurl($api_url, 'GET');
-    }
-
-    public function parseItems($response, $state_code, $total_tax, $Order)
-    {
-        $items = json_decode($response);
-        $item_xml = '';
-        $poNumber = 1;
-        foreach ($items as $i) {
-            Ecommerce::dd($i);
-            $product_id = (string)$i->product_id;
-            $quantity = (integer)$i->quantity;
-            $title = (string)$i->name;
-            $principle = (float)$i->total_ex_tax;
-            $price = Ecommerce::formatMoneyNoComma($principle) / $quantity;
-            $sku = (string)$i->sku;
-            $upc = $this->get_bc_product_upc($product_id);
-            $skuID = SKU::searchOrInsert($sku);
-            $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $poNumber);
-            if (!LOCAL) {
-//                OrderItem::save($orderID, $skuID, $price, $quantity);
-                $orderItem->save($Order);
-            }
-            $item_xml .= OrderItemXMLController::create($orderItem);
-            $poNumber++;
-        }
-        $item_xml .= TaxXMLController::getItemXml($state_code, $poNumber, $total_tax);
-        $info_array = [
-            'item_xml' => $item_xml
-        ];
-        return $info_array;
-    }
-
     public function get_bc_order_ship_info($order_id)
     {
         $api_url = 'https://mymusiclife.com/api/v2/orders/' . $order_id . '/shippingaddresses.json';
@@ -252,14 +146,6 @@ class BigCommerceOrder extends BigCommerce
         return $order;
     }
 
-    public function save_bc_order_to_xml($itemXML, Order $Order)
-    {
-        $sku = Ecommerce::substring_between($itemXML, '<ItemId>', '</ItemId>');
-        $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
-        $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
-        return $xml;
-    }
-
     public function update_bc_tracking($order_id, $tracking_num, $carrier)
     {
         $shipment = $this->get_bc_order_ship_info($order_id);
@@ -282,4 +168,130 @@ class BigCommerceOrder extends BigCommerce
         return $add_tracking;
     }
 
+    public function save_bc_order_to_xml($itemXML, Order $Order)
+    {
+        $sku = Ecommerce::substring_between($itemXML, '<ItemId>', '</ItemId>');
+        $channelNumber = Channel::getAccountNumbersBySku($Order->getChannelName(), $sku);
+        $xml = OrderXMLController::compile($channelNumber, $Order, $itemXML);
+        return $xml;
+    }
+
+
+    public static function getOrders($BC)
+    {
+        $fromDate = "-" . BigCommerce::getApiOrderDays() . " days";
+        $fromDate = "-20 days";
+        $filter = array(
+            'min_date_created' => date('r', strtotime($fromDate)),
+            'status_id' => 2
+        );
+
+        return $BC::getOrders($filter);
+    }
+
+    public function parseOrders($orders)
+    {
+        foreach ($orders as $order) {
+            $this->parseOrder($order);
+        }
+    }
+
+    protected function parseOrder($order)
+    {
+        $orderNum = $order->id;
+        $found = Order::get($orderNum);
+        if (LOCAL || !$found) {
+
+            $this->orderFound($order, $orderNum);
+        }
+    }
+
+    protected function orderFound($order, $orderNum)
+    {
+        Ecommerce::dd($order);
+        $channelName = 'BigCommerce';
+
+        $purchaseDate = (string)$order->date_created;
+
+        $total = $order->total_ex_tax;
+
+        $shippingCode = Order::shippingCode($total);
+        $shippingPrice = number_format($order->shipping_cost_inc_tax, 2);
+
+        $tax = (float)$order->total_tax;
+
+        //Address
+        $ship_info = $this->get_bc_order_ship_info($orderNum);
+        $streetAddress = (string)$ship_info[0]->street_1;
+        $streetAddress2 = (string)$ship_info[0]->street_2;
+        $city = (string)$ship_info[0]->city;
+        $state = (string)$ship_info[0]->state;
+        $zipCode = (string)$ship_info[0]->zip;
+        $country = (string)$ship_info[0]->country;
+
+
+        //Buyer
+        $firstName = (string)$ship_info[0]->first_name;
+        $lastName = (string)$ship_info[0]->last_name;
+        $phone = (string)$ship_info[0]->phone;
+        $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
+            $country, $phone);
+
+        $Order = new Order(1, $channelName, BigCommerceClient::getStoreID(), $buyer, $orderNum,
+            $purchaseDate, $shippingCode, $shippingPrice, $tax);
+
+        //Save Orders
+        if (!LOCAL) {
+            $Order->save(BigCommerceClient::getStoreID());
+        }
+        $items = $this->getItems($orderNum);
+
+        $this->parseItems($Order, $items);
+
+        $tax = $Order->getTax()->get();
+
+        Order::updateShippingAndTaxes($Order->getOrderId(), $Order->getShippingPrice(), $tax);
+
+        $Order->setOrderXml($Order);
+
+        if (!LOCAL) {
+            FTPController::saveXml($Order);
+        }
+    }
+
+    public function getItems($orderNum)
+    {
+        $api_url = 'https://mymusiclife.com/api/v2/orders/' . $orderNum . '/products.json';
+        return BigCommerceClient::bigcommerceCurl($api_url, 'GET');
+    }
+
+    public function parseItems(Order $Order, $items)
+    {
+        $items = json_decode($items);
+        foreach ($items as $item) {
+            $this->parseItem($Order, $item);
+        }
+    }
+
+    protected function parseItem(Order $Order, $item)
+    {
+        $sku = (string)$item->sku;
+        $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
+
+        $quantity = (integer)$item->quantity;
+        $title = (string)$item->name;
+
+        $productID = (string)$item->product_id;
+        $product = $this->get_bc_product_info($productID);
+        $upc = $product->upc;
+
+        $principle = (float)$item->total_ex_tax;
+        $price = Ecommerce::formatMoneyNoComma($principle) / $quantity;
+
+        $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
+        $Order->setOrderItems($orderItem);
+        if (!LOCAL) {
+            $orderItem->save($Order);
+        }
+    }
 }

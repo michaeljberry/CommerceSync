@@ -11,7 +11,10 @@ require WEBPLUGIN . 'wm/wmvar.php';
 $start = startClock();
 $user_id = 838;
 
-$wmord->getOrders();
+$orders = $wmord->getOrders();
+
+$wmord->parseOrders($orders);
+
 
 //$orders = $wmord->getOrder('2578500230963');
 //$wmord->parseOrder($orders);

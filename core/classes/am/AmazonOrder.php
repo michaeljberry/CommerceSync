@@ -246,14 +246,14 @@ class AmazonOrder extends Amazon
         $orderItems = simplexml_load_string($this->getOrderItems($Order->getOrderNumber()));
 
         if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
-            $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $Order);
+            $this->parseItems($Order, $orderItems->ListOrderItemsResult->OrderItems->OrderItem);
         } else {
             sleep(2);
             $this->getItems($Order);
         }
     }
 
-    protected function parseItems($items, Order $Order)
+    protected function parseItems(Order $Order, $items)
     {
         foreach ($items as $item) {
             $this->parseItem($Order, $item);

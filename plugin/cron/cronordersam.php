@@ -1,4 +1,5 @@
 <?php
+
 use am\AmazonOrder;
 
 error_reporting(-1);

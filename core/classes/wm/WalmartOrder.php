@@ -171,17 +171,16 @@ class WalmartOrder extends Walmart
         try {
             $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
 
-            $orders = $this->configure()->listAll([
+            return $this->configure()->listAll([
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
                 'limit' => WalmartOrder::$limit
             ]);
-            $this->parseOrders($orders);
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
         }
     }
 
-    protected function parseOrders($orders)
+    public function parseOrders($orders)
     {
         if ($this->isMulti($orders['elements']['order'])) {
             echo "Multiple Orders<br>";

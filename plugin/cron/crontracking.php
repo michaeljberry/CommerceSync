@@ -44,12 +44,12 @@ foreach ($unshippedOrders as $order) {
     $channel = $order['type'];
     $channelNumbers = Channel::getAccountNumbers($channel);
     $itemID = $order['item_id'];
-    $t = '';;
+    $transID = '';
     if (!empty($itemID)) {
         echo "Item ID: $itemID<br>";
-        $num_id = explode('-', $itemID);
-        $itemID = $num_id[0];
-        $trans_id = $num_id[1];
+        $numID = explode('-', $itemID);
+        $itemID = $numID[0];
+        $transID = $numID[1];
     }
 
     $trackingInfo = IBM::getTrackingNum($orderNumber, $channelNumbers);
@@ -80,7 +80,7 @@ foreach ($unshippedOrders as $order) {
             }
         } elseif (strtolower($channel) == 'ebay') {
             //Update Ebay
-            $response = EbayOrder::updateTracking($trackingNumber, $carrier, $itemID, $trans_id);
+            $response = EbayOrder::updateTracking($trackingNumber, $carrier, $itemID, $transID);
             $successMessage = 'Success';
             if (strpos($response, $successMessage)) {
                 $shipped = true;
@@ -115,6 +115,7 @@ foreach ($unshippedOrders as $order) {
 //                $shipped = true;
 //            }
         }
+        Ecommerce::dd($response);
         if ($shipped) {
             $success = Order::markAsShipped($orderNumber, $channel);
         }

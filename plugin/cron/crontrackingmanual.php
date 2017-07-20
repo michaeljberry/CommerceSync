@@ -3,11 +3,11 @@
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
-require WEBPLUGIN . 'am/amvar.php';
-require WEBPLUGIN . 'bc/bcvar.php';
-require WEBPLUGIN . 'eb/ebvar.php';
-require WEBPLUGIN . 'rev/revvar.php';
-require WEBPLUGIN . 'wm/wmvar.php';
+//require WEBPLUGIN . 'am/amvar.php';
+//require WEBPLUGIN . 'bc/bcvar.php';
+//require WEBPLUGIN . 'eb/ebvar.php';
+//require WEBPLUGIN . 'rev/revvar.php';
+//require WEBPLUGIN . 'wm/wmvar.php';
 
 use am\AmazonOrder;
 use bc\BigCommerceOrder;
@@ -27,8 +27,8 @@ $user_id = 838;
 $amazon_throttle = false;
 
 $folder = ROOTFOLDER;
-$log_file_name = 'Tracking - ' . date('ymd') . '.txt';
-$tracking_log = $folder . 'log/tracking/' . $log_file_name;
+$logFileName = 'Tracking - ' . date('ymd') . '.txt';
+$trackingLog = $folder . 'log/tracking/' . $logFileName;
 echo "Tracking Numbers" . PHP_EOL;
 echo "Channel -> Order Num : Tracking Number<br><br>" . PHP_EOL;
 
@@ -38,46 +38,47 @@ $amazonOrderCount = 1;
 $amazonTrackingXML = '';
 $amazonOrdersThatHaveShipped = [];
 
-foreach ($unshippedOrders as $o) {
-    $order_num = $o['order_num'];
-    $order_id = Order::getIdByOrder($order_num);
-    $channel = $o['type'];
+foreach ($unshippedOrders as $order) {
+    $orderNumber = $order['order_num'];
+    $orderID = Order::getIdByOrder($orderNumber);
+    $channel = $order['type'];
     $channelNumbers = Channel::getAccountNumbers($channel);
-    $item_id = $o['item_id'];
-    $trans_id = '';
-    if (!empty($item_id)) {
-        echo "Item ID: $item_id<br>";
-        $num_id = explode('-', $item_id);
-        $item_id = $num_id[0];
-        $trans_id = $num_id[1];
+    $itemID = $order['item_id'];
+    $transID = '';
+    if (!empty($itemID)) {
+        echo "Item ID: $itemID<br>";
+        $numID = explode('-', $itemID);
+        $itemID = $numID[0];
+        $transID = $numID[1];
     }
 
     $carrier = 'USPS';
-    $tracking_id = trim(IBM::getManualTrackingNum($order_num, $channelNumbers));
-    if (empty($tracking_id)) {
-        $tracking_id = trim(IBM::getSimilarTrackingNum($order_num, $channelNumbers));
+    $trackingNumber = trim(IBM::getManualTrackingNum($orderNumber, $channelNumbers));
+    if (empty($trackingNumber)) {
+        $trackingNumber = trim(IBM::getSimilarTrackingNum($orderNumber, $channelNumbers));
     }
-    echo "$channel: $order_num -> $tracking_id";
+    echo "$channel: $orderNumber -> $trackingNumber<br>";
 
-    if (!empty($tracking_id)) {
+    if (!empty($trackingNumber)) {
         $response = '';
         $shipped = false;
         $success = false;
-        echo $order_id . ': ' . $tracking_id . '; Channel: ' . $channel . '<br>';
-        $result = Tracking::updateTrackingNum($order_id, $tracking_id, $carrier);
+        echo $orderID . ': ' . $trackingNumber . '; Channel: ' . $channel . '<br>';
+        $result = Tracking::updateTrackingNum($orderID, $trackingNumber, $carrier);
         echo $result . '<br>';
         if (strtolower($channel) == 'bigcommerce') {
-            //update BC
-            $response = BigCommerceOrder::updateTracking($order_num, $tracking_id, $carrier);
+            //Update BC
+            $response = BigCommerceOrder::updateTracking($orderNumber, $trackingNumber, $carrier);
+            Ecommerce::dd($response);
             if ($response) {
                 $shipped = true;
             }
         } elseif (strtolower($channel) == 'ebay') {
-            //update Ebay
-            $response = EbayOrder::updateTracking($tracking_id, $carrier, $item_id, $trans_id);
+            //Update Ebay
+            $response = EbayOrder::updateTracking($trackingNumber, $carrier, $itemID, $transID);
             $successMessage = 'Success';
             if (strpos($response, $successMessage)) {
-                $success = true;
+                $shipped = true;
             }
         } elseif (strtolower($channel) == 'amazon') {
             if ($amazon_throttle) {
@@ -85,35 +86,36 @@ foreach ($unshippedOrders as $o) {
                 continue;
             } else {
                 //Update Amazon
-                $amazonOrdersThatHaveShipped[] = $order_num;
-                $amazonTrackingXML .= AmazonOrder::updateTrackingInfo($order_num, $tracking_id, $carrier,
+                $amazonOrdersThatHaveShipped[] = $orderNumber;
+                $amazonTrackingXML .= AmazonOrder::updateTrackingInfo($orderNumber, $trackingNumber, $carrier,
                     $amazonOrderCount);
             }
             $amazonOrderCount++;
         } elseif (strtolower($channel) == 'reverb') {
             //Update Reverb
-            $response = ReverbOrder::updateTracking($order_num, $tracking_id, $carrier, 'false');
+            $response = ReverbOrder::updateTracking($orderNumber, $trackingNumber, $carrier, 'false');
             $successMessage = '"shipped"';
             if (strpos($response, $successMessage)) {
-                $success = true;
+                $shipped = true;
             }
         } elseif (strtolower($channel) == 'walmart') {
             //Update Walmart
-            $response = WalmartOrder::updateTracking($order_num, $tracking_id, $carrier);
-            if (array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
-                if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
-                    $shipped = true;
-                }
-            } elseif (array_key_exists('trackingNumber', $response['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
-                $shipped = true;
-            }
+            $response = WalmartOrder::updateTracking($orderNumber, $trackingNumber, $carrier);
+//            Ecommerce::dd($response);
+//            if (array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
+//                if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
+//                    $shipped = true;
+//                }
+//            } elseif (array_key_exists('trackingNumber', $response['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
+//                $shipped = true;
+//            }
         }
         Ecommerce::dd($response);
         if ($shipped) {
-            $success = Order::markAsShipped($order_num, $channel);
+            $success = Order::markAsShipped($orderNumber, $channel);
         }
         if ($success) {
-            echo $channel . '-> ' . $order_num . ': ' . $tracking_id . PHP_EOL . '<br>';
+            echo "$channel-> $orderNumber: $trackingNumber<br>" . PHP_EOL;
         }
     }
 }
@@ -125,8 +127,8 @@ if (!empty($amazonTrackingXML)) {
     echo '<br>';
     $successMessage = 'SUBMITTED';
     if (strpos($response, $successMessage)) {
-        foreach ($amazonOrdersThatHaveShipped as $order_num) {
-            $success = Order::markAsShipped($order_num, $channel);
+        foreach ($amazonOrdersThatHaveShipped as $orderNumber) {
+            $success = Order::markAsShipped($orderNumber, $channel);
         }
     } elseif (strpos($response, 'throttle') || strpos($response, 'QuotaExceeded')) {
         $amazon_throttle = true;

@@ -132,7 +132,7 @@ class WalmartOrder extends Walmart
     public function getOrders(WMOrder $wmorder)
     {
         try {
-            $fromDate = Walmart::getApiOrderDays() . ' days';
+            $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
 
             $orders = $wmorder->listAll([
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),

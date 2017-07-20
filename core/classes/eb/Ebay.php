@@ -211,7 +211,7 @@ class Ebay
         return $tableArray;
     }
 
-    public static function get_order_days()
+    public static function getApiOrderDays()
     {
         $sql = "SELECT api_days FROM api_ebay WHERE store_id = :store_id";
         $query_params = [
@@ -220,7 +220,7 @@ class Ebay
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public static function set_order_days($days)
+    public static function setApiOrderDays($days)
     {
         $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
         $query_params = [

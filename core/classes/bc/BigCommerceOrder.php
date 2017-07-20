@@ -14,8 +14,14 @@ use controllers\channels\tax\TaxXMLController;
 
 class BigCommerceOrder extends BigCommerce
 {
-    public function get_bc_orders($BC, $filter)
+    public function getOrders($BC)
     {
+        $fromDate = "-" . BigCommerce::getApiOrderDays() . " days";
+        $filter = array(
+            'min_date_created' => date('r', strtotime($fromDate)),
+            'status_id' => 11
+        );
+
         $orders = $BC::getOrders($filter);
         if ($orders) {
             foreach ($orders as $order) {

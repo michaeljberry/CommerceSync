@@ -19,7 +19,7 @@ class Order
     private $channelAccount;
     private $storeID;
     private $buyer;
-    private $orderNum;
+    private $orderNumber;
     private $orderID;
     private $poNumber;
     private $purchaseDate;
@@ -37,7 +37,7 @@ class Order
         $channelName,
         $storeID,
         Buyer $buyer,
-        $orderNum,
+        $orderNumber,
         $purchaseDate,
         $shippingCode,
         $shippingPrice,
@@ -49,7 +49,7 @@ class Order
         $this->setChannelName($channelName);
         $this->setStoreId($storeID);
         $this->setBuyer($buyer);
-        $this->setOrderNum($orderNum);
+        $this->setOrderNumber($orderNumber);
         $this->setOrderId();
         $this->setPoNumber();
         $this->setPurchaseDate($purchaseDate);
@@ -81,14 +81,14 @@ class Order
         $this->buyer = $buyer;
     }
 
-    private function setOrderNum($orderNum)
+    private function setOrderNumber($orderNumber)
     {
-        $this->orderNum = $orderNum;
+        $this->orderNumber = $orderNumber;
     }
 
     private function setOrderId()
     {
-        $this->orderID = Order::getIdByOrder($this->orderNum);
+        $this->orderID = Order::getIdByOrder($this->orderNumber);
     }
 
     private function setPoNumber()
@@ -159,9 +159,9 @@ class Order
         return $this->buyer;
     }
 
-    public function getOrderNum(): string
+    public function getOrderNumber(): string
     {
-        return $this->orderNum;
+        return $this->orderNumber;
     }
 
     public function getOrderId(): int
@@ -327,14 +327,14 @@ class Order
 
     public function save($storeID)
     {
-        $orderID = Order::getIdByStoreId($storeID, $this->getOrderNum());
+        $orderID = Order::getIdByStoreId($storeID, $this->getOrderNumber());
         if (empty($orderID)) {
             $sql = "INSERT INTO sync.order (store_id, cust_id, order_num, ship_method, shipping_amount, taxes, fee, channel_order_id) 
                     VALUES (:store_id, :cust_id, :order_num, :ship_method, :shipping_amount, :taxes, :fee, :channel_order_id)";
             $queryParams = [
                 ":store_id" => $this->getStoreId(),
                 ":cust_id" => $this->getBuyer()->getId(),
-                ":order_num" => $this->getOrderNum(),
+                ":order_num" => $this->getOrderNumber(),
                 ":ship_method" => $this->getShippingCode(),
                 ":shipping_amount" => $this->getShippingPrice(),
                 ":taxes" => $this->getTax(),

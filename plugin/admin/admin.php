@@ -9,11 +9,11 @@ require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
-$days = Amazon::get_order_dates();
+$days = Amazon::getApiOrderDays();
 $from = $days['api_pullfrom'];
 $to = $days['api_pullto'];
 
-$ebayDays = Ebay::get_order_days();
+$ebayDays = Ebay::getApiOrderDays();
 
 
 ?>

@@ -14,14 +14,13 @@ use \DateTimeZone;
 
 class AmazonOrder extends Amazon
 {
-
-    public function updateTrackingInfo($orderNum, $trackingID, $carrier, $num)
+    public function updateTrackingInfo($orderNumber, $trackingID, $carrier, $num)
     {
         $xml = [
             'Message' => [
                 'MessageID' => $num,
                 'OrderFulfillment' => [
-                    'AmazonOrderID' => $orderNum,
+                    'AmazonOrderID' => $orderNumber,
                     'FulfillmentDate' => gmdate("Y-m-d\TH:i:s\Z", time()),
                     'FulfillmentData' => [
                         'CarrierName' => $carrier,
@@ -33,7 +32,7 @@ class AmazonOrder extends Amazon
         return XMLController::makeXML($xml);
     }
 
-    public function update_amazon_tracking($xml1)
+    public function updateTracking($xml1)
     {
         $action = 'SubmitFeed';
         $feedtype = '_POST_ORDER_FULFILLMENT_DATA_';
@@ -77,7 +76,7 @@ class AmazonOrder extends Amazon
         return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
     }
 
-    public function getOrderItems($orderNum)
+    public function getOrderItems($orderNumber)
     {
         $action = 'ListOrderItems';
         $feedtype = '';
@@ -89,7 +88,7 @@ class AmazonOrder extends Amazon
         ];
 
         $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
-        $param['AmazonOrderId'] = $orderNum;
+        $param['AmazonOrderId'] = $orderNumber;
 
         $xml = '';
 
@@ -114,7 +113,7 @@ class AmazonOrder extends Amazon
         $param['OrderStatus.Status.2'] = 'PartiallyShipped';
 //        $param['OrderStatus.Status.1'] = 'Shipped';
 //        $param['FulfillmentChannel.Channel.1'] = 'MFN';
-        $from = Amazon::get_order_dates();
+        $from = Amazon::getApiOrderDays();
         $from = $from['api_pullfrom'];
 //        $from = "-1";
         $from .= ' days';
@@ -152,15 +151,15 @@ class AmazonOrder extends Amazon
 
     public function parseOrder($order)
     {
-        $orderNum = $order->AmazonOrderId;
-        $found = Order::get($orderNum);
+        $orderNumber = $order->AmazonOrderId;
+        $found = Order::get($orderNumber);
 
         if (LOCAL || !$found) {
-            $this->orderFound($order, $orderNum);
+            $this->orderFound($order, $orderNumber);
         }
     }
 
-    public function orderFound($order, $orderNum)
+    public function orderFound($order, $orderNumber)
     {
         Ecommerce::dd($order);
         $channelName = 'Amazon';
@@ -221,7 +220,7 @@ class AmazonOrder extends Amazon
             $country, $phone);
 
 
-        $Order = new Order(1, $channelName, AmazonClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
+        $Order = new Order(1, $channelName, AmazonClient::getStoreID(), $buyer, $orderNumber, $purchaseDate,
             $shippingCode, $shippingPrice, $tax);
 
         //Save Order
@@ -244,7 +243,7 @@ class AmazonOrder extends Amazon
 
     protected function getItems(Order $Order)
     {
-        $orderItems = simplexml_load_string($this->getOrderItems($Order->getOrderNum()));
+        $orderItems = simplexml_load_string($this->getOrderItems($Order->getOrderNumber()));
 
         if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
             $this->parseItems($orderItems->ListOrderItemsResult->OrderItems->OrderItem, $Order);

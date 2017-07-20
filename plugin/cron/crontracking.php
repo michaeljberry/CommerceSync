@@ -75,7 +75,7 @@ foreach ($unshippedOrders as $o) {
             }
         } elseif (strtolower($channel) == 'ebay') {
             //Update Ebay
-            $response = $ebord->update_ebay_tracking($tracking_id, $carrier, $item_id, $trans_id);
+            $response = $ebord->updateTracking($tracking_id, $carrier, $item_id, $trans_id);
             $successMessage = 'Success';
             if (strpos($response, $successMessage)) {
                 $shipped = true;
@@ -92,14 +92,14 @@ foreach ($unshippedOrders as $o) {
             $amazonOrderCount++;
         } elseif (strtolower($channel) == 'reverb') {
             //Update Reverb
-            $response = $revord->update_reverb_tracking($order_num, $tracking_id, $carrier, 'false');
+            $response = $revord->updateTracking($order_num, $tracking_id, $carrier, 'false');
             $successMessage = '"shipped"';
             if (strpos($response, $successMessage)) {
                 $shipped = true;
             }
         } elseif (strtolower($channel) == 'walmart') {
             //Update Walmart
-            $response = $wmord->updateWalmartTracking($order_num, $tracking_id, $carrier);
+            $response = $wmord->updateTracking($order_num, $tracking_id, $carrier);
 //            Ecommerce::dd($response);
 //            if (array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
 //                if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
@@ -120,7 +120,7 @@ foreach ($unshippedOrders as $o) {
 
 if (!empty($amazonTrackingXML)) {
     Ecommerce::dd($amazonTrackingXML);
-    $response = $amord->update_amazon_tracking($amazonTrackingXML);
+    $response = $amord->updateTracking($amazonTrackingXML);
     print_r($response);
     echo '<br>';
     $successMessage = 'SUBMITTED';

@@ -13,11 +13,11 @@ class OrderXMLController
     {
         return [
             'NAMM_PO~version=2007.1' => [
-                'Id' => "S2S{$order->getChannelAccount()}_PO{$order->getOrderNum()}",
+                'Id' => "S2S{$order->getChannelAccount()}_PO{$order->getOrderNumber()}",
                 'Timestamp' => $order->getPurchaseDate(),
                 'BuyerId' => $order->getChannelAccount(),
                 'BuyerIdDesc' => SELLER_NAME . " {$order->getChannelName()}",
-                'PO' => $order->getOrderNum(),
+                'PO' => $order->getOrderNumber(),
                 'Backorder' => 'Y',
                 'SupplierId' => '33076',
                 'SupplierName' => SUPPLIER,

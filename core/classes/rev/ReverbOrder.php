@@ -10,7 +10,7 @@ use controllers\channels\FTPController;
 
 class ReverbOrder extends Reverb
 {
-    public static function clean_sku($sku)
+    public static function cleanSku($sku)
     {
         if (strpos($sku, ';') > 0) {
             $sku = substr($sku, 0, strpos($sku, ';'));
@@ -22,13 +22,13 @@ class ReverbOrder extends Reverb
         return $sku;
     }
 
-    public function update_reverb_tracking($order_num, $tracking_id, $carrier, $notification = true)
+    public function updateTracking($orderNumber, $trackingNumber, $carrier, $notification = true)
     {
-        $url = 'https://reverb.com/api/my/orders/selling/' . $order_num . '/ship';
+        $url = 'https://reverb.com/api/my/orders/selling/' . $orderNumber . '/ship';
         $postString = [
-            'id' => $order_num,
+            'id' => $orderNumber,
             'provider' => $carrier,
-            'tracking_number' => $tracking_id,
+            'tracking_number' => $trackingNumber,
             'send_notification' => $notification,
         ];
         $response = ReverbClient::reverbCurl(
@@ -41,7 +41,7 @@ class ReverbOrder extends Reverb
 
     public static function getOrders()
     {
-        $url = 'https://api.reverb.com/api/my/orders/selling/all?created_start_date=2017-07-18T12:00-00:00&created_end_date=2017-07-19T12:00-00:00'; //awaiting_shipment
+        $url = 'https://api.reverb.com/api/my/orders/selling/awaiting_shipment'; //
         return ReverbClient::reverbCurl($url, 'GET');
     }
 
@@ -65,14 +65,14 @@ class ReverbOrder extends Reverb
 
     protected function parseOrder($order)
     {
-        $orderNum = $order->order_number;
-        $found = Order::get($orderNum);
+        $orderNumber = $order->order_number;
+        $found = Order::get($orderNumber);
         if (LOCAL || !$found) {
-            $this->orderFound($order, $orderNum);
+            $this->orderFound($order, $orderNumber);
         }
     }
 
-    protected function orderFound($order, $orderNum)
+    protected function orderFound($order, $orderNumber)
     {
         Ecommerce::dd($order);
         $channelName = 'Reverb';
@@ -104,7 +104,7 @@ class ReverbOrder extends Reverb
         $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
 
-        $Order = new Order(1, $channelName, ReverbClient::getStoreID(), $buyer, $orderNum,
+        $Order = new Order(1, $channelName, ReverbClient::getStoreID(), $buyer, $orderNumber,
             $purchaseDate, $shippingCode, $shippingPrice, $tax, $fee);
 
         //Save Order
@@ -135,7 +135,7 @@ class ReverbOrder extends Reverb
         $sku = '';
         if(isset($item->sku)) {
             $sku = (string)$item->sku;
-            $sku = ReverbOrder::clean_sku($sku);
+            $sku = ReverbOrder::cleanSku($sku);
         }
         $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
 

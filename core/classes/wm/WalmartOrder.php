@@ -3,16 +3,13 @@
 namespace wm;
 
 use ecommerce\Ecommerce;
-use Exception;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\FTPController;
 use controllers\channels\BuyerController;
-use controllers\channels\order\OrderItemXMLController;
-use controllers\channels\order\OrderXMLController;
-use controllers\channels\tax\TaxXMLController;
 use \Walmart\Order as WMOrder;
+use Exception;
 
 class WalmartOrder extends Walmart
 {
@@ -28,13 +25,10 @@ class WalmartOrder extends Walmart
         ]);
     }
 
-    public function updateWalmartTracking($order_num, $tracking_id, $carrier)
+    public function updateTracking($orderNumber, $trackingNumber, $carrier)
     {
-        $wmorder = $this->configure();
-        $order = $wmorder->get([
-            'purchaseOrderId' => $order_num
-        ]);
-//        print_r($order);
+        $order = $this->getOrder($orderNumber);
+
         if (isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo',
                 $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])
         ) {
@@ -52,19 +46,19 @@ class WalmartOrder extends Walmart
         }
         Ecommerce::dd($order);
         if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
-            $tracking = $this->processTracking($order['orderLines'], $order_num, $date, $carrier, $tracking_id,
+            $tracking = $this->processTracking($order['orderLines'], $orderNumber, $date, $carrier, $trackingNumber,
                 $trackingURL);
         } else {
             foreach ($order['orderLines']['orderLine'] as $o) {
-                $tracking = $this->processTracking($order['orderLines']['orderLine'], $order_num, $date, $carrier,
-                    $tracking_id, $trackingURL);
+                $tracking = $this->processTracking($order['orderLines']['orderLine'], $orderNumber, $date, $carrier,
+                    $trackingNumber, $trackingURL);
             }
         }
 
         return $tracking;
     }
 
-    public function processTracking($order, $order_num, $date, $carrier, $tracking_id, $trackingURL)
+    public function processTracking($order, $orderNumber, $date, $carrier, $trackingNumber, $trackingURL)
     {
         foreach ($order as $o) {
             $lineNumber = $o['lineNumber'];
@@ -72,8 +66,8 @@ class WalmartOrder extends Walmart
             $wmorder = $this->configure();
             try {
                 $tracking = $wmorder->ship(
-                    $order_num,
-                    $this->createTrackingArray($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
+                    $orderNumber,
+                    $this->createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber, $trackingURL)
                 );
             } catch (Exception $e) {
                 die("There was a problem requesting the data: " . $e->getMessage());
@@ -83,7 +77,7 @@ class WalmartOrder extends Walmart
         return $tracking;
     }
 
-    public function createTrackingArray($lineNumber, $quantity, $date, $carrier, $tracking_id, $trackingURL)
+    public function createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber, $trackingURL)
     {
         $tracking = [
             'orderShipment' => [
@@ -103,7 +97,7 @@ class WalmartOrder extends Walmart
                                         'carrier' => $carrier
                                     ],
                                     'methodCode' => 'Standard',
-                                    'trackingNumber' => $tracking_id,
+                                    'trackingNumber' => $trackingNumber,
                                     'trackingURL' => $trackingURL
                                 ]
                             ]
@@ -151,9 +145,7 @@ class WalmartOrder extends Walmart
     public function getMoreOrders($next)
     {
         try {
-            $wmorder = $this->configure();
-
-            $orders = $wmorder->listAll([
+            $orders = $this->configure()->listAll([
                 'nextCursor' => $next
             ]);
             $this->parseOrders($orders);
@@ -165,24 +157,21 @@ class WalmartOrder extends Walmart
     public function getOrder($orderNum)
     {
         try {
-            $wmOrder = $this->configure();
-            $order = $wmOrder->get([
+            $order = $this->configure()->get([
                 'purchaseOrderId' => $orderNum
             ]);
             return $order;
         } catch (Exception $e) {
             die("There was a problem requesting the data: " . $e->getMessage());
         }
-
     }
 
     public function getOrders()
     {
         try {
-            $wmOrder = $this->configure();
             $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
 
-            $orders = $wmOrder->listAll([
+            $orders = $this->configure()->listAll([
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
                 'limit' => WalmartOrder::$limit
             ]);
@@ -240,19 +229,13 @@ class WalmartOrder extends Walmart
             $shippingPrice = 0.00;
             $orderTotal = 0.00;
 
-            echo "<br><br>Order: $orderNum<br><pre>";
-            print_r($order);
-            echo '</pre><br><br>';
-
             if (!$this->isMulti($order['orderLines']['orderLine'])) {
-                $orderInfo = $this->getOrderTotal($order['orderLines']['orderLine'], $orderTotal);
-                $orderTotal += $orderInfo['order_total'];
+                $orderTotal = $this->getOrderTotal($order['orderLines']['orderLine'], $orderTotal);
 
                 $orderItems = $order['orderLines'];
             } else {
-                foreach ($order['orderLines']['orderLine'] as $o) {
-                    $orderInfo = $this->getOrderTotal($o, $orderTotal);
-                    $orderTotal += $orderInfo['order_total'];
+                foreach ($order['orderLines']['orderLine'] as $orderLine) {
+                    $orderTotal += $this->getOrderTotal($orderLine, $orderTotal);
                 }
                 $orderItems = $order['orderLines']['orderLine'];
             }
@@ -300,14 +283,14 @@ class WalmartOrder extends Walmart
         }
     }
 
-    protected function getItems(Order $Order, $order_items)
+    protected function getItems(Order $Order, $orderItems)
     {
-        $this->parseItems($Order, $order_items);
+        $this->parseItems($Order, $orderItems);
     }
 
-    protected function parseItems(Order $Order, $order_items)
+    protected function parseItems(Order $Order, $orderItems)
     {
-        foreach ($order_items as $item) {
+        foreach ($orderItems as $item) {
             $this->parseItem($Order, $item);
         }
     }
@@ -351,8 +334,6 @@ class WalmartOrder extends Walmart
             $orderTotal += $price['chargeAmount']['amount'];
         }
 
-        return [
-            'order_total' => $orderTotal
-        ];
+        return $orderTotal;
     }
 }

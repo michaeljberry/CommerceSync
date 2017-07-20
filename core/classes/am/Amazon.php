@@ -67,7 +67,7 @@ class Amazon
         MDB::query($sql, $query_params);
     }
 
-    public static function get_order_dates()
+    public static function getApiOrderDays()
     {
         $sql = "SELECT api_pullfrom, api_pullto FROM api_amazon WHERE store_id = :store_id";
         $query_params = [
@@ -76,7 +76,7 @@ class Amazon
         return MDB::query($sql, $query_params, 'fetch');
     }
 
-    public static function set_order_dates($from, $to)
+    public static function setApiOrderDays($from, $to)
     {
         $sql = "UPDATE api_amazon SET api_pullfrom = :api_pullfrom, api_pullto = :api_pullto WHERE store_id = :store_id";
         $query_params = [

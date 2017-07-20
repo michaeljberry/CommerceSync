@@ -418,5 +418,24 @@ class BigCommerce
         }
     }
 
+    public static function getApiOrderDays()
+    {
+        $sql = "SELECT api_days FROM api_ebay WHERE store_id = :store_id";
+        $query_params = [
+            ':store_id' => EbayClient::getStoreID()
+        ];
+        return MDB::query($sql, $query_params, 'fetchColumn');
+    }
+
+    public static function setApiOrderDays($days)
+    {
+        $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
+        $query_params = [
+            ':store_id' => EbayClient::getStoreID(),
+            ':api_days' => $days
+        ];
+        MDB::query($sql, $query_params);
+    }
+
 
 }

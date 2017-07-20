@@ -11,15 +11,10 @@ use controllers\channels\BuyerController;
 
 class EbayOrder extends Ebay
 {
-
-    protected $orderNumber;
-    protected $channel;
-
-
     public static function getOrderXml($pageNumber)
     {
         $xml = [
-            'NumberOfDays' => Ebay::get_order_days(),
+            'NumberOfDays' => Ebay::getApiOrderDays(),
             'Pagination' => [
                 'EntriesPerPage' => '100',
                 'PageNumber' => $pageNumber
@@ -29,19 +24,19 @@ class EbayOrder extends Ebay
         return $xml;
     }
 
-    public function update_ebay_tracking($tracking_id, $carrier, $item_id, $trans_id)
+    public function updateTracking($trackingNumber, $carrier, $itemID, $transID)
     {
         $requestName = 'CompleteSale';
 
         $xml = [
-            'ItemID' => $item_id,
-            'TransactionID' => $trans_id,
+            'ItemID' => $itemID,
+            'TransactionID' => $transID,
             'Shipped' => 'true',
             'Shipment' =>
                 [
                     'ShipmentTrackingDetails' =>
                         [
-                            'ShipmentTrackingNumber' => $tracking_id,
+                            'ShipmentTrackingNumber' => $trackingNumber,
                             'ShippingCarrierUsed' => $carrier
                         ]
                 ]
@@ -78,19 +73,19 @@ class EbayOrder extends Ebay
 
     protected function parseOrder($order)
     {
-        $orderNum = (string)$order->ExternalTransaction->ExternalTransactionID;
+        $orderNumber = (string)$order->ExternalTransaction->ExternalTransactionID;
         $orderStatus = trim((string)$order->OrderStatus);
 
         if ($orderStatus !== 'Cancelled') {
-            $found = Order::get($orderNum);
+            $found = Order::get($orderNumber);
 
             if (LOCAL || !$found) {
-                $this->orderFound($order, $orderNum);
+                $this->orderFound($order, $orderNumber);
             }
         }
     }
 
-    protected function orderFound($order, $orderNum)
+    protected function orderFound($order, $orderNumber)
     {
         Ecommerce::dd($order);
         $channelName = 'Ebay';
@@ -146,7 +141,7 @@ class EbayOrder extends Ebay
             $country, $phone);
 
 
-        $Order = new Order(1, $channelName, EbayClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
+        $Order = new Order(1, $channelName, EbayClient::getStoreID(), $buyer, $orderNumber, $purchaseDate,
             $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
 
         //Save Order

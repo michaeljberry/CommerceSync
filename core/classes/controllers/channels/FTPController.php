@@ -10,14 +10,14 @@ class FTPController
 
     public static function saveXml(Order $order)
     {
-        $filename = $order->getOrderNum() . '.xml';
+        $filename = $order->getOrderNumber() . '.xml';
         echo $filename . '<br />';
         FTPController::saveToDisk($filename, $order->getOrderXml());
         if (file_exists(FTP_FOLDER . $filename)) {
             echo "Successfully uploaded $filename<br />";
-            $results = Order::saveToSync($order->getOrderNum(), 1, $order->getChannelName());
+            $results = Order::saveToSync($order->getOrderNumber(), 1, $order->getChannelName());
             if ($results) {
-                echo "{$order->getOrderNum()} successfully updated in DB.";
+                echo "{$order->getOrderNumber()} successfully updated in DB.";
             }
         }
     }

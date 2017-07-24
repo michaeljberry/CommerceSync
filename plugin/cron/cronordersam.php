@@ -1,6 +1,6 @@
 <?php
 
-use am\AmazonOrder;
+use Amazon\AmazonOrder;
 
 error_reporting(-1);
 

@@ -1,5 +1,5 @@
 <?php
-$WooCommerceClient = \wc\WooCommerceClient::instance($userID);
-$woocommerce = new \wc\WooCommerce();
-$wcord = new \wc\WooCommerceOrder();
-$wcinv = new \wc\WooCommerceInventory();
+$WooCommerceClient = \WooCommerce\WooCommerceClient::instance($userID);
+$woocommerce = new \WooCommerce\WooCommerce();
+$wcord = new \WooCommerce\WooCommerceOrder();
+$wcinv = new \WooCommerce\WooCommerceInventory();

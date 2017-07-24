@@ -2,12 +2,57 @@
 
 namespace models\channels;
 
+use Amazon\AmazonOrderTracking;
 use models\ModelDB as MDB;
 
 class Tracking
 {
 
-    public static function getUnshippedOrdersByChannel($channel)
+    private $tracker = [];
+
+    public function setChannelName($channelName)
+    {
+        if(!isset($this->tracker[$channelName])){
+//            $this->setChannelNumbers($channelName);
+            $channelTracking = $channelName . "\\" . $channelName . "Tracking";
+            $this->tracker[$channelName] = new $channelTracking($channelName);
+        }
+    }
+
+    public function setOrderTracking($channelName, $orderNumber, $trackingNumber, $carrier)
+    {
+//        $this->tracker[$channelName]['orders'][$orderNumber]['trackingNumber'] = $trackingNumber;
+//        $this->tracker[$channelName]['orders'][$orderNumber]['carrier'] = $carrier;
+        $this->tracker[$channelName]->updateOrders(new AmazonOrderTracking($orderNumber, $trackingNumber, $carrier));
+    }
+
+    public function setShipped($channelName, $orderNumber)
+    {
+        $this->tracker[$channelName]['orders'][$orderNumber]['shipped'] = true;
+    }
+
+    public function setSuccess($channelName, $orderNumber)
+    {
+        $this->tracker[$channelName]['orders'][$orderNumber]['success'] = true;
+    }
+
+    public function setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID)
+    {
+        $this->tracker[$channelName]['orders'][$orderNumber]['itemID'] = $itemID;
+        $this->tracker[$channelName]['orders'][$orderNumber]['transID'] = $transactionID;
+    }
+
+    public function getChannelNumbers($channelName)
+    {
+        return $this->tracker[$channelName]->getChannelNumbers();
+    }
+
+    public function getTrackingNumber($channelName, $orderNumber)
+    {
+        return $this->tracker[$channelName]['orders'][$orderNumber]['trackingNumber'];
+    }
+
+    public static function getUnshippedOrdersByChannel($channelName)
     {
 
         $sql = "SELECT a.order_num, a.type, a.processed, c.item_id 
@@ -19,7 +64,7 @@ class Tracking
                 AND b.cancelled IS NULL 
                 ORDER BY a.processed";
         $queryParams = [
-            ':channel' => $channel
+            ':channel' => $channelName
         ];
         return MDB::query($sql, $queryParams, 'fetchAll');
     }
@@ -36,21 +81,21 @@ class Tracking
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public static function findUnshippedOrders($channel = null)
+    public static function findUnshippedOrders($channelName = null)
     {
-        if (!empty($channel)) {
-            return Tracking::getUnshippedOrdersByChannel($channel);
+        if (!empty($channelName)) {
+            return Tracking::getUnshippedOrdersByChannel($channelName);
         }
         return Tracking::getUnshippedOrders();
     }
 
-    public static function updateTrackingSuccessful($order_num)
+    public static function updateTrackingSuccessful($orderNumber)
     {
         $sql = "UPDATE order_sync 
                 SET track_successful = '1' 
                 WHERE order_num = :order_num";
         $queryParams = [
-            ':order_num' => $order_num
+            ':order_num' => $orderNumber
         ];
         return MDB::query($sql, $queryParams, 'id');
     }
@@ -80,7 +125,7 @@ class Tracking
         return MDB::query($sql, $queryParams, 'id');
     }
 
-    public static function updateTrackingNum($orderID, $trackingNumber, $carrier)
+    public static function updateTrackingNumber($orderID, $trackingNumber, $carrier)
     {
         $id = Tracking::getId($orderID, $trackingNumber);
         if (empty($id)) {

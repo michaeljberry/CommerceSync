@@ -1,6 +1,6 @@
 <?php
 
-use bc\BigCommerceOrder;
+use BigCommerce\BigCommerceOrder;
 
 error_reporting(-1);
 

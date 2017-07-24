@@ -1,6 +1,6 @@
 <?php
 
-use eb\EbayOrder;
+use Ebay\EbayOrder;
 
 error_reporting(-1);
 

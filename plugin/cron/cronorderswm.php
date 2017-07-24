@@ -1,6 +1,6 @@
 <?php
 
-use wm\WalmartOrder;
+use Walmart\WalmartOrder;
 
 error_reporting(-1);
 

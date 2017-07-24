@@ -1,5 +1,5 @@
 <?php
-$WalmartClient = \wm\WalmartClient::instance($userID);
-$wm = new \wm\Walmart($WalmartClient);
-$wmord = new \wm\WalmartOrder($WalmartClient);
-$wminv = new \wm\WalmartInventory($WalmartClient);
+$WalmartClient = \Walmart\WalmartClient::instance($userID);
+$wm = new \Walmart\Walmart($WalmartClient);
+$wmord = new \Walmart\WalmartOrder($WalmartClient);
+$wminv = new \Walmart\WalmartInventory($WalmartClient);

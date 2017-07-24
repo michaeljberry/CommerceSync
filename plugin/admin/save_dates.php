@@ -1,6 +1,6 @@
 <?php
-use am\Amazon;
-use eb\Ebay;
+use Amazon\Amazon;
+use Ebay\Ebay;
 
 require '../../core/init.php';
 

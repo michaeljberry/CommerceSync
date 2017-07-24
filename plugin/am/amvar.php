@@ -1,5 +1,5 @@
 <?php
-$AmazonClient = \am\AmazonClient::instance($userID);
-$amazon = new \am\Amazon();
-$amord = new \am\AmazonOrder();
-$aminv = new \am\AmazonInventory();
+$AmazonClient = \Amazon\AmazonClient::instance($userID);
+$amazon = new \Amazon\Amazon();
+$amord = new \Amazon\AmazonOrder();
+$aminv = new \Amazon\AmazonInventory();

@@ -1,7 +1,7 @@
 <?php
 $BC = new \Bigcommerce\Api\Client();
 
-$BigCommerceClient = \bc\BigCommerceClient::instance($userID);
-$bigcommerce = new \bc\BigCommerce($BC);
-$bcord = new \bc\BigCommerceOrder($BC);
-$bcinv = new \bc\BigCommerceInventory($BC);
+$BigCommerceClient = \BigCommerce\BigCommerceClient::instance($userID);
+$bigcommerce = new \BigCommerce\BigCommerce($BC);
+$bcord = new \BigCommerce\BigCommerceOrder($BC);
+$bcinv = new \BigCommerce\BigCommerceInventory($BC);

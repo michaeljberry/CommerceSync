@@ -1,5 +1,5 @@
 <?php
-$reverbClient = \rev\ReverbClient::instance($userID);
-$reverb = new \rev\Reverb($reverbClient);
-$revord = new \rev\ReverbOrder($reverbClient);
-$revinv = new \rev\ReverbInventory($reverbClient);
+$reverbClient = \Reverb\ReverbClient::instance($userID);
+$reverb = new \Reverb\Reverb($reverbClient);
+$revord = new \Reverb\ReverbOrder($reverbClient);
+$revinv = new \Reverb\ReverbInventory($reverbClient);

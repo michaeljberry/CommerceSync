@@ -1,6 +1,6 @@
 <?php
 
-use rev\ReverbOrder;
+use Reverb\ReverbOrder;
 
 error_reporting(-1);
 

@@ -1,5 +1,5 @@
 <?php
-$EbayClient = \eb\EbayClient::instance($userID);
-$ebay = new \eb\Ebay();
-$ebord = new \eb\EbayOrder();
-$ebinv = new \eb\EbayInventory();
+$EbayClient = \Ebay\EbayClient::instance($userID);
+$ebay = new \Ebay\Ebay();
+$ebord = new \Ebay\EbayOrder();
+$ebinv = new \Ebay\EbayInventory();

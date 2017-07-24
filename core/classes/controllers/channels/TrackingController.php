@@ -2,16 +2,16 @@
 
 namespace controllers\channels;
 
-use am\AmazonOrder;
-use bc\BigCommerceOrder;
-use eb\EbayOrder;
+use Amazon\AmazonOrder;
+use BigCommerce\BigCommerceOrder;
+use Ebay\EbayOrder;
 use ecommerce\Ecommerce;
 use IBM;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\Tracking;
-use rev\ReverbOrder;
-use wm\WalmartOrder;
+use Reverb\ReverbOrder;
+use Walmart\WalmartOrder;
 
 class TrackingController
 {
@@ -35,8 +35,9 @@ class TrackingController
 
     public static function updateTracking($method = "auto")
     {
+        $tracker = new Tracking();
         $orders = TrackingController::getUnshippedOrders();
-        TrackingController::parseOrders($orders, $method);
+        TrackingController::parseOrders($tracker, $orders, $method);
     }
 
     public static function getUnshippedOrders()
@@ -44,7 +45,7 @@ class TrackingController
         return Tracking::findUnshippedOrders();
     }
 
-    protected static function parseOrders($orders, $method)
+    protected static function parseOrders(Tracking $tracker, $orders, $method)
     {
         $amazon_throttle = false;
         $amazonOrderCount = 1;
@@ -52,23 +53,15 @@ class TrackingController
         $amazonOrdersThatHaveShipped = [];
 
         foreach ($orders as $order) {
-            list($orderNumber, $channel, $response, $successMessage, $amazonOrdersThatHaveShipped, $amazonTrackingXML) = TrackingController::parseOrder($order,
+            list($orderNumber, $channel, $response, $successMessage, $amazonOrdersThatHaveShipped, $amazonTrackingXML) = TrackingController::parseOrder($tracker, $order,
                 $amazon_throttle, $amazonOrdersThatHaveShipped, $amazonOrderCount, $amazonTrackingXML, $method);
         }
-
-        TrackingController::updateAmazonTracking($amazonTrackingXML, $amazonOrdersThatHaveShipped, $channel);
+        Ecommerce::dd($tracker);
+//        TrackingController::updateAmazonTracking($amazonTrackingXML, $amazonOrdersThatHaveShipped, $channel);
     }
 
-    /**
-     * @param $order
-     * @param $amazon_throttle
-     * @param $amazonOrdersThatHaveShipped
-     * @param $amazonOrderCount
-     * @param $amazonTrackingXML
-     * @param $method
-     * @return array
-     */
     protected static function parseOrder(
+        Tracking $tracker,
         $order,
         $amazon_throttle,
         $amazonOrdersThatHaveShipped,
@@ -78,60 +71,67 @@ class TrackingController
     ) {
         $orderNumber = $order['order_num'];
         $orderID = Order::getIdByOrder($orderNumber);
-        $channel = $order['type'];
-        $channelNumbers = Channel::getAccountNumbers($channel);
+        $channelName = $order['type'];
+        if($channelName == 'Amazon') {
+            $tracker->setChannelName($channelName);
+
+            TrackingController::setTrackingNumbers($tracker, $channelName, $orderNumber, $method);
+
+        }
+
+        return;
+        echo "$channelName: $orderNumber -> {$tracker->getTrackingNumber($channelName, $orderNumber)}<br>";
         $itemID = $order['item_id'];
-        $transID = '';
+        $transactionID = '';
         if (!empty($itemID)) {
             echo "Item ID: $itemID<br>";
             $numID = explode('-', $itemID);
             $itemID = $numID[0];
-            $transID = $numID[1];
+            $transactionID = $numID[1];
         }
 
-        list($trackingNumber, $carrier) = TrackingController::getTrackingNumbers($orderNumber, $channelNumbers, ,
-            $method);
-        echo "$channel: $orderNumber -> $trackingNumber<br>";
 
-        if (!empty($trackingNumber)) {
+
+        $tracker->setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID);
+
+        if (!empty($tracker->getTrackingNumber($channelName, $orderNumber))) {
             $response = '';
             $shipped = false;
             $success = false;
-            echo $orderID . ': ' . $trackingNumber . '; Channel: ' . $channel . '<br>';
-            $result = Tracking::updateTrackingNum($orderID, $trackingNumber, $carrier);
+            echo $orderID . ': ' . $trackingNumber . '; Channel: ' . $channelName . '<br>';
+            $result = Tracking::updateTrackingNumber($orderID, $trackingNumber, $carrier);
             echo $result . '<br>';
-            if (strtolower($channel) == 'bigcommerce') {
+            if (strtolower($channelName) == 'bigcommerce') {
                 //Update BC
                 $response = BigCommerceOrder::updateTracking($orderNumber, $trackingNumber, $carrier);
                 Ecommerce::dd($response);
                 if ($response) {
                     $shipped = true;
                 }
-            } elseif (strtolower($channel) == 'ebay') {
+            } elseif (strtolower($channelName) == 'ebay') {
                 //Update Ebay
-                $response = EbayOrder::updateTracking($trackingNumber, $carrier, $itemID, $transID);
+                $response = EbayOrder::updateTracking($trackingNumber, $carrier, $itemID, $transactionID);
                 $successMessage = 'Success';
                 if (strpos($response, $successMessage)) {
                     $shipped = true;
                 }
-            } elseif (strtolower($channel) == 'amazon') {
+            } elseif (strtolower($channelName) == 'amazon') {
                 if ($amazon_throttle) {
                     echo 'Amazon is throttled.<br>';
                 } else {
                     //Update Amazon
                     $amazonOrdersThatHaveShipped[] = $orderNumber;
-                    $amazonTrackingXML .= AmazonOrder::updateTrackingInfo($orderNumber, $trackingNumber, $carrier,
-                        $amazonOrderCount);
+                    $amazonTrackingXML .= AmazonOrder::updateTracking($orderNumber, $trackingNumber, $carrier, $amazonOrderCount);
                 }
                 $amazonOrderCount++;
-            } elseif (strtolower($channel) == 'reverb') {
+            } elseif (strtolower($channelName) == 'reverb') {
                 //Update Reverb
                 $response = ReverbOrder::updateTracking($orderNumber, $trackingNumber, $carrier, 'false');
                 $successMessage = '"shipped"';
                 if (strpos($response, $successMessage)) {
                     $shipped = true;
                 }
-            } elseif (strtolower($channel) == 'walmart') {
+            } elseif (strtolower($channelName) == 'walmart') {
                 //Update Walmart
                 $response = WalmartOrder::updateTracking($orderNumber, $trackingNumber, $carrier);
                 //            Ecommerce::dd($response);
@@ -145,26 +145,21 @@ class TrackingController
             }
             Ecommerce::dd($response);
             if ($shipped) {
-                $success = Order::markAsShipped($orderNumber, $channel);
+                $success = Order::markAsShipped($orderNumber, $channelName);
             }
             if ($success) {
-                echo "$channel-> $orderNumber: $trackingNumber<br>" . PHP_EOL;
+                echo "$channelName-> $orderNumber: $trackingNumber<br>" . PHP_EOL;
             }
         }
 
-        return [$orderNumber, $channel, $response, $successMessage, $amazonOrdersThatHaveShipped, $amazonTrackingXML];
+        return [$orderNumber, $channelName, $response, $successMessage, $amazonOrdersThatHaveShipped, $amazonTrackingXML];
     }
 
-    /**
-     * @param $amazonTrackingXML
-     * @param $amazonOrdersThatHaveShipped
-     * @param $channel
-     */
     protected static function updateAmazonTracking($amazonTrackingXML, $amazonOrdersThatHaveShipped, $channel)
     {
         if (!empty($amazonTrackingXML)) {
             Ecommerce::dd($amazonTrackingXML);
-            $response = AmazonOrder::updateTracking($amazonTrackingXML);
+            $response = AmazonOrder::sendTracking($amazonTrackingXML);
             print_r($response);
             echo '<br>';
             $successMessage = 'SUBMITTED';
@@ -179,27 +174,22 @@ class TrackingController
         }
     }
 
-    /**
-     * @param $orderNumber
-     * @param $channelNumbers
-     * @param $method
-     * @return array
-     */
-    protected static function getTrackingNumbers($orderNumber, $channelNumbers, $method)
+    protected static function setTrackingNumbers(Tracking $tracker, $channelName, $orderNumber, $method)
     {
         $trackingNumber = '';
         $carrier = '';
 
         if($method !== 'auto'){
             $carrier = 'USPS';
-            $trackingNumber = trim(IBM::getManualTrackingNum($orderNumber, $channelNumbers));
+            $trackingNumber = trim(IBM::getManualTrackingNum($orderNumber, $tracker->getChannelNumbers($channelName)));
             if (empty($trackingNumber)) {
-                $trackingNumber = trim(IBM::getSimilarTrackingNum($orderNumber, $channelNumbers));
+                $trackingNumber = trim(IBM::getSimilarTrackingNum($orderNumber, $tracker->getChannelNumbers($channelName)));
             }
-            return [$trackingNumber, $carrier];
+            $tracker->setOrderTracking($channelName, $orderNumber, $trackingNumber, $carrier);
+            return;
         }
 
-        $trackingInfo = IBM::getTrackingNum($orderNumber, $channelNumbers);
+        $trackingInfo = IBM::getTrackingNum($orderNumber, $tracker->getChannelNumbers($channelName));
         if (isset($trackingInfo['USPS'])) {
             $trackingNumber = trim($trackingInfo['USPS']);
             $carrier = 'USPS';
@@ -207,8 +197,9 @@ class TrackingController
             $trackingNumber = trim($trackingNumber['UPS']);
             $carrier = 'UPS';
         }
+        $tracker->setOrderTracking($channelName, $orderNumber, $trackingNumber, $carrier);
 
-        return [$trackingNumber, $carrier];
+        return;
     }
 
 

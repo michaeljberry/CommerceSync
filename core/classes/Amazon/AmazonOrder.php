@@ -17,7 +17,7 @@ class AmazonOrder extends Amazon
 
     private $trackingXML;
 
-    public function updateTracking($orderNumber, $trackingNumber, $carrier, $orderCount)
+    public static function updateTracking($orderNumber, $trackingNumber, $carrier, $orderCount)
     {
         AmazonOrder::updateTrackingInfo($orderNumber, $trackingNumber, $carrier, $orderCount);
     }

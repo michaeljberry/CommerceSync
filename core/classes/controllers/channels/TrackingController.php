@@ -72,27 +72,23 @@ class TrackingController
         $orderNumber = $order['order_num'];
         $orderID = Order::getIdByOrder($orderNumber);
         $channelName = $order['type'];
-        if($channelName == 'Amazon') {
-            $tracker->setChannelName($channelName);
+        $tracker->setChannelName($channelName);
 
-            TrackingController::setTrackingNumbers($tracker, $channelName, $orderNumber, $method);
+        TrackingController::setTrackingNumbers($tracker, $channelName, $orderNumber, $method);
 
-            echo "$channelName: $orderNumber -> {$tracker->getTrackingNumber($channelName, $orderNumber)}<br>";
-            if ($channelName == 'Ebay') {
-                $itemID = $order['item_id'];
-                $transactionID = '';
-                if (!empty($itemID)) {
-                    echo "Item ID: $itemID<br>";
-                    $numID = explode('-', $itemID);
-                    $itemID = $numID[0];
-                    $transactionID = $numID[1];
-                }
-
-                $tracker->setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID);
+        echo "$channelName: $orderNumber -> {$tracker->getTrackingNumber($channelName, $orderNumber)}<br>";
+        if ($channelName == 'Ebay') {
+            $itemID = $order['item_id'];
+            $transactionID = '';
+            if (!empty($itemID)) {
+                echo "Item ID: $itemID<br>";
+                $numID = explode('-', $itemID);
+                $itemID = $numID[0];
+                $transactionID = $numID[1];
             }
-        }
 
-        return;
+            $tracker->setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID);
+        }
 
         if (!empty($tracker->getTrackingNumber($channelName, $orderNumber))) {
             $response = '';
@@ -110,7 +106,7 @@ class TrackingController
                 }
             } elseif (strtolower($channelName) == 'ebay') {
                 //Update Ebay
-                $response = EbayOrder::updateTracking($trackingNumber, $carrier, $itemID, $transactionID);
+                $response = EbayOrder::updateTracking($orderNumber, $trackingNumber, $carrier, $itemID, $transactionID);
                 $successMessage = 'Success';
                 if (strpos($response, $successMessage)) {
                     $shipped = true;
@@ -121,12 +117,13 @@ class TrackingController
                 } else {
                     //Update Amazon
                     $amazonOrdersThatHaveShipped[] = $orderNumber;
-                    $amazonTrackingXML .= AmazonOrder::updateTracking($orderNumber, $trackingNumber, $carrier, $amazonOrderCount);
+                    $amazonTrackingXML .= AmazonOrder::updateTracking($orderNumber, $trackingNumber, $carrier,
+                        $amazonOrderCount);
                 }
                 $amazonOrderCount++;
             } elseif (strtolower($channelName) == 'reverb') {
                 //Update Reverb
-                $response = ReverbOrder::updateTracking($orderNumber, $trackingNumber, $carrier, 'false');
+                $response = ReverbOrder::updateTracking($orderNumber, $trackingNumber, $carrier);
                 $successMessage = '"shipped"';
                 if (strpos($response, $successMessage)) {
                     $shipped = true;

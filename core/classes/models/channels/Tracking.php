@@ -48,8 +48,8 @@ class Tracking
 
     public function setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID)
     {
-        $this->tracker[$channelName]['orders'][$orderNumber]['itemID'] = $itemID;
-        $this->tracker[$channelName]['orders'][$orderNumber]['transID'] = $transactionID;
+        $this->getOrder($channelName, $orderNumber)->setItemId($itemID);
+        $this->getOrder($channelName, $orderNumber)->setTransactionId($transactionID);
     }
 
     public function getChannelNumbers($channelName)

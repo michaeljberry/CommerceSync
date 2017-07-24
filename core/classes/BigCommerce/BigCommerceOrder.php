@@ -122,41 +122,6 @@ class BigCommerceOrder extends BigCommerce
         return $shipping;
     }
 
-    public static function postTrackingInfo($orderNumber, $shipmentID, $filter)
-    {
-        $post_string = json_encode($filter);
-        $apiURL = 'https://mymusiclife.com/api/v2/orders/' . $orderNumber . '/shipments';
-        $response = BigCommerceClient::bigcommerceCurl($apiURL, 'POST', $post_string);
-        Ecommerce::dd('Post BC Tracking Info');
-        Ecommerce::dd($response);
-
-        $order = json_decode($response);
-        return $order;
-    }
-
-    public static function updateTracking($orderNumber, $trackingNumber, $carrier)
-    {
-        $shipment = BigCommerceOrder::getShippingInfo($orderNumber);
-        $shipmentID = (string)$shipment[0]->id;
-        $products = BigCommerceOrder::getOrderProducts($orderNumber);
-        $filter = array(
-            'order_address_id' => $shipmentID,
-            'tracking_number' => $trackingNumber,
-            'shipping_method' => $carrier
-        );
-        $items = [];
-        foreach ($products as $product) {
-            $items[] = array(
-                'order_product_id' => (string)$product->id,
-                'quantity' => (string)$product->quantity
-            );
-        }
-        $filter['items'] = $items;
-        $add_tracking = BigCommerceOrder::postTrackingInfo($orderNumber, $shipmentID, $filter);
-        print_r($add_tracking);
-        return $add_tracking;
-    }
-
     public static function getOrders(Client $BC)
     {
         $fromDate = "-" . BigCommerce::getApiOrderDays() . " days";

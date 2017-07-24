@@ -24,28 +24,6 @@ class EbayOrder extends Ebay
         return $xml;
     }
 
-    public static function updateTracking($orderNumber, $trackingNumber, $carrier, $itemID, $transID)
-    {
-        $requestName = 'CompleteSale';
-
-        $xml = [
-            'ItemID' => $itemID,
-            'TransactionID' => $transID,
-            'Shipped' => 'true',
-            'Shipment' =>
-                [
-                    'ShipmentTrackingDetails' =>
-                        [
-                            'ShipmentTrackingNumber' => $trackingNumber,
-                            'ShippingCarrierUsed' => $carrier
-                        ]
-                ]
-        ];
-
-        $response = EbayClient::ebayCurl($requestName, $xml);
-        return $response;
-    }
-
     public static function getOrders($requestName, $pageNumber)
     {
         $xml = EbayOrder::getOrderXml($pageNumber);

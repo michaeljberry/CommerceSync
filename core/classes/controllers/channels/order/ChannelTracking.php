@@ -27,6 +27,11 @@ abstract class ChannelTracking
         $this->channelNumbers = Channel::getAccountNumbers($this->channelName);
     }
 
+    public function setOrder(ChannelOrderTracking $order)
+    {
+        $this->orders[$order->getOrderNumber()] = $order;
+    }
+
     public function getChannelName()
     {
         return $this->channelName;
@@ -45,10 +50,5 @@ abstract class ChannelTracking
     public function getOrder($orderNum)
     {
         return $this->orders[$orderNum];
-    }
-
-    public function updateOrders(ChannelOrderTracking $order)
-    {
-        $this->orders[$order->getOrderNumber()] = $order;
     }
 }

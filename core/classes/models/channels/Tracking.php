@@ -2,6 +2,8 @@
 
 namespace models\channels;
 
+use controllers\channels\order\ChannelOrderTracking;
+use controllers\channels\order\ChannelTracking;
 use models\ModelDB as MDB;
 
 class Tracking
@@ -9,21 +11,18 @@ class Tracking
 
     private $tracker = [];
 
-    public function setChannelName($channelName)
+    public function setChannel($channelName)
     {
         if(!isset($this->tracker[$channelName])){
-//            $this->setChannelNumbers($channelName);
             $channelTracking = $channelName . "\\" . $channelName . "Tracking";
             $this->tracker[$channelName] = new $channelTracking($channelName);
         }
     }
 
-    public function setOrderTracking($channelName, $orderNumber, $trackingNumber, $carrier)
+    public function setOrder($channelName, $orderNumber, $orderID, $trackingNumber, $carrier)
     {
-//        $this->tracker[$channelName]['orders'][$orderNumber]['trackingNumber'] = $trackingNumber;
-//        $this->tracker[$channelName]['orders'][$orderNumber]['carrier'] = $carrier;
         $channelOrderTracking = $channelName . "\\" . $channelName . "OrderTracking";
-        $this->getChannel($channelName)->updateOrders(new $channelOrderTracking($orderNumber, $trackingNumber, $carrier));
+        $this->getChannel($channelName)->setOrder(new $channelOrderTracking($orderNumber, $orderID, $trackingNumber, $carrier));
     }
 
     public function setShipped($channelName, $orderNumber)
@@ -31,25 +30,25 @@ class Tracking
         $this->getOrder($channelName, $orderNumber)->setShipped();
     }
 
-    public function setSuccess($channelName, $orderNumber)
-    {
-        $this->getOrder($channelName, $orderNumber)->setSuccess();
-    }
-
-    public function getChannel($channelName)
-    {
-        return $this->tracker[$channelName];
-    }
-
-    public function getOrder($channelName, $orderNumber)
-    {
-        return $this->getChannel($channelName)->getOrder($orderNumber);
-    }
-
     public function setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID)
     {
         $this->getOrder($channelName, $orderNumber)->setItemId($itemID);
         $this->getOrder($channelName, $orderNumber)->setTransactionId($transactionID);
+    }
+
+    public function getChannel($channelName): ChannelTracking
+    {
+        return $this->tracker[$channelName];
+    }
+
+    public function getOrder($channelName, $orderNumber): ChannelOrderTracking
+    {
+        return $this->getChannel($channelName)->getOrder($orderNumber);
+    }
+
+    public function getShipped($channelName, $orderNumber)
+    {
+        return $this->getOrder($channelName, $orderNumber)->getShipped();
     }
 
     public function getChannelNumbers($channelName)
@@ -97,6 +96,16 @@ class Tracking
             return Tracking::getUnshippedOrdersByChannel($channelName);
         }
         return Tracking::getUnshippedOrders();
+    }
+
+    public static function markAsShipped($orderNum, $channel)
+    {
+        $response = Tracking::updateTrackingSuccessful($orderNum);
+        if ($response) {
+            echo "Tracking for $channel order $orderNum was updated!";
+            return true;
+        }
+        return false;
     }
 
     public static function updateTrackingSuccessful($orderNumber)

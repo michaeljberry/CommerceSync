@@ -15,59 +15,6 @@ use \DateTimeZone;
 class AmazonOrder extends Amazon
 {
 
-    private $trackingXML;
-
-    public static function updateTracking($orderNumber, $trackingNumber, $carrier, $orderCount)
-    {
-        AmazonOrder::updateTrackingInfo($orderNumber, $trackingNumber, $carrier, $orderCount);
-    }
-
-    private function updateTrackingXML($trackingXML)
-    {
-        $this->trackingXML .= $trackingXML;
-    }
-
-    protected static function updateTrackingInfo($orderNumber, $trackingNumber, $carrier, $orderCount)
-    {
-        $xml = [
-            'Message' => [
-                'MessageID' => $orderCount,
-                'OrderFulfillment' => [
-                    'AmazonOrderID' => $orderNumber,
-                    'FulfillmentDate' => gmdate("Y-m-d\TH:i:s\Z", time()),
-                    'FulfillmentData' => [
-                        'CarrierName' => $carrier,
-                        'ShipperTrackingNumber' => $trackingNumber
-                    ]
-                ]
-            ]
-        ];
-        return XMLController::makeXML($xml);
-    }
-
-    public static function sendTracking($xml1)
-    {
-        $action = 'SubmitFeed';
-        $feedtype = '_POST_ORDER_FULFILLMENT_DATA_';
-        $feed = 'Feeds';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
-        $whatToDo = 'POST';
-
-        $paramAdditionalConfig = [
-            'SellerId'
-        ];
-
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
-
-        $xml = [
-            'MessageType' => 'OrderFulfillment',
-        ];
-        $xml = XMLController::makeXML($xml);
-        $xml .= $xml1;
-
-        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
-    }
-
     public function getMoreOrders($nextToken)
     {
         $action = 'ListOrdersByNextToken';

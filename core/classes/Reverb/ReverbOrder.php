@@ -22,23 +22,6 @@ class ReverbOrder extends Reverb
         return $sku;
     }
 
-    public static function updateTracking($orderNumber, $trackingNumber, $carrier, $notification = false)
-    {
-        $url = 'https://reverb.com/api/my/orders/selling/' . $orderNumber . '/ship';
-        $postString = [
-            'id' => $orderNumber,
-            'provider' => $carrier,
-            'tracking_number' => $trackingNumber,
-            'send_notification' => $notification,
-        ];
-        $response = ReverbClient::reverbCurl(
-            $url,
-            'POST',
-            json_encode($postString)
-        );
-        return $response;
-    }
-
     public static function getOrders()
     {
         $url = 'https://api.reverb.com/api/my/orders/selling/awaiting_shipment'; //

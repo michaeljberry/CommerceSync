@@ -10,11 +10,15 @@ abstract class ChannelOrderTracking
     protected $trackingNumber;
     protected $carrier;
     protected $shipped;
-    protected $success;
+    private $orderID;
 
-    public function __construct($orderNumber, $trackingNumber, $carrier)
+    abstract function updated($trackingResponse);
+    abstract function updateTracking(ChannelTracking $channelTracking, ChannelOrderTracking $channelOrderTracking);
+
+    public function __construct($orderNumber, $orderID, $trackingNumber, $carrier)
     {
         $this->setOrderNumber($orderNumber);
+        $this->setOrderId($orderID);
         $this->setTrackingNumber($trackingNumber);
         $this->setCarrier($carrier);
     }
@@ -22,6 +26,11 @@ abstract class ChannelOrderTracking
     private function setOrderNumber($orderNumber)
     {
         $this->orderNumber = $orderNumber;
+    }
+
+    private function setOrderId($orderID)
+    {
+        $this->orderID = $orderID;
     }
 
     private function setTrackingNumber($trackingNumber)
@@ -39,14 +48,14 @@ abstract class ChannelOrderTracking
         $this->shipped = true;
     }
 
-    public function setSuccess()
-    {
-        $this->success = true;
-    }
-
     public function getOrderNumber()
     {
         return $this->orderNumber;
+    }
+
+    public function getOrderId()
+    {
+        return $this->orderID;
     }
 
     public function getTrackingNumber()
@@ -62,10 +71,5 @@ abstract class ChannelOrderTracking
     public function getShipped()
     {
         return $this->shipped;
-    }
-
-    public function getSuccess()
-    {
-        return $this->success;
     }
 }

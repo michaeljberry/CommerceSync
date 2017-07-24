@@ -290,16 +290,6 @@ class Order
         return MDB::query($sql, $queryParams, 'fetch');
     }
 
-    public static function markAsShipped($orderNum, $channel)
-    {
-        $response = Tracking::updateTrackingSuccessful($orderNum);
-        if ($response) {
-            echo "Tracking for $channel order $orderNum was updated!";
-            return true;
-        }
-        return false;
-    }
-
     public static function updateShippingAmount($orderNum, $shippingAmount)
     {
         $sql = "UPDATE sync.order 

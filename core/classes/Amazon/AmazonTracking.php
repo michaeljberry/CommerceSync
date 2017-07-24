@@ -2,31 +2,19 @@
 
 namespace Amazon;
 
-use controllers\channels\order\OrderTracking;
-use models\channels\Channel;
+use controllers\channels\order\ChannelTracking;
 
-class AmazonTracking
+class AmazonTracking extends ChannelTracking
 {
-    private $channelName;
-    private $channelNumbers;
+
     private $trackingXML;
-    private $orders;
+    private $orderCount;
 
     public function __construct($channelName)
     {
-        $this->setChannelName($channelName);
-        $this->setChannelNumbers();
+        parent::__construct($channelName);
         $this->setTrackingXml();
-    }
-
-    private function setChannelName($channelName)
-    {
-        $this->channelName = $channelName;
-    }
-
-    private function setChannelNumbers()
-    {
-        $this->channelNumbers = Channel::getAccountNumbers($this->channelName);
+        $this->setOrderCount();
     }
 
     private function setTrackingXml()
@@ -34,14 +22,9 @@ class AmazonTracking
         $this->trackingXML = '';
     }
 
-    public function getChannelName()
+    private function setOrderCount()
     {
-        return $this->channelName;
-    }
-
-    public function getChannelNumbers()
-    {
-        return $this->channelNumbers;
+        $this->orderCount = 0;
     }
 
     public function getTrackingXml()
@@ -49,9 +32,10 @@ class AmazonTracking
         return $this->trackingXML;
     }
 
-    public function getOrders()
+    public function getOrderCount()
     {
-        return $this->orders;
+        $this->updateOrderCount();
+        return $this->orderCount;
     }
 
     public function updateTrackingXml($trackingXML)
@@ -59,8 +43,8 @@ class AmazonTracking
         $this->trackingXML .= $trackingXML;
     }
 
-    public function updateOrders(OrderTracking $order)
+    protected function updateOrderCount()
     {
-        $this->orders[$order->getOrderNumber()] = $order;
+        $this->orderCount++;
     }
 }

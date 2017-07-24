@@ -77,22 +77,22 @@ class TrackingController
 
             TrackingController::setTrackingNumbers($tracker, $channelName, $orderNumber, $method);
 
+            echo "$channelName: $orderNumber -> {$tracker->getTrackingNumber($channelName, $orderNumber)}<br>";
+            if ($channelName == 'Ebay') {
+                $itemID = $order['item_id'];
+                $transactionID = '';
+                if (!empty($itemID)) {
+                    echo "Item ID: $itemID<br>";
+                    $numID = explode('-', $itemID);
+                    $itemID = $numID[0];
+                    $transactionID = $numID[1];
+                }
+
+                $tracker->setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID);
+            }
         }
 
         return;
-        echo "$channelName: $orderNumber -> {$tracker->getTrackingNumber($channelName, $orderNumber)}<br>";
-        $itemID = $order['item_id'];
-        $transactionID = '';
-        if (!empty($itemID)) {
-            echo "Item ID: $itemID<br>";
-            $numID = explode('-', $itemID);
-            $itemID = $numID[0];
-            $transactionID = $numID[1];
-        }
-
-
-
-        $tracker->setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID);
 
         if (!empty($tracker->getTrackingNumber($channelName, $orderNumber))) {
             $response = '';

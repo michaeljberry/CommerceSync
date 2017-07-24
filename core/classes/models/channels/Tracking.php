@@ -2,7 +2,6 @@
 
 namespace models\channels;
 
-use Amazon\AmazonOrderTracking;
 use models\ModelDB as MDB;
 
 class Tracking
@@ -23,17 +22,28 @@ class Tracking
     {
 //        $this->tracker[$channelName]['orders'][$orderNumber]['trackingNumber'] = $trackingNumber;
 //        $this->tracker[$channelName]['orders'][$orderNumber]['carrier'] = $carrier;
-        $this->tracker[$channelName]->updateOrders(new AmazonOrderTracking($orderNumber, $trackingNumber, $carrier));
+        $channelOrderTracking = $channelName . "\\" . $channelName . "OrderTracking";
+        $this->getChannel($channelName)->updateOrders(new $channelOrderTracking($orderNumber, $trackingNumber, $carrier));
     }
 
     public function setShipped($channelName, $orderNumber)
     {
-        $this->tracker[$channelName]['orders'][$orderNumber]['shipped'] = true;
+        $this->getOrder($channelName, $orderNumber)->setShipped();
     }
 
     public function setSuccess($channelName, $orderNumber)
     {
-        $this->tracker[$channelName]['orders'][$orderNumber]['success'] = true;
+        $this->getOrder($channelName, $orderNumber)->setSuccess();
+    }
+
+    public function getChannel($channelName)
+    {
+        return $this->tracker[$channelName];
+    }
+
+    public function getOrder($channelName, $orderNumber)
+    {
+        return $this->getChannel($channelName)->getOrder($orderNumber);
     }
 
     public function setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID)
@@ -49,7 +59,7 @@ class Tracking
 
     public function getTrackingNumber($channelName, $orderNumber)
     {
-        return $this->tracker[$channelName]['orders'][$orderNumber]['trackingNumber'];
+        return $this->getOrder($channelName, $orderNumber)->getTrackingNumber();
     }
 
     public static function getUnshippedOrdersByChannel($channelName)

@@ -7,7 +7,7 @@ require WEBCORE . 'ibminit.php';
 //require WEBPLUGIN . 'bc/bcvar.php';
 //require WEBPLUGIN . 'eb/ebvar.php';
 //require WEBPLUGIN . 'rev/revvar.php';
-//require WEBPLUGIN . 'wm/wmvar.php';
+require WEBPLUGIN . 'wm/wmvar.php';
 
 use controllers\channels\TrackingController;
 

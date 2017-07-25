@@ -2,7 +2,6 @@
 
 namespace Walmart;
 
-use ecommerce\Ecommerce;
 use ecommerce\EcommerceInterface;
 use models\channels\Channel;
 
@@ -30,16 +29,13 @@ class WalmartClient implements EcommerceInterface
         return self::$instance;
     }
 
-    public function __construct($userID = '838')
+    public function __construct($userID)
     {
         self::setInfo($userID);
         self::setConsumerKey();
         self::setSecretKey();
         self::setAPIHeader();
         self::setStoreID();
-        Ecommerce::dd(WalmartClient::getConsumerKey());
-        Ecommerce::dd(WalmartClient::getSecretKey());
-        Ecommerce::dd(WalmartClient::getAPIHeader());
     }
 
     private function setInfo($userID)

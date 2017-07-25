@@ -33,7 +33,7 @@ class EbayOrderTracking extends ChannelOrderTracking
                 ]
         ];
 
-//        $response = EbayClient::ebayCurl($requestName, $xml);
+        $response = EbayClient::ebayCurl($requestName, $xml);
         return $response;
     }
 

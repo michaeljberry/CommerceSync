@@ -8,12 +8,9 @@ use controllers\channels\XMLController;
 
 class AmazonOrderTracking extends ChannelOrderTracking
 {
-
-    private $trackingXML;
-
     public function updateTracking(ChannelTracking $amazonTracking, ChannelOrderTracking $amazonOrderTracking)
     {
-        $this->trackingXML .= AmazonOrderTracking::updateTrackingInfo($amazonTracking, $amazonOrderTracking);
+        $amazonTracking->updateTrackingXml(AmazonOrderTracking::updateTrackingInfo($amazonTracking, $amazonOrderTracking));
     }
 
     public function updateTrackingInfo(AmazonTracking $amazonTracking, AmazonOrderTracking $amazonOrderTracking)

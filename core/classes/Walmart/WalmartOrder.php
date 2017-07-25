@@ -16,7 +16,7 @@ class WalmartOrder extends Walmart
 
     private static $limit = 10;
 
-    public static function configure()
+    public static function configure(): WMOrder
     {
         return new WMOrder([
             'consumerId' => WalmartClient::getConsumerKey(),

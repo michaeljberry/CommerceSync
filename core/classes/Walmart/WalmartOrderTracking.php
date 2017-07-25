@@ -19,9 +19,7 @@ class WalmartOrderTracking extends ChannelOrderTracking
 
         $order = WalmartOrder::getOrder($orderNumber);
 
-        if (isset($order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) && array_key_exists('trackingInfo',
-                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])
-        ) {
+        if ($this->shipped($order)) {
             return $order;
         }
         echo '<br><br>';
@@ -103,7 +101,18 @@ class WalmartOrderTracking extends ChannelOrderTracking
 
     public function updated($response)
     {
-        if (isset($response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']['trackingNumber'])) {
+        if ($this->shipped($response)) {
+            return true;
+        }
+        return false;
+    }
+
+    protected function shipped($order)
+    {
+        if (isset(
+                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) &&
+                array_key_exists('trackingInfo', $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])
+        ) {
             return true;
         }
         return false;

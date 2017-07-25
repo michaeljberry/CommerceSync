@@ -17,7 +17,7 @@ class ReverbOrderTracking extends ChannelOrderTracking
             'tracking_number' => $reverbOrderTracking->getTrackingNumber(),
             'send_notification' => false,
         ];
-//        $response = ReverbClient::reverbCurl($url,'POST', json_encode($postString));
+        $response = ReverbClient::reverbCurl($url,'POST', json_encode($postString));
         return $response;
     }
 

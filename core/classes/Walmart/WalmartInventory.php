@@ -2,7 +2,7 @@
 
 namespace Walmart;
 
-use \WalmartAPI\Item as WalmartItem;
+use WalmartAPI\Item as WalmartItem;
 
 class WalmartInventory extends Walmart
 {

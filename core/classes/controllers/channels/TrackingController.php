@@ -69,7 +69,7 @@ class TrackingController
         $orderID = Order::getIdByOrder($orderNumber);
         $channelName = $order['type'];
 
-//        if($channelName == 'Amazon') {
+        if($channelName == 'Walmart') {
         $tracker->setChannel($channelName);
 
             TrackingController::setTrackingNumbers($tracker, $channelName, $orderNumber, $orderID, $method);
@@ -171,7 +171,7 @@ class TrackingController
 //                echo "$channelName-> $orderNumber: $trackingNumber<br>" . PHP_EOL;
 //            }
 //            return [$orderNumber, $channelName, $response, $successMessage, $amazonOrdersThatHaveShipped, $amazonTrackingXML];
-//        }
+        }
     }
 
     protected static function setTrackingNumbers(Tracking $tracker, $channelName, $orderNumber, $orderID, $method)

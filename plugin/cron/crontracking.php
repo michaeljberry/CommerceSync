@@ -14,7 +14,7 @@ use controllers\channels\TrackingController;
 //ob_start();
 
 $start = startClock();
-$user_id = 838;
+$userID = 838;
 
 $amazon_throttle = false;
 

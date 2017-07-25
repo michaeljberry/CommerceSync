@@ -23,10 +23,10 @@ class WooCommerceClient implements EcommerceInterface
         return call_user_func_array([self::instance(), $method], $args);
     }
 
-    public static function instance($user_id)
+    public static function instance($userID)
     {
         if (self::$instance === null) {
-            self::$instance = new WooCommerceClient($user_id);
+            self::$instance = new WooCommerceClient($userID);
         }
         return self::$instance;
     }

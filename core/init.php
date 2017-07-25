@@ -45,7 +45,7 @@ if ($general->logged_in() === true) {
     $company_id = $user['company_id'];
 
     //Walmart Variables
-    require WEBPLUGIN . 'wm/wmvar.php';
+//    require WEBPLUGIN . 'wm/wmvar.php';
 
     //EcomDash Variables
 //    require WEBPLUGIN . 'ecd/ecdvar.php';

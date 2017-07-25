@@ -41,6 +41,11 @@ class Tracking
         return $this->tracker[$channelName];
     }
 
+    public function getChannels()
+    {
+        return $this->tracker;
+    }
+
     public function getOrder($channelName, $orderNumber): ChannelOrderTracking
     {
         return $this->getChannel($channelName)->getOrder($orderNumber);

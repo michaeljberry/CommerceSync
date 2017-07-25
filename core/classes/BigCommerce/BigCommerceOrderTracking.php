@@ -36,9 +36,7 @@ class BigCommerceOrderTracking extends ChannelOrderTracking
     {
         $post_string = json_encode($filter);
         $apiURL = 'https://mymusiclife.com/api/v2/orders/' . $orderNumber . '/shipments';
-        $response = BigCommerceClient::bigcommerceCurl($apiURL, 'POST', $post_string);
-        Ecommerce::dd('Post BC Tracking Info');
-        Ecommerce::dd($response);
+//        $response = BigCommerceClient::bigcommerceCurl($apiURL, 'POST', $post_string);
 
         $order = json_decode($response);
         return $order;

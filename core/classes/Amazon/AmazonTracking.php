@@ -84,22 +84,21 @@ class AmazonTracking extends ChannelTracking
         return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
     }
 
-    public function updateAmazonTracking()
+    public function updateAmazonTracking(ChannelTracking $tracking)
     {
         if (!empty($this->getTrackingXml())) {
             Ecommerce::dd($this->getTrackingXml());
             $response = $this->sendTracking($this->getTrackingXml());
-            print_r($response);
-            echo '<br>';
+            Ecommerce::dd($response);
             $successMessage = 'SUBMITTED';
-//            if (strpos($response, $successMessage)) {
-//                foreach ($amazonOrdersThatHaveShipped as $orderNumber) {
-//                    $success = Tracking::markAsShipped($orderNumber, $channel);
-//                }
-//            } elseif (strpos($response, 'throttle') || strpos($response, 'QuotaExceeded')) {
-//                $amazon_throttle = true;
-//                echo 'Amazon is throttled.<br>';
-//            }
+            if (strpos($response, $successMessage)) {
+                foreach($tracking->getOrders() as $order){
+                    $order->setShipped();
+                }
+            } elseif (strpos($response, 'throttle') || strpos($response, 'QuotaExceeded')) {
+                $this->updateThrottleStatus(true);
+                echo 'Amazon is throttled.<br>';
+            }
         }
     }
 }

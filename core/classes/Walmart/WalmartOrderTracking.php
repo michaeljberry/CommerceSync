@@ -55,15 +55,15 @@ class WalmartOrderTracking extends ChannelOrderTracking
         foreach ($order as $o) {
             $lineNumber = $o['lineNumber'];
             $quantity = $o['orderLineQuantity']['amount'];
-//            try {
-//                $response = WalmartOrder::configure()->ship(
-//                    $orderNumber,
-//                    $this->createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber,
-//                        $trackingURL)
-//                );
-//            } catch (Exception $e) {
-//                die("There was a problem requesting the data: " . $e->getMessage());
-//            }
+            try {
+                $response = WalmartOrder::configure()->ship(
+                    $orderNumber,
+                    $this->createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber,
+                        $trackingURL)
+                );
+            } catch (Exception $e) {
+                die("There was a problem requesting the data: " . $e->getMessage());
+            }
             print_r($response);
         }
         return $response;
@@ -103,8 +103,7 @@ class WalmartOrderTracking extends ChannelOrderTracking
 
     public function updated($response)
     {
-        $successMessage = 'Success';
-        if (strpos($response, $successMessage)) {
+        if (isset($response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']['trackingNumber'])) {
             return true;
         }
         return false;

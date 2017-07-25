@@ -8,7 +8,7 @@ use models\channels\order\Order;
 use models\channels\order\OrderItem;
 use controllers\channels\FTPController;
 use controllers\channels\BuyerController;
-use \WalmartAPI\Order as WMOrder;
+use WalmartAPI\Order as WMOrder;
 use Exception;
 
 class WalmartOrder extends Walmart

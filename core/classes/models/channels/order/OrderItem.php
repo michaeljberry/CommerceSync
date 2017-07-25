@@ -9,7 +9,6 @@ use models\ModelDB as MDB;
 
 class OrderItem
 {
-
     private $sku;
     private $title;
     private $quantity;

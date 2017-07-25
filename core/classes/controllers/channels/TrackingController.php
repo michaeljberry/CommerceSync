@@ -2,21 +2,10 @@
 
 namespace controllers\channels;
 
-use Amazon\AmazonOrder;
-use Amazon\AmazonOrderTracking;
-use BigCommerce\BigCommerceOrder;
-use BigCommerce\BigCommerceOrderTracking;
-use Ebay\EbayOrder;
-use Ebay\EbayOrderTracking;
 use ecommerce\Ecommerce;
 use IBM;
-use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\Tracking;
-use Reverb\ReverbOrder;
-use Reverb\ReverbOrderTracking;
-use Walmart\WalmartOrder;
-use Walmart\WalmartOrderTracking;
 
 class TrackingController
 {

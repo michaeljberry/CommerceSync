@@ -176,12 +176,12 @@ class WalmartOrder extends Walmart
             $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
                 $country, $phone);
 
-            $Order = new Order(1, $channelName, WalmartClient::getStoreID(), $buyer, $orderNum, $purchaseDate,
+            $Order = new Order(1, $channelName, WalmartClient::getStoreId(), $buyer, $orderNum, $purchaseDate,
                 $shippingCode, $shippingPrice, $tax);
 
             //Save Orders
             if (!LOCAL) {
-                $Order->save(WalmartClient::getStoreID());
+                $Order->save(WalmartClient::getStoreId());
             }
 
             $this->getItems($Order, $orderItems);

@@ -87,12 +87,12 @@ class ReverbOrder extends Reverb
         $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
 
-        $Order = new Order(1, $channelName, ReverbClient::getStoreID(), $buyer, $orderNumber,
+        $Order = new Order(1, $channelName, ReverbClient::getStoreId(), $buyer, $orderNumber,
             $purchaseDate, $shippingCode, $shippingPrice, $tax, $fee);
 
         //Save Order
         if (!LOCAL) {
-            $Order->save(ReverbClient::getStoreID());
+            $Order->save(ReverbClient::getStoreId());
         }
 
         $this->getItems($Order, $order);

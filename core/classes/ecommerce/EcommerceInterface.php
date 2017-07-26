@@ -5,7 +5,7 @@ namespace ecommerce;
 interface EcommerceInterface
 {
 
-    static function getStoreID();
+    static function getStoreId();
 
     static function instance($userID);
 

@@ -215,7 +215,7 @@ class Ebay
     {
         $sql = "SELECT api_days FROM api_ebay WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => EbayClient::getStoreID()
+            ':store_id' => EbayClient::getStoreId()
         ];
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
@@ -224,7 +224,7 @@ class Ebay
     {
         $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => EbayClient::getStoreID(),
+            ':store_id' => EbayClient::getStoreId(),
             ':api_days' => $days
         ];
         MDB::query($sql, $query_params);

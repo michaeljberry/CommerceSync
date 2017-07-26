@@ -72,6 +72,7 @@ class Channel
     public static function getAppInfo($user_id, $table, $channel, $columns)
     {
         $columnSelect = Channel::prepareColumnList($table, $columns);
+        Ecommerce::dd($columnSelect);
 
         $sql = "SELECT $columnSelect
                 FROM $table

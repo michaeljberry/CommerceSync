@@ -85,7 +85,7 @@ class WalmartClient implements EcommerceInterface
         return self::$walmartAPIHeader;
     }
 
-    public static function getStoreID()
+    public static function getStoreId()
     {
         return static::$walmartStoreID;
     }

@@ -18,20 +18,20 @@ trait AmazonClientCurl
     public static function setParams($action, $feedtype, $version, $paramAdditionalConfig = [])
     {
         $param = [];
-        $param['AWSAccessKeyId'] = AmazonClient::getAWSAccessKey();
+        $param['AWSAccessKeyId'] = AmazonClient::getAwsAccessKey();
         $param['Action'] = $action;
 
         //Parse $paramAdditionalConfig Array
         if (in_array('Merchant', $paramAdditionalConfig))
-            $param['Merchant'] = AmazonClient::getMerchantID();
+            $param['Merchant'] = AmazonClient::getMerchantId();
         if (in_array('MarketplaceId.Id.1', $paramAdditionalConfig))
-            $param['MarketplaceId.Id.1'] = AmazonClient::getMarketplaceID();
+            $param['MarketplaceId.Id.1'] = AmazonClient::getMarketplaceId();
         if (in_array('PurgeAndReplace', $paramAdditionalConfig))
             $param['PurgeAndReplace'] = 'false';
         if (in_array('MarketplaceId', $paramAdditionalConfig))
-            $param['MarketplaceId'] = AmazonClient::getMarketplaceID();
+            $param['MarketplaceId'] = AmazonClient::getMarketplaceId();
         if (in_array('SellerId', $paramAdditionalConfig))
-            $param['SellerId'] = AmazonClient::getMerchantID();
+            $param['SellerId'] = AmazonClient::getMerchantId();
 
         if (!empty($feedtype)) {
             $param['FeedType'] = $feedtype;
@@ -152,7 +152,7 @@ trait AmazonClientCurl
         $xml = [
             'Header' => [
                 'DocumentVersion' => '1.01',
-                'MerchantIdentifier' => AmazonClient::getMerchantID()
+                'MerchantIdentifier' => AmazonClient::getMerchantId()
             ]
         ];
 

@@ -42,7 +42,7 @@ class Walmart
     {
         $sql = "SELECT api_days FROM api_walmart WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => WalmartClient::getStoreID()
+            ':store_id' => WalmartClient::getStoreId()
         ];
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
@@ -51,7 +51,7 @@ class Walmart
     {
         $sql = "UPDATE api_walmart SET api_days = :api_days WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => WalmartClient::getStoreID(),
+            ':store_id' => WalmartClient::getStoreId(),
             ':api_days' => $days
         ];
         MDB::query($sql, $query_params);

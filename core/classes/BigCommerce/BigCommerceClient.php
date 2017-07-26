@@ -89,7 +89,7 @@ class BigCommerceClient implements EcommerceInterface
         return self::$bigcommerceAPIKey;
     }
 
-    public static function getStoreID()
+    public static function getStoreId()
     {
         return self::$bigcommerceStoreID;
     }

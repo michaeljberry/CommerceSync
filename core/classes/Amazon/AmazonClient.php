@@ -38,6 +38,14 @@ class AmazonClient implements EcommerceInterface
         ]
     ];
 
+    private static $columns = [
+        'store_id',
+        'merchantid',
+        'marketplaceid',
+        'aws_access_key',
+        'secret_key'
+    ];
+
     public static function __callStatic($method, $args)
     {
         return call_user_func_array([self::instance(), $method], $args);
@@ -58,11 +66,11 @@ class AmazonClient implements EcommerceInterface
     protected function __construct($user_id)
     {
         self::setInfo($user_id);
-        self::setMerchantID();
-        self::setMarketplaceID();
-        self::setAWSAccessKey();
+        self::setMerchantId();
+        self::setMarketplaceId();
+        self::setAwsAccessKey();
         self::setSecretKey();
-        self::setStoreID();
+        self::setStoreId();
     }
 
     /**
@@ -70,28 +78,20 @@ class AmazonClient implements EcommerceInterface
      */
     private function setInfo($user_id)
     {
-        $columns = [
-            'store_id',
-            'merchantid',
-            'marketplaceid',
-            'aws_access_key',
-            'secret_key'
-        ];
-
-        self::$amazonInfo = Channel::getAppInfo($user_id, AmazonClient::$apiTable, AmazonClient::$channel, $columns);
+        self::$amazonInfo = Channel::getAppInfo($user_id, AmazonClient::$apiTable, AmazonClient::$channel, AmazonClient::$columns);
     }
 
-    private function setMerchantID()
+    private function setMerchantId()
     {
         self::$amazonMerchantID = decrypt(self::$amazonInfo['merchantid']);
     }
 
-    private function setMarketplaceID()
+    private function setMarketplaceId()
     {
         self::$amazonMarketplaceID = decrypt(self::$amazonInfo['marketplaceid']);
     }
 
-    private function setAWSAccessKey()
+    private function setAwsAccessKey()
     {
         self::$amazonAWSAccessKey = decrypt(self::$amazonInfo['aws_access_key']);
     }
@@ -101,7 +101,7 @@ class AmazonClient implements EcommerceInterface
         self::$amazonSecretKey = decrypt(self::$amazonInfo['secret_key']);
     }
 
-    private function setStoreID()
+    private function setStoreId()
     {
         self::$amazonStoreID = self::$amazonInfo['store_id'];
     }
@@ -111,17 +111,17 @@ class AmazonClient implements EcommerceInterface
         return self::$apiFeedInfo[$feed];
     }
 
-    public static function getMerchantID()
+    public static function getMerchantId()
     {
         return self::$amazonMerchantID;
     }
 
-    public static function getMarketplaceID()
+    public static function getMarketplaceId()
     {
         return self::$amazonMarketplaceID;
     }
 
-    public static function getAWSAccessKey()
+    public static function getAwsAccessKey()
     {
         return self::$amazonAWSAccessKey;
     }
@@ -131,7 +131,7 @@ class AmazonClient implements EcommerceInterface
         return self::$amazonSecretKey;
     }
 
-    public static function getStoreID()
+    public static function getStoreId()
     {
         return static::$amazonStoreID;
     }

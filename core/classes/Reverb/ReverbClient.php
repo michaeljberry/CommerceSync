@@ -64,7 +64,7 @@ class ReverbClient implements EcommerceInterface
         return self::$reverbAuth;
     }
 
-    public static function getStoreID()
+    public static function getStoreId()
     {
         return self::$reverbStoreID;
     }

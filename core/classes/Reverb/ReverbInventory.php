@@ -65,11 +65,11 @@ class ReverbInventory extends Reverb
                     $product_id = Product::searchOrInsert($sku, $name, '', $description, '', '');
                     //add-product-availability
                     $availability_id = ProductAvailability::searchOrInsert($product_id,
-                        ReverbClient::getStoreID());
+                        ReverbClient::getStoreId());
                     //find sku
                     $sku_id = $ecommerce->sku_soi($sku);
                     //add price
-                    $price_id = $ecommerce->price_soi($sku_id, $price, ReverbClient::getStoreID());
+                    $price_id = $ecommerce->price_soi($sku_id, $price, ReverbClient::getStoreId());
                     //normalize condition
                     $condition = $ecommerce->normal_condition($product_condition);
                     //find condition id
@@ -77,7 +77,7 @@ class ReverbInventory extends Reverb
                     //add stock to sku
                     $stock_id = $ecommerce->stock_soi($sku_id, $condition_id);
                     $channel_array = [
-                        'store_id' => ReverbClient::getStoreID(),
+                        'store_id' => ReverbClient::getStoreId(),
                         'stock_id' => $stock_id,
                         'store_listing_id' => $store_listing_id,
                         'price' => $price,
@@ -96,7 +96,7 @@ class ReverbInventory extends Reverb
                         'shipping_cost' => $shipping_cost
                     ];
 //                    print_r($channel_array);
-                    $listing_id = Listing::searchOrInsert('listing_reverb', ReverbClient::getStoreID(), $stock_id,
+                    $listing_id = Listing::searchOrInsert('listing_reverb', ReverbClient::getStoreId(), $stock_id,
                         $channel_array, 'true');
                     echo $listing_id . '<br><br>';
                 }

@@ -180,12 +180,12 @@ class AmazonOrder extends Amazon
             $country, $phone);
 
 
-        $Order = new Order(1, $channelName, AmazonClient::getStoreID(), $buyer, $orderNumber, $purchaseDate,
+        $Order = new Order(1, $channelName, AmazonClient::getStoreId(), $buyer, $orderNumber, $purchaseDate,
             $shippingCode, $shippingPrice, $tax);
 
         //Save Order
         if (!LOCAL) {
-            $Order->save(AmazonClient::getStoreID());
+            $Order->save(AmazonClient::getStoreId());
         }
 
         $this->getItems($Order);

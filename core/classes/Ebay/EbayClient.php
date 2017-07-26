@@ -101,7 +101,7 @@ class EbayClient implements EcommerceInterface
         return self::$eBayToken;
     }
 
-    public static function getStoreID()
+    public static function getStoreId()
     {
         return static::$eBayStoreID;
     }

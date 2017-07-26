@@ -341,11 +341,11 @@ class BigCommerce
                 //find-product-id
                 $product_id = Product::searchOrInsert($sku, $name, '', $description, $upc, $weight);
                 //add-product-availability
-                $availability_id = MDB::availability_soi($product_id, BigCommerceClient::getStoreID());
+                $availability_id = MDB::availability_soi($product_id, BigCommerceClient::getStoreId());
                 //find sku
                 $sku_id = $ecommerce->sku_soi($sku);
                 //add price
-                $price_id = $ecommerce->price_soi($sku_id, $price, BigCommerceClient::getStoreID());
+                $price_id = $ecommerce->price_soi($sku_id, $price, BigCommerceClient::getStoreId());
                 //normalize condition
                 $condition = $ecommerce->normal_condition($product_condition);
                 //find condition id
@@ -353,7 +353,7 @@ class BigCommerce
                 //add stock to sku
                 $stock_id = $ecommerce->stock_soi($sku_id, $condition_id);
                 $channel_array = array(
-                    'store_id' => BigCommerceClient::getStoreID(),
+                    'store_id' => BigCommerceClient::getStoreId(),
                     'stock_id' => $stock_id,
                     'store_listing_id' => $store_listing_id,
                     'url' => $url,
@@ -410,7 +410,7 @@ class BigCommerce
                     'photo_url' => $photo_url
                 );
                 //add stock to listing
-                $listing_id = Listing::searchOrInsert('listing_bigcommerce', BigCommerceClient::getStoreID(), $stock_id,
+                $listing_id = Listing::searchOrInsert('listing_bigcommerce', BigCommerceClient::getStoreId(), $stock_id,
                     $channel_array, 'true');
                 echo $listing_id . '<br>';
 //                return $listing_id;
@@ -422,7 +422,7 @@ class BigCommerce
     {
         $sql = "SELECT api_days FROM api_ebay WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => BigCommerceClient::getStoreID()
+            ':store_id' => BigCommerceClient::getStoreId()
         ];
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
@@ -431,7 +431,7 @@ class BigCommerce
     {
         $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => BigCommerceClient::getStoreID(),
+            ':store_id' => BigCommerceClient::getStoreId(),
             ':api_days' => $days
         ];
         MDB::query($sql, $query_params);

@@ -181,12 +181,12 @@ class BigCommerceOrder extends BigCommerce
         $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
 
-        $Order = new Order(1, $channelName, BigCommerceClient::getStoreID(), $buyer, $orderNum,
+        $Order = new Order(1, $channelName, BigCommerceClient::getStoreId(), $buyer, $orderNum,
             $purchaseDate, $shippingCode, $shippingPrice, $tax);
 
         //Save Orders
         if (!LOCAL) {
-            $Order->save(BigCommerceClient::getStoreID());
+            $Order->save(BigCommerceClient::getStoreId());
         }
         $items = $this->getItems($orderNum);
 

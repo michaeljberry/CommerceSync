@@ -87,7 +87,7 @@ class WooCommerceClient implements EcommerceInterface
         return self::$woocommerceSite;
     }
 
-    public static function getStoreID()
+    public static function getStoreId()
     {
         return self::$woocommerceStoreID;
     }

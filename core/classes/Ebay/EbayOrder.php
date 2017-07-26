@@ -119,12 +119,12 @@ class EbayOrder extends Ebay
             $country, $phone);
 
 
-        $Order = new Order(1, $channelName, EbayClient::getStoreID(), $buyer, $orderNumber, $purchaseDate,
+        $Order = new Order(1, $channelName, EbayClient::getStoreId(), $buyer, $orderNumber, $purchaseDate,
             $shippingCode, $shippingPrice, $tax, $fee, $channelOrderID);
 
         //Save Order
         if (!LOCAL) {
-            $Order->save(EbayClient::getStoreID());
+            $Order->save(EbayClient::getStoreId());
         }
 
         $this->getItems($Order, $order->TransactionArray);

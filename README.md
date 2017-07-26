@@ -9,9 +9,13 @@ After insertion into the ERP, updated product inventory quantities are extracted
 Once orders have shipped within the ERP, tracking information (number and carrier) are retrieved and pushed directly to each channel.
 
 TODO::
+
+(Ongoing - Write tests for current code)
 1. OOP approach to directly updating each channel with inventory updates.
-2. Build more robust channel inventory updater to allow for products disallowed from being sold on certain channels.
-3. Build background taxonomy mapper to allow for much more robust handling of data between channels.
-4. Create products and list directly to each channel
-5. Integrate the 'V' in MVC after 'M' and 'C' are completed. 
-6. And probably a whole bunch more stuff...
+2. Forms to manage API keys/Oauth.
+3. Forms to create/edit users.
+4. Build more robust channel inventory updater to allow for products disallowed from being sold on certain channels.
+5. Build background taxonomy mapper to allow for much more robust handling of data between channels.
+6. Create products and list directly to each channel
+7. Integrate the 'V' in MVC after 'M' and 'C' are completed. 
+8. And probably a whole bunch more stuff...

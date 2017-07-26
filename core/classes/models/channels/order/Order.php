@@ -8,7 +8,6 @@ use controllers\channels\ShippingController;
 use ecommerce\Ecommerce;
 use models\channels\Buyer;
 use models\channels\Tax;
-use models\channels\Tracking;
 use models\ModelDB as MDB;
 
 class Order
@@ -50,7 +49,6 @@ class Order
         $this->setStoreId($storeID);
         $this->setBuyer($buyer);
         $this->setOrderNumber($orderNumber);
-        $this->setOrderId();
         $this->setPoNumber();
         $this->setPurchaseDate($purchaseDate);
         $this->setShippingCode($shippingCode);
@@ -86,7 +84,7 @@ class Order
         $this->orderNumber = $orderNumber;
     }
 
-    private function setOrderId()
+    public function setOrderId()
     {
         $this->orderID = Order::getIdByOrder($this->orderNumber);
     }

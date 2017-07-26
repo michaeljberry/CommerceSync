@@ -186,6 +186,7 @@ class AmazonOrder extends Amazon
         if (!LOCAL) {
             $Order->save(AmazonClient::getStoreId());
         }
+        $Order->setOrderId();
 
         $this->getItems($Order);
 

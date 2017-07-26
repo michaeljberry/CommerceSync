@@ -183,6 +183,7 @@ class WalmartOrder extends Walmart
             if (!LOCAL) {
                 $Order->save(WalmartClient::getStoreId());
             }
+            $Order->setOrderId();
 
             $this->getItems($Order, $orderItems);
 

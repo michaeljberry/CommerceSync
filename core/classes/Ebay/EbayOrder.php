@@ -126,6 +126,7 @@ class EbayOrder extends Ebay
         if (!LOCAL) {
             $Order->save(EbayClient::getStoreId());
         }
+        $Order->setOrderId();
 
         $this->getItems($Order, $order->TransactionArray);
 

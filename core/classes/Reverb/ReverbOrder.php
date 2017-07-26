@@ -94,6 +94,7 @@ class ReverbOrder extends Reverb
         if (!LOCAL) {
             $Order->save(ReverbClient::getStoreId());
         }
+        $Order->setOrderId();
 
         $this->getItems($Order, $order);
 

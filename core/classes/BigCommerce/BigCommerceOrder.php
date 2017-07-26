@@ -188,6 +188,8 @@ class BigCommerceOrder extends BigCommerce
         if (!LOCAL) {
             $Order->save(BigCommerceClient::getStoreId());
         }
+        $Order->setOrderId();
+
         $items = $this->getItems($orderNum);
 
         $this->parseItems($Order, $items);

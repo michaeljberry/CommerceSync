@@ -27,7 +27,7 @@ class XMLController
 
     public static function closingXMLTag($tagname)
     {
-        return "</$tagname>";
+        return "</$tagname>" . PHP_EOL;
     }
 
     /**

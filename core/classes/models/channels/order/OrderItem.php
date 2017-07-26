@@ -100,7 +100,7 @@ class OrderItem
         return $this->upc;
     }
 
-    public function getChannelOrderItemId(): string
+    public function getChannelOrderItemId()
     {
         return $this->channelOrderItemID;
     }

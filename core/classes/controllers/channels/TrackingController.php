@@ -2,6 +2,7 @@
 
 namespace controllers\channels;
 
+use controllers\channels\order\ChannelOrderTracking;
 use ecommerce\Ecommerce;
 use IBM;
 use models\channels\order\Order;
@@ -49,18 +50,7 @@ class TrackingController
             $tracker->getChannel('Amazon')->updateAmazonTracking($tracker->getChannel('Amazon'));
         }
         Ecommerce::dd($tracker);
-        foreach($tracker->getChannels() as $channel){
-            Ecommerce::dd('Channel:');
-            Ecommerce::dd($channel);
-            foreach($channel->getOrders() as $order){
-                Ecommerce::dd('Order:');
-                Ecommerce::dd($order->getOrderNumber());
-                if($order->getShipped()) {
-                    Ecommerce::dd("Order: " . $order->getOrderNumber() . " has shipped");
-//                    Tracking::markAsShipped($order->getOrderNumber(), $channel->getChannelName());
-                }
-            }
-        }
+        TrackingController::markOrdersAsShipped($tracker);
     }
 
     protected static function parseOrder(Tracking $tracker, $order, $method)
@@ -72,106 +62,12 @@ class TrackingController
 //        if($channelName == 'Walmart') {
         $tracker->setChannel($channelName);
 
-            TrackingController::setTrackingNumbers($tracker, $channelName, $orderNumber, $orderID, $method);
+        TrackingController::setTrackingNumbers($tracker, $channelName, $orderNumber, $orderID, $method);
 
-            echo "$channelName: $orderNumber -> {$tracker->getTrackingNumber($channelName, $orderNumber)}<br>";
-            $itemID = '';
-            $transactionID = '';
-            if ($channelName == 'Ebay') {
-                $itemID = $order['item_id'];
-                $transactionID = '';
-                if (!empty($itemID)) {
-                    echo "Item ID: $itemID<br>";
-                    $numID = explode('-', $itemID);
-                    $itemID = $numID[0];
-                    $transactionID = $numID[1];
-                }
+        echo "$channelName: $orderNumber -> {$tracker->getTrackingNumber($channelName, $orderNumber)}<br>";
+        TrackingController::setEbayId($tracker, $order, $channelName, $orderNumber);
 
-                $tracker->setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID);
-            }
-
-            if (!empty($tracker->getTrackingNumber($channelName, $orderNumber))) {
-                $trackingNumber = $tracker->getOrder($channelName, $orderNumber)->getTrackingNumber();
-                $carrier = $tracker->getOrder($channelName, $orderNumber)->getCarrier();
-//            $response = '';
-//            $shipped = false;
-//            $success = false;
-                echo $orderID . ': ' . $trackingNumber . '; Channel: ' . $channelName . '<br>';
-
-                Tracking::updateTrackingNumber(
-                    $tracker->getOrder($channelName, $orderNumber)->getOrderId(),
-                    $trackingNumber,
-                    $carrier
-                );
-
-                $channelOrderTracking = $tracker->getOrder($channelName, $orderNumber);
-                $response = $channelOrderTracking->updateTracking($tracker->getChannel($channelName),
-                    $channelOrderTracking);
-
-                Ecommerce::dd($response);
-                $updated = $channelOrderTracking->updated($response);
-
-                if ($channelName !== 'Amazon') {
-                    if ($updated) {
-                        $channelOrderTracking->setShipped();
-                        echo "$channelName-> $orderNumber: $trackingNumber<br>" . PHP_EOL;
-                    }
-                }
-            }
-
-
-
-
-            if (strtolower($channelName) == 'bigcommerce') {
-                //Update BC
-//                $response = $channelOrderTracking->updateTracking($orderNumber, $trackingNumber, $carrier);
-
-            } elseif (strtolower($channelName) == 'ebay') {
-                //Update Ebay
-//                $response = EbayOrderTracking::updateTracking($orderNumber, $trackingNumber, $carrier, $itemID,
-//                    $transactionID);
-//                $successMessage = 'Success';
-//                if (strpos($response, $successMessage)) {
-//                    $shipped = true;
-//                }
-            } elseif (strtolower($channelName) == 'amazon') {
-//                if ($amazon_throttle) {
-//                    echo 'Amazon is throttled.<br>';
-//                } else {
-//                    //Update Amazon
-//                    $amazonOrdersThatHaveShipped[] = $orderNumber;
-//                    $amazonTrackingXML .= AmazonOrderTracking::updateTracking($amazonTracking, $orderNumber,
-//                        $trackingNumber, $carrier);
-//                }
-//                $amazonOrderCount++;
-            } elseif (strtolower($channelName) == 'reverb') {
-                //Update Reverb
-//                $response = ReverbOrderTracking::updateTracking($orderNumber, $trackingNumber, $carrier);
-//                $successMessage = '"shipped"';
-//                if (strpos($response, $successMessage)) {
-//                    $shipped = true;
-//                }
-            } elseif (strtolower($channelName) == 'walmart') {
-                //Update Walmart
-//                $response = WalmartOrderTracking::updateTracking($orderNumber, $trackingNumber, $carrier);
-                //            Ecommerce::dd($response);
-                //            if (array_key_exists('orderLineStatuses', $response['orderLines']['orderLine'])) {
-                //                if (array_key_exists('trackingNumber', $response['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
-                //                    $shipped = true;
-                //                }
-                //            } elseif (array_key_exists('trackingNumber', $response['orderLines']['orderLine'][0]['orderLineStatuses']['orderLineStatus']['trackingInfo'])) {
-                //                $shipped = true;
-                //            }
-            }
-//            Ecommerce::dd($response);
-//            if ($shipped) {
-//                $success = Tracking::markAsShipped($orderNumber, $channelName);
-//            }
-//            if ($success) {
-//                echo "$channelName-> $orderNumber: $trackingNumber<br>" . PHP_EOL;
-//            }
-//            return [$orderNumber, $channelName, $response, $successMessage, $amazonOrdersThatHaveShipped, $amazonTrackingXML];
-//        }
+        TrackingController::shipped($tracker, $channelName, $orderNumber, $orderID);
     }
 
     protected static function setTrackingNumbers(Tracking $tracker, $channelName, $orderNumber, $orderID, $method)
@@ -202,5 +98,69 @@ class TrackingController
         return;
     }
 
+    protected static function setEbayId(Tracking $tracker, $order, $channelName, $orderNumber)
+    {
+        if ($channelName == 'Ebay') {
+            $itemID = $order['item_id'];
+            $transactionID = '';
+            if (!empty($itemID)) {
+                echo "Item ID: $itemID<br>";
+                $numID = explode('-', $itemID);
+                $itemID = $numID[0];
+                $transactionID = $numID[1];
+            }
 
+            $tracker->setItemTransactionId($channelName, $orderNumber, $itemID, $transactionID);
+        }
+    }
+
+    protected static function shipped(Tracking $tracker, $channelName, $orderNumber, $orderID)
+    {
+        if (!empty($tracker->getTrackingNumber($channelName, $orderNumber))) {
+            $trackingNumber = $tracker->getOrder($channelName, $orderNumber)->getTrackingNumber();
+            $carrier = $tracker->getOrder($channelName, $orderNumber)->getCarrier();
+            echo $orderID . ': ' . $trackingNumber . '; Channel: ' . $channelName . '<br>';
+
+            Tracking::updateTrackingNumber(
+                $tracker->getOrder($channelName, $orderNumber)->getOrderId(),
+                $trackingNumber,
+                $carrier
+            );
+
+            $channelOrderTracking = $tracker->getOrder($channelName, $orderNumber);
+            $response = $channelOrderTracking->updateTracking($tracker->getChannel($channelName),
+                $channelOrderTracking);
+
+            Ecommerce::dd($response);
+            $updated = $channelOrderTracking->updated($response);
+
+            TrackingController::setShipped($channelName, $updated, $channelOrderTracking);
+        }
+    }
+
+    protected static function setShipped($channelName, $updated, ChannelOrderTracking $channelOrderTracking)
+    {
+        if ($channelName !== 'Amazon') {
+            if ($updated) {
+                $channelOrderTracking->setShipped();
+            }
+        }
+    }
+
+    protected static function markOrdersAsShipped(Tracking $tracker)
+    {
+        foreach ($tracker->getChannels() as $channel) {
+            TrackingController::markOrderAsShipped($channel);
+        }
+    }
+
+    protected static function markOrderAsShipped($channel)
+    {
+        foreach ($channel->getOrders() as $order) {
+            if ($order->getShipped()) {
+                Ecommerce::dd("Order: " . $order->getOrderNumber() . " has shipped");
+                Tracking::markAsShipped($order->getOrderNumber(), $channel->getChannelName());
+            }
+        }
+    }
 }

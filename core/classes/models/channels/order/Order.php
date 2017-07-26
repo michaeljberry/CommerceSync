@@ -327,7 +327,7 @@ class Order
                 ":order_num" => $this->getOrderNumber(),
                 ":ship_method" => $this->getShippingCode(),
                 ":shipping_amount" => $this->getShippingPrice(),
-                ":taxes" => $this->getTax(),
+                ":taxes" => $this->getTax()->get(),
                 ':fee' => $this->getFee(),
                 ':channel_order_id' => $this->getChannelOrderId()
             ];

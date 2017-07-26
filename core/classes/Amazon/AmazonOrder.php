@@ -178,8 +178,7 @@ class AmazonOrder extends Amazon
         list($lastName, $firstName) = BuyerController::splitName($shipToName);
         $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
-
-
+        
         $Order = new Order(1, $channelName, AmazonClient::getStoreId(), $buyer, $orderNumber, $purchaseDate,
             $shippingCode, $shippingPrice, $tax);
 

@@ -145,7 +145,7 @@ class OrderItem
                 VALUES (:order_id, :sku_id, :price, :item_id, :quantity)";
         $queryParams = [
             ':order_id' => $order->getOrderId(),
-            ':sku_id' => $this->getSku()->getId(),
+            ':sku_id' => $this->getSku()->getSkuId(),
             ':price' => Ecommerce::toCents($this->getPrice()),
             ':item_id' => $this->getChannelOrderItemId(),
             ':quantity' => $this->getQuantity()

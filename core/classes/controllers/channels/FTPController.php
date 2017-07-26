@@ -13,7 +13,7 @@ class FTPController
         $filename = $order->getOrderNumber() . '.xml';
         echo $filename . '<br />';
         FTPController::saveToDisk($filename, $order->getOrderXml());
-        if (file_exists(FTP_FOLDER . $filename)) {
+        if (file_exists(FTP_FOLDER . '/' . $filename)) {
             echo "Successfully uploaded $filename<br />";
             $results = Order::saveToSync($order->getOrderNumber(), 1, $order->getChannelName());
             if ($results) {

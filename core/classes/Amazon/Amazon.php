@@ -2,6 +2,7 @@
 
 namespace Amazon;
 
+use Crypt;
 use models\ModelDB as MDB;
 
 class Amazon
@@ -61,7 +62,7 @@ class Amazon
         $column = $this->sanitizeColumnName($column);
         $sql = "UPDATE api_amazon SET $column = :id WHERE store_id = :store_id";
         $query_params = array(
-            ':id' => $crypt->encrypt($id),
+            ':id' => Crypt::encrypt($id),
             ':store_id' => $store_id
         );
         MDB::query($sql, $query_params);

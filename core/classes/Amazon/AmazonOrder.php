@@ -258,6 +258,7 @@ class AmazonOrder extends Amazon
 
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
         $Order->setOrderItems($orderItem);
+        Ecommerce::dd($Order);
         if (!LOCAL) {
             $orderItem->save($Order);
         }

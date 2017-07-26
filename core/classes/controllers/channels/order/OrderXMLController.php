@@ -76,7 +76,9 @@ class OrderXMLController
         if(!empty($tax)) {
             $orderItems .= $tax;
         }
-        $xml = substr_replace($orderXML, $orderItems . '</NAMM_PO>', -10);
+        $xml = strstr($orderXML, '</NAMM_PO>', true);
+        $xml .= $orderItems;
+        $xml .= '</NAMM_PO>';
         Ecommerce::dd($xml);
         return $xml;
     }

@@ -1,5 +1,5 @@
 # CommerceSync
-####**This project is currently being refactored from a procedural approach (its' original approach) to an OOP-MVC approach 
+####This project is currently being refactored from a procedural approach (its' original approach) to an OOP-MVC approach 
 A system to manage online orders across Amazon, Ebay, Walmart, Reverb, and Big Commerce stores
 
 All channel orders (excepting Amazon FBA), are brought into the DB and turned into XML files for insertion into an AS-400 IBM server based ERP. 

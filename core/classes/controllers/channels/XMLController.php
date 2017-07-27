@@ -27,7 +27,7 @@ class XMLController
 
     public static function closingXMLTag($tagname)
     {
-        return "</$tagname>" . "\n";
+        return "</$tagname>" . PHP_EOL;
     }
 
     /**
@@ -53,7 +53,7 @@ class XMLController
     public static function generateXML($key, $value, $parentKey)
     {
         list($parameters, $parentKey) = XMLController::parameterized($parentKey);
-        $generatedXML = XMLController::openingXMLTag($parentKey, $parameters) . "\n";
+        $generatedXML = XMLController::openingXMLTag($parentKey, $parameters) . PHP_EOL;
         $generatedXML .= XMLController::makeXML($value, $key);
         $generatedXML .= XMLController::closingXMLTag($parentKey);
         return $generatedXML;

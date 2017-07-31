@@ -11,64 +11,145 @@ use WalmartAPI\Order as WMOrder;
 class WalmartOrderTracking extends ChannelOrderTracking
 {
 
+    /**
+     * If shipped return updated as true
+     *
+     * @param $response
+     * @return bool
+     */
+    public function updated($response)
+    {
+        if ($this->shipped($response)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if order has already shipped
+     *
+     * @param $order
+     * @return bool
+     */
+    protected function shipped($order)
+    {
+        if (isset(
+                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) &&
+            array_key_exists('trackingInfo', $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Update shipping information for $walmartOrderTracking (order)
+     *
+     * @param ChannelTracking $walmartTracking
+     * @param ChannelOrderTracking $walmartOrderTracking
+     * @return array
+     */
     public function updateTracking(ChannelTracking $walmartTracking, ChannelOrderTracking $walmartOrderTracking)
     {
-        $orderNumber = $walmartOrderTracking->getOrderNumber();
         $carrier = $walmartOrderTracking->getCarrier();
-        $trackingNumber = $walmartOrderTracking->getTrackingNumber();
 
-        $order = WalmartOrder::getOrder($orderNumber);
+        $order = WalmartOrder::getOrder($walmartOrderTracking->getOrderNumber());
 
         if ($this->shipped($order)) {
             return $order;
         }
-        echo '<br><br>';
-        $date = date("Y-m-d") . "T" . date("H:i:s") . "Z";
-        echo "Date: $date<br><br>";
-//        $order_num = $order['purchaseOrderId'];
+
         $trackingURL = '';
         if ($carrier == 'USPS') {
             $trackingURL = "https://tools.usps.com/go/TrackConfirmAction.action";
         } elseif ($carrier == 'UPS') {
             $trackingURL = "http://wwwapps.ups.com/WebTracking/track";
         }
-        Ecommerce::dd($order);
-        if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
-            $tracking = $this->processTracking($order['orderLines'], $orderNumber, $date, $carrier,
-                $trackingNumber,
-                $trackingURL);
-        } else {
-            foreach ($order['orderLines']['orderLine'] as $o) {
-                $tracking = $this->processTracking($order['orderLines']['orderLine'], $orderNumber, $date,
-                    $carrier,
-                    $trackingNumber, $trackingURL);
-            }
-        }
+        $tracking = $this->processTracking($order, $walmartOrderTracking, $trackingURL);
 
         return $tracking;
     }
 
-    public function processTracking($order, $orderNumber, $date, $carrier, $trackingNumber, $trackingURL)
+    /**
+     * Check for multiple order items
+     *
+     * @param $order
+     * @param ChannelOrderTracking $walmartOrderTracking
+     * @param $trackingURL
+     * @return array
+     */
+    protected function processTracking($order, ChannelOrderTracking $walmartOrderTracking, $trackingURL): array
+    {
+        if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
+            $tracking = $this->processOrderLineTracking($order['orderLines'], $walmartOrderTracking, $trackingURL);
+        } else {
+            foreach ($order['orderLines']['orderLine'] as $o) {
+                $tracking = $this->processOrderLineTracking($order['orderLines']['orderLine'], $walmartOrderTracking,
+                    $trackingURL);
+            }
+        }
+        return $tracking;
+    }
+
+    /**
+     * Process each order item to send shipping information
+     *
+     * @param $order
+     * @param ChannelOrderTracking $walmartOrderTracking
+     * @param $trackingURL
+     * @return array
+     */
+    public function processOrderLineTracking($order, ChannelOrderTracking $walmartOrderTracking, $trackingURL)
     {
         foreach ($order as $o) {
             $lineNumber = $o['lineNumber'];
             $quantity = $o['orderLineQuantity']['amount'];
-            try {
-                $response = WalmartOrder::configure()->ship(
-                    $orderNumber,
-                    $this->createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber,
-                        $trackingURL)
-                );
-            } catch (Exception $e) {
-                die("There was a problem requesting the data: " . $e->getMessage());
-            }
-            print_r($response);
+            $response = $this->shipOrderItem($walmartOrderTracking, $trackingURL, $lineNumber, $quantity);
         }
         return $response;
     }
 
-    public function createTrackingArray($lineNumber, $quantity, $date, $carrier, $trackingNumber, $trackingURL)
-    {
+    /**
+     * Send shipping information to WalmartAPI
+     *
+     * @param ChannelOrderTracking $walmartOrderTracking
+     * @param $trackingURL
+     * @param $lineNumber
+     * @param $quantity
+     * @return array
+     */
+    protected function shipOrderItem(
+        ChannelOrderTracking $walmartOrderTracking,
+        $trackingURL,
+        $lineNumber,
+        $quantity
+    ): array {
+        try {
+            $response = WalmartOrder::configure()->ship(
+                $walmartOrderTracking->getOrderNumber(),
+                $this->createTrackingArray($walmartOrderTracking, $trackingURL, $lineNumber, $quantity)
+            );
+        } catch (Exception $e) {
+            Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
+        }
+        return $response;
+    }
+
+    /**
+     * Create array of information to send to WalmartAPI
+     *
+     * @param ChannelOrderTracking $walmartOrderTracking
+     * @param $trackingURL
+     * @param $lineNumber
+     * @param $quantity
+     * @return array
+     */
+    public function createTrackingArray(
+        ChannelOrderTracking $walmartOrderTracking,
+        $trackingURL,
+        $lineNumber,
+        $quantity
+    ) {
         $tracking = [
             'orderShipment' => [
                 'orderLines' => [
@@ -82,12 +163,12 @@ class WalmartOrderTracking extends ChannelOrderTracking
                                     'amount' => $quantity
                                 ],
                                 'trackingInfo' => [
-                                    'shipDateTime' => $date,
+                                    'shipDateTime' => date("Y-m-d") . "T" . date("H:i:s") . "Z",
                                     'carrierName' => [
-                                        'carrier' => $carrier
+                                        'carrier' => $walmartOrderTracking->getCarrier()
                                     ],
                                     'methodCode' => 'Standard',
-                                    'trackingNumber' => $trackingNumber,
+                                    'trackingNumber' => $walmartOrderTracking->getTrackingNumber(),
                                     'trackingURL' => $trackingURL
                                 ]
                             ]
@@ -97,24 +178,5 @@ class WalmartOrderTracking extends ChannelOrderTracking
             ]
         ];
         return $tracking;
-    }
-
-    public function updated($response)
-    {
-        if ($this->shipped($response)) {
-            return true;
-        }
-        return false;
-    }
-
-    protected function shipped($order)
-    {
-        if (isset(
-                $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus']['trackingInfo']) &&
-                array_key_exists('trackingInfo', $order['orderLines']['orderLine']['orderLineStatuses']['orderLineStatus'])
-        ) {
-            return true;
-        }
-        return false;
     }
 }

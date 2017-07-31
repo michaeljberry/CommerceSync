@@ -376,7 +376,7 @@ class Order
         $number = Order::getUploadedVaiOrder($orderNum);
 
         if ($number > 0) {
-            Ecommerce::dd("Found in database");
+            Ecommerce::dd("$orderNum - found in database");
             return true;
         }
         return false;

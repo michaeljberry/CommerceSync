@@ -2,7 +2,6 @@
 
 namespace Ebay;
 
-use ecommerce\Ecommerce;
 use controllers\channels\CurlController;
 use controllers\channels\XMLController;
 
@@ -95,7 +94,7 @@ trait EbayClientCurl
     {
         $credentialTag = 'RequesterCredentials';
         $credentials = XMLController::openingXMLTag($credentialTag);
-        $credentials .= XMLController::xmlTag('eBayAuthToken', EbayClient::getToken());
+        $credentials .= XMLController::xmlElement('eBayAuthToken', EbayClient::getToken());
         $credentials .= XMLController::closingXMLTag($credentialTag);
         return $credentials;
     }

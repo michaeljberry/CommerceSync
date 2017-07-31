@@ -12,7 +12,7 @@ class OrderController
         return [
             'Item' => [
                 'ItemId' => $itemID,
-                'ItemDesc' => '<![CDATA[' . $itemDesc . ']]>',
+                'ItemDesc' => $itemDesc,
                 'POLineNumber' => $poNumber,
                 'UOM' => 'EACH',
                 'Qty' => $qty,

@@ -9,22 +9,14 @@ use models\ModelDB as MDB;
 
 class Channel
 {
-
     protected static $columnsToEncrypt = ['pass', 'token', 'cert', 'app', 'dev', 'api', 'username', 'merchant', 'marketplace', 'secret', 'access'];
 
-    /**
-     * @param $column
-     * @param $value
-     * @return string
-     */
     public static function encryptColumn($column, $value): string
     {
-        foreach (Channel::$columnsToEncrypt as $encrypt) {
-            if (strpos($column, $encrypt) !== false) {
-                $value = \Crypt::encrypt($value);
-            }
+        if (array_key_exists('encrypt', $value)) {
+            return \Crypt::encrypt($value['value']);
         }
-        return $value;
+        return $value['value'];
     }
 
     public static function prepareColumnList($table, $columns)
@@ -46,8 +38,8 @@ class Channel
     {
         $params = [];
 
-        foreach ($columns as $column => $value){
-            $value = Channel::encryptColumn($column, $value);
+        foreach ($columns as $column => $array){
+            $value = Channel::encryptColumn($column, $array);
             $params[':' . $column] = $value;
             $params[':' . $column . '2'] = $value;
         }
@@ -87,26 +79,33 @@ class Channel
         return MDB::query($sql, $queryParams, 'fetch');
     }
 
-    public static function saveAppInfo($storeID, $table, $columns)
+    public static function insertOrUpdate($table, $columns)
     {
         $columnInsert = Channel::prepareColumnInsert($columns);
         $columnValues = Channel::prepareColumnValues($columns);
-        $columnParams = Channel::prepareColumnParams($columns);
+        $queryParams = Channel::prepareColumnParams($columns);
         $updateValues = Channel::prepareColumnUpdate($columns);
 
         $table = CHC::sanitizeAPITableName($table);
 
-        $sql = "INSERT INTO $table (store_id, $columnInsert) 
-                VALUES (:store_id, $columnValues)
+        $sql = "INSERT INTO $table ($columnInsert) 
+                VALUES ($columnValues)
                 ON DUPLICATE KEY UPDATE $updateValues";
-        $queryParams = [
-            ":store_id" => $storeID,
-        ];
-        $queryParams = array_merge($queryParams, $columnParams);
         Ecommerce::dd($sql);
         Ecommerce::dd($queryParams);
 
-        return MDB::query($sql, $queryParams, 'id');
+//        return MDB::query($sql, $queryParams, 'id');
+    }
+
+    public static function select($table, $columns, $queryParams, $method)
+    {
+        $columnSelect = Channel::prepareColumnList($table, $columns);
+
+        $table = CHC::sanitizeAPITableName($table);
+
+        $sql = "SELECT $columnSelect
+                FROM $table";
+        return MDB::query($sql, $queryParams, $method);
     }
 
     public static function getAccounts($name)
@@ -144,6 +143,4 @@ class Channel
         return implode(",", $companyNumbers);
 
     }
-
-
 }

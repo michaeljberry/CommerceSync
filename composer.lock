@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8604c944080deb6a76d7deb96734b0e4",
+    "content-hash": "38f8c6a6d30e082645afbeedf1449ecc",
     "packages": [
         {
             "name": "automattic/woocommerce",
@@ -384,7 +384,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Walmart\\Auth\\": "src/"
+                    "WalmartAPI\\Auth\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -433,7 +433,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Walmart\\": "src/"
+                    "WalmartAPI\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -941,6 +941,51 @@
                 "sql"
             ],
             "time": "2017-06-15T19:07:41+00:00"
+        },
+        {
+            "name": "illuminate/events",
+            "version": "v5.4.27",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/illuminate/events.git",
+                "reference": "ebdca3b0305e9fc954afb9e422c4559482cd11e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/events/zipball/ebdca3b0305e9fc954afb9e422c4559482cd11e6",
+                "reference": "ebdca3b0305e9fc954afb9e422c4559482cd11e6",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/container": "5.4.*",
+                "illuminate/contracts": "5.4.*",
+                "illuminate/support": "5.4.*",
+                "php": ">=5.6.4"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Illuminate\\Events\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The Illuminate Events package.",
+            "homepage": "https://laravel.com",
+            "time": "2017-05-02T12:57:00+00:00"
         },
         {
             "name": "illuminate/support",

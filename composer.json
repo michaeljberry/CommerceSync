@@ -7,7 +7,8 @@
 		"dts/ebay-sdk-php": "^0.2.0",
 		"rackspace/php-opencloud": "^1.15",
 		"automattic/woocommerce": "^1.0",
-		"fillup/walmart-partner-api-sdk-php": "^1.0.9"
+		"fillup/walmart-partner-api-sdk-php": "^1.0.9",
+		"illuminate/events": "^5.4"
 	},
 	"autoload": {
 		"psr-4": {

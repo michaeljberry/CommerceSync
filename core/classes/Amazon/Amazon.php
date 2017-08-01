@@ -3,9 +3,10 @@
 namespace Amazon;
 
 use Crypt;
+use models\channels\ChannelAPI;
 use models\ModelDB as MDB;
 
-class Amazon
+class Amazon extends ChannelAPI
 {
     /**
      * Sanitize the columns that are allowed to be updated
@@ -35,30 +36,30 @@ class Amazon
     /**
      * Get DB ID for Amazon listings using Amazon's listing ID.
      *
-     * @param $store_listing_id
+     * @param $storeListingID
      * @return bool|string
      */
-    public function getListing($store_listing_id)
+    public function getListing($storeListingID)
     {
         $sql = "SELECT id FROM listing_amazon WHERE store_listing_id = :store_listing_id";
         $query_params = array(
-            'store_listing_id' => $store_listing_id
+            'store_listing_id' => $storeListingID
         );
         return MDB::query($sql, $query_params, 'fetchColumn');
     }
 
-    public function saveAppInfo($store_id, $merchant_id, $marketplace_id, $aws_access_key, $secret_key)
-    {
-        $sql = "INSERT INTO api_amazon (store_id, merchantid, marketplaceid, aws_access_key, secret_key) VALUES (:store_id, :merchantid, :marketplaceid, :aws_access_key, :secret_key)";
-        $query_params = array(
-            ":store_id" => $store_id,
-            ":merchantid" => Crypt::encrypt($merchant_id),
-            ":marketplaceid" => Crypt::encrypt($marketplace_id),
-            ":aws_access_key" => Crypt::encrypt($aws_access_key),
-            ":secret_key" => Crypt::encrypt($secret_key)
-        );
-        MDB::query($sql, $query_params);
-    }
+//    public function saveAppInfo($storeID, $merchantID, $marketplaceID, $awsAccessKey, $secretKey)
+//    {
+//        $sql = "INSERT INTO api_amazon (store_id, merchantid, marketplaceid, aws_access_key, secret_key) VALUES (:store_id, :merchantid, :marketplaceid, :aws_access_key, :secret_key)";
+//        $query_params = array(
+//            ":store_id" => $storeID,
+//            ":merchantid" => Crypt::encrypt($merchantID),
+//            ":marketplaceid" => Crypt::encrypt($marketplaceID),
+//            ":aws_access_key" => Crypt::encrypt($awsAccessKey),
+//            ":secret_key" => Crypt::encrypt($secretKey)
+//        );
+//        MDB::query($sql, $query_params);
+//    }
 
     public function updateAppInfo($storeID, $column, $id)
     {
@@ -71,24 +72,24 @@ class Amazon
         MDB::query($sql, $query_params);
     }
 
-    public static function getApiOrderDays()
-    {
-        $sql = "SELECT api_pullfrom, api_pullto FROM api_amazon WHERE store_id = :store_id";
-        $query_params = [
-            ':store_id' => AmazonClient::getStoreId()
-        ];
-        return MDB::query($sql, $query_params, 'fetch');
-    }
+//    public static function getApiOrderDays()
+//    {
+//        $sql = "SELECT api_from, api_to FROM api_amazon WHERE store_id = :store_id";
+//        $query_params = [
+//            ':store_id' => AmazonClient::getStoreId()
+//        ];
+//        return MDB::query($sql, $query_params, 'fetch');
+//    }
 
-    public static function setApiOrderDays($from, $to)
-    {
-        $sql = "UPDATE api_amazon SET api_pullfrom = :api_pullfrom, api_pullto = :api_pullto WHERE store_id = :store_id";
-        $query_params = [
-            ':store_id' => AmazonClient::getStoreId(),
-            ':api_pullfrom' => $from,
-            ':api_pullto' => $to
-        ];
-        MDB::query($sql, $query_params);
-    }
+//    public static function updateApiOrderDays($from, $to = null)
+//    {
+//        $sql = "UPDATE api_amazon SET api_from = :api_from, api_to = :api_to WHERE store_id = :store_id";
+//        $query_params = [
+//            ':store_id' => AmazonClient::getStoreId(),
+//            ':api_from' => $from,
+//            ':api_to' => $to
+//        ];
+//        MDB::query($sql, $query_params);
+//    }
 
 }

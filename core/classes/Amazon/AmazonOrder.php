@@ -74,7 +74,7 @@ class AmazonOrder extends Amazon
 //        $param['OrderStatus.Status.1'] = 'Shipped';
 //        $param['FulfillmentChannel.Channel.1'] = 'MFN';
         $from = Amazon::getApiOrderDays();
-        $from = $from['api_pullfrom'];
+        $from = $from['api_from'];
 //        $from = "-1";
         $from .= ' days';
         $createdAfter = new DateTime($from, new DateTimeZone('America/Boise'));

@@ -123,7 +123,7 @@ class WalmartOrderTracking extends ChannelOrderTracking
         $trackingURL,
         $lineNumber,
         $quantity
-    ): array {
+    ) {
         try {
             $response = WalmartOrder::configure()->ship(
                 $walmartOrderTracking->getOrderNumber(),

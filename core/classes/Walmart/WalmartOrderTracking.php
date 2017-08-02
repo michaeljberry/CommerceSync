@@ -131,7 +131,7 @@ class WalmartOrderTracking extends ChannelOrderTracking
             );
             return $response;
         } catch (Exception $e) {
-            Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
+            Ecommerce::dd("There was a problem sending the data: " . $e->getMessage());
         }
     }
 

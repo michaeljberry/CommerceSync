@@ -45,7 +45,7 @@ class TrackingController
         foreach ($orders as $order) {
             TrackingController::parseOrder($tracker, $order, $method);
         }
-        if(null !== $tracker->getChannel('Amazon')) {
+        if(is_object($tracker->getChannel('Amazon'))) {
             Ecommerce::dd('Update Amazon Tracking');
             $tracker->getChannel('Amazon')->updateAmazonTracking($tracker->getChannel('Amazon'));
         }

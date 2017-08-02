@@ -8,7 +8,6 @@ use models\ModelDB as MDB;
 
 class Tracking
 {
-
     private $tracker = [];
 
     public function setChannel($channelName)

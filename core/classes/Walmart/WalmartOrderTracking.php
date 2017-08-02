@@ -129,10 +129,10 @@ class WalmartOrderTracking extends ChannelOrderTracking
                 $walmartOrderTracking->getOrderNumber(),
                 $this->createTrackingArray($walmartOrderTracking, $trackingURL, $lineNumber, $quantity)
             );
+            return $response;
         } catch (Exception $e) {
             Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
         }
-        return $response;
     }
 
     /**

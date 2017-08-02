@@ -10,8 +10,8 @@ require WEBPLUGIN . 'rev/revvar.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
 $days = Amazon::getApiOrderDays();
-$from = $days['api_pullfrom'];
-$to = $days['api_pullto'];
+$from = $days['api_from'];
+$to = $days['api_to'];
 
 $ebayDays = Ebay::getApiOrderDays();
 

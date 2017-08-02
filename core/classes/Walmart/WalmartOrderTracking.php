@@ -78,7 +78,7 @@ class WalmartOrderTracking extends ChannelOrderTracking
      * @param $trackingURL
      * @return array
      */
-    protected function processTracking($order, ChannelOrderTracking $walmartOrderTracking, $trackingURL): array
+    protected function processTracking($order, ChannelOrderTracking $walmartOrderTracking, $trackingURL)
     {
         if (array_key_exists('lineNumber', $order['orderLines']['orderLine'])) {
             $tracking = $this->processOrderLineTracking($order['orderLines'], $walmartOrderTracking, $trackingURL);
@@ -149,8 +149,8 @@ class WalmartOrderTracking extends ChannelOrderTracking
         $trackingURL,
         $lineNumber,
         $quantity
-    ) {
-        $tracking = [
+    ): array {
+        return [
             'orderShipment' => [
                 'orderLines' => [
                     [
@@ -177,6 +177,5 @@ class WalmartOrderTracking extends ChannelOrderTracking
                 ]
             ]
         ];
-        return $tracking;
     }
 }

@@ -7,7 +7,7 @@ use ecommerce\Ecommerce;
 use models\channels\Fee;
 use models\ModelDB as MDB;
 
-class Ebay extends ChannelAPI
+class Ebay //extends ChannelAPI
 {
     protected $apiTable = 'api_ebay';
     protected $apiColumns = [
@@ -217,22 +217,22 @@ class Ebay extends ChannelAPI
         return $tableArray;
     }
 
-//    public static function getApiOrderDays()
-//    {
-//        $sql = "SELECT api_from FROM api_ebay WHERE store_id = :store_id";
-//        $query_params = [
-//            ':store_id' => EbayClient::getStoreId()
-//        ];
-//        return MDB::query($sql, $query_params, 'fetchColumn');
-//    }
-//
-//    public static function updateApiOrderDays($from, $to = null)
-//    {
-//        $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
-//        $query_params = [
-//            ':store_id' => EbayClient::getStoreId(),
-//            ':api_days' => $from
-//        ];
-//        MDB::query($sql, $query_params);
-//    }
+    public static function getApiOrderDays()
+    {
+        $sql = "SELECT api_from FROM api_ebay WHERE store_id = :store_id";
+        $query_params = [
+            ':store_id' => EbayClient::getStoreId()
+        ];
+        return MDB::query($sql, $query_params, 'fetchColumn');
+    }
+
+    public static function updateApiOrderDays($from, $to = null)
+    {
+        $sql = "UPDATE api_ebay SET api_days = :api_days WHERE store_id = :store_id";
+        $query_params = [
+            ':store_id' => EbayClient::getStoreId(),
+            ':api_days' => $from
+        ];
+        MDB::query($sql, $query_params);
+    }
 }

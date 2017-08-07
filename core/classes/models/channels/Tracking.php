@@ -88,7 +88,7 @@ class Tracking
                 FROM order_sync a
                 JOIN sync.order b ON b.order_num = a.order_num
                 JOIN order_item c ON c.order_id = b.id
-                WHERE a.track_successful IS NULL 
+                WHERE (a.track_successful IS NULL OR a.track_successful = 0) 
                 AND b.cancelled IS NULL
                 ORDER BY a.processed";
         return MDB::query($sql, [], 'fetchAll');

@@ -93,7 +93,7 @@ class AmazonTracking extends ChannelTracking
             $successMessage = 'SUBMITTED';
             if (strpos($response, $successMessage)) {
                 foreach($tracking->getOrders() as $order){
-                    $order->setShipped();
+//                    $order->setShipped();
                 }
             } elseif (strpos($response, 'throttle') || strpos($response, 'QuotaExceeded')) {
                 $this->updateThrottleStatus(true);

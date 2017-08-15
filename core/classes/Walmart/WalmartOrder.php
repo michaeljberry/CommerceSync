@@ -66,7 +66,7 @@ class WalmartOrder extends Walmart
             ]);
             $this->parseOrders($orders);
         } catch (Exception $e) {
-            die("There was a problem requesting the data: " . $e->getMessage());
+            Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
         }
     }
 
@@ -78,7 +78,7 @@ class WalmartOrder extends Walmart
             ]);
             return $order;
         } catch (Exception $e) {
-            die("There was a problem requesting the data: " . $e->getMessage());
+            Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
         }
     }
 
@@ -92,7 +92,7 @@ class WalmartOrder extends Walmart
                 'limit' => WalmartOrder::$limit
             ]);
         } catch (Exception $e) {
-            die("There was a problem requesting the data: " . $e->getMessage());
+            Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
         }
     }
 

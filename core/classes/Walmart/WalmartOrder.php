@@ -118,7 +118,7 @@ class WalmartOrder extends Walmart
         }
     }
 
-    public function parseOrder($order)
+    protected function parseOrder($order)
     {
         $orderNum = $order['purchaseOrderId'];
 

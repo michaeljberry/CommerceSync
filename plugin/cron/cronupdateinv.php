@@ -39,6 +39,12 @@ foreach ($vaidata as $v) {
             }
             echo "SKU: $sku; Old Level: {$current_quantities[$sku]['inventory_level']}; New Level: $qty<br>";
         }
+    }else{
+        $result = Listing::updateInventory($sku, $qty, $table);
+        if ($result) {
+            echo $sku . ' was added.<br />';
+        }
+        echo "SKU: $sku; New Level: $qty<br>";
     }
 }
 endClock($start);

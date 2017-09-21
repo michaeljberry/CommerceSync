@@ -118,7 +118,7 @@ class WalmartOrder extends Walmart
         }
     }
 
-    protected function parseOrder($order)
+    public function parseOrder($order)
     {
         $orderNum = $order['purchaseOrderId'];
 
@@ -235,6 +235,8 @@ class WalmartOrder extends Walmart
             }
         }
         $price = sprintf("%01.2f", number_format($price, 2, '.', '') / $quantity);
+        $totalTax = Ecommerce::formatMoney($tax);
+        $Order->getTax()->updateTax($totalTax);
 
 
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());

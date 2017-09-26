@@ -62,7 +62,7 @@ class ecdclass
             echo "Seconds to wait: $time";
             sleep($time);
             if ($method == 'post') {
-                $response = $this->curl_post_update($ecd_ocp_key, $ecd_sub_key, $url, $parameters);
+                $response = $this->curl_post($ecd_ocp_key, $ecd_sub_key, $url, $parameters);
             }
         }
         return $response;

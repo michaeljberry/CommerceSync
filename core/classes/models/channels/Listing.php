@@ -81,7 +81,7 @@ class Listing
         $table = CHC::sanitize_table_name($table);
         $sql = "SELECT tb.sku, tb.inventory_level AS qty 
                 FROM $table tb 
-                "; //WHERE tb.last_edited >= DATE_SUB(NOW(), INTERVAL 45 MINUTE)
+                WHERE tb.last_edited >= DATE_SUB(NOW(), INTERVAL 45 MINUTE)";
         return MDB::query($sql, [], 'fetchAll');
     }
 

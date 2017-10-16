@@ -127,7 +127,7 @@ class ReverbOrder extends Reverb
         $quantity = (int)$item->quantity;
         $upc = '';
 
-        $price = (float)$item->amount_product_subtotal->amount;
+        $price = (float)$item->amount_product_subtotal->amount/$quantity;
 
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
         $Order->setOrderItems($orderItem);

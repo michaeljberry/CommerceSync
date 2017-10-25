@@ -28,7 +28,7 @@ class ReverbOrder extends Reverb
         return ReverbClient::reverbCurl($url, 'GET');
     }
 
-    public function getOrder($order)
+    public static function getOrder($order)
     {
         $url = 'https://reverb.com/api/my/orders/selling/' . $order;
         $response = ReverbClient::reverbCurl($url, 'GET');
@@ -127,7 +127,7 @@ class ReverbOrder extends Reverb
         $quantity = (int)$item->quantity;
         $upc = '';
 
-        $price = (float)$item->amount_product_subtotal->amount/$quantity;
+        $price = (float)$item->amount_product->amount;
 
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
         $Order->setOrderItems($orderItem);

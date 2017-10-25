@@ -183,7 +183,7 @@ stdClass Object
 
             [web_tracking] => stdClass Object
                 (
-                    [href] => https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=9405510200830999999999
+                    [href] => https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=9405510200830699999999
                 )
 
             [web] => stdClass Object
@@ -223,3 +223,172 @@ stdClass Object
         )
 
 )
+{
+    "amount_product":{
+        "amount":"2.45",
+        "amount_cents":245,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"$2.45"
+    },
+    "amount_product_subtotal":{
+        "amount":"7.35",
+        "amount_cents":735,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"$7.35"
+    },
+    "shipping":{
+        "amount":"11.97",
+        "amount_cents":1197,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"$11.97"
+    },
+    "amount_tax":{
+        "amount":"0.00",
+        "amount_cents":0,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"FREE"
+    },
+    "total":{
+        "amount":"19.32",
+        "amount_cents":1932,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"$19.32"
+    },
+    "buyer_name":"Customer Name",
+    "buyer_first_name":"Customer",
+    "buyer_last_name":"Name",
+    "buyer_id":259999,
+    "created_at":"2017-10-14T16:24:28-05:00",
+    "order_number":"2359999",
+    "needs_feedback_for_buyer":false,
+    "needs_feedback_for_seller":true,
+    "order_type":"instant",
+    "paid_at":"2017-10-14T16:24:30-05:00",
+    "quantity":3,
+    "shipping_address":{
+        "region":"NY",
+        "locality":"Somewhere",
+        "country_code":"US",
+        "display_location":"Somewhere, NY, United States",
+        "id":"9139999",
+        "primary":false,
+        "name":"Customer Name",
+        "street_address":"123 Main St",
+        "extended_address":null,
+        "postal_code":"99999",
+        "phone":"1234567890",
+        "unformatted_phone":"1234567890",
+        "complete_shipping_address":true,
+        "_links":{
+            "self":{
+                "href":"https://reverb.com/api/my/addresses/9139999"
+            }
+        }
+    },
+    "shipping_date":"2017-10-16",
+    "shipped_at":"2017-10-16T12:55:47-05:00",
+    "shipping_provider":"USPS",
+    "shipping_code":"9405510200830699999999",
+    "shipping_method":"shipped",
+    "local_pickup":false,
+    "shop_name":"Seller",
+    "status":"shipped",
+    "title":"Product Name",
+    "updated_at":"2017-10-16T12:55:47-05:00",
+    "payment_method":"direct_checkout",
+    "order_bundle_id":"2389999",
+    "product_id":"599999",
+    "photos":[
+        {
+            "_links":{
+                "large_crop":{
+                    "href":"https://images.reverb.com/image/upload/s--gAFEJqhx--/a_exif,c_thumb,f_auto,fl_progressive,g_south,h_640,q_auto:eco,w_640/v1500099999/99999999999999.jpg"
+                },
+                "small_crop":{
+                    "href":"https://images.reverb.com/image/upload/s--gNySyYS0--/a_exif,c_thumb,f_auto,fl_progressive,g_south,h_296,q_auto:eco,w_296/v1500099999/99999999999999.jpg"
+                },
+                "full":{
+                    "href":"https://images.reverb.com/image/upload/s--iKSn5VCg--/a_exif,c_limit,f_auto,fl_progressive,g_south,h_1136,q_auto:eco,w_640/v1500099999/99999999999999.jpg"
+                },
+                "thumbnail":{
+                    "href":"https://images.reverb.com/image/upload/s--fE0Wz3F4--/a_exif,c_thumb,f_auto,fl_progressive,g_south,h_192,q_auto:eco,w_192/v1500099999/99999999999999.jpg"
+                }
+            }
+        }
+    ],
+    "sku":"CFS106",
+    "remaining_listing_inventory":96,
+    "selling_fee":{
+        "amount":"0.68",
+        "amount_cents":68,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"$0.68"
+    },
+    "bump_fee":{
+        "amount":"0.68",
+        "amount_cents":68,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"$0.68"
+    },
+    "direct_checkout_fee":{
+        "amount":"0.73",
+        "amount_cents":73,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"$0.73"
+    },
+    "direct_checkout_payout":{
+        "amount":"17.23",
+        "amount_cents":1723,
+        "currency":"USD",
+        "symbol":"$",
+        "display":"$17.23"
+    },
+    "_links":{
+        "photo":{
+            "href":"https://images.reverb.com/image/upload/s--fE0Wz3F4--/a_exif,c_thumb,f_auto,fl_progressive,g_south,h_192,q_auto:eco,w_192/v1500099999/99999999999999.jpg"
+        },
+        "feedback_for_buyer":{
+            "href":"https://reverb.com/api/orders/2359999/feedback/buyer"
+        },
+        "feedback_for_seller":{
+            "href":"https://reverb.com/api/orders/2359999/feedback/seller"
+        },
+        "listing":{
+            "href":"https://reverb.com/api/listings/1966395"
+        },
+        "start_conversation":{
+            "href":"https://reverb.com/api/my/conversations?listing_id=599999&recipient_id=1345928"
+        },
+        "web_tracking":{
+            "href":"https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=9405510200830699999999"
+        },
+        "web":{
+            "href":"https://reverb.com/my/selling/orders/2359999"
+        },
+        "web_listing":{
+            "href":"https://reverb.com/item/1966395-hosa-guitar-patch-cable-cfs106"
+        },
+        "self":{
+            "href":"https://reverb.com/api/my/orders/selling/2359999"
+        },
+        "mark_picked_up":{
+            "href":"https://reverb.com/api/my/orders/selling/2359999/mark_picked_up"
+        },
+        "payments":{
+            "href":"https://reverb.com/api/my/payments/selling?order_id=2359999"
+        },
+        "contact_buyer":{
+            "web":{
+                "href":"https://reverb.com/my/messages/new?item=599999-product-name&to=259999&token=98b51ff693ece0d5dc4d7a1771761d037cd260fe4e42340e0599999999999999"
+            }
+        }
+    }
+}

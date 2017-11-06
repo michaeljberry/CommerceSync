@@ -54,7 +54,7 @@ class EbayOrder extends Ebay
         $orderNumber = (string)$order->ExternalTransaction->ExternalTransactionID;
         $orderStatus = trim((string)$order->OrderStatus);
 
-        if ($orderStatus !== 'Cancelled') {
+        if ($orderStatus !== 'Cancelled' && !empty($orderNumber)) {
             $found = Order::get($orderNumber);
 
             if (LOCAL || !$found) {

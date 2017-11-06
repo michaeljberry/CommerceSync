@@ -59,7 +59,6 @@ class TrackingController
         $orderID = Order::getIdByOrder($orderNumber);
         $channelName = $order['type'];
 
-//        if($channelName == 'Walmart') {
         $tracker->setChannel($channelName);
 
         TrackingController::setTrackingNumbers($tracker, $channelName, $orderNumber, $orderID, $method);

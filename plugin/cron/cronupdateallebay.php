@@ -17,7 +17,7 @@ foreach ($results as $r) {
     $listing_id = $r['store_listing_id'];
     $price = $r['price'];
     echo $listing_id . ': ' . $price . '<br>';
-    $response = $ebinv->update_all_ebay_inventory($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $listing_id); //$price
+    $response = $ebinv->update_all_ebay_inventory($listing_id, $price); //$price
     print_r($response);
     echo '<br><br>';
 //    $x++;

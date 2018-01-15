@@ -61,6 +61,10 @@ foreach ($updatedPrices as $key => $prices) {
         }
         $x++;
     }
+    if(array_key_exists($key, $walmartListings)){
+        echo "Walmart: $key -> $pl10 -> {$walmartListings[$key]['sku']}<br>";
+
+    }
     if (array_key_exists($key, $bigcommerceListings)) {
         echo "BigCommerce: $key -> $pl10 -> {$bigcommerceListings[$key]['id']}<br>";
         $response = $bcinv->updateInventory($bigcommerceListings[$key]['id'], $pl10);

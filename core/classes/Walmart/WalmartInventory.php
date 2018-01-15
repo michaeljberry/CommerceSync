@@ -24,4 +24,16 @@ class WalmartInventory extends Walmart
         return $item;
     }
 
+    public function getAllItems()
+    {
+        $wmItems = $this->configure();
+        $items = $wmItems->list();
+        return $items;
+    }
+
+    public function updatePrice($sku, $price)
+    {
+
+    }
+
 }

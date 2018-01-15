@@ -28,9 +28,12 @@ class WalmartInventory extends Walmart
     {
         $wmItems = $this->configure();
         $items = [];
-        for($i = 0; $i < 21; $i+=20) {
-            $items[] = $wmItems->list();
-        }
+        $i = 0;
+//        for($i = 0; $i < 21; $i+=20) {
+            $items[] = $wmItems->list([
+                'offset' => $i
+            ]);
+//        }
         return $items;
     }
 

@@ -29,7 +29,7 @@ class WalmartInventory extends Walmart
         $wmItems = $this->configure();
         $items = [];
         for($i = 0; $i < 21; $i+=20) {
-            $items[] = $wmItems->list()['MPItemView'];
+            $items[] = $wmItems->list();
         }
         return $items;
     }

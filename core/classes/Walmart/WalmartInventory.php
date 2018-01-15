@@ -26,18 +26,16 @@ class WalmartInventory extends Walmart
 
     public function getAllItems()
     {
-        $wmItems = $this->configure();
         $items = [];
-        $i = 0;
         for($i = 0; $i < 21; $i+=20) {
-            $items[] = $this->listItems($wmItems, $i);
+            $items[] = $this->listItems($i);
         }
         return $items;
     }
 
-    public function listItems(WalmartItem $wmItems, $offset)
+    public function listItems($offset)
     {
-        return $wmItems->list([
+        return $this->configure()->list([
             'offset' => $offset
         ]);
     }

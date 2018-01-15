@@ -27,7 +27,10 @@ class WalmartInventory extends Walmart
     public function getAllItems()
     {
         $wmItems = $this->configure();
-        $items = $wmItems->list();
+        $items = [];
+        for($i = 0; $i < 21; $i+=20) {
+            $items[] = $wmItems->list()['MPItemView'];
+        }
         return $items;
     }
 

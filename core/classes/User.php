@@ -132,7 +132,7 @@ class User
         $query_params = array(
             ':username' => $username
         );
-        $data = MDB::query($sql, [], 'fetch');
+        $data = MDB::query($sql, $query_params, 'fetch');
 
         $stored_password = $data['password'];
         $id = $data['id'];

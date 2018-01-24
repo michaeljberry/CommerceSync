@@ -11,8 +11,8 @@ class ecdinvclass extends ecdclass
         $url = "https://ecomdash.azure-api.net/api/inventory/updateQuantityOnHand";
         echo $ecd_ocp_key . "<br>" . $ecd_sub_key . "<br>" . $url . "<br>" . $parameters . "<br>";
         $response = $this->curl_post($ecd_ocp_key, $ecd_sub_key, $url, $parameters);
-        // $responseJson = json_decode($response, true);
-        // print_r($responseJson);
+        $responseJson = json_decode($response, true);
+        print_r($responseJson);
         $response = $this->wait_call($response, $ecd_ocp_key, $ecd_sub_key, $url, $parameters, $ecommerce);
 //        if($responseJson['statusCode'] == '429'){
 //            $time = $ecommerce->substring_between($responseJson['message'], 'Try again in ', ' seconds');

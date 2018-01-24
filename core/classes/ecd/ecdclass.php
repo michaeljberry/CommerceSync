@@ -36,6 +36,7 @@ class ecdclass
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($parameters));
         curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 
         $headers = [
             "Content-Type: application/json",
@@ -45,7 +46,7 @@ class ecdclass
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        print_r($ch);
+        print_r(curl_getinfo($ch));
 
         $response = curl_exec($ch);
         if (curl_errno($ch)) {

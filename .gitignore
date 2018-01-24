@@ -11,3 +11,4 @@ index*
 *.iml
 /vendor/
 *.log
+/.vscode

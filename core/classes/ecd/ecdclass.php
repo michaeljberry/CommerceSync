@@ -48,7 +48,6 @@ class ecdclass
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         $response = curl_exec($ch);
-        print_r(curl_getinfo($ch));
 
         if (curl_errno($ch)) {
             echo 'Error:' . curl_error($ch);

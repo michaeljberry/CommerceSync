@@ -16,7 +16,7 @@ $user_id = 838;
 $table = 'listing_ecd';
 $vaidata = IBM::getBigCommerceInventory();
 
-//ecom::dd($vaidata);
+ecom::dd($vaidata);
 
 $folder = '/var/www/html/portal/';
 $log_file_name = date('ymd-H-i') . ' - VAI Inventory.txt';

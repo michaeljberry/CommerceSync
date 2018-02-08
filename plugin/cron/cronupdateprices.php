@@ -16,9 +16,9 @@ use models\channels\product\ProductPrice;
 $start = startClock();
 
 $count = IBM::getCount();
-echo $count . '<br>';
+echo "SKU count: $count<br>";
 
-$updatedPrices = ProductPrice::getUpdated(15);
+$updatedPrices = ProductPrice::getUpdated();
 
 $reverbListings = Listing::getByChannel('listing_reverb');
 $ebayListings = Listing::getByChannel('listing_ebay');
@@ -30,27 +30,30 @@ $y = 0;
 $amazonXML = '';
 $arrayKeys = array_keys($updatedPrices);
 $lastArrayKey = array_pop($arrayKeys);
-foreach ($updatedPrices as $key => $prices) {
-//    if($x > 6){
-//        break;
-//    }
+foreach ($updatedPrices as $sku => $prices) {
+    // if($sku !== 'CMP153'){
+    //     continue;
+    // }
+
+    // print_r($prices);
+
     extract($prices);
 
-    if (array_key_exists($key, $reverbListings)) {
-        echo "Reverb: $key -> $pl10 -> {$reverbListings[$key]['id']}<br>";
-        $response = $revinv->updateListing($reverbListings[$key]['id'], $pl10);
+    if (array_key_exists($sku, $reverbListings)) {
+        echo "Reverb: $sku -> $pl10 -> {$reverbListings[$sku]['id']}<br>";
+        $response = $revinv->updateListing($reverbListings[$sku]['id'], $pl10);
         Ecommerce::dd($response);
     }
-    if (array_key_exists($key, $ebayListings)) {
-        echo "Ebay: $key -> $pl10 -> {$ebayListings[$key]['id']}<br>";
-        $response = $ebinv->update_all_ebay_inventory($ebayListings[$key]['id'], $pl10);
+    if (array_key_exists($sku, $ebayListings)) {
+        echo "Ebay: $sku -> $pl10 -> {$ebayListings[$sku]['id']}<br>";
+        $response = $ebinv->update_all_ebay_inventory($ebayListings[$sku]['id'], $pl10);
         Ecommerce::dd($response);
     }
-    if (array_key_exists($key, $amazonListings)) {
-        echo "Amazon: $key -> $pl10 -> {$amazonListings[$key]['id']}<br>";
+    if (array_key_exists($sku, $amazonListings)) {
+        echo "Amazon: $sku -> $pl10 -> {$amazonListings[$sku]['id']}<br>";
         $y++;
         $amazonXML .= $aminv->create_inventory_price_update_item_xml(
-            $key,
+            $sku,
             $pl10,
             $y
         );
@@ -61,13 +64,13 @@ foreach ($updatedPrices as $key => $prices) {
         }
         $x++;
     }
-    if(array_key_exists($key, $walmartListings)){
-        echo "Walmart: $key -> $pl10 -> {$walmartListings[$key]['sku']}<br>";
+    if(array_key_exists($sku, $walmartListings)){
+        echo "Walmart: $sku -> $pl10 -> {$walmartListings[$sku]['sku']}<br>";
 
     }
-    if (array_key_exists($key, $bigcommerceListings)) {
-        echo "BigCommerce: $key -> $pl10 -> {$bigcommerceListings[$key]['id']}<br>";
-        $response = $bcinv->updateInventory($bigcommerceListings[$key]['id'], $pl10);
+    if (array_key_exists($sku, $bigcommerceListings)) {
+        echo "BigCommerce: $sku -> $pl10 -> {$bigcommerceListings[$sku]['id']}<br>";
+        $response = $bcinv->updateInventory($bigcommerceListings[$sku]['id'], $pl10);
         Ecommerce::dd($response);
     }
     echo "<br><br>";

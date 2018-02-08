@@ -9,13 +9,18 @@ use models\channels\SKU;
 $start = startClock();
 
 $count = IBM::getCount();
-echo $count . '<br>';
+echo "SKU count: $count<br>";
 
 $currentPrices = ProductPrice::get();
+// print_r($currentPrices);
 
 for ($low = 0; $low < $count; $low += 500) {
+    if ($low > 6) {
+        break;
+    }
     $high = $low + 500;
     $vaidata = IBM::syncVAIPrice($low, $high);
+    // print_r($vaidata);
     foreach ($vaidata as $v) {
         $sku = trim($v['J6ITEM']);
         $msrp = Ecommerce::formatMoneyNoComma($v['J6LPRC']);
@@ -25,6 +30,7 @@ for ($low = 0; $low < $count; $low += 500) {
         $cost = Ecommerce::formatMoneyNoComma($v['FIFOCOST']);
 
         if (array_key_exists($sku, $currentPrices)) {
+            echo "$sku: $msrp; $pl10<br>";
             if (
                 Ecommerce::formatMoneyNoComma($currentPrices[$sku]['msrp']) !== $msrp ||
                 Ecommerce::formatMoneyNoComma($currentPrices[$sku]['pl1']) !== $pl1 ||

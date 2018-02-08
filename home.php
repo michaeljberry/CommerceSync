@@ -3,11 +3,11 @@ include_once 'core/init.php';
 
 if ($userID) {
     $template->get_header();
-    if ($rbac->check('management', $userID)) {
-        echo 'Hey Howdy Hey, ' . $firstname . '!';
-    } elseif ($rbac->check('musikey', $userID)) {
-        include 'plugin/musikey/musikey.php';
-    }
+    // if ($rbac->check('management', $userID)) {
+    //     echo 'Hey Howdy Hey, ' . $firstname . '!';
+    // } elseif ($rbac->check('musikey', $userID)) {
+    //     include 'plugin/musikey/musikey.php';
+    // }
     echo "<br>";
 
     ?>

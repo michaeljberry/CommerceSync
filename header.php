@@ -40,5 +40,5 @@ global $template;
 <noscript>To use this site, please enable Javascript in your Browser.</noscript>
 <div id="wrapper">
     <div id="main">
-        <?php $template->get_menu(); ?>
+        <?php $template->get_menu(); echo 'howdy!';?>
         <div id="maincontainer">

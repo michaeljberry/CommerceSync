@@ -1,6 +1,7 @@
 <?php
+// phpinfo();
 session_start();
-error_reporting(-1);
+ini_set('display_errors', '1');
 $userID = 838;
 require 'config.php';
 require WEBVENDOR . 'autoload.php';

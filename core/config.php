@@ -41,6 +41,7 @@ define('WEBCSS', WEBINCLUDES . 'css/');
 define('WEBJS', WEBINCLUDES . 'js/');
 
 define('DB_HOST', $iniArray['DB_HOST']);
+define('DB_PORT', $iniArray['DB_PORT']);
 define('DB_NAME', $iniArray['DB_NAME']);
 define('DB_USER', $iniArray['DB_USER']);
 define('DB_PASS', $iniArray['DB_PASS']);

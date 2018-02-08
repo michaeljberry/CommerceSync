@@ -95,7 +95,7 @@ class OrderItem
         return $this->poNumber;
     }
 
-    public function getUpc(): string
+    public function getUpc()
     {
         return $this->upc;
     }

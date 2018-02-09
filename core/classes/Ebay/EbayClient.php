@@ -32,7 +32,7 @@ class EbayClient extends Ebay implements EcommerceInterface
         return self::$instance;
     }
 
-    protected function __construct($userID)
+    public function __construct($userID)
     {
         self::setInfo($userID);
         self::setDevID();

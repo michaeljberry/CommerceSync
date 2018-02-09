@@ -27,7 +27,7 @@ class WalmartOrder extends Walmart
 
     protected static function acknowledgeOrder($orderNum)
     {
-        WalmartOrder::configure()->acknowledge([
+        static::configure()->acknowledge([
             'purchaseOrderId' => $orderNum,
         ]);
     }
@@ -44,7 +44,7 @@ class WalmartOrder extends Walmart
 
     protected static function isAcknowledged($orderLine): bool
     {
-        if (!WalmartOrder::isMulti($orderLine)) {
+        if (!static::isMulti($orderLine)) {
             return (array_key_exists(
                     'orderLineStatuses',
                     $orderLine) &&
@@ -58,13 +58,13 @@ class WalmartOrder extends Walmart
             == 'Acknowledged') ? true : false;
     }
 
-    public function getMoreOrders($next)
+    public static function getMoreOrders($next)
     {
         try {
-            $orders = WalmartOrder::configure()->listAll([
+            $orders = static::configure()->listAll([
                 'nextCursor' => $next
             ]);
-            $this->parseOrders($orders);
+            static::parseOrders($orders);
         } catch (Exception $e) {
             Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
         }
@@ -73,7 +73,7 @@ class WalmartOrder extends Walmart
     public static function getOrder($orderNum)
     {
         try {
-            $order = WalmartOrder::configure()->get([
+            $order = static::configure()->get([
                 'purchaseOrderId' => $orderNum
             ]);
             return $order;
@@ -87,9 +87,9 @@ class WalmartOrder extends Walmart
         try {
             $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
 
-            return WalmartOrder::configure()->listAll([
+            return static::configure()->listAll([
                 'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
-                'limit' => WalmartOrder::$limit
+                'limit' => static::$limit
             ]);
         } catch (Exception $e) {
             Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
@@ -98,23 +98,23 @@ class WalmartOrder extends Walmart
 
     public function parseOrders($orders)
     {
-        if (WalmartOrder::isMulti($orders['elements']['order'])) {
+        if (static::isMulti($orders['elements']['order'])) {
             echo "Multiple Orders<br>";
             foreach ($orders['elements']['order'] as $order) {
-                $this->parseOrder($order);
+                static::parseOrder($order);
             }
         } else {
             echo "Single Order:<br>";
             foreach ($orders['elements'] as $order) {
-                $this->parseOrder($order);
+                static::parseOrder($order);
             }
         }
 
         if (isset($orders['meta']['nextCursor'])) {
             $nextCursor = $orders['meta']['nextCursor'];
-            $orders = $this->getMoreOrders($nextCursor);
+            $orders = static::getMoreOrders($nextCursor);
 
-            $this->parseOrders($orders);
+            static::parseOrders($orders);
         }
     }
 
@@ -125,16 +125,16 @@ class WalmartOrder extends Walmart
         $found = Order::get($orderNum);
 
         if (LOCAL || !$found) {
-            $this->orderFound($order, $orderNum);
+            static::orderFound($order, $orderNum);
         }
     }
 
     protected function orderFound($order, $orderNum)
     {
         if (!LOCAL) {
-            WalmartOrder::acknowledgeOrder($orderNum);
+            static::acknowledgeOrder($orderNum);
         }
-        if (WalmartOrder::isAcknowledged($order['orderLines']['orderLine'])) {
+        if (static::isAcknowledged($order['orderLines']['orderLine'])) {
             Ecommerce::dd($order);
             $channelName = 'Walmart';
 
@@ -144,13 +144,13 @@ class WalmartOrder extends Walmart
             $shippingPrice = 0.00;
             $orderTotal = 0.00;
 
-            if (!WalmartOrder::isMulti($order['orderLines']['orderLine'])) {
-                $orderTotal = $this->getOrderTotal($order['orderLines']['orderLine'], $orderTotal);
+            if (!static::isMulti($order['orderLines']['orderLine'])) {
+                $orderTotal = static::getOrderTotal($order['orderLines']['orderLine'], $orderTotal);
 
                 $orderItems = $order['orderLines'];
             } else {
                 foreach ($order['orderLines']['orderLine'] as $orderLine) {
-                    $orderTotal += $this->getOrderTotal($orderLine, $orderTotal);
+                    $orderTotal += static::getOrderTotal($orderLine, $orderTotal);
                 }
                 $orderItems = $order['orderLines']['orderLine'];
             }
@@ -185,7 +185,7 @@ class WalmartOrder extends Walmart
             }
             $Order->setOrderId();
 
-            $this->getItems($Order, $orderItems);
+            static::getItems($Order, $orderItems);
 
             $tax = $Order->getTax()->get();
 
@@ -201,13 +201,13 @@ class WalmartOrder extends Walmart
 
     protected function getItems(Order $Order, $orderItems)
     {
-        $this->parseItems($Order, $orderItems);
+        static::parseItems($Order, $orderItems);
     }
 
     protected function parseItems(Order $Order, $orderItems)
     {
         foreach ($orderItems as $item) {
-            $this->parseItem($Order, $item);
+            static::parseItem($Order, $item);
         }
     }
 

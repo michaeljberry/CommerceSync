@@ -118,7 +118,7 @@ class WalmartOrder extends Walmart
         }
     }
 
-    protected function parseOrder($order)
+    protected static function parseOrder($order)
     {
         $orderNum = $order['purchaseOrderId'];
 
@@ -129,7 +129,7 @@ class WalmartOrder extends Walmart
         }
     }
 
-    protected function orderFound($order, $orderNum)
+    protected static function orderFound($order, $orderNum)
     {
         if (!LOCAL) {
             static::acknowledgeOrder($orderNum);
@@ -199,19 +199,19 @@ class WalmartOrder extends Walmart
         }
     }
 
-    protected function getItems(Order $Order, $orderItems)
+    protected static function getItems(Order $Order, $orderItems)
     {
         static::parseItems($Order, $orderItems);
     }
 
-    protected function parseItems(Order $Order, $orderItems)
+    protected static function parseItems(Order $Order, $orderItems)
     {
         foreach ($orderItems as $item) {
             static::parseItem($Order, $item);
         }
     }
 
-    protected function parseItem(Order $Order, $item)
+    protected static function parseItem(Order $Order, $item)
     {
         $sku = $item['item']['sku'];
         $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
@@ -246,7 +246,7 @@ class WalmartOrder extends Walmart
         }
     }
 
-    protected function getOrderTotal($order, $orderTotal)
+    protected static function getOrderTotal($order, $orderTotal)
     {
         foreach ($order['charges'] as $price) {
             $orderTotal += $price['chargeAmount']['amount'];

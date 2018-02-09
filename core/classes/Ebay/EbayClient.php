@@ -5,7 +5,7 @@ namespace Ebay;
 use ecommerce\EcommerceInterface;
 use models\channels\Channel;
 
-class EbayClient implements EcommerceInterface
+class EbayClient extends Ebay implements EcommerceInterface
 {
 
     use EbayClientCurl;
@@ -16,8 +16,7 @@ class EbayClient implements EcommerceInterface
     private static $eBayCertID;
     private static $eBayToken;
     private static $eBayStoreID;
-    private static $apiTable = 'api_ebay';
-    private static $channel = 'Ebay';
+
     protected static $instance = null;
 
     public static function __callStatic($method, $args)
@@ -33,9 +32,9 @@ class EbayClient implements EcommerceInterface
         return self::$instance;
     }
 
-    protected function __construct($user_id)
+    protected function __construct($userID)
     {
-        self::setInfo($user_id);
+        self::setInfo($userID);
         self::setDevID();
         self::setAppID();
         self::setCertID();
@@ -43,7 +42,7 @@ class EbayClient implements EcommerceInterface
         self::setStoreID();
     }
 
-    private static function setInfo($user_id)
+    private static function setInfo($userID)
     {
         $columns = [
             'store_id',
@@ -53,7 +52,7 @@ class EbayClient implements EcommerceInterface
             'token'
         ];
 
-        self::$ebayInfo = Channel::getAppInfo($user_id, EbayClient::$apiTable, EbayClient::$channel, $columns);
+        self::$ebayInfo = Channel::getAppInfo($userID, self::$apiTable, self::$channel, $columns);
     }
 
     private static function setDevID()

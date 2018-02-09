@@ -9,7 +9,7 @@ use models\channels\order\OrderItem;
 use controllers\channels\FTPController;
 use controllers\channels\BuyerController;
 
-class EbayOrder extends Ebay
+class EbayOrder extends EbayClient
 {
     public static function getOrderXml($pageNumber)
     {

@@ -6,10 +6,12 @@ use models\channels\ChannelAPI;
 use ecommerce\Ecommerce;
 use models\channels\Fee;
 use models\ModelDB as MDB;
+use ecommerce\ChannelInterface;
 
-class Ebay //extends ChannelAPI
+class Ebay implements ChannelInterface
 {
-    protected $apiTable = 'api_ebay';
+    protected static $channel = 'Ebay';
+    protected static $apiTable = 'api_ebay';
     protected $apiColumns = [
         'api_from'
     ];
@@ -110,7 +112,7 @@ class Ebay //extends ChannelAPI
         return $response;
     }
 
-    public function ebay_pricing(Ecommerce $ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, $propose = null, $increaseBy = 0)
+    public function ebay_pricing($minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, $propose = null, $increaseBy = 0)
     {
 
         $ebayFeeMax = 250;
@@ -155,7 +157,7 @@ class Ebay //extends ChannelAPI
         if (!empty($propose) && ($grossProfitPercent < $minimumProfitPercent || $netProfitPercent < $minimumNetProfitPercent)) {
             $totalPrice = $totalPrice + $increment;
             $totalPrice = Ecommerce::formatMoney($totalPrice);
-            $priceArray = $this->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, 1, $totalPrice);
+            $priceArray = $this->ebay_pricing($minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, 1, $totalPrice);
         } else {
             $priceArray = compact(
                 'sku', 'quantity', 'msrp', 'pl10', 'pl1', 'cost', 'totalPrice',

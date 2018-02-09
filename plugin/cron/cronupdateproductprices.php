@@ -15,9 +15,9 @@ $currentPrices = ProductPrice::get();
 // print_r($currentPrices);
 
 for ($low = 0; $low < $count; $low += 500) {
-    if ($low > 6) {
-        break;
-    }
+    // if ($low > 6) {
+    //     break;
+    // }
     $high = $low + 500;
     $vaidata = IBM::syncVAIPrice($low, $high);
     // print_r($vaidata);

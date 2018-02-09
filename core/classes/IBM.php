@@ -161,8 +161,8 @@ class IBM
             $qty1 = 'ITWAQTY1';
             $qty2 = 'ITWAQTY2';
         }
-        $sql = "SELECT $qty1 AS CO_ONE, $qty2 AS CO_TWO 
-                FROM R37MODSDTA/VIOSELLERC 
+        $sql = "SELECT $qty1 AS CO_ONE, $qty2 AS CO_TWO
+                FROM R37MODSDTA/VIOSELLERC
                 WHERE $itemcol = :item";
         $query_params = array(
             ':item' => $item
@@ -187,7 +187,7 @@ class IBM
         return MIBMDB::query($sql, [], 'fetchAll', PDO::FETCH_ASSOC);
     }
 
-    public static function syncVAIPrice($low = null, $high = null, $company = 1)
+    public static function syncVAIPrice($low = null, $high = null, $company = 2)
     {
         $sql = "SELECT * FROM (SELECT J6ITEM, MAX(J6LPRC) AS J6LPRC, MAX(J6PL01) AS J6PL01, MAX(J6PL09) AS J6PL09, MAX(J6PL10) AS J6PL10, DECIMAL(AVG(FIFOCOST), 5, 2) AS FIFOCOST, ROW_NUMBER() OVER(ORDER BY J6ITEM) AS ROWNUMBER FROM R37FILES/VINPMAT LEFT JOIN MELQRY/FIFOCOST ON J6ITEM = U8ITEM LEFT JOIN R37MODSDTA/VIOSELLCRM ON ITITEM = J6ITEM WHERE J6CMP = $company AND J6LOC != '1VRM' AND J6DEL != 'I' AND J6PL10 > 0 AND ITMMLPRICE = J6PL10 GROUP BY J6ITEM ORDER BY J6ITEM) AS xxx WHERE ROWNUMBER BETWEEN $low AND $high ORDER BY J6ITEM";
         return MIBMDB::query($sql, [], 'fetchAll', PDO::FETCH_ASSOC);

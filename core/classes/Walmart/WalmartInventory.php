@@ -2,42 +2,58 @@
 
 namespace Walmart;
 
-use WalmartAPI\Item as WalmartItem;
+use WalmartAPI\Item as WMItem;
 
 class WalmartInventory extends WalmartClient
 {
-    public function configure()
+
+    public static function configure(): WMItem
     {
-        $wmitem = new WalmartItem([
-            'consumerId' => WalmartClient::getConsumerKey(),
-            'privateKey' => WalmartClient::getSecretKey()
-        ]);
-        return $wmitem;
+
+        return new WMItem(
+            [
+                'consumerId' => WalmartClient::getConsumerKey(),
+                'privateKey' => WalmartClient::getSecretKey()
+            ]
+        );
+
     }
 
     public function getItem($sku)
     {
-        $wmitem = $this->configure();
-        $item = $wmitem->get([
-            'sku' => $sku
-        ]);
-        return $item;
+
+        return static::configure()->get(
+            [
+                'sku' => $sku
+            ]
+        );
+
     }
 
     public function getAllItems()
     {
+
         $items = [];
+
         for($i = 0; $i < 21; $i+=20) {
+
             $items[] = $this->listItems($i)['MPItemView'];
+
         }
+
         return $items;
+
     }
 
     public function listItems($offset)
     {
-        return $this->configure()->list([
-            'offset' => $offset
-        ]);
+
+        return static::configure()->list(
+            [
+                'offset' => $offset
+            ]
+        );
+
     }
 
     public function updatePrice($sku, $price)

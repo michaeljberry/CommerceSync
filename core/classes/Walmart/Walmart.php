@@ -8,9 +8,15 @@ use ecommerce\ChannelInterface;
 class Walmart implements ChannelInterface
 {
 
+    private static $userID;
     private static $apiTable = 'api_walmart';
     private static $channel = 'Walmart';
-    private static $userID;
+    private static $apiColumns = [
+            'store_id',
+            'consumer_id',
+            'secret_key',
+            'api_header'
+        ];
 
     public function __construct($userID)
     {
@@ -37,6 +43,13 @@ class Walmart implements ChannelInterface
     {
 
         return static::$apiTable;
+
+    }
+
+    protected static function getApiColumns()
+    {
+
+        return static::$apiColumns;
 
     }
 

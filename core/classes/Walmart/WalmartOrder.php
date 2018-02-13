@@ -14,7 +14,7 @@ use Exception;
 class WalmartOrder extends WalmartClient
 {
 
-    private static $limit = 10;
+    private static $numberOfOrdersToPull = 10;
 
     public static function configure(): WMOrder
     {
@@ -29,10 +29,10 @@ class WalmartOrder extends WalmartClient
 
     }
 
-    protected static function getOrderLimit()
+    protected static function getNumberOfOrdersToPull()
     {
 
-        return static::$limit;
+        return static::$numberOfOrdersToPull;
 
     }
 
@@ -89,12 +89,11 @@ class WalmartOrder extends WalmartClient
 
         try {
 
-            $orders = static::configure()->listAll(
+            return static::configure()->listAll(
                 [
                     'nextCursor' => $next
                 ]
             );
-            static::parseOrders($orders);
 
         } catch (Exception $e) {
 
@@ -109,12 +108,11 @@ class WalmartOrder extends WalmartClient
 
         try {
 
-            $order = static::configure()->get(
+            return static::configure()->get(
                 [
                     'purchaseOrderId' => $orderNum
                 ]
             );
-            return $order;
 
         } catch (Exception $e) {
 
@@ -134,7 +132,7 @@ class WalmartOrder extends WalmartClient
             return static::configure()->listAll(
                 [
                     'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
-                    'limit' => static::$limit
+                    'limit' => static::getNumberOfOrdersToPull()
                 ]
             );
 
@@ -378,9 +376,11 @@ class WalmartOrder extends WalmartClient
                 $tax += $itemPrice['tax']['taxAmount']['amount'];
 
             }
+
         }
 
         return [$price, $shipping, $tax];
 
     }
+
 }

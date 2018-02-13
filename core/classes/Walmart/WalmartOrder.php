@@ -18,130 +18,201 @@ class WalmartOrder extends WalmartClient
 
     public static function configure(): WMOrder
     {
-        return new WMOrder([
-            'consumerId' => WalmartClient::getConsumerKey(),
-            'privateKey' => WalmartClient::getSecretKey(),
-            'wmConsumerChannelType' => WalmartClient::getAPIHeader()
-        ]);
+
+        return new WMOrder(
+            [
+                'consumerId' => WalmartClient::getConsumerKey(),
+                'privateKey' => WalmartClient::getSecretKey(),
+                'wmConsumerChannelType' => WalmartClient::getAPIHeader()
+            ]
+        );
+
     }
 
     protected static function getOrderLimit()
     {
+
         return static::$limit;
+
     }
 
     protected static function acknowledgeOrder($orderNum)
     {
-        static::configure()->acknowledge([
-            'purchaseOrderId' => $orderNum,
-        ]);
+
+        static::configure()->acknowledge(
+            [
+                'purchaseOrderId' => $orderNum,
+            ]
+        );
+
     }
 
     protected static function hasMultipleOrders($array): bool
     {
+
         foreach ($array as $key => $value) {
-            if (is_numeric($key)) {
+
+            if (is_numeric($key)){
                 return true;
             }
+
         }
+
         return false;
+
     }
 
     protected static function checkOrderAcknowledgeStatus($orderLine): bool
     {
+
         return (array_key_exists('orderLineStatuses',$orderLine) &&
                 $orderLine['orderLineStatuses']['orderLineStatus']['status']
                 == 'Acknowledged') ? true : false;
+
     }
 
     protected static function isAcknowledged($orderLine): bool
     {
+
         if (!static::hasMultipleOrders($orderLine)) {
+
             return static::checkOrderAcknowledgeStatus($orderLine);
+
         }
+
         return static::checkOrderAcknowledgeStatus($orderLine[0]);
+
     }
 
     public static function getMoreOrders($next)
     {
+
         try {
-            $orders = static::configure()->listAll([
-                'nextCursor' => $next
-            ]);
+
+            $orders = static::configure()->listAll(
+                [
+                    'nextCursor' => $next
+                ]
+            );
             static::parseOrders($orders);
+
         } catch (Exception $e) {
+
             Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
+
         }
+
     }
 
     public static function getOrder($orderNum)
     {
+
         try {
-            $order = static::configure()->get([
-                'purchaseOrderId' => $orderNum
-            ]);
+
+            $order = static::configure()->get(
+                [
+                    'purchaseOrderId' => $orderNum
+                ]
+            );
             return $order;
+
         } catch (Exception $e) {
+
             Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
+
         }
+
     }
 
     public static function getOrders()
     {
+
         try {
+
             $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
 
-            return static::configure()->listAll([
-                'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
-                'limit' => static::$limit
-            ]);
+            return static::configure()->listAll(
+                [
+                    'createdStartDate' => date('Y-m-d', strtotime($fromDate)),
+                    'limit' => static::$limit
+                ]
+            );
+
         } catch (Exception $e) {
+
             Ecommerce::dd("There was a problem requesting the data: " . $e->getMessage());
+
         }
+
     }
 
     protected static function parseEachOrder($orders)
     {
+
         foreach ($orders as $order) {
+
             static::parseOrder($order);
+
         }
+
     }
 
     public static function parseOrders($orders)
     {
-        if (static::hasMultipleOrders($orders['elements']['order'])) {
+
+        $multipleOrdersInCall = static::hasMultipleOrders($orders['elements']['order']);
+
+        if ($multipleOrdersInCall) {
+
             echo "Multiple Orders<br>";
             static::parseEachOrder($orders['elements']['order']);
+
         } else {
+
             echo "Single Order:<br>";
             static::parseEachOrder($orders['elements']);
+
         }
 
         if (isset($orders['meta']['nextCursor'])) {
+
             $nextCursor = $orders['meta']['nextCursor'];
             $orders = static::getMoreOrders($nextCursor);
 
             static::parseOrders($orders);
+
         }
+
     }
 
     protected static function parseOrder($order)
     {
+
         $orderNum = $order['purchaseOrderId'];
 
         $found = Order::get($orderNum);
 
         if (LOCAL || !$found) {
+
             static::orderFound($order, $orderNum);
+
         }
+
     }
 
     protected static function orderFound($order, $orderNum)
     {
+
         if (!LOCAL) {
+
             static::acknowledgeOrder($orderNum);
+
         }
-        if (static::isAcknowledged($order['orderLines']['orderLine'])) {
+
+        $orderIsAcknowledged = static::isAcknowledged($order['orderLines']['orderLine']);
+
+        if ($orderIsAcknowledged) {
+
             Ecommerce::dd($order);
             $channelName = 'Walmart';
 
@@ -151,15 +222,24 @@ class WalmartOrder extends WalmartClient
             $shippingPrice = 0.00;
             $orderTotal = 0.00;
 
-            if (!static::hasMultipleOrders($order['orderLines']['orderLine'])) {
+            $multipleOrdersInCall = static::hasMultipleOrders($order['orderLines']['orderLine']);
+
+            if (!$multipleOrdersInCall) {
+
                 $orderTotal = static::getOrderTotal($order['orderLines']['orderLine'], $orderTotal);
 
                 $orderItems = $order['orderLines'];
+
             } else {
+
                 foreach ($order['orderLines']['orderLine'] as $orderLine) {
+
                     $orderTotal += static::getOrderTotal($orderLine, $orderTotal);
+
                 }
+
                 $orderItems = $order['orderLines']['orderLine'];
+
             }
 
             $shippingCode = Order::shippingCode($orderTotal);
@@ -180,6 +260,7 @@ class WalmartOrder extends WalmartClient
             $shipToName = (string)$postalAddress['name'];
             $phone = (string)$shippingInfo['phone'];
             list($lastName, $firstName) = BuyerController::splitName($shipToName);
+
             $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
                 $country, $phone);
 
@@ -188,8 +269,11 @@ class WalmartOrder extends WalmartClient
 
             //Save Orders
             if (!LOCAL) {
+
                 $Order->save(WalmartClient::getStoreId());
+
             }
+
             $Order->setOrderId();
 
             static::getItems($Order, $orderItems);
@@ -201,25 +285,36 @@ class WalmartOrder extends WalmartClient
             $Order->setOrderXml($Order);
 
             if (!LOCAL) {
+
                 FTPController::saveXml($Order);
+
             }
+
         }
+
     }
 
     protected static function getItems(Order $Order, $orderItems)
     {
+
         static::parseItems($Order, $orderItems);
+
     }
 
     protected static function parseItems(Order $Order, $orderItems)
     {
+
         foreach ($orderItems as $item) {
+
             static::parseItem($Order, $item);
+
         }
+
     }
 
     protected static function parseItem(Order $Order, $item)
     {
+
         $sku = $item['item']['sku'];
         $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
 
@@ -230,35 +325,62 @@ class WalmartOrder extends WalmartClient
         $tax = 0.00;
         $shipping = 0.00;
         $price = 0.00;
-        foreach ($item['charges'] as $itemPrice) {
-            if ($itemPrice['chargeType'] == 'PRODUCT') {
-                $price += $itemPrice['chargeAmount']['amount'];
-            }
-            if ($itemPrice['chargeType'] == 'SHIPPING') {
-                $shipping += $itemPrice['chargeAmount']['amount'];
-            }
-            if (array_key_exists('tax', $itemPrice)) {
-                $tax += $itemPrice['tax']['taxAmount']['amount'];
-            }
-        }
-        $price = sprintf("%01.2f", number_format($price, 2, '.', '') / $quantity);
+        list($price, $shipping, $tax) = static::calculateItemTotals($item['charges'], $price, $shipping, $tax);
+
+        $price = sprintf("%01.2f", Ecommerce::formatMoneyNoComma($price) / $quantity);
         $totalTax = Ecommerce::formatMoney($tax);
         $Order->getTax()->updateTax($totalTax);
 
 
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
         $Order->setOrderItems($orderItem);
+
         if (!LOCAL) {
+
             $orderItem->save($Order);
+
         }
+
     }
 
     protected static function getOrderTotal($order, $orderTotal)
     {
+
         foreach ($order['charges'] as $price) {
+
             $orderTotal += $price['chargeAmount']['amount'];
+
         }
 
         return $orderTotal;
+
+    }
+
+    protected static function calculateItemTotals($charges, $price, $shipping, $tax)
+    {
+
+        foreach ($item['charges'] as $itemPrice) {
+
+            if ($itemPrice['chargeType'] == 'PRODUCT') {
+
+                $price += $itemPrice['chargeAmount']['amount'];
+
+            }
+
+            if ($itemPrice['chargeType'] == 'SHIPPING') {
+
+                $shipping += $itemPrice['chargeAmount']['amount'];
+
+            }
+
+            if (array_key_exists('tax', $itemPrice)) {
+
+                $tax += $itemPrice['tax']['taxAmount']['amount'];
+
+            }
+        }
+
+        return [$price, $shipping, $tax];
+
     }
 }

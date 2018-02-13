@@ -21,88 +21,119 @@ class EbayClient extends Ebay implements EcommerceInterface
 
     public static function __callStatic($method, $args)
     {
-        return call_user_func_array([self::instance(), $method], $args);
+
+        return call_user_func_array([static::instance(), $method], $args);
+
     }
 
     public static function instance($userID)
     {
-        if (self::$instance === null) {
-            self::$instance = new EbayClient($userID);
+
+        if (static::$instance === null) {
+
+            static::$instance = new EbayClient($userID);
+
         }
-        return self::$instance;
+
+        return static::$instance;
+
     }
 
     public function __construct($userID)
     {
-        self::setInfo($userID);
-        self::setDevID();
-        self::setAppID();
-        self::setCertID();
-        self::setToken();
-        self::setStoreID();
+
+        static::setInfo($userID);
+        static::setDevID();
+        static::setAppID();
+        static::setCertID();
+        static::setToken();
+        static::setStoreID();
+
     }
 
     private static function setInfo($userID)
     {
-        $columns = [
-            'store_id',
-            'devid',
-            'appid',
-            'certid',
-            'token'
-        ];
 
-        self::$ebayInfo = Channel::getAppInfo($userID, self::$apiTable, self::$channel, $columns);
+        // $columns = [
+        //     'store_id',
+        //     'devid',
+        //     'appid',
+        //     'certid',
+        //     'token'
+        // ];
+
+        static::$ebayInfo = Channel::getAppInfo(Ebay::getUserId(), Ebay::getApiTable(), Ebay::getChannelName(), Ebay::getApiColumns());
+
     }
 
     private static function setDevID()
     {
-        self::$eBayDevID = decrypt(self::$ebayInfo['devid']);
+
+        static::$eBayDevID = decrypt(static::$ebayInfo['devid']);
+
     }
 
     private static function setAppID()
     {
-        self::$eBayAppID = decrypt(self::$ebayInfo['appid']);
+
+        static::$eBayAppID = decrypt(static::$ebayInfo['appid']);
+
     }
 
     private static function setCertID()
     {
-        self::$eBayCertID = decrypt(self::$ebayInfo['certid']);
+
+        static::$eBayCertID = decrypt(static::$ebayInfo['certid']);
+
     }
 
     private static function setToken()
     {
-        self::$eBayToken = decrypt(self::$ebayInfo['token']);
+
+        static::$eBayToken = decrypt(static::$ebayInfo['token']);
+
     }
 
     private static function setStoreID()
     {
-        self::$eBayStoreID = self::$ebayInfo['store_id'];
+
+        static::$eBayStoreID = static::$ebayInfo['store_id'];
+
     }
 
     public static function getDevID()
     {
-        return self::$eBayDevID;
+
+        return static::$eBayDevID;
+
     }
 
     public static function getAppID()
     {
-        return self::$eBayAppID;
+
+        return static::$eBayAppID;
+
     }
 
     public static function getCertID()
     {
-        return self::$eBayCertID;
+
+        return static::$eBayCertID;
+
     }
 
     public static function getToken()
     {
-        return self::$eBayToken;
+
+        return static::$eBayToken;
+
     }
 
     public static function getStoreId()
     {
+
         return static::$eBayStoreID;
+
     }
 
 }

@@ -7,13 +7,22 @@ use ecommerce\Ecommerce;
 use models\channels\Fee;
 use models\ModelDB as MDB;
 use ecommerce\ChannelInterface;
+use controllers\channels\ChannelSetup;
 
 class Ebay implements ChannelInterface
 {
+
+    use ChannelSetup;
+
+    protected static $userID;
     protected static $channel = 'Ebay';
     protected static $apiTable = 'api_ebay';
     protected $apiColumns = [
-        'api_from'
+        'store_id',
+        'devid',
+        'appid',
+        'certid',
+        'token'
     ];
 
     public function sanitize_column_name($col)

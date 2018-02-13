@@ -7,8 +7,10 @@ use controllers\channels\XMLController;
 
 trait EbayClientCurl
 {
+
     protected static function createTradingHeader($post_string, $callName)
     {
+
         $headers = [
             "Content-type: text/xml",
             "Content-length: " . strlen($post_string),
@@ -21,11 +23,14 @@ trait EbayClientCurl
             "X-EBAY-API-SITEID: 0",
             "X-EBAY-API-DETAIL-LEVEL:0"
         ];
+
         return $headers;
+
     }
 
     protected static function createFindingHeader($callName)
     {
+
         $headers = [
             "X-EBAY-SOA-SERVICE-NAME: FindingService",
             "X-EBAY-SOA-OPERATION-NAME: $callName",
@@ -35,10 +40,12 @@ trait EbayClientCurl
             "X-EBAY-SOA-REQUEST-DATA-FORMAT: XML"
         ];
         return $headers;
+
     }
 
     protected static function createMerchandisingHeader($callName)
     {
+
         $headers = [
             "X-EBAY-SOA-OPERATION-NAME: $callName",
             "X-EBAY-SOA-REQUEST-DATA-FORMAT: XML",
@@ -47,10 +54,12 @@ trait EbayClientCurl
             "X-EBAY-SOA-GLOBAL-ID: EBAY-US"
         ];
         return $headers;
+
     }
 
     protected static function createShoppingHeader($callName)
     {
+
         $headers = [
             "X-EBAY-API-APP-ID: " . EbayClient::getAppID(),
             "X-EBAY-API-CALL-NAME: $callName",
@@ -59,92 +68,133 @@ trait EbayClientCurl
             "Content-type: text/xml",
         ];
         return $headers;
+
     }
 
     protected static function createHeader($post_string, $callName, $callType)
     {
+
         $headers = [];
 
         if ($callType === 'trading') {
+
             $headers = EbayClient::createTradingHeader($post_string, $callName);
+
         } elseif ($callType === 'finding') {
+
             $headers = EbayClient::createFindingHeader($callName);
+
         } elseif ($callType === 'merchandising') {
+
             $headers = EbayClient::createMerchandisingHeader($callName);
+
         } elseif ($callType === 'shopping') {
+
             $headers = EbayClient::createShoppingHeader($callName);
+
         }
+
         return $headers;
+
     }
 
     protected static function headerParameter($callType)
     {
+
         $param = '';
 
         if ($callType === 'trading' || $callType === 'shopping') {
+
             $param = 'xmlns="urn:ebay:apis:eBLBaseComponents"';
+
         } elseif ($callType === 'finding') {
+
             $param = 'xmlns="http://www.ebay.com/marketplace/search/v1/services"';
+
         }
 
         return $param;
+
     }
 
     protected static function eBayCredentialsXML()
     {
+
         $credentialTag = 'RequesterCredentials';
         $credentials = XMLController::openingXMLTag($credentialTag);
         $credentials .= XMLController::xmlElement('eBayAuthToken', EbayClient::getToken());
         $credentials .= XMLController::closingXMLTag($credentialTag);
         return $credentials;
+
     }
 
     protected static function xmlHeader($requestName, $callType)
     {
+
         $header = XMLController::xmlOpenTag();
         $request = $requestName . 'Request';
         $param = EbayClient::headerParameter($callType);
         $header .= XMLController::openingXMLTag($request, $param);
         if ($callType !== 'finding' && $callType !== 'shopping') {
+
             $header .= EbayClient::eBayCredentialsXML();
+
         }
+
         return $header;
+
     }
 
     protected static function xmlFooter($requestName)
     {
+
         $request = $requestName . 'Request';
         $footer = XMLController::closingXMLTag($request);
+
         return $footer;
+
     }
 
     protected static function setCurlUrl($callType = 'trading')
     {
+
         $url = '';
 
         if ($callType === 'trading') {
+
             $url = 'https://api.ebay.com/ws/api.dll';
+
         } elseif ($callType === 'finding') {
+
             $url = 'http://svcs.ebay.com/services/search/FindingService/v1';
+
         } elseif ($callType === 'merchandising') {
+
             $url = 'http://svcs.ebay.com/MerchandisingService?';
+
         } elseif ($callType === 'shopping') {
+
             $url = 'http://open.api.ebay.com/shopping?';
+
         }
 
         return $url;
+
     }
 
     protected static function curlPostString($requestName, $xml, $callType)
     {
+
         $post_string = EbayClient::xmlHeader($requestName, $callType);
         $post_string .= XMLController::makeXML($xml);
         $post_string .= EbayClient::xmlFooter($requestName);
         return $post_string;
+
     }
 
     protected static function setCurlOptions($headers, $post_string, $url)
     {
+
         $request = curl_init($url);
         curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($request, CURLOPT_FOLLOWLOCATION, true);
@@ -154,14 +204,18 @@ trait EbayClientCurl
         curl_setopt($request, CURLOPT_POST, true);
         curl_setopt($request, CURLOPT_SSL_VERIFYPEER, 0);
         return $request;
+
     }
 
     public static function ebayCurl($requestName, $xml, $callType = 'trading')
     {
+
         $post_string = EbayClient::curlPostString($requestName, $xml, $callType);
         $headers = EbayClient::createHeader($post_string, $requestName, $callType);
         $curlUrl = EbayClient::setCurlUrl($callType);
         $request = EbayClient::setCurlOptions($headers, $post_string, $curlUrl);
         return CurlController::request($request);
+
     }
+
 }

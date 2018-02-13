@@ -4,61 +4,22 @@ namespace Walmart;
 
 use models\ModelDB as MDB;
 use ecommerce\ChannelInterface;
+use controllers\channels\ChannelSetup;
 
 class Walmart implements ChannelInterface
 {
 
-    private static $userID;
-    private static $apiTable = 'api_walmart';
-    private static $channel = 'Walmart';
-    private static $apiColumns = [
-            'store_id',
-            'consumer_id',
-            'secret_key',
-            'api_header'
-        ];
+    use ChannelSetup;
 
-    public function __construct($userID)
-    {
-
-        static::setUserId($userID);
-
-    }
-
-    protected static function setUserId($userID)
-    {
-
-        static::$userID = $userID;
-
-    }
-
-    protected static function getUserId()
-    {
-
-        return static::$userID;
-
-    }
-
-    protected static function getApiTable()
-    {
-
-        return static::$apiTable;
-
-    }
-
-    protected static function getApiColumns()
-    {
-
-        return static::$apiColumns;
-
-    }
-
-    protected static function getChannelName()
-    {
-
-        return static::$channel;
-
-    }
+    protected static $userID;
+    protected static $channel = 'Walmart';
+    protected static $apiTable = 'api_walmart';
+    protected static $apiColumns = [
+        'store_id',
+        'consumer_id',
+        'secret_key',
+        'api_header'
+    ];
 
     public function get_wm_app_info($user_id)
     {

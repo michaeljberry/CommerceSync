@@ -7,7 +7,7 @@ interface EcommerceInterface
 
     static function getStoreId();
 
-    static function instance($userID);
+    static function instance();
 
     static function __callStatic($name, $arguments);
 

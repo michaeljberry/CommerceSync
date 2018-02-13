@@ -11,7 +11,7 @@ use controllers\channels\BuyerController;
 use WalmartAPI\Order as WMOrder;
 use Exception;
 
-class WalmartOrder extends Walmart
+class WalmartOrder extends WalmartClient
 {
 
     private static $limit = 10;
@@ -25,6 +25,11 @@ class WalmartOrder extends Walmart
         ]);
     }
 
+    protected static function getOrderLimit()
+    {
+        return static::$limit;
+    }
+
     protected static function acknowledgeOrder($orderNum)
     {
         static::configure()->acknowledge([
@@ -32,7 +37,7 @@ class WalmartOrder extends Walmart
         ]);
     }
 
-    protected static function isMulti($array): bool
+    protected static function hasMultipleOrders($array): bool
     {
         foreach ($array as $key => $value) {
             if (is_numeric($key)) {
@@ -42,20 +47,19 @@ class WalmartOrder extends Walmart
         return false;
     }
 
-    protected static function isAcknowledged($orderLine): bool
+    protected static function checkOrderAcknowledgeStatus($orderLine): bool
     {
-        if (!static::isMulti($orderLine)) {
-            return (array_key_exists(
-                    'orderLineStatuses',
-                    $orderLine) &&
+        return (array_key_exists('orderLineStatuses',$orderLine) &&
                 $orderLine['orderLineStatuses']['orderLineStatus']['status']
                 == 'Acknowledged') ? true : false;
+    }
+
+    protected static function isAcknowledged($orderLine): bool
+    {
+        if (!static::hasMultipleOrders($orderLine)) {
+            return static::checkOrderAcknowledgeStatus($orderLine);
         }
-        return (array_key_exists(
-                'orderLineStatuses',
-                $orderLine[0]) &&
-            $orderLine[0]['orderLineStatuses']['orderLineStatus']['status']
-            == 'Acknowledged') ? true : false;
+        return static::checkOrderAcknowledgeStatus($orderLine[0]);
     }
 
     public static function getMoreOrders($next)
@@ -82,7 +86,7 @@ class WalmartOrder extends Walmart
         }
     }
 
-    public function getOrders()
+    public static function getOrders()
     {
         try {
             $fromDate = '-' . Walmart::getApiOrderDays() . ' days';
@@ -96,18 +100,21 @@ class WalmartOrder extends Walmart
         }
     }
 
-    public function parseOrders($orders)
+    protected static function parseEachOrder($orders)
     {
-        if (static::isMulti($orders['elements']['order'])) {
+        foreach ($orders as $order) {
+            static::parseOrder($order);
+        }
+    }
+
+    public static function parseOrders($orders)
+    {
+        if (static::hasMultipleOrders($orders['elements']['order'])) {
             echo "Multiple Orders<br>";
-            foreach ($orders['elements']['order'] as $order) {
-                static::parseOrder($order);
-            }
+            static::parseEachOrder($orders['elements']['order']);
         } else {
             echo "Single Order:<br>";
-            foreach ($orders['elements'] as $order) {
-                static::parseOrder($order);
-            }
+            static::parseEachOrder($orders['elements']);
         }
 
         if (isset($orders['meta']['nextCursor'])) {
@@ -144,7 +151,7 @@ class WalmartOrder extends Walmart
             $shippingPrice = 0.00;
             $orderTotal = 0.00;
 
-            if (!static::isMulti($order['orderLines']['orderLine'])) {
+            if (!static::hasMultipleOrders($order['orderLines']['orderLine'])) {
                 $orderTotal = static::getOrderTotal($order['orderLines']['orderLine'], $orderTotal);
 
                 $orderItems = $order['orderLines'];

@@ -9,12 +9,8 @@ require WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'wm/wmvar.php';
 
 $start = startClock();
-$user_id = 838;
 
-$orders = $wmord->getOrders();
-
-$wmord->parseOrders($orders);
-
+WalmartOrder::parseOrders(WalmartOrder::getOrders());
 
 //$orders = $wmord->getOrder('2578500230963');
 //$wmord->parseOrder($orders);

@@ -4,7 +4,7 @@ namespace Walmart;
 
 use WalmartAPI\Item as WalmartItem;
 
-class WalmartInventory extends Walmart
+class WalmartInventory extends WalmartClient
 {
     public function configure()
     {

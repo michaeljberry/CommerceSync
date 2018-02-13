@@ -3,9 +3,40 @@
 namespace Walmart;
 
 use models\ModelDB as MDB;
+use ecommerce\ChannelInterface;
 
-class Walmart
+class Walmart implements ChannelInterface
 {
+
+    private static $apiTable = 'api_walmart';
+    private static $channel = 'Walmart';
+    private static $userID;
+
+    public function __construct($userID)
+    {
+        static::setUserId($userID);
+    }
+
+    protected static function setUserId($userID)
+    {
+        static::$userID = $userID;
+    }
+
+    protected static function getUserId()
+    {
+        return static::$userID;
+    }
+
+    protected static function getApiTable()
+    {
+        return static::$apiTable;
+    }
+
+    protected static function getChannelName()
+    {
+        return static::$channel;
+    }
+
     public function get_wm_app_info($user_id)
     {
         $sql = "SELECT wm.id, store_id, wm.consumer_id, wm.secret_key, wm.api_header FROM api_walmart AS wm INNER JOIN store ON wm.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Walmart'";

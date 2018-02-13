@@ -12,7 +12,7 @@ $start = startClock();
 
 WalmartOrder::parseOrders(WalmartOrder::getOrders());
 
-//$orders = $wmord->getOrder('2578500230963');
-//$wmord->parseOrder($orders);
+//$order = "2578500230963";
+//WalmartOrder::parseOrder(WalmartOrder::getOrder($order));
 
 endClock($start);

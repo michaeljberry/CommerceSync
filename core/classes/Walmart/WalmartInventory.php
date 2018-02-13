@@ -19,7 +19,7 @@ class WalmartInventory extends WalmartClient
 
     }
 
-    public function getItem($sku)
+    public static function getItem($sku)
     {
 
         return static::configure()->get(
@@ -30,14 +30,14 @@ class WalmartInventory extends WalmartClient
 
     }
 
-    public function getAllItems()
+    public static function getAllItems()
     {
 
         $items = [];
 
         for($i = 0; $i < 21; $i+=20) {
 
-            $items[] = $this->listItems($i)['MPItemView'];
+            $items[] = static::listItems($i)['MPItemView'];
 
         }
 
@@ -45,7 +45,7 @@ class WalmartInventory extends WalmartClient
 
     }
 
-    public function listItems($offset)
+    public static function listItems($offset)
     {
 
         return static::configure()->list(
@@ -56,7 +56,7 @@ class WalmartInventory extends WalmartClient
 
     }
 
-    public function updatePrice($sku, $price)
+    public static function updatePrice($sku, $price)
     {
 
     }

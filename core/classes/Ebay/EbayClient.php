@@ -11,11 +11,11 @@ class EbayClient extends Ebay implements EcommerceInterface
     use EbayClientCurl;
 
     private static $ebayInfo;
+    private static $eBayStoreID;
     private static $eBayDevID;
     private static $eBayAppID;
     private static $eBayCertID;
     private static $eBayToken;
-    private static $eBayStoreID;
 
     protected static $instance = null;
 
@@ -26,12 +26,12 @@ class EbayClient extends Ebay implements EcommerceInterface
 
     }
 
-    public static function instance($userID)
+    public static function instance()
     {
 
         if (static::$instance === null) {
 
-            static::$instance = new EbayClient($userID);
+            static::$instance = new EbayClient();
 
         }
 
@@ -39,10 +39,10 @@ class EbayClient extends Ebay implements EcommerceInterface
 
     }
 
-    public function __construct($userID)
+    public function __construct()
     {
 
-        static::setInfo($userID);
+        static::setInfo();
         static::setDevID();
         static::setAppID();
         static::setCertID();
@@ -51,16 +51,8 @@ class EbayClient extends Ebay implements EcommerceInterface
 
     }
 
-    private static function setInfo($userID)
+    private static function setInfo()
     {
-
-        // $columns = [
-        //     'store_id',
-        //     'devid',
-        //     'appid',
-        //     'certid',
-        //     'token'
-        // ];
 
         static::$ebayInfo = Channel::getAppInfo(Ebay::getUserId(), Ebay::getApiTable(), Ebay::getChannelName(), Ebay::getApiColumns());
 

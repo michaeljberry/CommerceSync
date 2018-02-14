@@ -11,8 +11,13 @@ use controllers\channels\BuyerController;
 
 class EbayOrder extends EbayClient
 {
+
+    protected static $requestName = 'GetOrders';
+    protected static $pageNumber = 1;
+
     public static function getOrderXml($pageNumber)
     {
+
         $xml = [
             'NumberOfDays' => Ebay::getApiOrderDays(),
             'Pagination' => [
@@ -22,49 +27,87 @@ class EbayOrder extends EbayClient
             'DetailLevel' => 'ReturnAll'
         ];
         return $xml;
+
     }
 
-    public static function getOrders($requestName, $pageNumber)
+    private static function incrementPageNumber()
     {
-        $xml = EbayOrder::getOrderXml($pageNumber);
-        return EbayClient::ebayCurl($requestName, $xml);
+
+        static::$pageNumber++;
+
     }
 
-    public function parseOrders($orders, $pageNumber, $requestName)
+    protected static function getPageNumber()
     {
+
+        return static::$pageNumber;
+
+    }
+
+    protected static function getRequestName()
+    {
+
+        return static::$requestName;
+
+    }
+
+
+    public static function getOrders()
+    {
+
+        $xml = EbayOrder::getOrderXml(static::getPageNumber());
+        return EbayClient::ebayCurl(static::getRequestName(), $xml);
+
+    }
+
+    public static function parseOrders($orders)
+    {
+
         $xmlOrders = simplexml_load_string($orders);
 
         $orderCount = count($xmlOrders->OrderArray->Order);
         echo "Order Count: $orderCount<br>";
 
         foreach ($xmlOrders->OrderArray->Order as $order) {
-            $this->parseOrder($order);
+
+            static::parseOrder($order);
+
         }
 
         if ($orderCount >= 100) {
-            $pageNumber++;
-            $orders = EbayOrder::getOrders($requestName, $pageNumber);
 
-            $this->parseOrders($orders, $pageNumber, $requestName);
+            static::incrementPageNumber();
+            $orders = EbayOrder::getOrders();
+
+            static::parseOrders($orders);
+
         }
+
     }
 
-    protected function parseOrder($order)
+    protected static function parseOrder($order)
     {
+
         $orderNumber = (string)$order->ExternalTransaction->ExternalTransactionID;
         $orderStatus = trim((string)$order->OrderStatus);
 
         if ($orderStatus !== 'Cancelled' && !empty($orderNumber)) {
+
             $found = Order::get($orderNumber);
 
             if (LOCAL || !$found) {
-                $this->orderFound($order, $orderNumber);
+
+                static::orderFound($order, $orderNumber);
+
             }
+
         }
+
     }
 
-    protected function orderFound($order, $orderNumber)
+    protected static function orderFound($order, $orderNumber)
     {
+
         Ecommerce::dd($order);
         $channelName = 'Ebay';
 
@@ -73,24 +116,35 @@ class EbayOrder extends EbayClient
         $total = (float)$order->Total;
 
         //Address
-        $ismultilegshipping = (string)$order->IsMultiLegShipping;
-        if (strcasecmp($ismultilegshipping, 'true') == 0) {
+        $isGlobalShippingOrder = (string)$order->IsMultiLegShipping;
+
+        if (strcasecmp($isGlobalShippingOrder, 'true') == 0) {
+
             $shippingAddress = (object)$order
                 ->MultiLegShippingDetails
                 ->SellerShipmentToLogisticsProvider
                 ->ShipToAddress;
             $streetAddress = (string)$shippingAddress->ReferenceID;
             $streetAddress2 = (string)$shippingAddress->Street1;
+
         } else {
+
             $shippingAddress = (object)$order
                 ->ShippingAddress;
             $streetAddress = (string)$shippingAddress->Street1;
+
             if (is_object($shippingAddress->Street2)) {
+
                 $streetAddress2 = '';
+
             } else {
+
                 $streetAddress2 = (string)$shippingAddress->Street2;
+
             }
+
         }
+
         $city = (string)$shippingAddress->CityName;
         $state = (string)$shippingAddress->StateOrProvince;
         $zipCode = (string)$shippingAddress->PostalCode;
@@ -124,11 +178,14 @@ class EbayOrder extends EbayClient
 
         //Save Order
         if (!LOCAL) {
+
             $Order->save(EbayClient::getStoreId());
+
         }
+
         $Order->setOrderId();
 
-        $this->getItems($Order, $order->TransactionArray);
+        static::getItems($Order, $order->TransactionArray);
 
         $tax = $Order->getTax()->get();
 
@@ -137,28 +194,42 @@ class EbayOrder extends EbayClient
         $Order->setOrderXml($Order);
 
         if (!LOCAL) {
+
             FTPController::saveXml($Order);
+
         }
+
     }
 
-    protected function getItems(Order $Order, $items)
+    protected static function getItems(Order $Order, $items)
     {
-        $this->parseItems($Order, $items);
+
+        static::parseItems($Order, $items);
+
     }
 
-    protected function parseItems(Order $Order, $items)
+    protected static function parseItems(Order $Order, $items)
     {
+
         if (count($items->Transaction) > 1) {
+
             foreach ($items->Transaction as $item) {
-                $this->parseItem($Order, $item);
+
+                static::parseItem($Order, $item);
+
             }
+
         } else {
-            $this->parseItem($Order, $items->Transaction);
+
+            static::parseItem($Order, $items->Transaction);
+
         }
+
     }
 
-    protected function parseItem(Order $Order, $item)
+    protected static function parseItem(Order $Order, $item)
     {
+
         $sku = (string)$item->Item->SKU;
         $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
 
@@ -172,8 +243,13 @@ class EbayOrder extends EbayClient
 
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber(), $itemID);
         $Order->setOrderItems($orderItem);
+
         if (!LOCAL) {
+
             $orderItem->save($Order);
+
         }
+
     }
+
 }

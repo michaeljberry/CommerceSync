@@ -1,7 +1,7 @@
 <?php
 
+use Ebay\Ebay;
+use Ebay\EbayClient;
 
-$ebay = new \Ebay\Ebay();
-$EbayClient = \Ebay\EbayClient::instance($userID);
-$ebord = new \Ebay\EbayOrder();
-$ebinv = new \Ebay\EbayInventory();
+$ebay = new Ebay($userID);
+EbayClient::instance();

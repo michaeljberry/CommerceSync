@@ -17,7 +17,7 @@ class Ebay implements ChannelInterface
     protected static $userID;
     protected static $channel = 'Ebay';
     protected static $apiTable = 'api_ebay';
-    protected $apiColumns = [
+    protected static $apiColumns = [
         'store_id',
         'devid',
         'appid',
@@ -27,6 +27,7 @@ class Ebay implements ChannelInterface
 
     public function sanitize_column_name($col)
     {
+
         switch ($col) {
             case $col == "token":
                 $column = 'token';
@@ -47,7 +48,9 @@ class Ebay implements ChannelInterface
                 $column = 'sandbox_certid';
                 break;
         }
+
         return $column;
+
     }
 
     public function update_app_info($crypt, $store_id, $column, $id)

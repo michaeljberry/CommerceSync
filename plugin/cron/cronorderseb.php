@@ -9,13 +9,7 @@ require WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 
 $start = startClock();
-$userID = 838;
-$pageNumber = 1;
 
-$requestName = 'GetOrders';
-
-$orders = EbayOrder::getOrders($requestName, $pageNumber);
-
-$ebord->parseOrders($orders, $pageNumber, $requestName);
+EbayOrder::parseOrders(EbayOrder::getOrders());
 
 endClock($start);

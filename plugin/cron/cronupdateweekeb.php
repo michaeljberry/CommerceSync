@@ -3,6 +3,7 @@ use ecommerce\Ecommerce;
 use models\channels\Inventory;
 use models\channels\Listing;
 use models\channels\SKU;
+use Ebay\EbayInventory;
 
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
@@ -28,7 +29,7 @@ foreach ($updated as $u) {
         $price = '';
     }
 
-    $response = $ebinv->update_ebay_inventory($stock_id, $stock_qty, $price, $ecommerce);
+    $response = EbayInventory::updateEbayInventory($stock_id, $stock_qty, $price);
     print_r($response);
     echo '<br>';
 }

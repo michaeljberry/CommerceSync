@@ -3,13 +3,13 @@ use ecommerce\Ecommerce;
 use models\channels\Inventory;
 use models\channels\Listing;
 use models\channels\SKU;
+use Ebay\EbayInventory;
 
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 
 $start = startClock();
-$user_id = 838;
 require WEBPLUGIN . 'eb/ebvar.php';
 
 $table = 'listing_ebay';
@@ -49,7 +49,7 @@ foreach ($updated as $u) {
         $price = '';
     }
 
-    $response = $ebinv->update_ebay_inventory($stock_id, $stock_qty, $price, $ecommerce);
+    $response = EbayInventory::updateEbayInventory($stock_id, $stock_qty, $price);
     print_r($response);
 
     fwrite($fp, "Inventory Upload Response: " . PHP_EOL . $response . PHP_EOL . PHP_EOL);

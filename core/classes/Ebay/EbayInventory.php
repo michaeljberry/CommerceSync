@@ -12,7 +12,7 @@ use models\channels\Stock;
 class EbayInventory extends EbayClient
 {
 
-    public static function sync_ebay_products($store_id)
+    public static function downloadEbayListings()
     {
 
         $requestName = 'GetMyeBaySelling';
@@ -33,9 +33,9 @@ class EbayInventory extends EbayClient
 
             foreach ($xml_items->ActiveList->ItemArray->Item as $xml) {
 
-                $item_id = $xml->ItemID;
-                $listing_id = static::sync_inventory_items($item_id, $store_id);
-                echo $item_id . ' updated.<br>';
+                $itemID = $xml->ItemID;
+                $listing_id = static::saveEbayListing($itemID);
+                echo $itemID . ' updated.<br>';
 
             }
 
@@ -43,107 +43,103 @@ class EbayInventory extends EbayClient
 
     }
 
-    public static function sync_inventory_items($item_id, $store_id)
+    public static function saveEbayListing($itemID)
     {
 
-        $response = static::getSingleItem($item_id);
+        $response = static::getSingleItem($itemID);
         $xml = simplexml_load_string($response);
 
         $country = $xml->Item->Country;
         $description = $xml->Item->Description;
         $price = $xml->Item->StartPrice;
         $url = $xml->Item->Storefront->StoreURL;
-        $listing_duration = $xml->Item->ListingDuration;
-        $listing_type = $xml->Item->ListingType;
-        $primary_category = $xml->Item->PrimaryCategory->CategoryID;
-        $category_name = $xml->Item->PrimaryCategory->CategoryName;
+        $listingDuration = $xml->Item->ListingDuration;
+        $listingType = $xml->Item->ListingType;
+        $primaryCategory = $xml->Item->PrimaryCategory->CategoryID;
+        $categoryName = $xml->Item->PrimaryCategory->CategoryName;
         $quantity = $xml->Item->Quantity;
         $isbn = $xml->Item->ProductListingDetails->ISBN;
-        $stock_photo = $xml->Item->ProductListingDetails->StockPhotoURL;
-        $global_shipping = $xml->Item->ShippingDetails->GlobalShipping;
-        $free_shipping = $xml->Item->ShippingDetails->ShippingServiceOptions[0]->FreeShipping;
-        $shipping_cost = $xml->Item->ShippingDetails->ShippingServiceOptions->ShippingServiceCost;
-        $shipping_cost_additional = $xml->Item->ShippingDetails->ShippingServiceOptions->ShippingServiceAdditionalCost;
-        $shipping_type = $xml->Item->ShippingDetails->ShippingType;
+        $stockPhoto = $xml->Item->ProductListingDetails->StockPhotoURL;
+        $globalShipping = $xml->Item->ShippingDetails->GlobalShipping;
+        $freeShipping = $xml->Item->ShippingDetails->ShippingServiceOptions[0]->FreeShipping;
+        $shippingCost = $xml->Item->ShippingDetails->ShippingServiceOptions->ShippingServiceCost;
+        $shippingCostAdditional = $xml->Item->ShippingDetails->ShippingServiceOptions->ShippingServiceAdditionalCost;
+        $shippingType = $xml->Item->ShippingDetails->ShippingType;
         $title = $xml->Item->Title;
         $sku = $xml->Item->SKU;
-        $photo_url = $xml->Item->PictureDetails->PictureURL[0];
-        $external_photo_url = $xml->Item->ExternalPictureURL;
-        $refund_option = $xml->Item->ReturnPolicy->RefundOption;
+        $photoUrl = $xml->Item->PictureDetails->PictureURL[0];
+        $externalPhotoUrl = $xml->Item->ExternalPictureURL;
+        $refundOption = $xml->Item->ReturnPolicy->RefundOption;
         $returnswithinoption = $xml->Item->ReturnPolicy->ReturnsWithinOption;
         $returnsacceptedoption = $xml->Item->ReturnPolicy->ReturnsAcceptedOption;
-        $product_condition = $xml->Item->ConditionDisplayName;
-        $listing_status = $xml->Item->SellingStatus->ListingStatus;
+        $productCondition = $xml->Item->ConditionDisplayName;
+        $listingStatus = $xml->Item->SellingStatus->ListingStatus;
         $active = 0;
 
-        if ($listing_status == 'Ended') {
-
-            $active = 0;
-
-        } elseif ($listing_status == 'Active') {
+        if ($listingStatus == 'Active') {
 
             $active = 1;
 
         }
 //
         //find-product-id
-        $product_id = Product::searchOrInsert($sku, $title, '', $description, '', '');
+        $productID = Product::searchOrInsert($sku, $title, '', $description, '', '');
         //add-product-availability
-        $availability_id = ProductAvailability::searchOrInsert($product_id, $store_id);
+        $availability_id = ProductAvailability::searchOrInsert($productID, EbayClient::getStoreId());
         //find sku
-        $sku_id = SKU::searchOrInsert($sku);
+        $skuID = SKU::searchOrInsert($sku);
         //add price
-        $price_id = ProductPrice::searchOrInsert($sku_id, $price, $store_id);
+        $price_id = ProductPrice::searchOrInsert($skuID, $price, EbayClient::getStoreId());
         //normalize condition
-        $condition = ConditionController::normalCondition($product_condition);
+        $condition = ConditionController::normalCondition($productCondition);
         //find condition id
-        $condition_id = Condition::searchOrInsert($condition);
+        $conditionID = Condition::searchOrInsert($condition);
         //add stock to sku
-        $stock_id = Stock::searchOrInsert($sku_id, $condition_id);
-        $channel_array = array(
-            'store_id' => $store_id,
-            'stock_id' => $stock_id,
-            'store_listing_id' => $item_id,
+        $stockID = Stock::searchOrInsert($skuID, $conditionID);
+        $listingItemArray = array(
+            'store_id' => EbayClient::getStoreId(),
+            'stock_id' => $stockID,
+            'store_listing_id' => $itemID,
             'price' => $price,
             'url' => $url,
             'title' => $title,
             'description' => $description,
             'active' => $active,
             'country' => $country,
-            'listing_duration' => $listing_duration,
-            'listing_type' => $listing_type,
-            'primary_category' => $primary_category,
-            'category_name' => $category_name,
+            'listing_duration' => $listingDuration,
+            'listing_type' => $listingType,
+            'primary_category' => $primaryCategory,
+            'category_name' => $categoryName,
             'inventory_level' => $quantity,
             'isbn' => $isbn,
-            'stock_photo_url' => $stock_photo,
-            'global_shipping' => $global_shipping,
-            'free_shipping' => $free_shipping,
-            'shipping_cost' => $shipping_cost,
-            'shipping_cost_additional' => $shipping_cost_additional,
-            'shipping_type' => $shipping_type,
+            'stock_photo_url' => $stockPhoto,
+            'global_shipping' => $globalShipping,
+            'free_shipping' => $freeShipping,
+            'shipping_cost' => $shippingCost,
+            'shipping_cost_additional' => $shippingCostAdditional,
+            'shipping_type' => $shippingType,
             'sku' => $sku,
-            'photo_url' => $photo_url,
-            'external_photo_url' => $external_photo_url,
-            'refund_option' => $refund_option,
+            'photo_url' => $photoUrl,
+            'external_photo_url' => $externalPhotoUrl,
+            'refund_option' => $refundOption,
             'returns_within_option' => $returnswithinoption,
             'returns_accepted_option' => $returnsacceptedoption,
-            'product_condition' => $product_condition
+            'product_condition' => $productCondition
         );
-        $listing_id = Listing::searchOrInsert('listing_ebay', $store_id, $stock_id, $channel_array, 'true');
+        $listing_id = Listing::searchOrInsert('listing_ebay', EbayClient::getStoreId(), $stockID, $listingItemArray, 'true');
         return $listing_id;
 
     }
 
-    public static function update_ebay_inventory($stock_id, $quantity, $price)
+    public static function updateEbayInventory($stockID, $quantity, $price)
     {
 
-        $item_id = Listing::getChannelListingIdByStockId($stock_id, 'listing_ebay');
+        $itemID = Listing::getChannelListingIdByStockId($stockID, 'listing_ebay');
 
         $requestName = 'ReviseInventoryStatus';
         $xml = [
             'InventoryStatus' => [
-                'ItemID' => $item_id,
+                'ItemID' => $itemID,
                 'Quantity' => $quantity
             ]
         ];
@@ -159,7 +155,7 @@ class EbayInventory extends EbayClient
 
     }
 
-    public static function update_all_ebay_inventory($item_id, $price)
+    public static function updateEbayListingPrice($itemID, $price)
     {
 
         $requestName = 'ReviseItem';
@@ -167,7 +163,7 @@ class EbayInventory extends EbayClient
         //Use Tax Table
         $xml = [
             'Item' => [
-                'ItemID' => $item_id,
+                'ItemID' => $itemID,
                 'StartPrice' => $price
             ]
         ];
@@ -205,14 +201,14 @@ class EbayInventory extends EbayClient
     }
 
     //<IncludeItemSpecifics>true</IncludeItemSpecifics>
-    public static function getSingleItem($item_id)
+    public static function getSingleItem($itemID)
     {
 
         $requestName = 'GetItem';
 
         $xml = [
             'DetailLevel' => 'ReturnAll',
-            'ItemID' => $item_id
+            'ItemID' => $itemID
         ];
 
         $response = EbayClient::ebayCurl($requestName, $xml);
@@ -220,7 +216,7 @@ class EbayInventory extends EbayClient
 
     }
 
-    public static function add_ebay_inventory($ebay_category_id, $title, $description, $upc, $sku, $photo_url, $quantity, $price)
+    public static function createEbayListing($categoryID, $title, $description, $upc, $sku, $photoUrl, $quantity, $price)
     {
 
         $requestName = 'AddItem';
@@ -256,11 +252,11 @@ class EbayInventory extends EbayClient
                 'PictureDetails' => [
                     'GalleryType' => 'Gallery',
                     'PhotoDisplay' => 'None',
-                    'PictureURL' => $photo_url,
+                    'PictureURL' => $photoUrl,
                 ],
                 'PostalCode' => '83403',
                 'PrimaryCategory' => [
-                    'CategoryID' => $ebay_category_id,
+                    'CategoryID' => $categoryID,
                 ],
                 'ProductListingDetails' => [
                 ],
@@ -321,14 +317,14 @@ class EbayInventory extends EbayClient
 
     }
 
-    public static function edit_gtin($item_id, $upc, $sku)
+    public static function updateUpc($itemID, $upc, $sku)
     {
 
         $requestName = 'ReviseItem';
 
         $xml = [
             'Item' => [
-                'ItemID' => $item_id,
+                'ItemID' => $itemID,
                 'ItemSpecifics' => [
                     'NameValueList' => [
                         [
@@ -364,13 +360,13 @@ class EbayInventory extends EbayClient
 
     }
 
-    public static function deleteItem($item_id)
+    public static function deleteItem($itemID)
     {
 
         $requestName = 'EndItem';
 
         $xml = [
-            'ItemID' => $item_id,
+            'ItemID' => $itemID,
             'EndingReason' => 'NotAvailable'
         ];
 

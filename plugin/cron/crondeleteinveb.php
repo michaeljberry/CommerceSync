@@ -1,6 +1,7 @@
 <?php
 use ecommerce\Ecommerce;
 use models\channels\Listing;
+use Ebay\EbayInventory;
 
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
@@ -15,7 +16,7 @@ foreach ($results as $r) {
 //    }
     $sku = trim($r['IFITEM']);
     $listing_id = Listing::getIdBySku($sku, 'listing_ebay');
-    $result = $ebinv->deleteItem($listing_id);
+    $result = EbayInventory::deleteItem($listing_id);
     echo "$sku: <br>";
     print_r($result);
     echo '<br><br>';

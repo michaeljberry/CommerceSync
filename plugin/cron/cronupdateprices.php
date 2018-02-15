@@ -12,6 +12,7 @@ require WEBPLUGIN . 'wm/wmvar.php';
 use ecommerce\Ecommerce;
 use models\channels\Listing;
 use models\channels\product\ProductPrice;
+use Ebay\EbayInventory;
 
 $start = startClock();
 
@@ -46,7 +47,7 @@ foreach ($updatedPrices as $sku => $prices) {
     }
     if (array_key_exists($sku, $ebayListings)) {
         echo "Ebay: $sku -> $pl10 -> {$ebayListings[$sku]['id']}<br>";
-        $response = $ebinv->update_all_ebay_inventory($ebayListings[$sku]['id'], $pl10);
+        $response = EbayInventory::updateEbayListingPrice($ebayListings[$sku]['id'], $pl10);
         Ecommerce::dd($response);
     }
     if (array_key_exists($sku, $amazonListings)) {

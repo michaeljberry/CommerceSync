@@ -11,12 +11,12 @@ print_r($results);
 foreach ($results as $r) {
     $date = $r['date'];
     $sales = $r['sales'];
-    $units_sold = $r['units_sold'];
+    $unitsSold = $r['units_sold'];
     $channel = $r['channel'];
 
-    $stat_id = OrderStats::save($channel, $date, $sales, $units_sold);
+    $stat_id = OrderStats::save($channel, $date, $sales, $unitsSold);
     if (!empty($stat_id)) {
-        echo "Date: $date; Channel: $channel; Sales: $sales, Units Sold: $units_sold<br>";
+        echo "Date: $date; Channel: $channel; Sales: $sales, Units Sold: $unitsSold<br>";
     }
 }
 

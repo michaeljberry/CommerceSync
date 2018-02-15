@@ -4,6 +4,8 @@ require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 
+use Ebay\EbayInventory;
+
 $start = startClock();
 $user_id = 838;
 
@@ -17,7 +19,7 @@ foreach ($results as $r) {
     $listing_id = $r['store_listing_id'];
     $sku = $r['sku'];
     $upc = $r['upc'];
-    $response = $ebinv->edit_gtin($listing_id, $upc, $sku);
+    $response = EbayInventory::updateUpc($listing_id, $upc, $sku);
     print_r($response);
     echo '<br><br>';
 //    $x++;

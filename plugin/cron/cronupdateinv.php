@@ -11,7 +11,7 @@ require WEBPLUGIN . 'ecd/ecdvar.php';
 //ob_start();
 
 $start = startClock();
-$user_id = 838;
+$userID = 838;
 
 $table = 'listing_ecd';
 $vaidata = IBM::getBigCommerceInventory();
@@ -23,21 +23,21 @@ $log_file_name = date('ymd-H-i') . ' - VAI Inventory.txt';
 $inventory_log = $folder . 'log/inventory/' . $log_file_name;
 echo "Updated SKU's: Stock_QTY" . PHP_EOL;
 
-$current_quantities = Listing::getInventory($table);
+$currentSkuInventoryLevels = Listing::getInventory($table);
 
-//ecom::dd($current_quantities);
+//ecom::dd($currentSkuInventoryLevels);
 
 foreach ($vaidata as $v) {
     $sku = trim($v['ITITEM']);
     $qty = (int)$v['QTY'];
 
-    if (array_key_exists($sku, $current_quantities)) {
-        if ((int)$current_quantities[$sku]['inventory_level'] !== $qty) {
+    if (array_key_exists($sku, $currentSkuInventoryLevels)) {
+        if ((int)$currentSkuInventoryLevels[$sku]['inventory_level'] !== $qty) {
             $result = Listing::updateInventory($sku, $qty, $table);
             if ($result) {
                 echo $sku . ' is updated.<br />';
             }
-            echo "SKU: $sku; Old Level: {$current_quantities[$sku]['inventory_level']}; New Level: $qty<br>";
+            echo "SKU: $sku; Old Level: {$currentSkuInventoryLevels[$sku]['inventory_level']}; New Level: $qty<br>";
         }
     }else{
         $result = Listing::updateInventory($sku, $qty, $table);

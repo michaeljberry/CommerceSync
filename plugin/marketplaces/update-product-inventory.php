@@ -3,6 +3,7 @@ use ecommerce\Ecommerce;
 use models\channels\Inventory;
 use models\channels\Listing;
 use models\channels\SKU;
+use Ebay\EbayInventory;
 
 require '../../core/init.php';
 $start_time = microtime(true);
@@ -106,7 +107,7 @@ if ($_POST['inventory-sku']) {
             }
             echo 'eBay Quantity: ' . $stock_qty . '; eBay Price: ' . $price . '<br>';
 
-            $response = $ebinv->update_ebay_inventory($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $stock_id, $stock_qty, $price, $ecommerce);
+            $response = EbayInventory::updateEbayInventory($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $stock_id, $stock_qty, $price, $ecommerce);
 
             if (strpos($response, 'Success')) {
                 echo 'eBay Inventory/Price Update was uploaded successfully';

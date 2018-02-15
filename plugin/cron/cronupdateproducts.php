@@ -9,7 +9,7 @@ use models\channels\product\ProductPrice;
 $start = startClock();
 
 $debug = false;
-$sku_test = 'z11102-95-p-blk-7str';
+$testSku = 'z11102-95-p-blk-7str';
 if (!$debug) {
     $count = IBM::getCount();
     echo $count . '<br>';
@@ -19,7 +19,7 @@ if (!$debug) {
         foreach ($vaidata as $v) {
             $sku = trim($v['ICITEM']);
             $name = trim($v['ICTITL']);
-            $sub_title = trim($v['ICSUBT']);
+            $subTitle = trim($v['ICSUBT']);
             $description = trim($v['ICDSC1']);
             $upc = trim($v['ICUPC']);
             $weight = trim($v['ICWGHT']);
@@ -27,7 +27,7 @@ if (!$debug) {
             if ($status) {
                 $status = 1;
             }
-            $sku_id = Product::searchOrInsertBySku($sku, $name, $sub_title, $description, $upc, $weight, $status);
+            $sku_id = Product::searchOrInsertBySku($sku, $name, $subTitle, $description, $upc, $weight, $status);
 
             $sku = str_replace("'", "''", $sku);
             $money = IBM::syncVAIPrices($sku, '1');
@@ -48,7 +48,7 @@ if (!$debug) {
             $result = ProductPrice::update($sku_id, $msrp, $pl1, $map, $pl10, $cost);
 
             if ($sku_id) {
-//            echo $sku . ': Title: ' . $name . '; Subtitle: ' . $sub_title . '; Description: ' . $description . '; UPC: ' . $upc . '; Weight: ' . $weight . '<br>';
+//            echo $sku . ': Title: ' . $name . '; Subtitle: ' . $subTitle . '; Description: ' . $description . '; UPC: ' . $upc . '; Weight: ' . $weight . '<br>';
                 echo $sku . ': Title: ' . $name . '; UPC: ' . $upc . ';<br>';
             } else {
                 echo $sku_id . ' not successfully added/updated.';
@@ -56,11 +56,11 @@ if (!$debug) {
         }
     }
 } else {
-    $vaidata = IBM::syncVAI('', '', strtoupper($sku_test));
+    $vaidata = IBM::syncVAI('', '', strtoupper($testSku));
     print_r($vaidata);
     $sku = trim($vaidata[0]['ICITEM']);
     $name = trim($vaidata[0]['ICTITL']);
-    $sub_title = trim($vaidata[0]['ICSUBT']);
+    $subTitle = trim($vaidata[0]['ICSUBT']);
     $description = trim($vaidata[0]['ICDSC1']);
     $upc = trim($vaidata[0]['ICUPC']);
     $weight = trim($vaidata[0]['ICWGHT']);
@@ -68,7 +68,7 @@ if (!$debug) {
     if ($status) {
         $status = 1;
     }
-    $sku_id = $ecommerce->product_soi_sku($sku, $name, $sub_title, $description, $upc, $weight, $status);
+    $sku_id = Product::searchOrInsert($sku, $name, $subTitle, $description, $upc, $weight, $status);
 
     $sku = str_replace("'", "''", $sku);
     $money = IBM::syncVAIPrices($sku, '1');
@@ -84,7 +84,7 @@ if (!$debug) {
     $result = ProductPrice::update($sku_id, $msrp, $pl1, $map, $pl10, $cost);
 
     if ($sku_id) {
-//        echo $sku . ': Title: ' . $name . '; Subtitle: ' . $sub_title . '; Description: ' . $description . '; UPC: ' . $upc . '; Weight: ' . $weight . '<br>';
+//        echo $sku . ': Title: ' . $name . '; Subtitle: ' . $subTitle . '; Description: ' . $description . '; UPC: ' . $upc . '; Weight: ' . $weight . '<br>';
         echo $sku . ': Title: ' . $name . '; PL1: ' . $pl1 . '; PL10: ' . $pl10 . '; Cost: ' . $cost . '; MSRP: ' . $msrp . '<br>';
     } else {
         echo $sku_id . ' not successfully added/updated.';

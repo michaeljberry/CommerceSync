@@ -11,18 +11,21 @@ require WEBPLUGIN . 'am/amvar.php';
 require WEBPLUGIN . 'bc/bcvar.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 require WEBPLUGIN . 'rev/revvar.php';
+
+use Ebay\EbayInventory;
+
 $bigcommerce->configure($BC);
 
-$from_array = [
+$channelToSyncFrom = [
     'table' => 'listing_amazon',
     'category_column' => 'categories_amazon_id'
 ];
-$to_array = [
+$channelToSyncTo = [
     'table' => 'listing_ebay',
     'category_column' => 'categories_ebay_id'
 ];
 
-$eligible_products = Listing::syncFromTo($from_array['table'], $to_array['table']);
+$eligible_products = Listing::syncFromTo($channelToSyncFrom['table'], $channelToSyncTo['table']);
 //print_r($eligible_products);
 $x = 0;
 $page = 34;
@@ -41,54 +44,54 @@ foreach ($eligible_products as $p) {
     $upc = $p['upc'];
     $sku = $p['sku'];
     $price = $p['price'];
-    $photo_url = "https://4dae45140096fd7fb6d3-7cac89ee19f3b4d177ef11effcca7827.ssl.cf1.rackcdn.com/images/$sku.jpg";
+    $photoUrl = "https://4dae45140096fd7fb6d3-7cac89ee19f3b4d177ef11effcca7827.ssl.cf1.rackcdn.com/images/$sku.jpg";
     $quantity = $p['quantity'];
-    $category_id = $p['category_id'];
+    $categoryID = $p['category_id'];
     $weight = $p['weight'];
-    echo "$title $upc $sku $category_id: ";
-    $category_id = Category::getMappedById($from_array['category_column'], $to_array['category_column'], $category_id);
-    echo $category_id . '<br>';
+    echo "$title $upc $sku $categoryID: ";
+    $categoryID = Category::getMappedById($channelToSyncFrom['category_column'], $channelToSyncTo['category_column'], $categoryID);
+    echo $categoryID . '<br>';
     //Need to check if item is non-stock in VAI before listing
     $result = IBM::findNonstockItem($sku);
     if (!empty($result)) {
-        if (strpos($to_array['table'], 'ebay') !== false) {
-            $response = $ebinv->add_ebay_inventory($category_id, $title, $description, $upc, $sku, $photo_url,
+        if (strpos($channelToSyncTo['table'], 'ebay') !== false) {
+            $response = EbayInventory::createEbayListing($categoryID, $title, $description, $upc, $sku, $photoUrl,
                 $quantity, $price);
             echo '<br><br>';
 //            print_r($response);
-            $item_id = Ecommerce::substring_between($response, '<itemid>', '</itemid>');
+            $itemID = Ecommerce::substring_between($response, '<itemid>', '</itemid>');
             $errors = Ecommerce::substring_between($response, '<errors>', '</errors>');
-            echo "Item ID: $item_id<br><br>";
+            echo "Item ID: $itemID<br><br>";
             if ($errors) {
                 print_r($errors);
             } else {
-                $listing_id = $ebinv->sync_inventory_items($item_id, '1', $ecommerce);
-                echo "$sku: UPC - $upc; ListingID - $listing_id<img src='$photo_url' width='200' height='200'><br>";
-//                echo "$sku: UPC - $upc; ListingID - $item_id<img src='$photo_url' width='200' height='200'><br>";
+                $listing_id = EbayInventory::saveEbayListing($itemID);
+                echo "$sku: UPC - $upc; ListingID - $listing_id<img src='$photoUrl' width='200' height='200'><br>";
+//                echo "$sku: UPC - $upc; ListingID - $itemID<img src='$photoUrl' width='200' height='200'><br>";
             }
-        } elseif (strpos($to_array['table'], 'bigcommerce') !== false) {
+        } elseif (strpos($channelToSyncTo['table'], 'bigcommerce') !== false) {
             //Add product
-            $cat_array = [$category_id];
-            $photo_sku = $sku;
-            if (strpos($photo_sku, '#') >= 0) {
-                $photo_sku = str_replace('#', '', $photo_sku);
+            $categoryArray = [$categoryID];
+            $photoSku = $sku;
+            if (strpos($photoSku, '#') >= 0) {
+                $photoSku = str_replace('#', '', $photoSku);
             }
-            $photo_url = "$photo_sku.jpg";
-            $add_result = [
+            $photoUrl = "$photoSku.jpg";
+            $addResult = [
                 $title,
                 'P',
                 'Y',
                 'by product',
-                $cat_array,
+                $categoryArray,
                 $price,
                 $weight,
                 $description,
                 $sku,
                 $upc,
-                $photo_url
+                $photoUrl
             ];
-            $bc_array[] = $add_result;
-//            $bcinv->add_item($title, $cat_array, $price, $weight, $description, $sku, $upc, $BC); //$bc_username, $bc_api_key
+            $bc_array[] = $addResult;
+//            $bcinv->add_item($title, $categoryArray, $price, $weight, $description, $sku, $upc, $BC); //$bc_username, $bc_api_key
 //            $result = $bcinv->get_product_id_by_sku($sku, $page, $bc_username, $bc_api_key);
 //            if($result) {
 //                $store_listing_id = $result['p_id'];
@@ -100,7 +103,7 @@ foreach ($eligible_products as $p) {
 //                    if(empty($product_images)){
 //                        print_r($product_images);
 //                        //Add product image
-////                        $result2 = $bcinv->add_product_image($store_listing_id, $photo_url, $bc_username, $bc_api_key);
+////                        $result2 = $bcinv->add_product_image($store_listing_id, $photoUrl, $bc_username, $bc_api_key);
 ////                        echo "$sku: Image added successfully<br>";
 //                    }
 //                    //Add brand

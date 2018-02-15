@@ -7,9 +7,10 @@ $start = startClock();
 $user_id = 838;
 require WEBPLUGIN . 'eb/ebvar.php';
 
+use Ebay;
 use Ebay\EbayInventory;
 
-$results = $ebay->get_listings();
+$results = Ebay::getListing();
 //print_r($results);
 //$x = 1;
 foreach ($results as $r) {

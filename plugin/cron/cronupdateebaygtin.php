@@ -4,12 +4,13 @@ require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'eb/ebvar.php';
 
+use Ebay;
 use Ebay\EbayInventory;
 
 $start = startClock();
 $user_id = 838;
 
-$results = $ebay->get_listing_upc();
+$results = Ebay::getUpcForListings();
 //print_r($results);
 //$x = 1;
 foreach ($results as $r) {

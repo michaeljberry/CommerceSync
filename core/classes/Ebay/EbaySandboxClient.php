@@ -3,9 +3,8 @@
 namespace Ebay;
 
 use ecommerce\EcommerceInterface;
-use models\channels\Channel;
 
-class EbayClient extends Ebay implements EcommerceInterface
+class EbaySandboxClient extends Ebay implements EcommerceInterface
 {
 
     use EbayClientCurl;
@@ -31,7 +30,7 @@ class EbayClient extends Ebay implements EcommerceInterface
 
         if (static::$instance === null) {
 
-            static::$instance = new EbayClient();
+            static::$instance = new EbaySandboxClient();
 
         }
 
@@ -41,20 +40,18 @@ class EbayClient extends Ebay implements EcommerceInterface
 
     public function __construct()
     {
-
         static::setInfo();
         static::setDevID();
         static::setAppID();
         static::setCertID();
         static::setToken();
         static::setStoreID();
-
     }
 
-    private static function setInfo()
+    protected static function setInfo()
     {
 
-        static::$ebayInfo = Channel::getAppInfo(Ebay::getUserId(), Ebay::getApiTable(), Ebay::getChannelName(), Ebay::getApiColumns());
+        static::$ebayInfo = Ebay::getEbayInfo(Ebay::getUserId());
 
     }
 
@@ -83,13 +80,6 @@ class EbayClient extends Ebay implements EcommerceInterface
     {
 
         static::$ebayToken = decrypt(static::$ebayInfo['token']);
-
-    }
-
-    private static function setStoreID()
-    {
-
-        static::$ebayStoreID = static::$ebayInfo['store_id'];
 
     }
 

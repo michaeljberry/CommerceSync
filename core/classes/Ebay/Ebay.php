@@ -25,7 +25,7 @@ class Ebay implements ChannelInterface
         'token'
     ];
 
-    public function sanitize_column_name($col)
+    public static function sanitizeColumnName($col)
     {
 
         switch ($col) {
@@ -55,7 +55,7 @@ class Ebay implements ChannelInterface
 
     public function update_app_info($crypt, $store_id, $column, $id)
     {
-        $column = $this->sanitize_column_name($column);
+        $column = static::sanitizeColumnName($column);
         $sql = "UPDATE api_ebay SET $column = :id WHERE store_id = :store_id";
         $query_params = [
             ':id' => $crypt->encrypt($id),
@@ -64,20 +64,16 @@ class Ebay implements ChannelInterface
         MDB::query($sql, $query_params);
     }
 
-    public function get_ebay_app_id($user_id, $sand = null)
+    public static function getEbaySandboxInfo($user_id)
     {
-        if (empty($sand)) {
-            $sql = "SELECT store_id, devid, appid, certid, token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'";
-        } else {
-            $sql = "SELECT store_id, sandbox_devid AS devid, sandbox_appid AS appid, sandbox_certid AS certid, sandbox_token AS token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'";
-        }
+        $sql = "SELECT store_id, sandbox_devid AS devid, sandbox_appid AS appid, sandbox_certid AS certid, sandbox_token AS token FROM api_ebay INNER JOIN store ON api_ebay.store_id = store.id INNER JOIN account ON account.company_id = store.company_id INNER JOIN channel ON channel.id = store.channel_id WHERE account.id = :user_id AND channel.name = 'Ebay'";
         $query_params = [
             ':user_id' => $user_id
         ];
         return MDB::query($sql, $query_params, 'fetch');
     }
 
-    public function get_listings($item_id = null)
+    public static function getListing($item_id = null)
     {
         if (!$item_id) {
             $sql = "SELECT id, store_listing_id, price FROM listing_ebay";
@@ -91,19 +87,19 @@ class Ebay implements ChannelInterface
         }
     }
 
-    public function get_recently_updated_listings()
+    public static function getListingsUpdatedToday()
     {
         $sql = "SELECT store_listing_id, description FROM listing_ebay WHERE DATE(last_edited) = CURRENT_DATE ";
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public function get_listing_upc()
+    public static function getUpcForListings()
     {
         $sql = "SELECT le.id, le.store_listing_id, le.sku, p.upc FROM listing_ebay le LEFT JOIN sku sk ON le.sku = sk.sku LEFT JOIN product p ON p.id = sk.product_id";
         return MDB::query($sql, [], 'fetchAll');
     }
 
-    public function get_listing_id($sku)
+    public function getListingId($sku)
     {
         $sql = "SELECT store_listing_id FROM listing_ebay WHERE sku = :sku";
         $query_params = [

@@ -129,8 +129,7 @@ class EbayOrder extends EbayClient
 
         } else {
 
-            $shippingAddress = (object)$order
-                ->ShippingAddress;
+            $shippingAddress = (object)$order->ShippingAddress;
             $streetAddress = (string)$shippingAddress->Street1;
 
             if (is_object($shippingAddress->Street2)) {
@@ -157,12 +156,23 @@ class EbayOrder extends EbayClient
             'zip' => $zipCode
         ];
         $shippingCode = Order::shippingCode($total, $address);
-        $shippingPrice = (float)$order->ShippingDetails->ShippingServiceOptions->ShippingServiceCost;
+        $shippingPrice = (float)$order
+            ->ShippingDetails
+            ->ShippingServiceOptions
+            ->ShippingServiceCost;
 
-        $fee = (float)$order->ExternalTransaction->FeeOrCreditAmount;
-        $tax = (float)$order->TransactionArray->Transaction->Taxes->TotalTaxAmount;
+        $fee = (float)$order
+            ->ExternalTransaction
+            ->FeeOrCreditAmount;
+        $tax = (float)$order
+            ->TransactionArray
+            ->Transaction
+            ->Taxes
+            ->TotalTaxAmount;
 
-        $channelOrderID = (string)$order->ShippingDetails->SellingManagerSalesRecordNumber;
+        $channelOrderID = (string)$order
+            ->ShippingDetails
+            ->SellingManagerSalesRecordNumber;
 
         //Buyer
         $shipToName = (string)$shippingAddress->Name;
@@ -233,7 +243,9 @@ class EbayOrder extends EbayClient
         $sku = (string)$item->Item->SKU;
         $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
 
-        $title = (string)$item->Item->Title;
+        $title = (string)$item
+            ->Item
+            ->Title;
         $quantity = (int)$item->QuantityPurchased;
         $upc = '';
 

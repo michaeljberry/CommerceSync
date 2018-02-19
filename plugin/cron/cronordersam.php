@@ -9,10 +9,7 @@ require WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'am/amvar.php';
 
 $start = startClock();
-$userID = 838;
 
-$orders = AmazonOrder::getOrders();
-
-$amord->parseOrders($orders);
+AmazonOrder::parseOrders(AmazonOrder::getOrders());
 
 endClock($start);

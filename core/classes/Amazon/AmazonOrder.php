@@ -15,8 +15,9 @@ use \DateTimeZone;
 class AmazonOrder extends Amazon
 {
 
-    public function getMoreOrders($nextToken)
+    protected static function getMoreOrders($nextToken)
     {
+
         $action = 'ListOrdersByNextToken';
         $feedtype = '';
         $feed = 'Orders';
@@ -34,10 +35,12 @@ class AmazonOrder extends Amazon
         $xml = '';
 
         return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+
     }
 
-    public function getOrderItems($orderNumber)
+    public static function getOrderItems($orderNumber)
     {
+
         $action = 'ListOrderItems';
         $feedtype = '';
         $feed = 'Orders';
@@ -53,10 +56,12 @@ class AmazonOrder extends Amazon
         $xml = '';
 
         return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+
     }
 
     public static function getOrders()
     {
+
         $action = 'ListOrders';
         $feedtype = '';
         $feed = 'Orders';
@@ -84,43 +89,62 @@ class AmazonOrder extends Amazon
         $xml = '';
 
         return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+
     }
 
-    public function parseOrders($orders, $nextPage = null)
+    public static function parseOrders($orders, $nextPage = null)
     {
+
         $xmlOrders = simplexml_load_string($orders);
 
         $page = "ListOrdersResult";
+
         if ($nextPage) {
+
             $page = "ListOrdersByNextTokenResult";
+
         }
+
         foreach ($xmlOrders->{$page}->Orders->Order as $order) {
-            $this->parseOrder($order);
+
+            static::parseOrder($order);
+
         }
 
         if (isset($xmlOrders->{$page}->NextToken)) {
+
             $nextToken = (string)$xmlOrders->{$page}->NextToken;
             Ecommerce::dd("Next Token:" . $nextToken);
-        }
-        if (isset($nextToken)) {
-            $orders = $this->getMoreOrders($nextToken);
 
-            $this->parseOrders($orders, true);
         }
+
+        if (isset($nextToken)) {
+
+            $orders = static::getMoreOrders($nextToken);
+
+            static::parseOrders($orders, true);
+
+        }
+
     }
 
-    public function parseOrder($order)
+    public static function parseOrder($order)
     {
+
         $orderNumber = $order->AmazonOrderId;
         $found = Order::get($orderNumber);
 
         if (LOCAL || !$found) {
-            $this->orderFound($order, $orderNumber);
+
+            static::orderFound($order, $orderNumber);
+
         }
+
     }
 
-    public function orderFound($order, $orderNumber)
+    public static function orderFound($order, $orderNumber)
     {
+
         Ecommerce::dd($order);
         $channelName = 'Amazon';
 
@@ -182,13 +206,15 @@ class AmazonOrder extends Amazon
         $Order = new Order(1, $channelName, AmazonClient::getStoreId(), $buyer, $orderNumber, $purchaseDate,
             $shippingCode, $shippingPrice, $tax);
 
-        //Save Order
         if (!LOCAL) {
+
             $Order->save(AmazonClient::getStoreId());
+
         }
+
         $Order->setOrderId();
 
-        $this->getItems($Order);
+        static::getItems($Order);
 
         $tax = $Order->getTax()->get();
 
@@ -197,31 +223,45 @@ class AmazonOrder extends Amazon
         $Order->setOrderXml($Order);
 
         if (!LOCAL) {
+
             FTPController::saveXml($Order);
+
         }
+
     }
 
-    protected function getItems(Order $Order)
+    protected static function getItems(Order $Order)
     {
-        $orderItems = simplexml_load_string($this->getOrderItems($Order->getOrderNumber()));
+
+        $orderItems = simplexml_load_string(static::getOrderItems($Order->getOrderNumber()));
 
         if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
-            $this->parseItems($Order, $orderItems->ListOrderItemsResult->OrderItems->OrderItem);
+
+            static::parseItems($Order, $orderItems->ListOrderItemsResult->OrderItems->OrderItem);
+
         } else {
+
             sleep(2);
-            $this->getItems($Order);
+            static::getItems($Order);
+
         }
+
     }
 
-    protected function parseItems(Order $Order, $items)
+    protected static function parseItems(Order $Order, $items)
     {
+
         foreach ($items as $item) {
-            $this->parseItem($Order, $item);
+
+            static::parseItem($Order, $item);
+
         }
+
     }
 
-    protected function parseItem(Order $Order, $item)
+    protected static function parseItem(Order $Order, $item)
     {
+
         $sku = (string)$item->SellerSKU;
         $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
 
@@ -260,9 +300,13 @@ class AmazonOrder extends Amazon
         $orderItem = new OrderItem($sku, $title, $quantity, $price, $upc, $Order->getPoNumber());
         $Order->setOrderItems($orderItem);
         Ecommerce::dd($Order);
+
         if (!LOCAL) {
+
             $orderItem->save($Order);
+
         }
+
     }
 
 }

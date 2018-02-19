@@ -2,7 +2,6 @@
 
 namespace Ebay;
 
-use models\channels\ChannelAPI;
 use ecommerce\Ecommerce;
 use models\channels\Fee;
 use models\ModelDB as MDB;

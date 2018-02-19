@@ -51,6 +51,19 @@ class EbayOrder extends EbayClient
 
     }
 
+    protected static function getMoreOrders($orderCount)
+    {
+
+        if ($orderCount >= 100) {
+
+            static::incrementPageNumber();
+            $orders = EbayOrder::getOrders();
+
+            static::parseOrders($orders);
+
+        }
+
+    }
 
     public static function getOrders()
     {
@@ -74,14 +87,7 @@ class EbayOrder extends EbayClient
 
         }
 
-        if ($orderCount >= 100) {
-
-            static::incrementPageNumber();
-            $orders = EbayOrder::getOrders();
-
-            static::parseOrders($orders);
-
-        }
+        static::getMoreOrders($orderCount);
 
     }
 

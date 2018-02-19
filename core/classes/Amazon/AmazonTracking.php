@@ -66,14 +66,13 @@ class AmazonTracking extends ChannelTracking
         $action = 'SubmitFeed';
         $feedtype = '_POST_ORDER_FULFILLMENT_DATA_';
         $feed = 'Feeds';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $paramAdditionalConfig = [
             'SellerId'
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
         $xml = [
             'MessageType' => 'OrderFulfillment',
@@ -81,7 +80,7 @@ class AmazonTracking extends ChannelTracking
         $xml = XMLController::makeXML($xml);
         $xml .= $xml1;
 
-        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
     }
 
     public function updateAmazonTracking(ChannelTracking $tracking)

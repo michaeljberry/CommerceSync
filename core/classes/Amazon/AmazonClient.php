@@ -57,7 +57,7 @@ class AmazonClient extends Amazon implements EcommerceInterface
 
     }
 
-    protected function __construct()
+    public function __construct()
     {
 
         static::setInfo();

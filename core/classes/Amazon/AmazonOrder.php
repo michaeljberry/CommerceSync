@@ -21,20 +21,20 @@ class AmazonOrder extends Amazon
         $action = 'ListOrdersByNextToken';
         $feedtype = '';
         $feed = 'Orders';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'MarketplaceId.Id.1',
             'SellerId',
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
-        $param['NextToken'] = $nextToken;
+        // $param['NextToken'] = $nextToken;
+        AmazonClient::setParameterByKey("NextToken", $nextToken);
 
         $xml = '';
 
-        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
     }
 
@@ -44,18 +44,19 @@ class AmazonOrder extends Amazon
         $action = 'ListOrderItems';
         $feedtype = '';
         $feed = 'Orders';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'SellerId'
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
-        $param['AmazonOrderId'] = $orderNumber;
+        AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
+
+        // $param['AmazonOrderId'] = $orderNumber;
+        AmazonClient::setParameterByKey("AmazonOrderId", $orderNumber);
 
         $xml = '';
 
-        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
     }
 
@@ -65,17 +66,18 @@ class AmazonOrder extends Amazon
         $action = 'ListOrders';
         $feedtype = '';
         $feed = 'Orders';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
         $paramAdditionalConfig = [
             'MarketplaceId.Id.1',
             'SellerId',
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
-        $param['OrderStatus.Status.1'] = 'Unshipped';
-        $param['OrderStatus.Status.2'] = 'PartiallyShipped';
+        // $param['OrderStatus.Status.1'] = 'Unshipped';
+        AmazonClient::setParameterByKey("OrderStatus.Status.1", "Unshipped");
+        // $param['OrderStatus.Status.2'] = 'PartiallyShipped';
+        AmazonClient::setParameterByKey("OrderStatus.Status.2", "PartiallyShipped");
 //        $param['OrderStatus.Status.1'] = 'Shipped';
 //        $param['FulfillmentChannel.Channel.1'] = 'MFN';
         $from = Amazon::getApiOrderDays();
@@ -84,11 +86,12 @@ class AmazonOrder extends Amazon
         $from .= ' days';
         $createdAfter = new DateTime($from, new DateTimeZone('America/Boise'));
         $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");
-        $param['CreatedAfter'] = $createdAfter;
+        // $param['CreatedAfter'] = $createdAfter;
+        AmazonClient::setParameterByKey("CreatedAfter", $createdAfter);
 
         $xml = '';
 
-        return AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
     }
 

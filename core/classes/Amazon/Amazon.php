@@ -5,6 +5,7 @@ namespace Amazon;
 use Crypt;
 use models\ModelDB as MDB;
 use models\channels\ChannelAPI;
+use ecommerce\ChannelInterface;
 use controllers\channels\ChannelSetup;
 
 class Amazon implements ChannelInterface

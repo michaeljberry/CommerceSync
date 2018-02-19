@@ -10,9 +10,8 @@ class AmazonInventory extends Amazon
     public function getFbaInventory($sku)
     {
         $action = 'ListInventorySupply';
-        $feedtype = '';
+        $feedType = '';
         $feed = 'FulfillmentInventory';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -24,21 +23,24 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        $param['ResponseGroup'] = 'Basic';
+        // $param['ResponseGroup'] = 'Basic';
+        AmazonClient::setParameterByKey('ResponseGroup', 'Basic');
 
         if (is_array($sku)) {
             for ($i = 0; $i < count($sku); $i++) {
                 $n_sku = $sku[$i];
                 $item = $i + 1;
-                $param["SellerSkus.member.$item"] = trim($n_sku);
+                // $param["SellerSkus.member.$item"] = trim($n_sku);
+                AmazonClient::setParameterByKey("SellerSkus.member.$item", trim($n_sku));
             }
         } else {
-            $param['SellerSkus.member.1'] = $sku;
+            // $param['SellerSkus.member.1'] = $sku;
+            AmazonClient::setParameterByKey("SellerSkus.member.1", $sku);
         }
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -46,9 +48,8 @@ class AmazonInventory extends Amazon
     public function updateAmazonInventory($xml1)
     {
         $action = 'SubmitFeed';
-        $feedtype = '_POST_PRODUCT_DATA_';
+        $feedType = '_POST_PRODUCT_DATA_';
         $feed = 'Feeds';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = [
@@ -63,9 +64,9 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -73,9 +74,8 @@ class AmazonInventory extends Amazon
     public function updateAmazonInventoryPrice($xml1)
     {
         $action = 'SubmitFeed';
-        $feedtype = '_POST_PRODUCT_PRICING_DATA_';
+        $feedType = '_POST_PRODUCT_PRICING_DATA_';
         $feed = 'Feeds';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = [
@@ -89,9 +89,9 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -99,9 +99,8 @@ class AmazonInventory extends Amazon
     public function listMatchingProducts($searchTerm)
     {
         $action = ucfirst(__FUNCTION__);
-        $feedtype = '';
+        $feedType = '';
         $feed = 'Products';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -113,11 +112,12 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        $param['Query'] = $searchTerm;
+        // $param['Query'] = $searchTerm;
+        AmazonClient::setParameterByKey("Query", $searchTerm);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -125,9 +125,8 @@ class AmazonInventory extends Amazon
     public function getMatchingProduct($asin)
     {
         $action = ucfirst(__FUNCTION__);
-        $feedtype = '';
+        $feedType = '';
         $feed = 'Products';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -139,11 +138,12 @@ class AmazonInventory extends Amazon
             'MarketplaceId'
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        $param['ASINList.ASIN.1'] = $asin;
+        // $param['ASINList.ASIN.1'] = $asin;
+        AmazonClient::setParameterByKey("ASINList.ASIN.1", $asin);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -151,9 +151,8 @@ class AmazonInventory extends Amazon
     public function GetMyPriceForSKU($sku)
     {
         $action = ucfirst(__FUNCTION__);
-        $feedtype = '';
+        $feedType = '';
         $feed = 'Products';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -165,11 +164,12 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        $param['SellerSKUList.SellerSKU.1'] = $sku;
+        // $param['SellerSKUList.SellerSKU.1'] = $sku;
+        AmazonClient::setParameterByKey("SellerSKUList.SellerSKU.1", $sku);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -177,9 +177,8 @@ class AmazonInventory extends Amazon
     public function listNewProduct($sku)
     {
         $action = 'SubmitFeed';
-        $feedtype = '_POST_PRODUCT_DATA_';
+        $feedType = '_POST_PRODUCT_DATA_';
         $feed = 'Feeds';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = [
@@ -207,9 +206,9 @@ class AmazonInventory extends Amazon
             $xml['Message']['Product']['DescriptionData']['Bullet'][] = $b;
         }
 
-        $param = AmazonClient::setParams($action, $feedtype, $version);
+        AmazonClient::setParams($action, $feedType, $feed);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -217,19 +216,20 @@ class AmazonInventory extends Amazon
     public function getProductInfo($asin)
     {
         $action = 'GetMatchingProductForId';
-        $feedtype = '';
+        $feedType = '';
         $feed = 'Products';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
 
-        $param = AmazonClient::setParams($action, $feedtype, $version);
+        AmazonClient::setParams($action, $feedType, $feed);
 
-        $param['IdType'] = 'ASIN';
-        $param['IdList.Id.1'] = $asin;
+        // $param['IdType'] = 'ASIN';
+        AmazonClient::setParameterByKey("IdType", "ASIN");
+        // $param['IdList.Id.1'] = $asin;
+        AmazonClient::setParameterByKey("IdList.Id.1", $asin);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -237,9 +237,8 @@ class AmazonInventory extends Amazon
     public function getFlatFile()
     {
         $action = 'RequestReport';
-        $feedtype = '_GET_FLAT_FILE_OPEN_LISTINGS_DATA_';
+        $feedType = '_GET_FLAT_FILE_OPEN_LISTINGS_DATA_';
         $feed = 'doc';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -250,11 +249,12 @@ class AmazonInventory extends Amazon
             'PurgeAndReplace'
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        $param['ReportType'] = $feedtype;
+        // $param['ReportType'] = $feedType;
+        AmazonClient::setParameterByKey("ReportType", $feedType);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
     }
@@ -262,9 +262,8 @@ class AmazonInventory extends Amazon
     public function getLowestOfferListingsForSKU($sku)
     {
         $action = ucfirst(__FUNCTION__);
-        $feedtype = '';
+        $feedType = '';
         $feed = 'Products';
-        $version = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
         $whatToDo = 'POST';
 
         $xml = '';
@@ -274,12 +273,14 @@ class AmazonInventory extends Amazon
             'SellerId',
         ];
 
-        $param = AmazonClient::setParams($action, $feedtype, $version, $paramAdditionalConfig);
+        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        $param['ItemCondition'] = 'New';
-        $param['SellerSKUList.SellerSKU.1'] = $sku;
+        // $param['ItemCondition'] = 'New';
+        AmazonClient::setParameterByKey("ItemCondition", "New");
+        // $param['SellerSKUList.SellerSKU.1'] = $sku;
+        AmazonClient::setParameterByKey("SellerSKUList.SellerSKU.1", $sku);
 
-        $response = AmazonClient::amazonCurl($xml, $feed, $version, $param, $whatToDo);
+        $response = AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
         return $response;
 

@@ -8,13 +8,17 @@ use controllers\channels\XMLController;
 
 class AmazonOrderTracking extends ChannelOrderTracking
 {
+
     public function updateTracking(ChannelTracking $amazonTracking, ChannelOrderTracking $amazonOrderTracking)
     {
+
         $amazonTracking->updateTrackingXml(AmazonOrderTracking::updateTrackingInfo($amazonTracking, $amazonOrderTracking));
+
     }
 
     public function updateTrackingInfo(AmazonTracking $amazonTracking, AmazonOrderTracking $amazonOrderTracking)
     {
+
         $xml = [
             'Message' => [
                 'MessageID' => $amazonTracking->getOrderCount(),
@@ -29,10 +33,14 @@ class AmazonOrderTracking extends ChannelOrderTracking
             ]
         ];
         return XMLController::makeXML($xml);
+
     }
 
     public function updated($trackingResponse)
     {
+
         return $trackingResponse;
+
     }
+
 }

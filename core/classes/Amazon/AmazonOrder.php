@@ -12,7 +12,7 @@ use controllers\channels\XMLController;
 use \DateTime;
 use \DateTimeZone;
 
-class AmazonOrder extends Amazon
+class AmazonOrder extends AmazonClient
 {
 
     protected static function getMoreOrders($nextToken)
@@ -29,7 +29,6 @@ class AmazonOrder extends Amazon
 
         AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
-        // $param['NextToken'] = $nextToken;
         AmazonClient::setParameterByKey("NextToken", $nextToken);
 
         $xml = '';
@@ -51,7 +50,6 @@ class AmazonOrder extends Amazon
 
         AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
-        // $param['AmazonOrderId'] = $orderNumber;
         AmazonClient::setParameterByKey("AmazonOrderId", $orderNumber);
 
         $xml = '';
@@ -74,19 +72,14 @@ class AmazonOrder extends Amazon
 
         AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
-        // $param['OrderStatus.Status.1'] = 'Unshipped';
         AmazonClient::setParameterByKey("OrderStatus.Status.1", "Unshipped");
-        // $param['OrderStatus.Status.2'] = 'PartiallyShipped';
         AmazonClient::setParameterByKey("OrderStatus.Status.2", "PartiallyShipped");
-//        $param['OrderStatus.Status.1'] = 'Shipped';
-//        $param['FulfillmentChannel.Channel.1'] = 'MFN';
         $from = Amazon::getApiOrderDays();
         $from = $from['api_from'];
-//        $from = "-1";
+        // $from = "-1";
         $from .= ' days';
         $createdAfter = new DateTime($from, new DateTimeZone('America/Boise'));
         $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");
-        // $param['CreatedAfter'] = $createdAfter;
         AmazonClient::setParameterByKey("CreatedAfter", $createdAfter);
 
         $xml = '';

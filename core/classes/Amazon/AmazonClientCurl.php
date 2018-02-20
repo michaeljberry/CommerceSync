@@ -13,80 +13,6 @@ trait AmazonClientCurl
     private static $signatureVersion = "2";
     private static $curlParameters = [];
 
-    public static function setSignatureMethodParameter()
-    {
-
-        static::$curlParameters['SignatureMethod'] = static::$signatureMethod;
-
-    }
-
-    public static function setSignatureVersionParameter()
-    {
-
-        static::$curlParameters['SignatureVersion'] = static::$signatureVersion;
-
-    }
-
-    protected static function setTimestampParameter()
-    {
-
-        static::$curlParameters['Timestamp'] = gmdate("Y-m-d\TH:i:s\Z", time());
-
-    }
-
-    protected static function setAwsAccessKeyParameter()
-    {
-
-        static::$curlParameters['AWSAccessKeyId'] = AmazonClient::getAwsAccessKey();
-
-    }
-
-    protected static function setActionParameter($action)
-    {
-
-        static::$curlParameters['Action'] = $action;
-
-    }
-
-    protected static function setMerchantIdParameter($key)
-    {
-
-        static::$curlParameters[$key] = AmazonClient::getMerchantId();
-
-    }
-
-    protected static function setPurgeAndReplaceParameter()
-    {
-
-        static::$curlParameters['PurgeAndReplace'] = 'false';
-
-    }
-
-    protected static function setMarketplaceIdParameter($key)
-    {
-
-        static::$curlParameters[$key] = AmazonClient::getMarketplaceId();
-
-    }
-
-    protected static function setFeedTypeParameter($feedtype)
-    {
-
-        if (!empty($feedtype)) {
-
-            $param['FeedType'] = $feedtype;
-
-        }
-
-    }
-
-    protected static function setVersionDateParameter($feed)
-    {
-
-        static::$curlParameters['Version'] = AmazonClient::getAPIFeedInfo($feed)['versionDate'];
-
-    }
-
     protected static function setParameterByKey($key, $value)
     {
 
@@ -108,50 +34,107 @@ trait AmazonClientCurl
 
     }
 
+    public static function setSignatureMethodParameter()
+    {
+
+        static::setParameterByKey('SignatureMethod', static::$signatureMethod);
+
+    }
+
+    public static function setSignatureVersionParameter()
+    {
+
+        static::setParameterByKey('SignatureVersion', static::$signatureVersion);
+
+    }
+
+    protected static function setTimestampParameter()
+    {
+
+        static::setParameterByKey('Timestamp', gmdate("Y-m-d\TH:i:s\Z", time()));
+
+    }
+
+    protected static function setAwsAccessKeyParameter()
+    {
+
+        static::setParameterByKey('AWSAccessKeyId', AmazonClient::getAwsAccessKey());
+
+    }
+
+    protected static function setActionParameter($action)
+    {
+
+        static::setParameterByKey('Action', $action);
+
+    }
+
+    protected static function setMerchantIdParameter($key)
+    {
+
+        static::setParameterByKey($key, AmazonClient::getMerchantId());
+
+    }
+
+    protected static function setPurgeAndReplaceParameter()
+    {
+
+        static::setParameterByKey('PurgeAndReplace', 'false');
+
+    }
+
+    protected static function setMarketplaceIdParameter($key)
+    {
+
+        static::setParameterByKey($key, AmazonClient::getMarketplaceId());
+
+    }
+
+    protected static function setFeedTypeParameter($feedtype)
+    {
+
+        if (!empty($feedtype)) {
+
+            static::setParameterByKey('FeedType', $feedtype);
+
+        }
+
+    }
+
+    protected static function setVersionDateParameter($feed)
+    {
+
+        static::setParameterByKey('Version', AmazonClient::getAPIFeedInfo($feed)['versionDate']);
+
+    }
+
     public static function setParams($action, $feedtype, $feed, $paramAdditionalConfig = [])
     {
 
-        // $param = [];
-        // $param['AWSAccessKeyId'] = AmazonClient::getAwsAccessKey();
         static::setAwsAccessKeyParameter();
-        // $param['Action'] = $action;
         static::setActionParameter($action);
 
-        //Parse $paramAdditionalConfig Array
         if (in_array('Merchant', $paramAdditionalConfig))
-            // $param['Merchant'] = AmazonClient::getMerchantId();
             static::setMerchantIdParameter('Merchant');
+
         if (in_array('SellerId', $paramAdditionalConfig))
-            // $param['SellerId'] = AmazonClient::getMerchantId();
             static::setMerchantIdParameter('SellerId');
+
         if (in_array('MarketplaceId.Id.1', $paramAdditionalConfig))
-            // $param['MarketplaceId.Id.1'] = AmazonClient::getMarketplaceId();
             static::setMarketplaceIdParameter('MarketplaceId.Id.1');
+
         if (in_array('MarketplaceId', $paramAdditionalConfig))
-            // $param['MarketplaceId'] = AmazonClient::getMarketplaceId();
             static::setMarketplaceIdParameter('MarketplaceId');
+
         if (in_array('PurgeAndReplace', $paramAdditionalConfig))
-            // $param['PurgeAndReplace'] = 'false';
             static::setPurgeAndReplaceParameter();
 
-
-        // if (!empty($feedtype)) {
-
-        //     $param['FeedType'] = $feedtype;
-
-        // }
         static::setFeedTypeParameter($feedtype);
 
-        // $param['SignatureMethod'] = 'HmacSHA256';
         static::setSignatureMethodParameter();
-        // $param['SignatureVersion'] = '2';
         static::setSignatureVersionParameter();
-        // $param['Timestamp'] = gmdate("Y-m-d\TH:i:s\Z", time());
         static::setTimestampParameter();
-        // $param['Version'] = $versionDate;
         static::setVersionDateParameter($feed);
-
-        // return $param;
 
     }
 
@@ -209,6 +192,7 @@ trait AmazonClientCurl
 
         $param = static::getCurlParameters();
         $url = [];
+
         foreach ($param as $key => $val) {
 
             $key = str_replace("%7E", "~", rawurlencode($key));

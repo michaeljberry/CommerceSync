@@ -4,6 +4,7 @@ namespace Amazon;
 
 use ecommerce\Ecommerce;
 use controllers\channels\XMLController;
+use Amazon\API\AmazonAPI;
 
 class AmazonInventory extends AmazonClient
 {
@@ -25,9 +26,9 @@ class AmazonInventory extends AmazonClient
             'MarketplaceId'
         ];
 
-        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
+        AmazonAPI::setParams($action, $feedType, $feed, $paramAdditionalConfig);
 
-        AmazonClient::setParameterByKey('ResponseGroup', 'Basic');
+        AmazonAPI::setParameterByKey('ResponseGroup', 'Basic');
 
         if (is_array($sku)) {
 
@@ -35,13 +36,13 @@ class AmazonInventory extends AmazonClient
 
                 $n_sku = $sku[$i];
                 $item = $i + 1;
-                AmazonClient::setParameterByKey("SellerSkus.member.$item", trim($n_sku));
+                AmazonAPI::setParameterByKey("SellerSkus.member.$item", trim($n_sku));
 
             }
 
         } else {
 
-            AmazonClient::setParameterByKey("SellerSkus.member.1", $sku);
+            AmazonAPI::setParameterByKey("SellerSkus.member.1", $sku);
 
         }
 

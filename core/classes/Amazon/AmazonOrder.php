@@ -11,6 +11,7 @@ use controllers\channels\BuyerController;
 use controllers\channels\XMLController;
 use \DateTime;
 use \DateTimeZone;
+use Amazon\API\API as AmazonAPI;
 
 class AmazonOrder extends AmazonClient
 {
@@ -27,9 +28,9 @@ class AmazonOrder extends AmazonClient
             'SellerId',
         ];
 
-        AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
+        AmazonAPI::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
-        AmazonClient::setParameterByKey("NextToken", $nextToken);
+        AmazonAPI::setParameterByKey("NextToken", $nextToken);
 
         $xml = '';
 
@@ -48,9 +49,9 @@ class AmazonOrder extends AmazonClient
             'SellerId'
         ];
 
-        AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
+        AmazonAPI::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
-        AmazonClient::setParameterByKey("AmazonOrderId", $orderNumber);
+        AmazonAPI::setParameterByKey("AmazonOrderId", $orderNumber);
 
         $xml = '';
 
@@ -70,17 +71,17 @@ class AmazonOrder extends AmazonClient
             'SellerId',
         ];
 
-        AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
+        AmazonAPI::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
 
-        AmazonClient::setParameterByKey("OrderStatus.Status.1", "Unshipped");
-        AmazonClient::setParameterByKey("OrderStatus.Status.2", "PartiallyShipped");
+        AmazonAPI::setParameterByKey("OrderStatus.Status.1", "Unshipped");
+        AmazonAPI::setParameterByKey("OrderStatus.Status.2", "PartiallyShipped");
         $from = Amazon::getApiOrderDays();
         $from = $from['api_from'];
         // $from = "-1";
         $from .= ' days';
         $createdAfter = new DateTime($from, new DateTimeZone('America/Boise'));
         $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");
-        AmazonClient::setParameterByKey("CreatedAfter", $createdAfter);
+        AmazonAPI::setParameterByKey("CreatedAfter", $createdAfter);
 
         $xml = '';
 

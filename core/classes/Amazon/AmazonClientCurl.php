@@ -93,13 +93,13 @@ trait AmazonClientCurl
     protected static function createLink($amazonAPI)
     {
 
-        $url = AmazonClient::createUrlArray($amazonAPI);
+        $url = static::createUrlArray($amazonAPI);
         usort($url, [get_called_class(), "cmp"]);
 
         $arr = implode('&', $url);
-        $sign = AmazonClient::sign($arr, $amazonAPI);
+        $sign = static::sign($arr, $amazonAPI);
 
-        $signature = AmazonClient::encodeSignature($sign);
+        $signature = static::encodeSignature($sign);
 
         $link = "https://mws.amazonservices.com/";
         $link .= $amazonAPI::getFeed();
@@ -165,9 +165,9 @@ trait AmazonClientCurl
         if ($xml) {
 
             $amazonXML = XMLController::xmlOpenTag();
-            $amazonXML .= AmazonClient::xmlAmazonEnvelopeHeader();
-            $amazonXML .= AmazonClient::parseXML($xml);
-            $amazonXML .= AmazonClient::xmlAmazonEnvelopeFooter();
+            $amazonXML .= static::xmlAmazonEnvelopeHeader();
+            $amazonXML .= static::parseXML($xml);
+            $amazonXML .= static::xmlAmazonEnvelopeFooter();
 
         }
 
@@ -178,11 +178,11 @@ trait AmazonClientCurl
     public static function amazonCurl($xml, $amazonAPI)
     {
 
-        $amazonXmlFeed = AmazonClient::parseAmazonXML($xml);
+        $amazonXmlFeed = static::parseAmazonXML($xml);
         Ecommerce::dd($amazonXmlFeed);
-        $link = AmazonClient::createLink($amazonAPI);
-        $httpHeader = AmazonClient::buildHeader($amazonXmlFeed);
-        $request = AmazonClient::setCurlOptions($link, $httpHeader, $amazonXmlFeed);
+        $link = static::createLink($amazonAPI);
+        $httpHeader = static::buildHeader($amazonXmlFeed);
+        $request = static::setCurlOptions($link, $httpHeader, $amazonXmlFeed);
         return CurlController::request($request);
 
     }

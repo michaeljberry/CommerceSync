@@ -77,10 +77,10 @@ trait APIParameters
 
     }
 
-    protected static function setActionParameter($action)
+    protected static function setActionParameter()
     {
 
-        self::setParameterByKey('Action', $action);
+        self::setParameterByKey('Action', static::getAction());
 
     }
 
@@ -105,21 +105,23 @@ trait APIParameters
 
     }
 
-    protected static function setFeedTypeParameter($feedtype)
+    protected static function setFeedTypeParameter()
     {
 
-        if ($feedtype) {
+        $feedType = static::getFeedType();
 
-            self::setParameterByKey('FeedType', $feedtype);
+        if ($feedType) {
+
+            self::setParameterByKey('FeedType', $feedType);
 
         }
 
     }
 
-    protected static function setVersionDateParameter($feed)
+    protected static function setVersionDateParameter()
     {
 
-        self::setParameterByKey('Version', AmazonClient::getAPIFeedInfo($feed)['versionDate']);
+        self::setParameterByKey('Version', static::getVersionDate());
 
     }
 
@@ -127,7 +129,7 @@ trait APIParameters
     {
 
         static::setAwsAccessKeyParameter();
-        static::setActionParameter(static::getAction());
+        static::setActionParameter();
 
         if (in_array('Merchant', $additionalConfiguration))
             static::setMerchantIdParameter('Merchant');
@@ -144,12 +146,12 @@ trait APIParameters
         if (in_array('PurgeAndReplace', $additionalConfiguration))
             static::setPurgeAndReplaceParameter();
 
-        static::setFeedTypeParameter(static::getFeedType());
+        static::setFeedTypeParameter();
 
         static::setSignatureMethodParameter();
         static::setSignatureVersionParameter();
         static::setTimestampParameter();
-        static::setVersionDateParameter(static::getFeed());
+        static::setVersionDateParameter();
 
     }
 

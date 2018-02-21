@@ -6,7 +6,6 @@ use ecommerce\Ecommerce;
 use models\channels\Channel;
 use models\channels\order\{Order, OrderItem};
 use controllers\channels\{FTPController, BuyerController, XMLController};
-use Amazon\API\API as AmazonAPI;
 use Amazon\API\Orders\{ListOrders, ListOrderItems, ListOrdersByNextToken};
 
 class AmazonOrder extends AmazonClient

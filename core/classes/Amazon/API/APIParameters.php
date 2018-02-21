@@ -4,18 +4,9 @@ namespace Amazon\API;
 
 use Amazon\AmazonClient;
 
-class API
+trait APIParameters
 {
 
-    public function __construct()
-    {
-
-        AmazonClient::resetCurlParameters();
-
-    }
-
-    private static $signatureMethod = "HmacSHA256";
-    private static $signatureVersion = "2";
     private static $curlParameters = [];
 
     public static function setParameterByKey($key, $value)
@@ -132,33 +123,33 @@ class API
 
     }
 
-    public static function setParams($action, $feedtype, $feed, $paramAdditionalConfig = [])
+    public static function setParams($additionalConfiguration = [])
     {
 
         static::setAwsAccessKeyParameter();
-        static::setActionParameter($action);
+        static::setActionParameter(static::getAction());
 
-        if (in_array('Merchant', $paramAdditionalConfig))
+        if (in_array('Merchant', $additionalConfiguration))
             static::setMerchantIdParameter('Merchant');
 
-        if (in_array('SellerId', $paramAdditionalConfig))
+        if (in_array('SellerId', $additionalConfiguration))
             static::setMerchantIdParameter('SellerId');
 
-        if (in_array('MarketplaceId.Id.1', $paramAdditionalConfig))
+        if (in_array('MarketplaceId.Id.1', $additionalConfiguration))
             static::setMarketplaceIdParameter('MarketplaceId.Id.1');
 
-        if (in_array('MarketplaceId', $paramAdditionalConfig))
+        if (in_array('MarketplaceId', $additionalConfiguration))
             static::setMarketplaceIdParameter('MarketplaceId');
 
-        if (in_array('PurgeAndReplace', $paramAdditionalConfig))
+        if (in_array('PurgeAndReplace', $additionalConfiguration))
             static::setPurgeAndReplaceParameter();
 
-        static::setFeedTypeParameter($feedtype);
+        static::setFeedTypeParameter(static::getFeedType());
 
         static::setSignatureMethodParameter();
         static::setSignatureVersionParameter();
         static::setTimestampParameter();
-        static::setVersionDateParameter($feed);
+        static::setVersionDateParameter(static::getFeed());
 
     }
 

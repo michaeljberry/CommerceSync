@@ -8,11 +8,11 @@ class ListInventorySupply extends FulfillmentInventory
     protected static $requestQuotaPerSecond = 30;
     protected static $restoreRatePerSecond = 2;
     protected static $responseGroup = 'Basic';
+    protected static $action = __CLASS__;
 
     public function __construct()
     {
 
-        $action = __CLASS__;
         $method = "POST";
 
         $additionalConfiguration = [
@@ -22,9 +22,9 @@ class ListInventorySupply extends FulfillmentInventory
             'MarketplaceId'
         ];
 
-        AmazonClient::setParams($action, static::getFeedType(), static::getFeed(), $additionalConfiguration);
+        AmazonAPI::setParams($action, static::getFeedType(), static::getFeed(), $additionalConfiguration);
 
-        AmazonClient::setParameterByKey('ResponseGroup', $responseGroup);
+        AmazonAPI::setParameterByKey('ResponseGroup', $responseGroup);
 
     }
 

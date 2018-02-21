@@ -5,151 +5,21 @@ namespace Amazon;
 use ecommerce\Ecommerce;
 use controllers\channels\CurlController;
 use controllers\channels\XMLController;
-use Amazon\API\API as AmazonAPI;
 
 trait AmazonClientCurl
 {
 
-    // private static $signatureMethod = "HmacSHA256";
-    // private static $signatureVersion = "2";
-    // private static $curlParameters = [];
-
-    // protected static function setParameterByKey($key, $value)
-    // {
-
-    //     static::$curlParameters[$key] = $value;
-
-    // }
-
-    // protected static function getParameterByKey($key)
-    // {
-
-    //     return static::$curlParameters[$key];
-
-    // }
-
-    // protected static function resetCurlParameters()
-    // {
-    //     static::$curlParameters = [];
-    // }
-
-    // protected static function getCurlParameters()
-    // {
-
-    //     return static::$curlParameters;
-
-    // }
-
-    // public static function setSignatureMethodParameter()
-    // {
-
-    //     static::setParameterByKey('SignatureMethod', static::$signatureMethod);
-
-    // }
-
-    // public static function setSignatureVersionParameter()
-    // {
-
-    //     static::setParameterByKey('SignatureVersion', static::$signatureVersion);
-
-    // }
-
-    // protected static function setTimestampParameter()
-    // {
-
-    //     static::setParameterByKey('Timestamp', gmdate("Y-m-d\TH:i:s\Z", time()));
-
-    // }
-
-    // protected static function setAwsAccessKeyParameter()
-    // {
-
-    //     static::setParameterByKey('AWSAccessKeyId', AmazonClient::getAwsAccessKey());
-
-    // }
-
-    // protected static function setActionParameter($action)
-    // {
-
-    //     static::setParameterByKey('Action', $action);
-
-    // }
-
-    // protected static function setMerchantIdParameter($key)
-    // {
-
-    //     static::setParameterByKey($key, AmazonClient::getMerchantId());
-
-    // }
-
-    // protected static function setPurgeAndReplaceParameter()
-    // {
-
-    //     static::setParameterByKey('PurgeAndReplace', 'false');
-
-    // }
-
-    // protected static function setMarketplaceIdParameter($key)
-    // {
-
-    //     static::setParameterByKey($key, AmazonClient::getMarketplaceId());
-
-    // }
-
-    // protected static function setFeedTypeParameter($feedtype)
-    // {
-
-    //     if ($feedtype) {
-
-    //         static::setParameterByKey('FeedType', $feedtype);
-
-    //     }
-
-    // }
-
-    // protected static function setVersionDateParameter($feed)
-    // {
-
-    //     static::setParameterByKey('Version', AmazonClient::getAPIFeedInfo($feed)['versionDate']);
-
-    // }
-
-    // public static function setParams($action, $feedtype, $feed, $paramAdditionalConfig = [])
-    // {
-
-    //     static::setAwsAccessKeyParameter();
-    //     static::setActionParameter($action);
-
-    //     if (in_array('Merchant', $paramAdditionalConfig))
-    //         static::setMerchantIdParameter('Merchant');
-
-    //     if (in_array('SellerId', $paramAdditionalConfig))
-    //         static::setMerchantIdParameter('SellerId');
-
-    //     if (in_array('MarketplaceId.Id.1', $paramAdditionalConfig))
-    //         static::setMarketplaceIdParameter('MarketplaceId.Id.1');
-
-    //     if (in_array('MarketplaceId', $paramAdditionalConfig))
-    //         static::setMarketplaceIdParameter('MarketplaceId');
-
-    //     if (in_array('PurgeAndReplace', $paramAdditionalConfig))
-    //         static::setPurgeAndReplaceParameter();
-
-    //     static::setFeedTypeParameter($feedtype);
-
-    //     static::setSignatureMethodParameter();
-    //     static::setSignatureVersionParameter();
-    //     static::setTimestampParameter();
-    //     static::setVersionDateParameter($feed);
-
-    // }
-
-    protected static function sign($arr, $whatToDo, $versionDate, $feed)
+    protected static function sign($arr, $amazonAPI)
     {
 
-        $sign = $whatToDo . "\n";
-        $sign .= 'mws.amazonservices.com' . "\n";
-        $sign .= '/' . $feed . '/' . $versionDate . "\n";
+        $sign = $amazonAPI::getMethod();
+        $sign .= "\n";
+        $sign .= "mws.amazonservices.com\n";
+        $sign .= "/";
+        $sign .= $amazonAPI::getFeed();
+        $sign .= "/";
+        $sign .= $amazonAPI::getParameterByKey('Version');
+        $sign .= "\n";
         $sign .= $arr;
         return $sign;
 
@@ -193,10 +63,10 @@ trait AmazonClientCurl
 
     }
 
-    protected static function createUrlArray()
+    protected static function createUrlArray($amazonAPI)
     {
 
-        $param = AmazonAPI::getCurlParameters();
+        $param = $amazonAPI::getCurlParameters();
         $url = [];
 
         foreach ($param as $key => $val) {
@@ -220,19 +90,21 @@ trait AmazonClientCurl
 
     }
 
-    protected static function createLink($feed, $whatToDo)
+    protected static function createLink($amazonAPI)
     {
 
-        $url = AmazonClient::createUrlArray();
+        $url = AmazonClient::createUrlArray($amazonAPI);
         usort($url, [get_called_class(), "cmp"]);
 
         $arr = implode('&', $url);
-        $sign = AmazonClient::sign($arr, $whatToDo, AmazonAPI::getParameterByKey('Version'), $feed);
+        $sign = AmazonClient::sign($arr, $amazonAPI);
 
         $signature = AmazonClient::encodeSignature($sign);
 
-        $link = "https://mws.amazonservices.com/$feed/";
-        $link .= AmazonAPI::getParameterByKey('Version');
+        $link = "https://mws.amazonservices.com/";
+        $link .= $amazonAPI::getFeed();
+        $link .= "/";
+        $link .= $amazonAPI::getParameterByKey('Version');
         $link .= "?$arr&Signature=$signature";
         return $link;
 
@@ -303,12 +175,12 @@ trait AmazonClientCurl
 
     }
 
-    public static function amazonCurl($xml, $feed, $whatToDo)
+    public static function amazonCurl($xml, $amazonAPI)
     {
 
         $amazonXmlFeed = AmazonClient::parseAmazonXML($xml);
         Ecommerce::dd($amazonXmlFeed);
-        $link = AmazonClient::createLink($feed, $whatToDo);
+        $link = AmazonClient::createLink($amazonAPI);
         $httpHeader = AmazonClient::buildHeader($amazonXmlFeed);
         $request = AmazonClient::setCurlOptions($link, $httpHeader, $amazonXmlFeed);
         return CurlController::request($request);

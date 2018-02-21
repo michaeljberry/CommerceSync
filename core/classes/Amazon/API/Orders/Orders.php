@@ -1,10 +1,17 @@
 <?php
 
-namespace Amazon\API;
+namespace Amazon\API\Orders;
 
-class Orders extends API
+use Amazon\API\{APIMethods, APIParameters};
+
+class Orders
 {
 
+    use APIMethods;
+    use APIParameters;
 
+    protected static $feed = "Orders";
+    protected static $feedType = "";
+    protected static $versionDate = "2013-09-01";
 
 }

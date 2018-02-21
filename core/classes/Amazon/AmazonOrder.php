@@ -4,14 +4,10 @@ namespace Amazon;
 
 use ecommerce\Ecommerce;
 use models\channels\Channel;
-use models\channels\order\Order;
-use models\channels\order\OrderItem;
-use controllers\channels\FTPController;
-use controllers\channels\BuyerController;
-use controllers\channels\XMLController;
-use \DateTime;
-use \DateTimeZone;
+use models\channels\order\{Order, OrderItem};
+use controllers\channels\{FTPController, BuyerController, XMLController};
 use Amazon\API\API as AmazonAPI;
+use Amazon\API\Orders\{ListOrders, ListOrderItems, ListOrdersByNextToken};
 
 class AmazonOrder extends AmazonClient
 {
@@ -19,18 +15,7 @@ class AmazonOrder extends AmazonClient
     protected static function getMoreOrders($nextToken)
     {
 
-        $action = 'ListOrdersByNextToken';
-        $feedtype = '';
-        $feed = 'Orders';
-        $whatToDo = 'POST';
-        $paramAdditionalConfig = [
-            'MarketplaceId.Id.1',
-            'SellerId',
-        ];
-
-        AmazonAPI::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
-
-        AmazonAPI::setParameterByKey("NextToken", $nextToken);
+        $moreUnshippedOrders = new ListOrdersByNextToken($nextToken);
 
         $xml = '';
 
@@ -41,51 +26,22 @@ class AmazonOrder extends AmazonClient
     public static function getOrderItems($orderNumber)
     {
 
-        $action = 'ListOrderItems';
-        $feedtype = '';
-        $feed = 'Orders';
-        $whatToDo = 'POST';
-        $paramAdditionalConfig = [
-            'SellerId'
-        ];
-
-        AmazonAPI::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
-
-        AmazonAPI::setParameterByKey("AmazonOrderId", $orderNumber);
+        $orderItems = new ListOrderItems($orderNumber);
 
         $xml = '';
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xml, $orderItems);
 
     }
 
-    public static function getOrders()
+    public static function getUnshippedOrders()
     {
 
-        $action = 'ListOrders';
-        $feedtype = '';
-        $feed = 'Orders';
-        $whatToDo = 'POST';
-        $paramAdditionalConfig = [
-            'MarketplaceId.Id.1',
-            'SellerId',
-        ];
-
-        AmazonAPI::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
-
-        AmazonAPI::setParameterByKey("OrderStatus.Status.1", "Unshipped");
-        AmazonAPI::setParameterByKey("OrderStatus.Status.2", "PartiallyShipped");
-        $from = Amazon::getApiOrderDays();
-        $from = $from['api_from'];
-        // $from = "-1";
-        $from .= ' days';
-        $createdAfter = new DateTime($from, new DateTimeZone('America/Boise'));
-        $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");
-        AmazonAPI::setParameterByKey("CreatedAfter", $createdAfter);
+        $unshippedOrders = new ListOrders(['Unshipped', 'PartiallyShipped']);
 
         $xml = '';
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xml, $unshippedOrders);
 
     }
 

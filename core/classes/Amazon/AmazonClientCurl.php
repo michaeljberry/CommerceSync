@@ -307,7 +307,6 @@ trait AmazonClientCurl
     {
 
         $amazonXmlFeed = AmazonClient::parseAmazonXML($xml);
-        echo 'Howdy!<br><br>';
         Ecommerce::dd($amazonXmlFeed);
         $link = AmazonClient::createLink($feed, $whatToDo);
         $httpHeader = AmazonClient::buildHeader($amazonXmlFeed);

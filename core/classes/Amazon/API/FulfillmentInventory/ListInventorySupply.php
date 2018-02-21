@@ -1,34 +1,18 @@
 <?php
 
-namespace Amazon\API;
+namespace Amazon\API\FulfillmentInventory;
 
-class FulfillmentInventory extends API
+class ListInventorySupply extends FulfillmentInventory
 {
 
     protected static $requestQuotaPerSecond = 30;
     protected static $restoreRatePerSecond = 2;
-    protected static $feed = "FulfillmentInventory";
-    protected static $feedType = "";
+    protected static $responseGroup = 'Basic';
 
-    protected static function getFeed()
+    public function __construct()
     {
 
-        return static::$feed;
-
-    }
-
-    protected static function getFeedType()
-    {
-
-        return static::$feedType;
-
-    }
-
-    protected static function ListInventorySupply($responseGroup = 'Basic')
-    {
-
-        $action = __FUNCTION__;
-        $feedType = '';
+        $action = __CLASS__;
         $method = "POST";
 
         $additionalConfiguration = [

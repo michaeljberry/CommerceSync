@@ -125,7 +125,7 @@ trait APIParameters
 
     }
 
-    public static function setParams($additionalConfiguration = [])
+    public static function setParameters($additionalConfiguration = [])
     {
 
         static::setAwsAccessKeyParameter();

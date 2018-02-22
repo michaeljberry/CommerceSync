@@ -91,7 +91,7 @@ class AmazonTracking extends ChannelTracking
             'SellerId'
         ];
 
-        AmazonClient::setParams($action, $feedtype, $feed, $paramAdditionalConfig);
+        AmazonClient::setParameters($action, $feedtype, $feed, $paramAdditionalConfig);
 
         $xml = [
             'MessageType' => 'OrderFulfillment',

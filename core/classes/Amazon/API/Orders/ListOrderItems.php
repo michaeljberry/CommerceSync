@@ -33,7 +33,7 @@ class ListOrderItems extends Orders
             'SellerId'
         ];
 
-        static::setParams($additionalConfiguration);
+        static::setParameters($additionalConfiguration);
 
     }
 

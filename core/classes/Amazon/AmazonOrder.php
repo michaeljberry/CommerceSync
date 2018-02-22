@@ -18,7 +18,7 @@ class AmazonOrder extends AmazonClient
 
         $xml = '';
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xml, $moreUnshippedOrders);
 
     }
 

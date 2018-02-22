@@ -5,6 +5,7 @@ namespace Amazon;
 use ecommerce\Ecommerce;
 use controllers\channels\XMLController;
 use Amazon\API\AmazonAPI;
+use Amazon\API\FulfillmentInventory\ListInventorySupply;
 
 class AmazonInventory extends AmazonClient
 {
@@ -12,41 +13,11 @@ class AmazonInventory extends AmazonClient
     public function getFbaInventory($sku)
     {
 
-        $action = 'ListInventorySupply';
-        $feedType = '';
-        $feed = 'FulfillmentInventory';
-        $whatToDo = 'POST';
+        $fbaInventory = new ListInventorySupply($sku);
 
         $xml = '';
 
-        $paramAdditionalConfig = [
-            'Merchant',
-            'MarketplaceId.Id.1',
-            'PurgeAndReplace',
-            'MarketplaceId'
-        ];
-
-        AmazonAPI::setParams($action, $feedType, $feed, $paramAdditionalConfig);
-
-        AmazonAPI::setParameterByKey('ResponseGroup', 'Basic');
-
-        if (is_array($sku)) {
-
-            for ($i = 0; $i < count($sku); $i++) {
-
-                $n_sku = $sku[$i];
-                $item = $i + 1;
-                AmazonAPI::setParameterByKey("SellerSkus.member.$item", trim($n_sku));
-
-            }
-
-        } else {
-
-            AmazonAPI::setParameterByKey("SellerSkus.member.1", $sku);
-
-        }
-
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xml, $fbaInventory);
 
     }
 
@@ -69,7 +40,7 @@ class AmazonInventory extends AmazonClient
             'SellerId',
         ];
 
-        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
+        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
 
         return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
@@ -94,7 +65,7 @@ class AmazonInventory extends AmazonClient
             'SellerId',
         ];
 
-        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
+        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
 
         return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
@@ -117,7 +88,7 @@ class AmazonInventory extends AmazonClient
             'MarketplaceId'
         ];
 
-        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
+        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
 
         AmazonClient::setParameterByKey("Query", $searchTerm);
 
@@ -142,7 +113,7 @@ class AmazonInventory extends AmazonClient
             'MarketplaceId'
         ];
 
-        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
+        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
 
         AmazonClient::setParameterByKey("ASINList.ASIN.1", $asin);
 
@@ -167,7 +138,7 @@ class AmazonInventory extends AmazonClient
             'SellerId',
         ];
 
-        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
+        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
 
         AmazonClient::setParameterByKey("SellerSKUList.SellerSKU.1", $sku);
 
@@ -210,7 +181,7 @@ class AmazonInventory extends AmazonClient
 
         }
 
-        AmazonClient::setParams($action, $feedType, $feed);
+        AmazonClient::setParameters($action, $feedType, $feed);
 
         return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
 
@@ -226,7 +197,7 @@ class AmazonInventory extends AmazonClient
 
         $xml = '';
 
-        AmazonClient::setParams($action, $feedType, $feed);
+        AmazonClient::setParameters($action, $feedType, $feed);
 
         AmazonClient::setParameterByKey("IdType", "ASIN");
         AmazonClient::setParameterByKey("IdList.Id.1", $asin);
@@ -251,7 +222,7 @@ class AmazonInventory extends AmazonClient
             'PurgeAndReplace'
         ];
 
-        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
+        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
 
         AmazonClient::setParameterByKey("ReportType", $feedType);
 
@@ -274,7 +245,7 @@ class AmazonInventory extends AmazonClient
             'SellerId',
         ];
 
-        AmazonClient::setParams($action, $feedType, $feed, $paramAdditionalConfig);
+        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
 
         AmazonClient::setParameterByKey("ItemCondition", "New");
         AmazonClient::setParameterByKey("SellerSKUList.SellerSKU.1", $sku);

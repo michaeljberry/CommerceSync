@@ -13,6 +13,7 @@ class ListOrderItems extends Orders
     protected static $action = "ListOrderItems";
     protected static $method = "POST";
     private static $curlParameters = [];
+    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrderItems.html";
 
     public function __construct($orderNumber)
     {
@@ -20,6 +21,8 @@ class ListOrderItems extends Orders
         static::setAdditionalParameters();
 
         static::setParameterByKey("AmazonOrderId", $orderNumber);
+
+        static::requestRules();
 
     }
 
@@ -31,6 +34,17 @@ class ListOrderItems extends Orders
         ];
 
         static::setParams($additionalConfiguration);
+
+    }
+
+    protected static function requestRules()
+    {
+
+        if(null == static::getParameterByKey("AmazonOrderId")){
+
+            throw new Exception("AmazonOrderId must be set. Please correct and try again.");
+
+        }
 
     }
 

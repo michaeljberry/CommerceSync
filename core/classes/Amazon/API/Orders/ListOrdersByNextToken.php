@@ -13,6 +13,7 @@ class ListOrdersByNextToken extends Orders
     protected static $action = "ListOrdersByNextToken";
     protected static $method = "POST";
     private static $curlParameters = [];
+    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrdersByNextToken.html";
 
     public function __construct($nextToken)
     {
@@ -20,6 +21,8 @@ class ListOrdersByNextToken extends Orders
         static::setAdditionalParameters();
 
         static::setParameterByKey("NextToken", $nextToken);
+
+        static::requestRules();
 
     }
 
@@ -30,6 +33,17 @@ class ListOrdersByNextToken extends Orders
             'MarketplaceId.Id.1',
             'SellerId',
         ];
+
+    }
+
+    protected static function requestRules()
+    {
+
+        if(null == static::getParameterByKey("NextToken")){
+
+            throw new Exception("NextToken must be set. Please correct and try again.");
+
+        }
 
     }
 

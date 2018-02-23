@@ -39,14 +39,14 @@ trait APIParameterValidation
 
     }
 
-    public static function ensureIntervalBetweenDates($dateToEnsureInterval, $baseDate, $interval, $direction = "sub")
+    public static function ensureIntervalBetweenDates($dateToEnsureInterval, $baseDate, $interval, $direction = "earlier")
     {
 
         if(null !== static::getParameterByKey($dateToEnsureInterval))
         {
 
             $date = DateTime(static::getParameterByKey($baseDate));
-            if($direction !== "sub")
+            if($direction !== "earlier")
             {
 
                 $adjustedDate = $date->add(new DateInterval($interval));
@@ -57,21 +57,35 @@ trait APIParameterValidation
 
             }
 
-            $ensuredDate = new DateTime(static::getParameterByKey($dateToEnsureInterval));
+            $dateToEnsure = new DateTime(static::getParameterByKey($dateToEnsureInterval));
 
-            if($ensuredDate > $adjustedDate)
+            if($dateToEnsure > $adjustedDate)
             {
 
-                $exceptionNotice = "$dateToEnsureInterval must be no ";
-                $exceptionNotice .= $direction !== "sub" ? "sooner" : "later";
+                $exceptionNotice = "$dateToEnsureInterval must be ";
+                $exceptionNotice .= $direction !== "earlier" ? "later" : "earlier";
                 $exceptionNotice .= " than ";
                 $exceptionNotice .= $interval->format('%m minutes');
-                $exceptionNotice .= $direction !== "sub" ? "after" : "before";
+                $exceptionNotice .= $direction !== "earlier" ? "after" : "before";
                 $exceptionNotice .= "$baseDate. Please correct and try again.";
 
                 throw new Exception($exceptionNotice);
 
             }
+
+        }
+
+    }
+
+    public static function ensureOneOrTheOtherIsSet($firstParameter, $secondParameter)
+    {
+
+        if(
+            null === static::getParameterByKey($firstParameter) &&
+            null === static::getParameterByKey($secondParameter)
+        ){
+
+            throw new Exception("$firstParameter or $secondParameter must be set. Please correct and try again.");
 
         }
 
@@ -119,6 +133,23 @@ trait APIParameterValidation
             {
 
                 throw new Exception("The value/s for $parameterToCheck is/are not valid. Please correct and try again.");
+
+            }
+
+        }
+
+    }
+
+    public static function ensureParameterIsInRange($parameterToCheck, $min, $max)
+    {
+
+        if(null !== static::getParameterByKey($parameterToCheck))
+        {
+
+            if($parameterToCheck < $min && $parameterToCheck > $max)
+            {
+
+                throw new Exception("$parameterToCheck must be between $min and $max");
 
             }
 

@@ -80,25 +80,11 @@ class ListOrders extends Orders
 
         static::ensureDatesAreChronological("LastUpdatedBefore", "LastUpdatedAfter");
 
+        static::ensureOneOrTheOtherIsSet("CreatedAfter", "LastUpdatedAfter");
+
         static::lastUpdatedAfterExclusivityRule();
 
-        if(null === static::getParameterByKey("CreatedAfter"))
-        {
-
-            $timestamp = new DateTime(static::getParameterByKey("Timestamp"));
-            $adjustedTimestamp = $timestamp->sub(new DateInterval("PT2M"));
-            $createdAfter = new DateTime(static::getParameterByKey("CreatedAfter"));
-
-            if($createdAfter > $adjustedTimestamp)
-            {
-
-                throw new Exception("CreatedAfter must be no later than two minutes before Timestamp. Please correct and try again.");
-
-            }
-
-        }
-
-
+        static::ensureIntervalBetweenDates("CreatedAfter", "Timestamp", "PT2M");
 
         static::exclusiveBuyerEmail();
 
@@ -106,7 +92,15 @@ class ListOrders extends Orders
 
         static::exclusiveCreatedAfter();
 
+        static::ensureParameterIsInRange("MaxResultsPerPage", 1, 100);
+
         static::validOrderStatusRule();
+
+        static::validFulfillmentChannel();
+
+        static::validPaymentMethod();
+
+        static::validTFMShipmentStatus();
 
     }
 
@@ -177,7 +171,50 @@ class ListOrders extends Orders
             "Unfulfillable"
         ];
 
-        static::ensureParametersAreValid('OrderStatus', $validOrderStatuses);
+        static::ensureParametersAreValid("OrderStatus", $validOrderStatuses);
+
+    }
+
+    protected static function validFulfillmentChannel()
+    {
+
+        $validFulfillmentChannels = [
+            "AFN",
+            "MFN"
+        ];
+
+        static::ensureParametersAreValid("FulfillmentChannel", $validFulfillmentChannels);
+    }
+
+    protected static function validPaymentMethod()
+    {
+
+        $validPaymentMethods = [
+            "COD",
+            "CVS",
+            "Other"
+        ];
+
+        static::ensureParametersAreValid("PaymentMethod", $validPaymentMethods);
+
+    }
+
+    protected static function validTFMShipmentStatus()
+    {
+
+        $validTFMShipmentStatuses = [
+            "PendingPickUp",
+            "LabelCanceled",
+            "PickedUp",
+            "AtDestinationFC",
+            "Delivered",
+            "RejectedByBuyer",
+            "Undeliverable",
+            "ReturnedToSeller",
+            "Lost"
+        ];
+
+        static::ensureParametersAreValid("TFMShipmentStatus", $validTFMShipmentStatuses);
 
     }
 

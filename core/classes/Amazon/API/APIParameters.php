@@ -25,7 +25,9 @@ trait APIParameters
 
     protected static function resetCurlParameters()
     {
+
         self::$curlParameters = [];
+
     }
 
     public static function getCurlParameters()
@@ -110,7 +112,8 @@ trait APIParameters
 
         $feedType = static::getFeedType();
 
-        if ($feedType) {
+        if ($feedType)
+        {
 
             self::setParameterByKey('FeedType', $feedType);
 

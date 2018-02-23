@@ -18,12 +18,12 @@ class ListOrders extends Orders
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrders.html";
 
-    public function __construct($shippedStatus = "")
+    public function __construct($orderStatus = "")
     {
 
         static::setAdditionalParameters();
 
-        static::setShippingParameters($shippedStatus);
+        static::setShippingParameters($orderStatus);
 
         static::setDateParameter();
 
@@ -43,14 +43,14 @@ class ListOrders extends Orders
 
     }
 
-    protected static function setShippingParameters($shippedStatus)
+    protected static function setShippingParameters($orderStatus)
     {
 
-        if($shippedStatus){
+        if($orderStatus){
 
-            for($x = 1; $x <= count($shippedStatus); $x++){
+            for($x = 1; $x <= count($orderStatus); $x++){
 
-                static::setParameterByKey("OrderStatus.Status.$x", $shippedStatus[$x-1]);
+                static::setParameterByKey("OrderStatus.Status.$x", $orderStatus[$x-1]);
 
             }
 
@@ -74,56 +74,13 @@ class ListOrders extends Orders
     protected static function requestRules()
     {
 
-        if(
-            null !== static::getParameterByKey("CreatedAfter") &&
-            null !== static::getParameterByKey("LastUpdatedAfter")
-        ){
+        static::requireParameterToBeSet("MarketplaceId");
 
-            throw new Exception("CreatedAfter and LastUpdatedAFter cannot both be set. Please unset one and try again.");
+        static::ensureDatesAreChronological("CreatedBefore", "CreatedAfter");
 
-        }
+        static::ensureDatesAreChronological("LastUpdatedBefore", "LastUpdatedAfter");
 
-        if(
-            null !== static::getParameterByKey("CreatedAfter") &&
-            null !== static::getParameterByKey("CreatedBefore")
-        ){
-
-            $createdBefore = new DateTime(static::getParameterByKey("CreatedBefore"));
-            $createdAfter = new DateTime(static::getParameterByKey("CreatedAfter"));
-
-            if($createdAfter > $createdBefore){
-
-                throw new Exception("CreatedBefore must be before CreatedAfter. Please correct the dates and try again.");
-
-            }
-
-        }
-
-        if(
-            null !== static::getParameterByKey("LastUpdatedAfter") &&
-            null !== static::getParameterByKey("LastUpdatedBefore")
-        ){
-
-            $lastUpdatedBefore = new DateTime(static::getParameterByKey("LastUpdatedBefore"));
-            $lastUpdatedAfter = new DateTime(static::getParameterByKey("LastUpdatedAfter"));
-
-            if($lastUpdatedBefore > $lastUpdatedAfter){
-
-                throw new Exception("LastUpdatedBefore must be before LastUpdatedAfter. Please correct the dates and try again.");
-
-            }
-        }
-
-        if(
-            null !== static::getParameterByKey("LastUpdatedAfter") &&
-            (
-                null !== static::getParameterByKey("BuyerEmail") ||
-                null !== static::getParameterByKey("SellerOrderId")
-            )
-        ){
-
-            throw new Exception("LastUpdatedAfter cannot be set at the same time as the following: BuyerEmail and SellerOrderId. Please correct and try again.");
-        }
+        static::lastUpdatedAfterExclusivityRule();
 
         if(null === static::getParameterByKey("CreatedAfter"))
         {
@@ -141,44 +98,86 @@ class ListOrders extends Orders
 
         }
 
-        if(null === static::getParameterByKey("MarketplaceId"))
-        {
 
-            throw new Exception("MarketplaceId must be set to complete this request. Please correct and try again.");
 
-        }
+        static::exclusiveBuyerEmail();
 
-        if(
-            null !== static::getParameterByKey("BuyerEmail") &&
-            (
-                null !== static::getParameterByKey("FulfillmentChannel") ||
-                null !== static::getParameterByKey("OrderStatus") ||
-                null !== static::getParameterByKey("PaymentMethod") ||
-                null !== static::getParameterByKey("LastUpdatedAfter") ||
-                null !== static::getParameterByKey("LastUpdatedBefore") ||
-                null !== static::getParameterByKey("SellerOrderId")
-            )
-        ){
+        static::exclusiveSellerOrderId();
 
-            throw new Exception("BuyerEmail cannot be set at the same time as the following: FulfillmentChannel, OrderStatus, PaymentMethod, LastUpdatedAfter, LastUpdatedBefore, SellerOrderId. Please correct and try again.");
+        static::exclusiveCreatedAfter();
 
-        }
+        static::validOrderStatusRule();
 
-        if(
-            null !== static::getParameterByKey("SellerOrderId") &&
-            (
-                null !== static::getParameterByKey("FulfillmentChannel") ||
-                null !== static::getParameterByKey("OrderStatus") ||
-                null !== static::getParameterByKey("PaymentMethod") ||
-                null !== static::getParameterByKey("LastUpdatedAfter") ||
-                null !== static::getParameterByKey("LastUpdatedBefore") ||
-                null !== static::getParameterByKey("BuyerEmail")
-            )
-        ){
+    }
 
-            throw new Exception("SellerOrderId cannot be set at the same time as the following: FulfillmentChannel, OrderStatus, PaymentMethod, LastUpdatedAfter, LastUpdatedBefore, BuyerEmail. Please correct and try again.");
+    protected static function exclusiveCreatedAfter()
+    {
 
-        }
+        $restrictedParameters = [
+            "LastUpdatedAfter"
+        ];
+
+        static::ensureMutuallyExclusiveParametersNotSet("CreatedAfter", $restrictedParameters);
+    }
+
+    protected static function exclusiveBuyerEmail()
+    {
+
+        $restrictedParameters = [
+            "FulfillmentChannel",
+            "OrderStatus",
+            "PaymentMethod",
+            "LastUpdatedAfter",
+            "LastUpdatedBefore",
+            "SellerOrderId"
+        ];
+
+        static::ensureMutuallyExclusiveParametersNotSet("BuyerEmail", $restrictedParameters);
+
+    }
+
+    protected static function lastUpdatedAfterExclusivityRule()
+    {
+
+        $restrictedParameters = [
+            "BuyerEmail",
+            "SellerOrderId"
+        ];
+
+        static::ensureMutuallyExclusiveParametersNotSet("LastUpdatedAfter", $restrictedParameters);
+
+    }
+
+    protected static function exclusiveSellerOrderId()
+    {
+
+        $restrictedParameters = [
+            "FulfillmentChannel",
+            "OrderStatus",
+            "PaymentMethod",
+            "LastUpdatedAfter",
+            "LastUpdatedBefore",
+            "BuyerEmail"
+        ];
+
+        static::ensureMutuallyExclusiveParametersNotSet("SellerOrderId", $restrictedParameters);
+
+    }
+
+    protected static function validOrderStatusRule()
+    {
+
+        $validOrderStatuses = [
+            "PendingAvailability",
+            "Pending",
+            "Unshipped",
+            "PartiallyShipped",
+            "InvoiceUnconfirmed",
+            "Canceled",
+            "Unfulfillable"
+        ];
+
+        static::ensureParametersAreValid('OrderStatus', $validOrderStatuses);
 
     }
 

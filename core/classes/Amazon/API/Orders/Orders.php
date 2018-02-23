@@ -2,13 +2,14 @@
 
 namespace Amazon\API\Orders;
 
-use Amazon\API\{APIMethods, APIParameters};
+use Amazon\API\{APIMethods, APIParameters, APIParameterValidation};
 
 class Orders
 {
 
     use APIMethods;
     use APIParameters;
+    use APIParameterValidation;
 
     protected static $feed = "Orders";
     protected static $feedType = "";

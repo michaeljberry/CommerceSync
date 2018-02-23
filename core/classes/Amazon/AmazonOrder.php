@@ -36,7 +36,12 @@ class AmazonOrder extends AmazonClient
     public static function getUnshippedOrders()
     {
 
-        $unshippedOrders = new ListOrders(['Unshipped', 'PartiallyShipped']);
+        $orderStatus = [
+            'Unshipped',
+            'PartiallyShipped'
+        ];
+
+        $unshippedOrders = new ListOrders($orderStatus);
 
         $xml = '';
 

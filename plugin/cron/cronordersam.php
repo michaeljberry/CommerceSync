@@ -10,6 +10,6 @@ require WEBPLUGIN . 'am/amvar.php';
 
 $start = startClock();
 
-AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
+// AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
 
 endClock($start);

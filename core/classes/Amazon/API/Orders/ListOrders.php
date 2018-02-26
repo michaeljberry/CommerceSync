@@ -63,7 +63,6 @@ class ListOrders extends Orders
 
         $from = Amazon::getApiOrderDays();
         $from = $from["api_from"];
-        // $from = "-1";
         $from .= " days";
         $createdAfter = new DateTime($from, new DateTimeZone("America/Boise"));
         $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");

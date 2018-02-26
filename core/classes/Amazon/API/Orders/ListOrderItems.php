@@ -40,11 +40,7 @@ class ListOrderItems extends Orders
     protected static function requestRules()
     {
 
-        if(null == static::getParameterByKey("AmazonOrderId")){
-
-            throw new Exception("AmazonOrderId must be set. Please correct and try again.");
-
-        }
+        static::requireParameterToBeSet("AmazonOrderId");
 
     }
 

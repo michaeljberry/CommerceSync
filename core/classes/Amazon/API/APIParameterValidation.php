@@ -2,13 +2,19 @@
 
 namespace Amazon\API;
 
+use \Exception;
+use \DateTime;
+use \DateInterval;
+
 trait APIParameterValidation
 {
 
     public static function requireParameterToBeSet($parameterToCheck)
     {
 
-        if(null === static::getParameterByKey($parameterToCheck))
+        $matchingParameters = static::searchCurlParameters($parameterToCheck);
+
+        if(empty($matchingParameters))
         {
 
             throw new Exception("$parameterToCheck must be set to complete this request. Please correct and try again.");
@@ -19,6 +25,7 @@ trait APIParameterValidation
 
     public static function ensureDatesAreChronological($earlierDate, $laterDate)
     {
+
 
         if(
             null !== static::getParameterByKey($earlierDate) &&
@@ -45,7 +52,7 @@ trait APIParameterValidation
         if(null !== static::getParameterByKey($dateToEnsureInterval))
         {
 
-            $date = DateTime(static::getParameterByKey($baseDate));
+            $date = new DateTime(static::getParameterByKey($baseDate));
             if($direction !== "earlier")
             {
 
@@ -113,16 +120,10 @@ trait APIParameterValidation
 
     }
 
-    public static function ensureParametersAreValid($parameterToCheck, $validParameterValues)
+    public static function ensureParametersAreValid($parameterToCheck, $validParameterValues = null)
     {
 
-        $matchingParameters = array_filter(
-            static::getCurlParameters(),
-            function($k){
-                return strpos($parameterToCheck) !== false;
-            },
-            ARRAY_FILTER_USE_KEY
-        );
+        $matchingParameters = static::searchCurlParameters($parameterToCheck);
 
         if(!empty($matchingParameters))
         {

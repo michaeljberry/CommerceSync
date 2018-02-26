@@ -6,10 +6,21 @@ use ecommerce\Ecommerce;
 use models\channels\Channel;
 use models\channels\order\{Order, OrderItem};
 use controllers\channels\{FTPController, BuyerController, XMLController};
-use Amazon\API\Orders\{ListOrders, ListOrderItems, ListOrdersByNextToken};
+use Amazon\API\Orders\{ListOrders, ListOrderItems, ListOrdersByNextToken, GetOrder};
 
 class AmazonOrder extends AmazonClient
 {
+
+    public static function getOrderById($amazonOrderId)
+    {
+
+        $amazonOrder = new GetOrder($amazonOrderId);
+
+        $xml = '';
+
+        return AmazonClient::amazonCurl($xml, $amazonOrder);
+
+    }
 
     protected static function getMoreOrders($nextToken)
     {
@@ -51,6 +62,13 @@ class AmazonOrder extends AmazonClient
 
     public static function parseOrders($orders, $nextPage = null)
     {
+
+        if(!$orders)
+        {
+
+            return;
+
+        }
 
         $xmlOrders = simplexml_load_string($orders);
 

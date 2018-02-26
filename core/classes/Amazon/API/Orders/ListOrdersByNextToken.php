@@ -39,11 +39,7 @@ class ListOrdersByNextToken extends Orders
     protected static function requestRules()
     {
 
-        if(null == static::getParameterByKey("NextToken")){
-
-            throw new Exception("NextToken must be set. Please correct and try again.");
-
-        }
+        static::requireParameterToBeSet("NextToken");
 
     }
 

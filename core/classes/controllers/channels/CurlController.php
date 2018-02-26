@@ -18,6 +18,7 @@ class CurlController
             curl_close($request);
             return 'Error: ' . curl_error($request);
         }
+        // print_r(curl_getinfo($request));
         curl_close($request);
         return $response;
     }

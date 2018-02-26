@@ -19,7 +19,7 @@ trait APIParameters
     public static function getParameterByKey($key)
     {
 
-        return self::$curlParameters[$key];
+        return self::$curlParameters[$key] ?? null;
 
     }
 
@@ -35,6 +35,19 @@ trait APIParameters
 
         return self::$curlParameters;
 
+    }
+
+    public static function searchCurlParameters($parameterToCheck)
+    {
+
+
+        return array_filter(
+            static::getCurlParameters(),
+            function($k) use ($parameterToCheck){
+                return strpos($k, $parameterToCheck) !== false;
+            },
+            ARRAY_FILTER_USE_KEY
+        );
     }
 
     private static function getSignatureMethod()

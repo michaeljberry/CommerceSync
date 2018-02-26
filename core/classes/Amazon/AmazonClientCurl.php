@@ -183,6 +183,7 @@ trait AmazonClientCurl
         $link = static::createLink($amazonAPI);
         $httpHeader = static::buildHeader($amazonXmlFeed);
         $request = static::setCurlOptions($link, $httpHeader, $amazonXmlFeed);
+        // curl_setopt($request, CURLINFO_HEADER_OUT, true);
         return CurlController::request($request);
 
     }

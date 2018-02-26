@@ -26,6 +26,15 @@ class Ecommerce
         echo '</pre><br>';
     }
 
+    public static function ddXml($data)
+    {
+
+        echo "<br><pre>";
+        echo htmlentities($data);
+        echo "</pre>";
+
+    }
+
     protected static function cellOpeningTag($value, $cellType)
     {
         $openTag = '';

@@ -12,7 +12,8 @@ class ListOrders extends Orders
 
     protected static $requestQuota = 6;
     protected static $restoreRate = 1;
-    protected static $quotaTimePeriod = "minute";
+    protected static $restoreRateTime = 1;
+    protected static $restoreRateTimePeriod = "minute";
     protected static $action = "ListOrders";
     protected static $method = "POST";
     private static $curlParameters = [];

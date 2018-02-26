@@ -7,7 +7,8 @@ class GetOrder extends Orders
 
     protected static $requestQuota = 6;
     protected static $restoreRate = 1;
-    protected static $qutoaTimePeriod = "minute";
+    protected static $restoreRateTime = 1;
+    protected static $restoreRateTimePeriod = "minute";
     protected static $action = "GetOrder";
     protected static $method = "POST";
     private static $curlParameters = [];

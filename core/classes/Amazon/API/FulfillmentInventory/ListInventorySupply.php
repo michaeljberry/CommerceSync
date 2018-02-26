@@ -5,8 +5,10 @@ namespace Amazon\API\FulfillmentInventory;
 class ListInventorySupply extends FulfillmentInventory
 {
 
-    protected static $requestQuotaPerSecond = 30;
-    protected static $restoreRatePerSecond = 2;
+    protected static $requestQuota = 30;
+    protected static $restoreRate = 2;
+    protected static $restoreRateTime = 1;
+    protected static $restoreRateTimePeriod = "second";
     protected static $quotaTimePeriod = "second";
     protected static $action = "ListInventorySupply";
     protected static $method = "POST";

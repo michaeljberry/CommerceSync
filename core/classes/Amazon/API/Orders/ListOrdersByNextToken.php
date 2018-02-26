@@ -9,7 +9,8 @@ class ListOrdersByNextToken extends Orders
 
     protected static $requestQuota = 30;
     protected static $restoreRate = 2;
-    protected static $quotaTimePeriod = "second";
+    protected static $restoreRateTime = 1;
+    protected static $restoreRateTimePeriod = "minute";
     protected static $action = "ListOrdersByNextToken";
     protected static $method = "POST";
     private static $curlParameters = [];

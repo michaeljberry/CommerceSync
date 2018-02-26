@@ -4,24 +4,24 @@ namespace Amazon\API\Orders;
 
 use Amazon\API\Orders\Orders;
 
-class ListOrderItems extends Orders
+class ListOrderItemsByNextToken extends Orders
 {
 
     protected static $requestQuota = 30;
     protected static $restoreRate = 1;
     protected static $restoreRateTime = 2;
-    protected static $restoreRateTimePeriod = "second";
-    protected static $action = "ListOrderItems";
+    protected static $retoreRateTimePeriod = "second";
+    protected static $action = "ListOrderItemsByNextToken";
     protected static $method = "POST";
     private static $curlParameters = [];
-    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrderItems.html";
+    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrderItemsByNextToken.html";
 
-    public function __construct($orderNumber)
+    public function __construct($nextItemToken)
     {
 
         static::setAdditionalParameters();
 
-        static::setParameterByKey("AmazonOrderId", $orderNumber);
+        static::setParameterByKey("NextToken", $nextItemToken);
 
         static::requestRules();
 
@@ -41,7 +41,7 @@ class ListOrderItems extends Orders
     protected static function requestRules()
     {
 
-        static::requireParameterToBeSet("AmazonOrderId");
+        static::requireParameterToBeSet("NextToken");
 
     }
 

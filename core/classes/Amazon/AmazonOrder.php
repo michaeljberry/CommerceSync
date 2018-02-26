@@ -44,6 +44,17 @@ class AmazonOrder extends AmazonClient
 
     }
 
+    public static function getMoreOrderItems($nextItemToken)
+    {
+
+        $moreOrderItems = new ListOrderItemsByNextToken($nextItemToken);
+
+        $xml = "";
+
+        return AmazonClient::amazonCurl($xml, $moreOrderItems);
+
+    }
+
     public static function getUnshippedOrders()
     {
 
@@ -72,28 +83,32 @@ class AmazonOrder extends AmazonClient
 
         $xmlOrders = simplexml_load_string($orders);
 
-        $page = "ListOrdersResult";
+        $orderPage = "ListOrdersResult";
 
-        if ($nextPage) {
+        if ($nextPage)
+        {
 
-            $page = "ListOrdersByNextTokenResult";
+            $orderPage = "ListOrdersByNextTokenResult";
 
         }
 
-        foreach ($xmlOrders->{$page}->Orders->Order as $order) {
+        foreach ($xmlOrders->{$orderPage}->Orders->Order as $order)
+        {
 
             static::parseOrder($order);
 
         }
 
-        if (isset($xmlOrders->{$page}->NextToken)) {
+        if (isset($xmlOrders->{$orderPage}->NextToken))
+        {
 
-            $nextToken = (string)$xmlOrders->{$page}->NextToken;
-            Ecommerce::dd("Next Token:" . $nextToken);
+            $nextToken = (string)$xmlOrders->{$orderPage}->NextToken;
+            Ecommerce::dd("Next Token: $nextToken");
 
         }
 
-        if (isset($nextToken)) {
+        if (isset($nextToken))
+        {
 
             $orders = static::getMoreOrders($nextToken);
 
@@ -109,7 +124,8 @@ class AmazonOrder extends AmazonClient
         $orderNumber = $order->AmazonOrderId;
         $found = Order::get($orderNumber);
 
-        if (LOCAL || !$found) {
+        if (LOCAL || !$found)
+        {
 
             static::orderFound($order, $orderNumber);
 
@@ -181,7 +197,8 @@ class AmazonOrder extends AmazonClient
         $Order = new Order(1, $channelName, AmazonClient::getStoreId(), $buyer, $orderNumber, $purchaseDate,
             $shippingCode, $shippingPrice, $tax);
 
-        if (!LOCAL) {
+        if (!LOCAL)
+        {
 
             $Order->save(AmazonClient::getStoreId());
 
@@ -189,7 +206,7 @@ class AmazonOrder extends AmazonClient
 
         $Order->setOrderId();
 
-        static::getItems($Order);
+        static::parseItems($Order, static::getOrderItems($Order->getOrderNumber()));
 
         $tax = $Order->getTax()->get();
 
@@ -197,7 +214,8 @@ class AmazonOrder extends AmazonClient
 
         $Order->setOrderXml($Order);
 
-        if (!LOCAL) {
+        if (!LOCAL)
+        {
 
             FTPController::saveXml($Order);
 
@@ -205,14 +223,44 @@ class AmazonOrder extends AmazonClient
 
     }
 
-    protected static function getItems(Order $Order)
+    protected static function parseItems(Order $Order, $items, $nextItemPage = null)
     {
 
-        $orderItems = simplexml_load_string(static::getOrderItems($Order->getOrderNumber()));
+        $orderItems = simplexml_load_string($items);
 
-        if (isset($orderItems->ListOrderItemsResult->OrderItems->OrderItem)) {
+        $itemPage = "ListOrderItemsResult";
 
-            static::parseItems($Order, $orderItems->ListOrderItemsResult->OrderItems->OrderItem);
+        if($nextItemPage)
+        {
+
+            $itemPage = "ListOrderItemsByNextTokenResult";
+
+        }
+
+        if (isset($orderItems->{$itemPage}->OrderItems->OrderItem))
+        {
+
+            foreach ($orderItems->{$itemPage}->OrderItems->OrderItem as $item) {
+
+                static::parseItem($Order, $item);
+
+            }
+
+            if(isset($orderItems->{$itemPage}->NextToken))
+            {
+
+                $nextItemToken = (string)$orderItems->{$itemPage}->NextToken;
+                Ecommerce::dd("Next Item Token: $nextToken");
+
+            }
+
+            if(isset($nextItemToken))
+            {
+
+                $orderItems = static::getMoreOrderItems($nextItemToken);
+                static::getItems($Order, $orderItems, true);
+
+            }
 
         } else {
 
@@ -221,16 +269,7 @@ class AmazonOrder extends AmazonClient
 
         }
 
-    }
 
-    protected static function parseItems(Order $Order, $items)
-    {
-
-        foreach ($items as $item) {
-
-            static::parseItem($Order, $item);
-
-        }
 
     }
 

@@ -33,14 +33,14 @@ $quantity = 2;
 //     $asin = $u['asin1'];
 //     $sku = 'WECKL'; //WB, VHD4
 //     echo "sku:$sku<br>";
-//     $amazon_xml .= AmazonInventory::updateShippingPrice($sku, '3.99', $y);
+//     $amazon_xml .= AmazonInventory::shippingPriceArray($sku, '3.99', $y);
 
 //     $x++;
 //     $y++;
 // }
 
 // Ecommerce::dd($amazon_xml);
-// $response = AmazonInventory::updateAmazonInventory($amazon_xml);
+// $response = AmazonInventory::updateInventory($amazon_xml);
 // Ecommerce::dd($response);
 
 endClock($start);

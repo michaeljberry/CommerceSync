@@ -4,6 +4,7 @@ use models\channels\Inventory;
 use models\channels\Listing;
 use models\channels\SKU;
 use Ebay\EbayInventory;
+use Amazon\AmazonInventory;
 
 require '../../core/init.php';
 $start_time = microtime(true);
@@ -47,14 +48,14 @@ if ($_POST['inventory-sku']) {
             fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
             $price = Listing::getPriceBySku($sku, $table);
             if (!empty($price)) {
-                $amazon_price_xml = array_merge($amazon_price_xml, $aminv->create_inventory_price_update_item_xml($sku, $price, $y));
+                $amazon_price_xml = array_merge($amazon_price_xml, AmazonInventory::priceArray($sku, $price, $y));
             } else {
                 echo 'There was either no price, or the price was overrode<br>';
             }
             echo 'Amazon Quantity: ' . $stock_qty . '; Amazon Price: ' . $price . '<br>';
 
 //        Create XML for Amazon
-            $amazon_xml = $aminv->create_inventory_update_item_xml($sku, $stock_qty, $x);
+            $amazon_xml = AmazonInventory::inventoryArray($sku, $stock_qty, $x);
 
             fwrite($fp, 'Inventory Upload File: ' . PHP_EOL . $amazon_xml . PHP_EOL . PHP_EOL);
             fwrite($fp, 'Price Upload File: ' . PHP_EOL . $amazon_price_xml . PHP_EOL . PHP_EOL);
@@ -62,13 +63,13 @@ if ($_POST['inventory-sku']) {
 //            echo $amazon_xml . '<br><br>';
 //            echo $amazon_price_xml . '<br><br>';
 
-            $response = $aminv->updateAmazonInventory($amazon_xml);
+            $response = AmazonInventory::updateInventory($amazon_xml);
             print_r($response);
             if (strpos($response, 'SUBMITTED')) {
                 echo 'Amazon Inventory Update was uploaded successfully.<br>';
             }
             fwrite($fp, "Inventory Upload Response: " . PHP_EOL . $response . PHP_EOL . PHP_EOL);
-            $response = $aminv->updateAmazonInventoryPrice($amazon_price_xml);
+            $response = AmazonInventory::updatePrice($amazon_price_xml);
 //            print_r($response);
             if (strpos($response, 'SUBMITTED')) {
                 echo 'Amazon Price Update was uploaded successfully.';

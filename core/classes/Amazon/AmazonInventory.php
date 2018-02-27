@@ -22,53 +22,37 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function updateAmazonInventory($xml1)
+    public function updateInventory($xml1)
     {
 
-        // $action = 'SubmitFeed';
         $feedType = '_POST_PRODUCT_DATA_';
-        // $feed = 'Feeds';
-        // $whatToDo = 'POST';
 
         $xmlArray = [
             'MessageType' => 'Product'
         ];
-        $xmlArray = array_merge($xmlArray, $xml1);
 
-        // $paramAdditionalConfig = [
-        //     'MarketplaceId',
-        //     'SellerId',
-        // ];
+        $xmlArray = array_merge($xmlArray, $xml1);
 
         $inventoryUpdate = new SubmitFeed($feedType);
 
-        // AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
-
-        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $inventoryUpdate);
 
     }
 
-    public function updateAmazonInventoryPrice($xml1)
+    public function updatePrice($xml1)
     {
 
-        $action = 'SubmitFeed';
         $feedType = '_POST_PRODUCT_PRICING_DATA_';
-        $feed = 'Feeds';
-        $whatToDo = 'POST';
 
         $xmlArray = [
             'MessageType' => 'Price'
         ];
+
         $xmlArray = array_merge($xmlArray, $xml1);
 
-        $paramAdditionalConfig = [
-            'MarketplaceId',
-            'SellerId',
-        ];
+        $inventoryUpdate = new SubmitFeed($feedType);
 
-        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
-
-        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $inventoryUpdate);
 
     }
 
@@ -150,10 +134,7 @@ class AmazonInventory extends AmazonClient
     public function listNewProduct($sku)
     {
 
-        $action = 'SubmitFeed';
         $feedType = '_POST_PRODUCT_DATA_';
-        $feed = 'Feeds';
-        $whatToDo = 'POST';
 
         $xmlArray = [
             'MessageType' => 'Product',
@@ -182,9 +163,9 @@ class AmazonInventory extends AmazonClient
 
         }
 
-        AmazonClient::setParameters($action, $feedType, $feed);
+        $newProduct = new SubmitFeed($feedType);
 
-        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $newProduct);
 
     }
 
@@ -255,7 +236,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function create_inventory_update_item_xml($sku, $quantity, $num)
+    public static function inventoryArray($sku, $quantity, $num)
     {
 
         $xmlArray = [
@@ -272,7 +253,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function create_inventory_price_update_item_xml($sku, $price, $num)
+    public static function priceArray($sku, $price, $num)
     {
 
         $xmlArray = [
@@ -289,7 +270,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function updateTaxCode($sku, $asin, $num)
+    public static function taxCodeArray($sku, $asin, $num)
     {
 
         $xmlArray = [
@@ -311,7 +292,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function updateShippingPrice($sku, $shipping, $num)
+    public static function shippingPriceArray($sku, $shipping, $num)
     {
 
         $xmlArray = [
@@ -331,7 +312,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function sortAmazonSearchResults($response)
+    public static function sortAmazonSearchResults($response)
     {
 
         foreach ($response->GetLowestOfferListingsForSKUResult->Product->LowestOfferListings->LowestOfferListing as $product) {

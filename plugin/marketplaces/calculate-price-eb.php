@@ -5,6 +5,7 @@ use models\channels\Listing;
 use models\channels\order\OrderStats;
 use models\channels\SKU;
 use models\channels\Stock;
+use Amazon\AmazonInventory;
 
 require '../../core/init.php';
 
@@ -104,7 +105,7 @@ if ($_POST['price_sku']) {
 
     echo "<br><br>Our Amazon Listing - Price: $amazonPrice; Shipping: $amazonShipping; Total: $amazonTotal<br><br>";
 
-    $amazonListings = $aminv->sortAmazonSearchResults($currentAmazonListings);
+    $amazonListings = AmazonInventory::sortAmazonSearchResults($currentAmazonListings);
     $arrayToInclude = ['numOfListingsAtThisPrice', 'sellerRating', 'shippingTime', 'price', 'shipping', 'total'];
     $label = 'Current Listings on Amazon for same SKU';
     $tableArray = [];

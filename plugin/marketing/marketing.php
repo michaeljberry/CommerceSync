@@ -559,7 +559,7 @@ if ($user_id == 838) {
     //$sku = $ecommerce->get_sku($sku_id);
 
     //Create XML for Amazon
-    //$amazon_xml = $aminv->create_inventory_update_item_xml($sku, $stock_qty, $x);
+    //$amazon_xml = AmazonInventory::inventoryArray($sku, $stock_qty, $x);
 
     //$x++;
     //Push to Amazon

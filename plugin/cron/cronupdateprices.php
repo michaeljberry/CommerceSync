@@ -4,15 +4,16 @@ require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 
 require WEBPLUGIN . 'am/amvar.php';
-require WEBPLUGIN . 'bc/bcvar.php';
+// require WEBPLUGIN . 'bc/bcvar.php';
 require WEBPLUGIN . 'eb/ebvar.php';
-require WEBPLUGIN . 'rev/revvar.php';
-require WEBPLUGIN . 'wm/wmvar.php';
+// require WEBPLUGIN . 'rev/revvar.php';
+// require WEBPLUGIN . 'wm/wmvar.php';
 
 use ecommerce\Ecommerce;
 use models\channels\Listing;
 use models\channels\product\ProductPrice;
 use Ebay\EbayInventory;
+use Amazon\AmazonInventory;
 
 $start = startClock();
 
@@ -21,10 +22,10 @@ echo "SKU count: $count<br>";
 
 $updatedPrices = ProductPrice::getUpdated();
 
-$reverbListings = Listing::getByChannel('listing_reverb');
+// $reverbListings = Listing::getByChannel('listing_reverb');
 $ebayListings = Listing::getByChannel('listing_ebay');
 $amazonListings = Listing::getByChannel('listing_amazon');
-$bigcommerceListings = Listing::getByChannel('listing_bigcommerce');
+// $bigcommerceListings = Listing::getByChannel('listing_bigcommerce');
 
 $x = 1;
 $y = 0;
@@ -32,11 +33,11 @@ $amazonXML = [];
 $arrayKeys = array_keys($updatedPrices);
 $lastArrayKey = array_pop($arrayKeys);
 foreach ($updatedPrices as $sku => $prices) {
-    // if($sku !== 'CMP153'){
-    //     continue;
-    // }
+    if($sku !== 'KG6W'){
+        continue;
+    }
 
-    // print_r($prices);
+    print_r($prices);
 
     extract($prices);
 
@@ -53,13 +54,9 @@ foreach ($updatedPrices as $sku => $prices) {
     if (array_key_exists($sku, $amazonListings)) {
         echo "Amazon: $sku -> $pl10 -> {$amazonListings[$sku]['id']}<br>";
         $y++;
-        $amazonXML = array_merge($amazonXML, $aminv->create_inventory_price_update_item_xml(
-            $sku,
-            $pl10,
-            $y
-        ));
+        $amazonXML = array_merge($amazonXML, AmazonInventory::updateInventoryPrice($sku,$pl10,$y));
         if ($x % 30000 == 0) {
-            $response = $aminv->updateAmazonInventoryPrice($amazonXML);
+            $response = AmazonInventory::updatePrice($amazonXML);
             Ecommerce::dd($response);
             $y = 0;
         }
@@ -76,7 +73,7 @@ foreach ($updatedPrices as $sku => $prices) {
     }
     echo "<br><br>";
 }
-$response = $aminv->updateAmazonInventoryPrice($amazonXML);
+$response = AmazonInventory::updatePrice($amazonXML);
 Ecommerce::dd($response);
 
 endClock($start);

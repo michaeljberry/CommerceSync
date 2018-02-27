@@ -126,7 +126,7 @@ trait AmazonClientCurl
         $request = 'AmazonEnvelope';
         $param = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd"';
         $header = XMLController::openingXMLTag($request, $param);
-        $header .= XMLController::parseXML($xml);
+        $header .= static::parseXML($xml);
 
         return $header;
 

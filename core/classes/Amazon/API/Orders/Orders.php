@@ -11,8 +11,10 @@ class Orders
     use APIParameters;
     use APIParameterValidation;
 
-    protected static $feed = "Orders";
     protected static $feedType = "";
+    protected static $feed = "Orders";
     protected static $versionDate = "2013-09-01";
+    private static $overviewUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_Overview.html";
+    private static $libraryUpdateUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ClientLibraries.html";
 
 }

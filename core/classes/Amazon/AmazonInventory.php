@@ -6,6 +6,7 @@ use ecommerce\Ecommerce;
 use controllers\channels\XMLController;
 use Amazon\API\AmazonAPI;
 use Amazon\API\FulfillmentInventory\ListInventorySupply;
+use Amazon\API\Feeds\SubmitFeed;
 
 class AmazonInventory extends AmazonClient
 {
@@ -15,34 +16,36 @@ class AmazonInventory extends AmazonClient
 
         $fbaInventory = new ListInventorySupply($sku);
 
-        $xml = '';
+        $xmlArray = '';
 
-        return AmazonClient::amazonCurl($xml, $fbaInventory);
+        return AmazonClient::amazonCurl($xmlArray, $fbaInventory);
 
     }
 
     public function updateAmazonInventory($xml1)
     {
 
-        $action = 'SubmitFeed';
+        // $action = 'SubmitFeed';
         $feedType = '_POST_PRODUCT_DATA_';
-        $feed = 'Feeds';
-        $whatToDo = 'POST';
+        // $feed = 'Feeds';
+        // $whatToDo = 'POST';
 
-        $xml = [
+        $xmlArray = [
             'MessageType' => 'Product'
         ];
-        $xml = XMLController::makeXML($xml);
-        $xml .= $xml1;
+        $xmlArray = XMLController::makeXML($xmlArray);
+        $xmlArray .= $xml1;
 
-        $paramAdditionalConfig = [
-            'MarketplaceId',
-            'SellerId',
-        ];
+        // $paramAdditionalConfig = [
+        //     'MarketplaceId',
+        //     'SellerId',
+        // ];
 
-        AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
+        $inventoryUpdate = new SubmitFeed($feedType);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        // AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
+
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
@@ -54,11 +57,10 @@ class AmazonInventory extends AmazonClient
         $feed = 'Feeds';
         $whatToDo = 'POST';
 
-        $xml = [
+        $xmlArray = [
             'MessageType' => 'Price'
         ];
-        $xml = XMLController::makeXML($xml);
-        $xml .= $xml1;
+        $xmlArray = array_merge($xmlArray, $xml1);
 
         $paramAdditionalConfig = [
             'MarketplaceId',
@@ -67,7 +69,7 @@ class AmazonInventory extends AmazonClient
 
         AmazonClient::setParameters($action, $feedType, $feed, $paramAdditionalConfig);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
@@ -79,7 +81,7 @@ class AmazonInventory extends AmazonClient
         $feed = 'Products';
         $whatToDo = 'POST';
 
-        $xml = '';
+        $xmlArray = '';
 
         $paramAdditionalConfig = [
             'Merchant',
@@ -92,7 +94,7 @@ class AmazonInventory extends AmazonClient
 
         AmazonClient::setParameterByKey("Query", $searchTerm);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
@@ -104,7 +106,7 @@ class AmazonInventory extends AmazonClient
         $feed = 'Products';
         $whatToDo = 'POST';
 
-        $xml = '';
+        $xmlArray = '';
 
         $paramAdditionalConfig = [
             'Merchant',
@@ -117,7 +119,7 @@ class AmazonInventory extends AmazonClient
 
         AmazonClient::setParameterByKey("ASINList.ASIN.1", $asin);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
@@ -129,7 +131,7 @@ class AmazonInventory extends AmazonClient
         $feed = 'Products';
         $whatToDo = 'POST';
 
-        $xml = '';
+        $xmlArray = '';
 
         $paramAdditionalConfig = [
             'Merchant',
@@ -142,7 +144,7 @@ class AmazonInventory extends AmazonClient
 
         AmazonClient::setParameterByKey("SellerSKUList.SellerSKU.1", $sku);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
@@ -154,7 +156,7 @@ class AmazonInventory extends AmazonClient
         $feed = 'Feeds';
         $whatToDo = 'POST';
 
-        $xml = [
+        $xmlArray = [
             'MessageType' => 'Product',
             'PurgeAndReplace' => 'false',
             'Message' => [
@@ -177,13 +179,13 @@ class AmazonInventory extends AmazonClient
 
         foreach ($bullets as $b) {
 
-            $xml['Message']['Product']['DescriptionData']['Bullet'][] = $b;
+            $xmlArray['Message']['Product']['DescriptionData']['Bullet'][] = $b;
 
         }
 
         AmazonClient::setParameters($action, $feedType, $feed);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
@@ -195,14 +197,14 @@ class AmazonInventory extends AmazonClient
         $feed = 'Products';
         $whatToDo = 'POST';
 
-        $xml = '';
+        $xmlArray = '';
 
         AmazonClient::setParameters($action, $feedType, $feed);
 
         AmazonClient::setParameterByKey("IdType", "ASIN");
         AmazonClient::setParameterByKey("IdList.Id.1", $asin);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
@@ -214,7 +216,7 @@ class AmazonInventory extends AmazonClient
         $feed = 'doc';
         $whatToDo = 'POST';
 
-        $xml = '';
+        $xmlArray = '';
 
         $paramAdditionalConfig = [
             'Merchant',
@@ -226,7 +228,7 @@ class AmazonInventory extends AmazonClient
 
         AmazonClient::setParameterByKey("ReportType", $feedType);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
@@ -238,7 +240,7 @@ class AmazonInventory extends AmazonClient
         $feed = 'Products';
         $whatToDo = 'POST';
 
-        $xml = '';
+        $xmlArray = '';
 
         $paramAdditionalConfig = [
             'MarketplaceId',
@@ -250,14 +252,14 @@ class AmazonInventory extends AmazonClient
         AmazonClient::setParameterByKey("ItemCondition", "New");
         AmazonClient::setParameterByKey("SellerSKUList.SellerSKU.1", $sku);
 
-        return AmazonClient::amazonCurl($xml, $feed, $whatToDo);
+        return AmazonClient::amazonCurl($xmlArray, $feed, $whatToDo);
 
     }
 
     public function create_inventory_update_item_xml($sku, $quantity, $num)
     {
 
-        $xml = [
+        $xmlArray = [
             'Message' => [
                 'MessageID' => $num,
                 'Inventory' => [
@@ -266,14 +268,14 @@ class AmazonInventory extends AmazonClient
                 ]
             ]
         ];
-        return XMLController::makeXML($xml);
+        return XMLController::makeXML($xmlArray);
 
     }
 
     public function create_inventory_price_update_item_xml($sku, $price, $num)
     {
 
-        $xml = [
+        $xmlArray = [
             'Message' => [
                 'MessageID' => $num,
                 'Price' => [
@@ -282,14 +284,14 @@ class AmazonInventory extends AmazonClient
                 ]
             ]
         ];
-        return XMLController::makeXML($xml);
+        return $xmlArray;
 
     }
 
     public function updateTaxCode($sku, $asin, $num)
     {
 
-        $xml = [
+        $xmlArray = [
             'Message' => [
                 'MessageID' => $num,
                 'OperationType' => 'Update',
@@ -303,14 +305,14 @@ class AmazonInventory extends AmazonClient
                 ]
             ]
         ];
-        return XMLController::makeXML($xml);
+        return XMLController::makeXML($xmlArray);
 
     }
 
     public function updateShippingPrice($sku, $shipping, $num)
     {
 
-        $xml = [
+        $xmlArray = [
             'Message' => [
                 'MessageID' => $num,
                 'OperationType' => 'Update',
@@ -322,7 +324,7 @@ class AmazonInventory extends AmazonClient
                 ]
             ]
         ];
-        return XMLController::makeXML($xml);
+        return XMLController::makeXML($xmlArray);
 
     }
 

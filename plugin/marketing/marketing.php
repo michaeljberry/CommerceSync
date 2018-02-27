@@ -553,14 +553,13 @@ if ($user_id == 838) {
     //print_r($updated);
     // /* Update Amazon Quantity per SKU */
     //$x = 1;
-    //$amazon_xml = '';
     //$stock_id = $updated['id'];
     //$sku_id = $updated['sku_id'];
     //$stock_qty = $updated['stock_qty'];
     //$sku = $ecommerce->get_sku($sku_id);
 
     //Create XML for Amazon
-    //$amazon_xml .= $aminv->create_inventory_update_item_xml($sku, $stock_qty, $x);
+    //$amazon_xml = $aminv->create_inventory_update_item_xml($sku, $stock_qty, $x);
 
     //$x++;
     //Push to Amazon
@@ -570,18 +569,18 @@ if ($user_id == 838) {
 
     // /* Update Amazon Prices */
     //$x = 1;
-    //$amazon_price_xml = '';
+    //$amazon_price_xml = [];
     //foreach($updated as $u){
     //    $sku = $u;
     //    echo $sku . '<br>';
     //    $price = $ecommerce->get_inventory_price($sku, 'listing_amazon');
     //    if(!empty($price)){
-    //        $amazon_price_xml .= $amazon->create_inventory_price_update_item_xml($sku, $price, $x);
+    //        $amazon_price_xml = array_merge($amazon_price_xml, $amazon->create_inventory_price_update_item_xml($sku, $price, $x));
     //        $x++;
     //    }
     //}
     //
-    //echo $amazon_price_xml;
+    //print_r($amazon_price_xml);
     //$response = $amazon->update_amazon_inventory_price($am_aws_access_key, $am_marketplace_id, $am_merchant_id, $am_secret_key, $amazon_price_xml);
     //print_r($response);
     //echo '<br><br>';

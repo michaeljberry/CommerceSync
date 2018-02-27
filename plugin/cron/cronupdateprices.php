@@ -28,7 +28,7 @@ $bigcommerceListings = Listing::getByChannel('listing_bigcommerce');
 
 $x = 1;
 $y = 0;
-$amazonXML = '';
+$amazonXML = [];
 $arrayKeys = array_keys($updatedPrices);
 $lastArrayKey = array_pop($arrayKeys);
 foreach ($updatedPrices as $sku => $prices) {
@@ -53,11 +53,11 @@ foreach ($updatedPrices as $sku => $prices) {
     if (array_key_exists($sku, $amazonListings)) {
         echo "Amazon: $sku -> $pl10 -> {$amazonListings[$sku]['id']}<br>";
         $y++;
-        $amazonXML .= $aminv->create_inventory_price_update_item_xml(
+        $amazonXML = array_merge($amazonXML, $aminv->create_inventory_price_update_item_xml(
             $sku,
             $pl10,
             $y
-        );
+        ));
         if ($x % 30000 == 0) {
             $response = $aminv->updateAmazonInventoryPrice($amazonXML);
             Ecommerce::dd($response);

@@ -47,9 +47,11 @@ class ListOrders extends Orders
     protected static function setShippingParameters($orderStatus)
     {
 
-        if($orderStatus){
+        if($orderStatus)
+        {
 
-            for($x = 1; $x <= count($orderStatus); $x++){
+            for($x = 1; $x <= count($orderStatus); $x++)
+            {
 
                 static::setParameterByKey("OrderStatus.Status.$x", $orderStatus[$x-1]);
 

@@ -240,7 +240,8 @@ class AmazonOrder extends AmazonClient
         if (isset($orderItems->{$itemPage}->OrderItems->OrderItem))
         {
 
-            foreach ($orderItems->{$itemPage}->OrderItems->OrderItem as $item) {
+            foreach ($orderItems->{$itemPage}->OrderItems->OrderItem as $item)
+            {
 
                 static::parseItem($Order, $item);
 
@@ -268,8 +269,6 @@ class AmazonOrder extends AmazonClient
             static::getItems($Order);
 
         }
-
-
 
     }
 
@@ -315,7 +314,8 @@ class AmazonOrder extends AmazonClient
         $Order->setOrderItems($orderItem);
         Ecommerce::dd($Order);
 
-        if (!LOCAL) {
+        if (!LOCAL)
+        {
 
             $orderItem->save($Order);
 

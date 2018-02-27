@@ -33,8 +33,7 @@ class AmazonInventory extends AmazonClient
         $xmlArray = [
             'MessageType' => 'Product'
         ];
-        $xmlArray = XMLController::makeXML($xmlArray);
-        $xmlArray .= $xml1;
+        $xmlArray = array_merge($xmlArray, $xml1);
 
         // $paramAdditionalConfig = [
         //     'MarketplaceId',
@@ -268,7 +267,8 @@ class AmazonInventory extends AmazonClient
                 ]
             ]
         ];
-        return XMLController::makeXML($xmlArray);
+
+        return $xmlArray;
 
     }
 
@@ -284,6 +284,7 @@ class AmazonInventory extends AmazonClient
                 ]
             ]
         ];
+
         return $xmlArray;
 
     }
@@ -305,7 +306,8 @@ class AmazonInventory extends AmazonClient
                 ]
             ]
         ];
-        return XMLController::makeXML($xmlArray);
+
+        return $xmlArray;
 
     }
 
@@ -324,7 +326,8 @@ class AmazonInventory extends AmazonClient
                 ]
             ]
         ];
-        return XMLController::makeXML($xmlArray);
+
+        return $xmlArray;
 
     }
 

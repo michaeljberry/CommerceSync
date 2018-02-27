@@ -39,8 +39,7 @@ if ($_POST['inventory-sku']) {
             /* Update Amazon Quantity per SKU */
             $x = 1;
             $y = 1;
-            $amazon_xml = '';
-            $amazon_price_xml = '';
+            $amazon_price_xml = [];
             $stock_id = $updated['id'];
             $sku_id = $updated['sku_id'];
             $stock_qty = $updated['stock_qty'];
@@ -48,14 +47,14 @@ if ($_POST['inventory-sku']) {
             fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
             $price = Listing::getPriceBySku($sku, $table);
             if (!empty($price)) {
-                $amazon_price_xml .= $aminv->create_inventory_price_update_item_xml($sku, $price, $y);
+                $amazon_price_xml = array_merge($amazon_price_xml, $aminv->create_inventory_price_update_item_xml($sku, $price, $y));
             } else {
                 echo 'There was either no price, or the price was overrode<br>';
             }
             echo 'Amazon Quantity: ' . $stock_qty . '; Amazon Price: ' . $price . '<br>';
 
 //        Create XML for Amazon
-            $amazon_xml .= $aminv->create_inventory_update_item_xml($sku, $stock_qty, $x);
+            $amazon_xml = $aminv->create_inventory_update_item_xml($sku, $stock_qty, $x);
 
             fwrite($fp, 'Inventory Upload File: ' . PHP_EOL . $amazon_xml . PHP_EOL . PHP_EOL);
             fwrite($fp, 'Price Upload File: ' . PHP_EOL . $amazon_price_xml . PHP_EOL . PHP_EOL);

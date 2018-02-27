@@ -19,8 +19,8 @@ $updated = Listing::getAll($table);
 print_r($updated);
 echo '<br><br>';
 $x = 1;
-$amazon_xml = '';
-$amazon_price_xml = '';
+$amazon_xml = [];
+$amazon_price_xml = [];
 foreach ($updated as $u) {
     $stock_id = $u['id'];
     $sku_id = $u['sku_id'];
@@ -28,10 +28,10 @@ foreach ($updated as $u) {
     $sku = SKU::getById($sku_id);
     $price = Listing::getPriceBySku($sku, $table);
     if (!empty($price)) {
-        $amazon_price_xml .= $aminv->create_inventory_price_update_item_xml($sku, $price, $x);
+        $amazon_price_xml = array_merge($amazon_price_xml, $aminv->create_inventory_price_update_item_xml($sku, $price, $x));
     }
     //Create XML for Amazon
-    $amazon_xml .= $aminv->create_inventory_update_item_xml($sku, $stock_qty, $x);
+    $amazon_xml = array_merge($amazon_xml, $aminv->create_inventory_update_item_xml($sku, $stock_qty, $x));
     $x++;
 }
 //Push to Amazon

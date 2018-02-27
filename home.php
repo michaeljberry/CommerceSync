@@ -19,4 +19,3 @@ if ($userID) {
 } else {
     header("Location: login.php");
 }
-?>

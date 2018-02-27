@@ -43,7 +43,8 @@ trait AmazonClientCurl
 
         $request = curl_init($url);
 
-        if ($headers) {
+        if ($headers)
+        {
 
             curl_setopt($request, CURLOPT_HTTPHEADER, $headers);
 
@@ -53,7 +54,8 @@ trait AmazonClientCurl
         curl_setopt($request, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($request, CURLOPT_POST, 1);
 
-        if ($post_string) {
+        if ($post_string)
+        {
 
             curl_setopt($request, CURLOPT_POSTFIELDS, $post_string);
 
@@ -69,7 +71,8 @@ trait AmazonClientCurl
         $param = $amazonAPI::getCurlParameters();
         $url = [];
 
-        foreach ($param as $key => $val) {
+        foreach ($param as $key => $val)
+        {
 
             $key = str_replace("%7E", "~", rawurlencode($key));
             $val = str_replace("%7E", "~", rawurlencode($val));
@@ -123,7 +126,7 @@ trait AmazonClientCurl
         $request = 'AmazonEnvelope';
         $param = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd"';
         $header = XMLController::openingXMLTag($request, $param);
-        $header .= XMLController::makeXML($xml);
+        $header .= XMLController::parseXML($xml);
 
         return $header;
 
@@ -143,7 +146,8 @@ trait AmazonClientCurl
 
         $amazonXml = '';
 
-        if (is_array($xml)) {
+        if (is_array($xml))
+        {
 
             $amazonXml .= XMLController::makeXML($xml);
 
@@ -162,7 +166,8 @@ trait AmazonClientCurl
 
         $amazonXML = '';
 
-        if ($xml) {
+        if ($xml)
+        {
 
             $amazonXML = XMLController::xmlOpenTag();
             $amazonXML .= static::xmlAmazonEnvelopeHeader();

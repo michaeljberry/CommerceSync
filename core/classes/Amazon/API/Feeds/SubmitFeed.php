@@ -18,6 +18,17 @@ class SubmitFeed extends Feeds
     protected static $body;
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_SubmitFeed.html";
+    protected static $requiredParameters = [
+        "MarketplaceId",
+        "SellerId",
+        "FeedType",
+        "Body"
+    ];
+    protected static $allowedParameters = [
+        "MarketetplaceIdList.Id",
+        "PurgeAndReplace",
+        "ContentMD5Value"
+    ];
 
     public function __construct($feedType, $body)
     {
@@ -26,30 +37,7 @@ class SubmitFeed extends Feeds
 
         static::setBody($body);
 
-        static::setAdditionalParameters();
-
-        static::requestRules();
-
-    }
-
-    protected static function setAdditionalParameters()
-    {
-
-        $additionalConfiguration = [
-            "MarketplaceId",
-            "SellerId"
-        ];
-
-        static::setParameters($additionalConfiguration);
-
-    }
-
-    protected static function requestRules()
-    {
-
-        static::requireParameterToBeSet("FeedType");
-
-        static::requireParameterToBeSet("Body");
+        static::setParameters();
 
     }
 

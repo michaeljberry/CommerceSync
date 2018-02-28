@@ -16,23 +16,21 @@ class CancelFeedSubmissions extends Feeds
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_CancelFeedSubmissions.html";
+    protected static $requiredParameters = [
+        "MarketplaceId",
+        "SellerId"
+    ];
+    protected static $allowedParameters = [
+        "FeedSubmissionIdList.Id",
+        "FeedTypeList",
+        "SubmittedFromDate",
+        "SubmittedToDate"
+    ];
 
     public function __construct()
     {
 
-        static::setAdditionalParameters();
-
-    }
-
-    protected static function setAdditionalParameters()
-    {
-
-        $additionalConfiguration = [
-            "MarketplaceId",
-            "SellerId"
-        ];
-
-        static::setParameters($additionalConfiguration);
+        static::setParameters();
 
     }
 

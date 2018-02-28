@@ -29,7 +29,6 @@ trait APIMethods
 
     }
 
-
     public static function getMethod()
     {
 

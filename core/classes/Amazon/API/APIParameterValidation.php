@@ -120,7 +120,7 @@ trait APIParameterValidation
 
     }
 
-    public static function ensureParametersAreValid($parameterToCheck, $validParameterValues = null)
+    public static function ensureParameterValuesAreValid($parameterToCheck, $validParameterValues = null)
     {
 
         $matchingParameters = static::searchCurlParameters($parameterToCheck);
@@ -136,6 +136,37 @@ trait APIParameterValidation
                 throw new Exception("The value/s for $parameterToCheck is/are not valid. Please correct and try again.");
 
             }
+
+        }
+
+    }
+
+    public static function ensureSetParametersAreAllowed()
+    {
+
+        foreach(static::getCurlParameters() as $parameterToCheck => $value)
+        {
+
+            $parameter = static::searchCurlParameters($parameterToCheck, array_fill_keys(static::getAllowedParameters(), " "));
+
+            if(!$parameter)
+            {
+
+                throw new Exception("The $parameterToCheck parameter is not allowed. Please correct and try again.");
+
+            }
+
+        }
+
+    }
+
+    public static function ensureRequiredParametersAreSet()
+    {
+
+        foreach (static::$requiredParameters as $key => $parameter)
+        {
+
+            static::requireParameterToBeSet($parameter);
 
         }
 

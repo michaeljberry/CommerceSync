@@ -16,25 +16,19 @@ class GetFeedSubmissionResult extends Feeds
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_GetFeedSubmissionResult.html";
+    protected static $requiredParameters = [
+        "MarketplaceId",
+        "SellerId",
+        "FeedSubmissionId"
+    ];
+    protected static $allowedParameters = [];
 
     public function __construct($feedSubmissionId)
     {
 
         static::setParameterByKey("FeedSubmissionId", $feedSubmissionId);
 
-        static::setAdditionalParameters();
-
-    }
-
-    protected static function setAdditionalParameters()
-    {
-
-        $additionalConfiguration = [
-            "MarketplaceId",
-            "SellerId"
-        ];
-
-        static::setParameters($additionalConfiguration);
+        static::setParameters();
 
     }
 

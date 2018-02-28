@@ -16,34 +16,20 @@ class GetFeedSubmissionListByNextToken extends Feeds
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_GetFeedSubmissionListByNextToken.html";
+    protected static $requiredParameters = [
+        "MarketplaceId",
+        "SellerId",
+        "NextToken"
+    ];
+    protected static $allowedParameters = [];
 
     public function __construct($nextToken)
     {
 
         static::setParameterByKey("NextToken", $nextToken);
 
-        static::setAdditionalParameters();
+        static::setParameters();
 
-        static::requestRules();
-
-    }
-
-    protected static function setAdditionalParameters()
-    {
-
-        $additionalConfiguration = [
-            "MarketplaceId",
-            "SellerId"
-        ];
-
-        static::setParameters($additionalConfiguration);
-
-    }
-
-    protected static function requestRules()
-    {
-
-        static::requireParameterToBeSet("NextToken");
     }
 
 }

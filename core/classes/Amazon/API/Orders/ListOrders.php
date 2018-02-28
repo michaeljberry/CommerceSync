@@ -18,29 +18,32 @@ class ListOrders extends Orders
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrders.html";
+    protected static $requiredParameters = [
+        "MarketplaceId.Id.1",
+        "SellerId",
+    ];
+    protected static $allowedParameters = [
+        "CreatedBefore",
+        "LastUpdatedBefore",
+        "OrderStatus.Status",
+        "FulfillmentChannel",
+        "PaymentMethod",
+        "BuyerEmail",
+        "SellerOrderId",
+        "MaxResultsPerPage",
+        "TFMShipmentStatus"
+    ];
 
     public function __construct($orderStatus = "")
     {
-
-        static::setAdditionalParameters();
 
         static::setShippingParameters($orderStatus);
 
         static::setDateParameter();
 
+        static::setParameters();
+
         static::requestRules();
-
-    }
-
-    protected static function setAdditionalParameters()
-    {
-
-        $additionalConfiguration = [
-            "MarketplaceId.Id.1",
-            "SellerId",
-        ];
-
-        static::setParameters($additionalConfiguration);
 
     }
 
@@ -173,7 +176,7 @@ class ListOrders extends Orders
             "Unfulfillable"
         ];
 
-        static::ensureParametersAreValid("OrderStatus", $validOrderStatuses);
+        static::ensureParameterValuesAreValid("OrderStatus", $validOrderStatuses);
 
     }
 
@@ -185,7 +188,7 @@ class ListOrders extends Orders
             "MFN"
         ];
 
-        static::ensureParametersAreValid("FulfillmentChannel", $validFulfillmentChannels);
+        static::ensureParameterValuesAreValid("FulfillmentChannel", $validFulfillmentChannels);
     }
 
     protected static function validPaymentMethod()
@@ -197,7 +200,7 @@ class ListOrders extends Orders
             "Other"
         ];
 
-        static::ensureParametersAreValid("PaymentMethod", $validPaymentMethods);
+        static::ensureParameterValuesAreValid("PaymentMethod", $validPaymentMethods);
 
     }
 
@@ -216,7 +219,7 @@ class ListOrders extends Orders
             "Lost"
         ];
 
-        static::ensureParametersAreValid("TFMShipmentStatus", $validTFMShipmentStatuses);
+        static::ensureParameterValuesAreValid("TFMShipmentStatus", $validTFMShipmentStatuses);
 
     }
 

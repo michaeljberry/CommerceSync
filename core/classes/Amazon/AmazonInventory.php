@@ -247,6 +247,12 @@ class AmazonInventory extends AmazonClient
 
     public static function priceArray($sku, $price, $num)
     {
+        if(!$num)
+        {
+
+            $num = 1;
+
+        }
 
         $xmlArray = [
             'Message' => [

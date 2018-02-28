@@ -16,23 +16,30 @@ class GetFeedSubmissionCount extends Feeds
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_GetFeedSubmissionCount.html";
+    protected static $requiredParameters = [
+        "MarketplaceId",
+        "SellerId"
+    ];
+    protected static $allowedParameters = [
+        "FeedTypeList",
+        "FeedProcessingStatusList",
+        "SubmittedFromDate",
+        "SubmittedToDate"
+    ];
 
     public function __construct()
     {
 
-        static::setAdditionalParameters();
+        static::setParameters();
+
+        static::requestRules();
 
     }
 
-    protected static function setAdditionalParameters()
+    protected static function requestRules()
     {
 
-        $additionalConfiguration = [
-            "MarketplaceId",
-            "SellerId"
-        ];
-
-        static::setParameters($additionalConfiguration);
+        static::ensureSetParametersAreAllowed(static::$allowedParameters);
 
     }
 

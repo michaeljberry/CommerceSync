@@ -3,11 +3,46 @@
 namespace Amazon\API;
 
 use Amazon\AmazonClient;
+use ecommerce\Ecommerce;
 
 trait APIParameters
 {
 
     private static $curlParameters = [];
+    private static $requiredParameters = [
+        "AWSAccessKeyId",
+        "Action",
+        // "MWSAuthToken", //For Developer Access
+        "SignatureMethod",
+        "SignatureVersion",
+        "Timestamp",
+        "Version"
+    ];
+
+    protected static function setRequiredParameter($parameter)
+    {
+
+        static::$requiredParameters[] = $parameter;
+
+    }
+
+    protected static function getRequiredParameters($parent = null)
+    {
+
+        if (!$parent) {
+            return static::$requiredParameters;
+        }
+
+        return self::$requiredParameters;
+
+    }
+
+    public static function getAllowedParameters()
+    {
+
+        return static::$allowedParameters;
+
+    }
 
     public static function setParameterByKey($key, $value)
     {
@@ -42,17 +77,22 @@ trait APIParameters
 
     }
 
-    public static function searchCurlParameters($parameterToCheck)
+    public static function searchCurlParameters($parameterToCheck, $allowedParameters = null)
     {
 
+        if(!$allowedParameters)
+        {
+            $allowedParameters = static::getCurlParameters();
+        }
 
         return array_filter(
-            static::getCurlParameters(),
+            $allowedParameters,
             function($k) use ($parameterToCheck){
-                return strpos($k, $parameterToCheck) !== false;
+                return strpos($parameterToCheck, $k) !== false;
             },
             ARRAY_FILTER_USE_KEY
         );
+
     }
 
     private static function getSignatureMethod()
@@ -108,6 +148,7 @@ trait APIParameters
     {
 
         self::setParameterByKey($key, AmazonClient::getMerchantId());
+        self::setRequiredParameter($key);
 
     }
 
@@ -115,6 +156,7 @@ trait APIParameters
     {
 
         self::setParameterByKey('PurgeAndReplace', 'false');
+        self::setRequiredParameter('PurgeAndReplace');
 
     }
 
@@ -122,6 +164,7 @@ trait APIParameters
     {
 
         self::setParameterByKey($key, AmazonClient::getMarketplaceId());
+        self::setRequiredParameter($key);
 
     }
 
@@ -160,25 +203,52 @@ trait APIParameters
 
     }
 
-    public static function setParameters($additionalConfiguration = [])
+    protected static function combineRequiredParameters()
     {
 
+        $parentRequiredParameters = static::getRequiredParameters(true);
+        $requiredParameters = static::getRequiredParameters();
+
+        foreach($parentRequiredParameters as $parameter)
+        {
+
+            static::setRequiredParameter($parameter);
+
+        }
+
+    }
+
+    protected static function combineRequiredAndAllowedParameters()
+    {
+
+        static::$allowedParameters = array_merge(
+            static::getRequiredParameters(),
+            static::getAllowedParameters()
+        );
+
+    }
+
+    public static function setParameters()
+    {
+
+        static::combineRequiredParameters();
+        static::combineRequiredAndAllowedParameters();
         static::setAwsAccessKeyParameter();
         static::setActionParameter();
 
-        if (in_array('Merchant', $additionalConfiguration))
+        if (in_array('Merchant', static::getRequiredParameters()))
             static::setMerchantIdParameter('Merchant');
 
-        if (in_array('SellerId', $additionalConfiguration))
+        if (in_array('SellerId', static::getRequiredParameters()))
             static::setMerchantIdParameter('SellerId');
 
-        if (in_array('MarketplaceId.Id.1', $additionalConfiguration))
+        if (in_array('MarketplaceId.Id.1', static::getRequiredParameters()))
             static::setMarketplaceIdParameter('MarketplaceId.Id.1');
 
-        if (in_array('MarketplaceId', $additionalConfiguration))
+        if (in_array('MarketplaceId', static::getRequiredParameters()))
             static::setMarketplaceIdParameter('MarketplaceId');
 
-        if (in_array('PurgeAndReplace', $additionalConfiguration))
+        if (in_array('PurgeAndReplace', static::getRequiredParameters()))
             static::setPurgeAndReplaceParameter();
 
         static::setFeedTypeParameter();
@@ -188,6 +258,8 @@ trait APIParameters
         static::setSignatureVersionParameter();
         static::setTimestampParameter();
         static::setVersionDateParameter();
+        static::ensureRequiredParametersAreSet();
+        static::ensureSetParametersAreAllowed();
 
     }
 

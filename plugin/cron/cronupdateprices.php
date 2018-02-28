@@ -54,7 +54,7 @@ foreach ($updatedPrices as $sku => $prices) {
     if (array_key_exists($sku, $amazonListings)) {
         echo "Amazon: $sku -> $pl10 -> {$amazonListings[$sku]['id']}<br>";
         $y++;
-        $amazonXML = array_merge($amazonXML, AmazonInventory::updateInventoryPrice($sku,$pl10,$y));
+        $amazonXML = array_merge($amazonXML, AmazonInventory::priceArray($sku,$pl10,$y));
         if ($x % 30000 == 0) {
             $response = AmazonInventory::updatePrice($amazonXML);
             Ecommerce::dd($response);

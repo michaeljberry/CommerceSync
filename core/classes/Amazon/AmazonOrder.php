@@ -14,44 +14,28 @@ class AmazonOrder extends AmazonClient
     public static function getOrderById($amazonOrderId)
     {
 
-        $amazonOrder = new GetOrder($amazonOrderId);
-
-        $xml = '';
-
-        return AmazonClient::amazonCurl($xml, $amazonOrder);
+        return AmazonClient::amazonCurl(new GetOrder($amazonOrderId));
 
     }
 
     protected static function getMoreOrders($nextToken)
     {
 
-        $moreUnshippedOrders = new ListOrdersByNextToken($nextToken);
-
-        $xml = '';
-
-        return AmazonClient::amazonCurl($xml, $moreUnshippedOrders);
+        return AmazonClient::amazonCurl(new ListOrdersByNextToken($nextToken));
 
     }
 
     public static function getOrderItems($orderNumber)
     {
 
-        $orderItems = new ListOrderItems($orderNumber);
-
-        $xml = '';
-
-        return AmazonClient::amazonCurl($xml, $orderItems);
+        return AmazonClient::amazonCurl(new ListOrderItems($orderNumber));
 
     }
 
     public static function getMoreOrderItems($nextItemToken)
     {
 
-        $moreOrderItems = new ListOrderItemsByNextToken($nextItemToken);
-
-        $xml = "";
-
-        return AmazonClient::amazonCurl($xml, $moreOrderItems);
+        return AmazonClient::amazonCurl(new ListOrderItemsByNextToken($nextItemToken));
 
     }
 
@@ -63,11 +47,7 @@ class AmazonOrder extends AmazonClient
             'PartiallyShipped'
         ];
 
-        $unshippedOrders = new ListOrders($orderStatus);
-
-        $xml = '';
-
-        return AmazonClient::amazonCurl($xml, $unshippedOrders);
+        return AmazonClient::amazonCurl(new ListOrders($orderStatus));
 
     }
 

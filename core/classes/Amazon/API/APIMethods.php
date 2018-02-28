@@ -15,6 +15,21 @@ trait APIMethods
 
     }
 
+    protected static function setFeedType($feedType)
+    {
+
+        static::$feedType = $feedType;
+
+    }
+
+    protected static function setBody($body)
+    {
+
+        static::$body = $body;
+
+    }
+
+
     public static function getMethod()
     {
 
@@ -33,6 +48,13 @@ trait APIMethods
     {
 
         return static::$feedType;
+
+    }
+
+    public static function getBody()
+    {
+
+        return static::$body;
 
     }
 

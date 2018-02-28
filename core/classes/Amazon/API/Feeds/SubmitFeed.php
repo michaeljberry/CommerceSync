@@ -15,21 +15,20 @@ class SubmitFeed extends Feeds
     protected static $action = "SubmitFeed";
     protected static $method = "POST";
     protected static $feedType;
+    protected static $body;
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_SubmitFeed.html";
 
-    public function __construct($feedType)
+    public function __construct($feedType, $body)
     {
 
         static::setFeedType($feedType);
+
+        static::setBody($body);
+
         static::setAdditionalParameters();
 
-    }
-
-    private static function setFeedType($feedType)
-    {
-
-        static::$feedType = $feedType;
+        static::requestRules();
 
     }
 
@@ -42,6 +41,15 @@ class SubmitFeed extends Feeds
         ];
 
         static::setParameters($additionalConfiguration);
+
+    }
+
+    protected static function requestRules()
+    {
+
+        static::requireParameterToBeSet("FeedType");
+
+        static::requireParameterToBeSet("Body");
 
     }
 

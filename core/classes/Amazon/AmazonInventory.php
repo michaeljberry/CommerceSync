@@ -11,18 +11,14 @@ use Amazon\API\Feeds\SubmitFeed;
 class AmazonInventory extends AmazonClient
 {
 
-    public function getFbaInventory($sku)
+    public static function getFbaInventory($sku)
     {
 
-        $fbaInventory = new ListInventorySupply($sku);
-
-        $xmlArray = '';
-
-        return AmazonClient::amazonCurl($xmlArray, $fbaInventory);
+        return AmazonClient::amazonCurl(new ListInventorySupply($sku));
 
     }
 
-    public function updateInventory($xml1)
+    public static function updateInventory($xml1)
     {
 
         $feedType = '_POST_PRODUCT_DATA_';
@@ -31,15 +27,13 @@ class AmazonInventory extends AmazonClient
             'MessageType' => 'Product'
         ];
 
-        $xmlArray = array_merge($xmlArray, $xml1);
+        $body = array_merge($xmlArray, $xml1);
 
-        $inventoryUpdate = new SubmitFeed($feedType);
-
-        return AmazonClient::amazonCurl($xmlArray, $inventoryUpdate);
+        return AmazonClient::amazonCurl(new SubmitFeed($feedType, $body));
 
     }
 
-    public function updatePrice($xml1)
+    public static function updatePrice($xml1)
     {
 
         $feedType = '_POST_PRODUCT_PRICING_DATA_';
@@ -48,15 +42,13 @@ class AmazonInventory extends AmazonClient
             'MessageType' => 'Price'
         ];
 
-        $xmlArray = array_merge($xmlArray, $xml1);
+        $body = array_merge($xmlArray, $xml1);
 
-        $inventoryUpdate = new SubmitFeed($feedType);
-
-        return AmazonClient::amazonCurl($xmlArray, $inventoryUpdate);
+        return AmazonClient::amazonCurl(new SubmitFeed($feedType, $body));
 
     }
 
-    public function listMatchingProducts($searchTerm)
+    public static function listMatchingProducts($searchTerm)
     {
 
         $action = ucfirst(__FUNCTION__);
@@ -81,7 +73,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function getMatchingProduct($asin)
+    public static function getMatchingProduct($asin)
     {
 
         $action = ucfirst(__FUNCTION__);
@@ -106,7 +98,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function GetMyPriceForSKU($sku)
+    public static function GetMyPriceForSKU($sku)
     {
 
         $action = ucfirst(__FUNCTION__);
@@ -131,7 +123,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function listNewProduct($sku)
+    public static function listNewProduct($sku)
     {
 
         $feedType = '_POST_PRODUCT_DATA_';
@@ -169,7 +161,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function getProductInfo($asin)
+    public static function getProductInfo($asin)
     {
 
         $action = 'GetMatchingProductForId';
@@ -188,7 +180,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function getFlatFile()
+    public static function getFlatFile()
     {
 
         $action = 'RequestReport';
@@ -212,7 +204,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public function getLowestOfferListingsForSKU($sku)
+    public static function getLowestOfferListingsForSKU($sku)
     {
 
         $action = ucfirst(__FUNCTION__);

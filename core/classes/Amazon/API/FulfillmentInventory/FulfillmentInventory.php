@@ -11,7 +11,8 @@ class FulfillmentInventory extends API
     use APIParameters;
     use APIParameterValidation;
 
-    protected static $feed = "FulfillmentInventory";
     protected static $feedType = "";
+    protected static $body = "";
+    protected static $feed = "FulfillmentInventory";
 
 }

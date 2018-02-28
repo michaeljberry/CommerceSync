@@ -12,7 +12,12 @@ trait APIParameters
     public static function setParameterByKey($key, $value)
     {
 
-        self::$curlParameters[$key] = $value;
+        if($value)
+        {
+
+            self::$curlParameters[$key] = $value;
+
+        }
 
     }
 
@@ -134,6 +139,20 @@ trait APIParameters
 
     }
 
+    protected static function setBodyParameter()
+    {
+
+        $body = static::getBody();
+
+        if($body)
+        {
+
+            self::setParameterByKey("Body", $body);
+
+        }
+
+    }
+
     protected static function setVersionDateParameter()
     {
 
@@ -163,6 +182,7 @@ trait APIParameters
             static::setPurgeAndReplaceParameter();
 
         static::setFeedTypeParameter();
+        static::setBodyParameter();
 
         static::setSignatureMethodParameter();
         static::setSignatureVersionParameter();

@@ -68,11 +68,18 @@ trait AmazonClientCurl
     protected static function createUrlArray($amazonAPI)
     {
 
-        $param = $amazonAPI::getCurlParameters();
+        $parameters = $amazonAPI::getCurlParameters();
         $url = [];
 
-        foreach ($param as $key => $val)
+        foreach ($parameters as $key => $val)
         {
+
+            if($key === "Body")
+            {
+
+                continue;
+
+            }
 
             $key = str_replace("%7E", "~", rawurlencode($key));
             $val = str_replace("%7E", "~", rawurlencode($val));
@@ -124,8 +131,8 @@ trait AmazonClientCurl
         ];
 
         $request = 'AmazonEnvelope';
-        $param = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd"';
-        $header = XMLController::openingXMLTag($request, $param);
+        $parameters = 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="amzn-envelope.xsd"';
+        $header = XMLController::openingXMLTag($request, $parameters);
         $header .= static::parseXML($xml);
 
         return $header;
@@ -161,17 +168,17 @@ trait AmazonClientCurl
 
     }
 
-    protected static function parseAmazonXML($xml)
+    protected static function parseAmazonXML($amazonAPI)
     {
 
         $amazonXML = '';
 
-        if ($xml)
+        if ($amazonAPI::getBody())
         {
 
             $amazonXML = XMLController::xmlOpenTag();
             $amazonXML .= static::xmlAmazonEnvelopeHeader();
-            $amazonXML .= static::parseXML($xml);
+            $amazonXML .= static::parseXML($amazonAPI::getBody());
             $amazonXML .= static::xmlAmazonEnvelopeFooter();
 
         }
@@ -180,10 +187,10 @@ trait AmazonClientCurl
 
     }
 
-    public static function amazonCurl($xml, $amazonAPI)
+    public static function amazonCurl($amazonAPI)
     {
 
-        $amazonXmlFeed = static::parseAmazonXML($xml);
+        $amazonXmlFeed = static::parseAmazonXML($amazonAPI);
         Ecommerce::dd($amazonXmlFeed);
         $link = static::createLink($amazonAPI);
         $httpHeader = static::buildHeader($amazonXmlFeed);

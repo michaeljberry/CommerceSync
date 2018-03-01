@@ -1,5 +1,6 @@
 <?php
 use models\channels\Category;
+use Ecommerce\Ecommerce;
 
 include 'header-admin.php';
 
@@ -55,7 +56,6 @@ function find_children($p_cat_id, $p_cat_name, $list_name, $p_fee, $g_p_fee)
 {
     global $children;
     global $fees;
-    global $ecommerce;
 //    global $x;
 //    $parentArray = [619, 16212, 3858, 84659, 180009, 181222, 181223, 180012,
 //        181227, 181228, 181246, 181249, 181254, 180010, 181225, 181489,
@@ -87,7 +87,7 @@ function find_children($p_cat_id, $p_cat_name, $list_name, $p_fee, $g_p_fee)
             $child_html .= "<li data-fees='$fee'>";
             $child_html .= "$cat_name"; //- $fee
 //            if(in_array($c_p_cat_id, $parentArray) && $x < 600) { //$current_fee != $fee && $x < 250
-//                $ecommerce->save_category_fee($c_cat_id, $fee);
+//                Ecommerce::save_category_fee($c_cat_id, $fee);
 //                $x++;
 //                echo "$x<br>";
 //            }

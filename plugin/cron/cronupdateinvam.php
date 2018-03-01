@@ -1,7 +1,7 @@
 <?php
 error_reporting(-1);
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\Listing;
 use Amazon\AmazonInventory;
 

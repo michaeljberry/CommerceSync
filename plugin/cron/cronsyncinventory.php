@@ -1,5 +1,5 @@
 <?php
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\Category;
 use models\channels\Listing;
 

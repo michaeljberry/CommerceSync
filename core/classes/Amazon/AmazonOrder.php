@@ -2,7 +2,7 @@
 
 namespace Amazon;
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\Channel;
 use models\channels\order\{Order, OrderItem};
 use controllers\channels\{FTPController, BuyerController, XMLController};

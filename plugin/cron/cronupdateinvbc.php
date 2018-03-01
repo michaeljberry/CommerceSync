@@ -1,4 +1,7 @@
 <?php
+
+use Ecommerce\Ecommerce;
+
 error_reporting(-1);
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
@@ -14,7 +17,7 @@ foreach ($vaidata as $v) {
     $sku = $v['ITEM'];
     $qty = $v['QTY'];
     $price = $v['PRICE'];
-//    $result = $ecommerce->update_inventory($sku, $qty, $price, $table);
+//    $result = Ecommerce::update_inventory($sku, $qty, $price, $table);
 //    if($result) echo $sku . ' is updated.<br />';
     echo "$sku: $qty -> $price<br>";
 }
@@ -29,7 +32,7 @@ foreach ($vaidata as $v) {
 //fwrite($fp, "------------------" . date("Y/m/d H:i:s").substr((string)$start_time,1,6) . "------------------" . PHP_EOL);
 //fwrite($fp, "Updated SKU's: Stock_QTY" . PHP_EOL);
 //
-//$updated = $ecommerce->get_inventory_for_update($table);
+//$updated = Ecommerce::get_inventory_for_update($table);
 //print_r($updated);
 //echo '<br><br>';
 //
@@ -37,14 +40,14 @@ foreach ($vaidata as $v) {
 //    $stock_id = $u['id'];
 //    $sku_id = $u['sku_id'];
 //    $stock_qty = $u['stock_qty'];
-//    $sku = $ecommerce->get_sku($sku_id);
+//    $sku = Ecommerce::get_sku($sku_id);
 //    fwrite($fp, $sku . ': ' . $stock_qty . PHP_EOL);
-//    $price = $ecommerce->get_inventory_price($sku, $table);
+//    $price = Ecommerce::get_inventory_price($sku, $table);
 //    if(empty($price)){
 //        $price = '';
 //    }
 //
-//    $response = $bcinv->update_bc_inventory($stock_id, $stock_qty, $price, $ecommerce);
+//    $response = $bcinv->update_bc_inventory($stock_id, $stock_qty, $price);
 //    print_r($response);
 //
 //    fwrite($fp, 'Inventory Upload Response: ' . PHP_EOL . $response. PHP_EOL . PHP_EOL);

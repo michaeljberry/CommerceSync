@@ -1,5 +1,4 @@
 <?php
-use ecommerce\Ecommerce;
 use models\channels\Inventory;
 use models\channels\Listing;
 use models\channels\SKU;

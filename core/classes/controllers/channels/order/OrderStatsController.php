@@ -3,7 +3,7 @@
 namespace controllers\channels\order;
 
 use models\channels\order\OrderStats;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 
 class OrderStatsController
 {
@@ -97,7 +97,7 @@ class OrderStatsController
         }
         return $jsonarray2;
     }
-    
+
     public static function stats_table($channel = null, $period = 'THISMTD', $period2 = null, $period3 = null)
     {
         $html = "<div>***Stats are only available after 9/08/2015***</div>

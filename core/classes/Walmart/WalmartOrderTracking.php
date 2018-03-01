@@ -4,7 +4,7 @@ namespace Walmart;
 
 use controllers\channels\order\ChannelOrderTracking;
 use controllers\channels\order\ChannelTracking;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use Exception;
 use WalmartAPI\Order as WMOrder;
 

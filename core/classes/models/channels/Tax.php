@@ -5,7 +5,7 @@ namespace models\channels;
 
 use controllers\channels\tax\TaxController;
 use controllers\channels\tax\TaxXMLController;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\order\Order;
 use models\ModelDB as MDB;
 use PDO;
@@ -76,9 +76,9 @@ class Tax
 
     public static function getCompanyInfo($companyID)
     {
-        $sql = "SELECT s.abbr, t.tax_rate, t.tax_line_name, t.shipping_taxed 
-                FROM taxes t 
-                INNER JOIN state s ON s.id = t.state_id 
+        $sql = "SELECT s.abbr, t.tax_rate, t.tax_line_name, t.shipping_taxed
+                FROM taxes t
+                INNER JOIN state s ON s.id = t.state_id
                 WHERE company_id = :company_id";
         $queryParams = [
             ':company_id' => $companyID

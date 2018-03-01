@@ -2,7 +2,7 @@
 
 namespace Amazon;
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use controllers\channels\CurlController;
 use controllers\channels\XMLController;
 

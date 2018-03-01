@@ -2,9 +2,8 @@
 
 namespace BigCommerce;
 
-use ecommerce\Ecommerce;
-use models\channels\Listing;
-use models\channels\product\Product;
+use models\channels\{Listing, SKU, Stock};
+use models\channels\product\{Product, ProductAvailability, ProductPrice};
 use models\ModelDB as MDB;
 
 class BigCommerce
@@ -25,7 +24,7 @@ class BigCommerce
 
     public function save_app_info($crypt, $store_id, $store_url, $store_username, $api_key)
     {
-        $sql = "INSERT INTO api_bigcommerce (store_id, store_url, username, api_key) 
+        $sql = "INSERT INTO api_bigcommerce (store_id, store_url, username, api_key)
                 VALUES (:store_id, :store_url, :username, :api_key)";
         $query_params = array(
             ":store_id" => $store_id,
@@ -39,7 +38,7 @@ class BigCommerce
 
     public function add_product($name, $description, $meta_keywords, $meta_description, $page_title, $width, $weight, $height, $depth)
     {
-        $sql = "INSERT INTO product (name, description, meta_keywords, meta_description, page_title, width, weight, height, depth) 
+        $sql = "INSERT INTO product (name, description, meta_keywords, meta_description, page_title, width, weight, height, depth)
                 VALUES (:name, :description, :meta_keywords, :meta_description, :page_title, :width, :weight, :height, :depth)";
         $query_params = array(
             ":name" => $name,
@@ -58,7 +57,7 @@ class BigCommerce
 
     public function add_sku($product_id, $sku)
     {
-        $sql = "INSERT INTO sku (product_id, sku) 
+        $sql = "INSERT INTO sku (product_id, sku)
                 VALUES (:product_id, :sku)";
         $query_params = array(
             ":product_id" => $product_id,
@@ -78,7 +77,7 @@ class BigCommerce
         } elseif ($condition == "Refurbished") {
             $condition_id = 5;
         }
-        $sql = "INSERT INTO stock (sku_id, condition_id, uofm_id) 
+        $sql = "INSERT INTO stock (sku_id, condition_id, uofm_id)
                 VALUES (:sku_id, :condition_id, :uofm_id)";
         $query_params = array(
             ":sku_id" => $sku_id,
@@ -90,7 +89,7 @@ class BigCommerce
 
     public function add_stock_to_listing($store_id, $stock_id, $store_listing_id)
     {
-        $sql = "INSERT INTO listing_bigcommerce (store_id, stock_id, store_listing_id) 
+        $sql = "INSERT INTO listing_bigcommerce (store_id, stock_id, store_listing_id)
                 VALUES (:store_id, :stock_id, :store_listing_id)";
         $query_params = array(
             ":store_id" => $store_id,
@@ -102,7 +101,7 @@ class BigCommerce
 
     public function add_product_availability($product_id, $store_id)
     {
-        $sql = "INSERT INTO product_availability (product_id, store_id, is_available) 
+        $sql = "INSERT INTO product_availability (product_id, store_id, is_available)
                 VALUES (:product_id, :store_id, 1)";
         $query_params = array(
             ":product_id" => $product_id,
@@ -113,7 +112,7 @@ class BigCommerce
 
     public function add_product_price($sku_id, $price, $store_id)
     {
-        $sql = "INSERT INTO product_price (sku_id, price, store_id) 
+        $sql = "INSERT INTO product_price (sku_id, price, store_id)
                 VALUES (:sku_id, :price, :store_id";
         $query_params = array(
             ":sku_id" => $sku_id,
@@ -125,17 +124,17 @@ class BigCommerce
 
     public function get_product_with_upc()
     {
-        $sql = "SELECT p.id, p.upc, sk.sku, lb.store_listing_id 
-                FROM product p 
-                JOIN sku sk ON sk.product_id = p.id 
+        $sql = "SELECT p.id, p.upc, sk.sku, lb.store_listing_id
+                FROM product p
+                JOIN sku sk ON sk.product_id = p.id
                 JOIN listing_bigcommerce lb ON lb.sku = sk.sku";
         return MDB::query($sql, [], 'fetchAll');
     }
 
     public function update_upc($sku, $upc)
     {
-        $sql = "UPDATE listing_bigcommerce 
-                SET upc = :upc 
+        $sql = "UPDATE listing_bigcommerce
+                SET upc = :upc
                 WHERE sku = :sku";
         $query_params = [
             ':upc' => $upc,
@@ -273,7 +272,7 @@ class BigCommerce
         }
     }
 
-    public function get_bc_products($BC, Ecommerce $ecommerce)
+    public function get_bc_products($BC)
     {
         $count = $BC::getProductsCount();
         $pages = $count / 250;
@@ -343,15 +342,15 @@ class BigCommerce
                 //add-product-availability
                 $availability_id = MDB::availability_soi($product_id, BigCommerceClient::getStoreId());
                 //find sku
-                $sku_id = $ecommerce->sku_soi($sku);
+                $sku_id = SKU::searchOrInsert($sku);
                 //add price
-                $price_id = $ecommerce->price_soi($sku_id, $price, BigCommerceClient::getStoreId());
+                $price_id = ProductPrice::searchOrInsert($sku_id, $price, BigCommerceClient::getStoreId());
                 //normalize condition
-                $condition = $ecommerce->normal_condition($product_condition);
+                $condition = ConditionController::normalCondition($product_condition);
                 //find condition id
-                $condition_id = $ecommerce->condition_soi($condition);
+                $condition_id = Condition::searchOrInsert($condition);
                 //add stock to sku
-                $stock_id = $ecommerce->stock_soi($sku_id, $condition_id);
+                $stock_id = Stock::searchOrInsert($sku_id, $condition_id);
                 $channel_array = array(
                     'store_id' => BigCommerceClient::getStoreId(),
                     'stock_id' => $stock_id,

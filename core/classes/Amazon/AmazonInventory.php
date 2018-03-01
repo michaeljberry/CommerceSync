@@ -2,7 +2,7 @@
 
 namespace Amazon;
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use controllers\channels\XMLController;
 use Amazon\API\AmazonAPI;
 use Amazon\API\FulfillmentInventory\ListInventorySupply;

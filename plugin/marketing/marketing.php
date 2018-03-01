@@ -30,42 +30,42 @@ if ($user_id == 838) {
     //
     //
     //    $ourAmazonPrice = simplexml_load_string($aminv->GetMyPriceForSKU($sku));
-    //    \ecommerceclass\ecommerceclass::dd($ourAmazonPrice);
+    //    Ecommerce::::dd($ourAmazonPrice);
     //    $amazonPrice = $ourAmazonPrice->GetMyPriceForSKUResult->Product->Offers->Offer->BuyingPrice->ListingPrice->Amount;
     //    $amazonShipping = $ourAmazonPrice->GetMyPriceForSKUResult->Product->Offers->Offer->BuyingPrice->Shipping->Amount;
     //    $amazonTotal = $ourAmazonPrice->GetMyPriceForSKUResult->Product->Offers->Offer->BuyingPrice->LandedPrice->Amount;
     //
-    //    \ecommerceclass\ecommerceclass::dd($amazonPrice);
+    //    Ecommerce::::dd($amazonPrice);
     //
     //    echo "$amazonPrice + $amazonShipping = $amazonTotal";
     //    $ebayRecentSales = simplexml_load_string($ebinv->findCompletedItems($upc));
     //    Ecommerce::formatChannelRecentSales($ebayRecentSales);
 
     //    $currentAmazonProducts = simplexml_load_string($aminv->getLowestOfferListingsForSKU($sku));
-    //    \ecommerceclass\ecommerceclass::dd($currentAmazonProducts);
+    //    Ecommerce::::dd($currentAmazonProducts);
     //    $amazonListings = $aminv->sortAmazonSearchResults($currentAmazonProducts);
     //    $arrayToInclude = ['numOfListingsAtThisPrice', 'sellerRating', 'shippingTime', 'price', 'shipping', 'total'];
     //    $label = 'Current Listings on Amazon for same SKU';
-    //    echo \ecommerceclass\ecommerceclass::arrayToTable($amazonListings, $arrayToInclude, $label);
-    //    \ecommerceclass\ecommerceclass::dd($amazonListings);
+    //    echo Ecommerce::::arrayToTable($amazonListings, $arrayToInclude, $label);
+    //    Ecommerce::::dd($amazonListings);
 
     //    $response = simplexml_load_string($ebinv->findCompletedItems($upc));
-    //    \ecommerceclass\ecommerceclass::dd($response);
+    //    Ecommerce::::dd($response);
 
-    //    $ourSalesHistory = $ecommerce->getSalesHistory($sku_id);
-    //    \ecommerceclass\ecommerceclass::dd($ourSalesHistory);
-    //    $jsonarray2 = \ecommerceclass\ecommerceclass::prepareStatJson($ourSalesHistory, 'monthly');
-    //    \ecommerceclass\ecommerceclass::dd($jsonarray2);
+    //    $ourSalesHistory = Ecommerce::getSalesHistory($sku_id);
+    //    Ecommerce::::dd($ourSalesHistory);
+    //    $jsonarray2 = Ecommerce::::prepareStatJson($ourSalesHistory, 'monthly');
+    //    Ecommerce::::dd($jsonarray2);
 
     //
     //    $sellers = [];
     //    $sellers = $ebinv->sorteBaySearchResults($response);
-    ////    \ecommerceclass\ecommerceclass::dd($sellers);
+    ////    Ecommerce::::dd($sellers);
     //    $table = $ebinv->searchResultsTable($sellers);
     //    echo $table;
 
-    //    \ecommerceclass\ecommerceclass::dd($sql);
-    //    \ecommerceclass\ecommerceclass::dd(\QB\querybuilder::arrayToQuery($sql));
+    //    Ecommerce::::dd($sql);
+    //    Ecommerce::::dd(\QB\querybuilder::arrayToQuery($sql));
 
     //    $xml = [
     //        'Item' =>
@@ -144,7 +144,7 @@ if ($user_id == 838) {
     //        $cat_id = $c->id;
     //        $p_cat_id = $c->parent_id;
     //        $cat_name = $c->name;
-    //        $result = $ecommerce->save_category($cat_id, $cat_name, $p_cat_id, 'categories_bigcommerce');
+    //        $result = Ecommerce::save_category($cat_id, $cat_name, $p_cat_id, 'categories_bigcommerce');
     //        echo ($result) ? "$cat_id: $cat_name added<br>" : "";
     //    }
 
@@ -166,8 +166,8 @@ if ($user_id == 838) {
     //    $minimumProfitPercent = 28;
     //    $minimumNetProfitPercent = 16;
     //    $increment = .20;
-    //    $sku_id = $ecommerce->sku_soi($sku);
-    //    $prices = $ecommerce->get_costs($sku_id);
+    //    $sku_id = Ecommerce::sku_soi($sku);
+    //    $prices = Ecommerce::get_costs($sku_id);
     ////    print_r($prices);
     //    $msrp = $prices['msrp'];
     //    $pl10 = $prices['pl10'];
@@ -184,7 +184,7 @@ if ($user_id == 838) {
     //</table><br><br>";
     //
     //    $shippingIncludedInPrice = 1; // 0 = No, Collected Shipping separately; 1 = Yes, Free Shipping to customer
-    //    $priceArray = $ebay->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice);
+    //    $priceArray = $ebay->ebay_pricing($minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice);
     ////    print_r($priceArray);
     ////    echo "<br><br>";
     //    $totalPrice = $priceArray['totalPrice'];
@@ -234,7 +234,7 @@ if ($user_id == 838) {
     ////    echo $html;
     //    if($grossProfitPercent < $minimumProfitPercent || $netProfit < $minimumNetProfitPercent){
     //
-    //        $priceArray = $ebay->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, 1);
+    //        $priceArray = $ebay->ebay_pricing($minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, 1);
     ////        echo "<br><br>";
     ////        print_r($priceArray);
     //
@@ -285,7 +285,7 @@ if ($user_id == 838) {
     //        </table>";
     //    }elseif($grossProfitPercent > $minimumProfitPercent || $netProfit > $minimumNetProfitPercent){
     //
-    //        $priceArray = $ebay->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, 1);
+    //        $priceArray = $ebay->ebay_pricing($minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, 1);
     ////        echo "<br><br>";
     ////        print_r($priceArray);
     //
@@ -387,12 +387,12 @@ if ($user_id == 838) {
     //    $pl1 = number_format($money[0]['J6PL01'], 2);
     //    $pl10 = number_format($money[0]['J6PL10'], 2);
     //    $cost = number_format($money[0]['U8COST'], 2);
-    //    $sku_id = $ecommerce->sku_soi($sku);
+    //    $sku_id = Ecommerce::sku_soi($sku);
     //    echo "$sku -> $msrp $pl10 $pl1 $cost";
-    //    $result = $ecommerce->update_prices($sku_id, $msrp, $pl1, $pl10, $cost);
+    //    $result = Ecommerce::update_prices($sku_id, $msrp, $pl1, $pl10, $cost);
     //$ebinv->get_ebay_products($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $eb_store_id, $ecommerce);
     //    error_reporting(0);
-    //    $results = $ecommerce->get_amazon_products(28500,2500); //, 12500,10000
+    //    $results = Ecommerce::get_amazon_products(28500,2500); //, 12500,10000
     //    $amazon_base_url = 'http://www.amazon.com/gp/product/';
     //    $amazon_base_url_dp = 'http://www.amazon.com/dp/';
     //    $html = new DOMDocument("1.0");
@@ -400,7 +400,7 @@ if ($user_id == 838) {
     //    foreach ($results as $r) {
     //        $sku = $r['sku'];
     //        $am_listing = $r['am_list'];
-    //        $amazonhtml = $ecommerce->curl($amazon_base_url . $am_listing);
+    //        $amazonhtml = Ecommerce::curl($amazon_base_url . $am_listing);
     ////        echo '<textarea>' . $amazonhtml . '</textarea>'. '<br><br><br>';
     ////        $html->loadHTMLFile($amazon_base_url . $am_listing);
     //        $html->loadHTML($amazonhtml);
@@ -417,7 +417,7 @@ if ($user_id == 838) {
     //                $category_id = $item->getAttribute('href');
     //                $category_id = substr($category_id, strpos($category_id, '&node=') + 6);
     //                $category_name = trim(preg_replace("/[\r\n]+/", " ", $item->nodeValue));
-    //                $cat_id = $ecommerce->save_category($category_id, $category_name, $parent_cat_id, 'categories_amazon');
+    //                $cat_id = Ecommerce::save_category($category_id, $category_name, $parent_cat_id, 'categories_amazon');
     //                echo "$sku - $parent_cat ($parent_cat_id) > $category_name ($category_id)<br><br>";
     //                $parent_cat_id = $category_id;
     //                $parent_cat = $category_name;
@@ -428,14 +428,14 @@ if ($user_id == 838) {
     //            $product_category = '4507';
     //        }
     //
-    //        $result = $ecommerce->update_category($sku, $product_category, 'listing_amazon');
+    //        $result = Ecommerce::update_category($sku, $product_category, 'listing_amazon');
     //        if($result){
     //            echo "$sku has been updated with $product_category as the category<br>";
     //        }
     //    }
 
     //    $folder = '/var/www/html/portal/amazonimages/';
-    //    $results = $ecommerce->get_products_from_all_channels(''); //, 15000, 10000
+    //    $results = Ecommerce::get_products_from_all_channels(''); //, 15000, 10000
     //    $amazon_base_url = 'http://www.amazon.com/gp/product/';
     //    $amazon_base_url_dp = 'http://www.amazon.com/dp/';
     //
@@ -452,21 +452,21 @@ if ($user_id == 838) {
     //        $rev_listing = $r['rev_list'];
     //
     //        if (!file_exists($folder . $filename . '.jpg')) {
-    //            $scraped_product = $ecommerce->curl($amazon_base_url . $am_listing);
+    //            $scraped_product = Ecommerce::curl($amazon_base_url . $am_listing);
     ////            echo '<textarea>' . $scraped_product . '</textarea>'. '<br><br><br>';
     //            if (strpos($scraped_product, '"hiRes":"http') === false && strpos($scraped_product, '"mainUrl":"') === false) {
-    //                $scraped_product = $ecommerce->curl($amazon_base_url_dp . $am_listing);
+    //                $scraped_product = Ecommerce::curl($amazon_base_url_dp . $am_listing);
     //                echo $sku . ' - DP listing' . '<br>';
     //            }
     //            if (!empty($scraped_product)) {
     //                $photo_url = '';
     //
     //                if (strpos($scraped_product, '"hiRes":"http') !== false) {
-    //                    $photo_url = $ecommerce->substring_between($scraped_product, '"hiRes":"', '","thumb');
+    //                    $photo_url = Ecommerce::substring_between($scraped_product, '"hiRes":"', '","thumb');
     //                } elseif (strpos($scraped_product, '"mainUrl":"') !== false) {
-    //                    $photo_url = $ecommerce->substring_between($scraped_product, '"mainUrl":"', '","dimensions');
+    //                    $photo_url = Ecommerce::substring_between($scraped_product, '"mainUrl":"', '","dimensions');
     //                } else {
-    //                    $photo_url = $ecommerce->substring_between($scraped_product, 'data-a-dynamic-image="{&quot;', '&quot;:');
+    //                    $photo_url = Ecommerce::substring_between($scraped_product, 'data-a-dynamic-image="{&quot;', '&quot;:');
     //                    echo 'Different photo<br>';
     //                }
     //                echo $sku . ': ' . $photo_url . '<br>';
@@ -479,16 +479,16 @@ if ($user_id == 838) {
     //                if (!file_exists($folder . $filename . '.' . $extension)) {
     //                    copy($photo_url, $folder . $image);
     //
-    //                    $top_description = urldecode($ecommerce->substring_between($scraped_product, "'encodedDescription' : \"", '",'));
-    //                    $description = urldecode($ecommerce->substring_between($scraped_product, '2productDescriptionWrapper', '%0A%20%20%20%20%20%20%0A%20%20%20%20%20%20%3Cdiv%20class'));
+    //                    $top_description = urldecode(Ecommerce::substring_between($scraped_product, "'encodedDescription' : \"", '",'));
+    //                    $description = urldecode(Ecommerce::substring_between($scraped_product, '2productDescriptionWrapper', '%0A%20%20%20%20%20%20%0A%20%20%20%20%20%20%3Cdiv%20class'));
     //                    if (empty($description)) {
     //                        $description = $top_description;
     //                    }
     //                    //    echo $top_description . '<br>';
     //                    //    echo $description . '<br>';
     //                    $rackspace_url = 'https://4dae45140096fd7fb6d3-7cac89ee19f3b4d177ef11effcca7827.ssl.cf1.rackcdn.com/images/';
-    //                    $ecommerce->update_photo($sku, $rackspace_url . $image, 'listing_amazon');
-    //                    $ecommerce->append_description($sku, $description, 'listing_amazon');
+    //                    Ecommerce::update_photo($sku, $rackspace_url . $image, 'listing_amazon');
+    //                    Ecommerce::append_description($sku, $description, 'listing_amazon');
     //                }
     //                $html .= '<tr>';
     //                $html .= "<td>$x - $sku</td><td>$am_listing</td><td>$bc_listing</td><td>$eb_listing</td><td>$rev_listing</td><td><img class='channelimage' src='../../amazonimages/$image' /></td><td>$description</td>";
@@ -497,7 +497,7 @@ if ($user_id == 838) {
     //            }
     //        }
     ////      else{
-    ////        $description = $ecommerce->get_description($sku, 'listing_amazon');
+    ////        $description = Ecommerce::get_description($sku, 'listing_amazon');
     ////        $image = $sku . '.jpg';
     ////    }
     //
@@ -529,12 +529,12 @@ if ($user_id == 838) {
     //        continue;
     //    }
     //    echo $category_id . ': ' . $category_name . ' - ' . $category_parent_id . '; Virtual: ' . $virtual;
-    //    $parents = $ecommerce->get_category_to_map($category_parent_id);
+    //    $parents = Ecommerce::get_category_to_map($category_parent_id);
     //    foreach($parents as $p){
     //        $p_cat_id = $p['id'];
     //        echo "Amazon Categories to look at: $p_cat_id<br>";
     //    }
-    ////    $cat_id = $ecommerce->save_category($category_id, $category_name, $category_parent_id, 'categories_ebay');
+    ////    $cat_id = Ecommerce::save_category($category_id, $category_name, $category_parent_id, 'categories_ebay');
     ////    if(!empty($cat_id)){
     ////        echo ' - Saved successfully';
     ////    }
@@ -549,14 +549,14 @@ if ($user_id == 838) {
 
     //$updated = array("1003690","1003841","1003842","1003843","1004831","1005232","1009727","1009728","1009729","1009770","1010859","1011042","1011082","1011083","1011476","1011477","1011478","1011479","1011480","1011481","1011482","1011483","1011484","1011485","1011951","1013481","1013747","1014305","1014784","1014785","1016715","1018275","1019784","1019786","1019787","1019788","1019789","1019791","1020115","1020116","1020146","1021630","1021656","1023354","1023721","1023725","1023726","1023727","1030462","1030463","1030464","1030465","1030466","1030467","1030468","1032712","1033815","1034123","1035719","1036833","1040483","1040493","1040494","1041145","1041768","1043186","1043798","1043799","1043800","1043801","1044882","1046351","1046478","1048314","1049034","1049035","1049036","1049037","1049038","1051808","1051809","1051810","1051811","1054224","1054294","1054515","1054516","1054656","1054881","1054882","1054883","1054949","1055289","105531","1056111","1056406","1057138","1057757","1058390","1059088","1059333","1059493","1059989","1059991","1059993","1059994","1059995","1059998","1060002","1060007","1060008","1060014","1060016","1060016","1060022","1060028","1060029","1060191","1060192","1060436","1063953","1063954","1064137","1064627","1064628","1065576","1065577","1065578","1065921","1066144","1066145","1066145","1066146","1066162","1066163","1066164","1066165","1066166","1066167","1066168","1066169","1066170","1066171","1066833","1068118","1069615","1069924","1069976","1070074","1070218","1070715","1071143","1071144","1071145","1071146","1072165","1075293","1075472","1076084","1077997","1077998","1077999","1078000","1078001","1078001","1078002","1078004","1078005","1078006","1078007","1078008","1078010","1078011","1078012","1078013","1078013","1078014","1078015","1078016","1078017","1078018","1078019","1078020","1078021","1078022","1078023","1078024","1078025","1078026","1078027","1078265","1078913","1078913","1078914","1078915","1078916","1079009","1079011","1080201","1080829","1080830","1082302","1082467","1083362","1083363","1083364","1084869","1085890","1086384","1086385","1086389","1086393","1086949","1086950","1087195","1088290","1088425","1088617","1088830","1089521","1089974","1089975","1091851","1092815","1092945","1092956","1094150","1094183","1094184","1094281","1094584","1095647","1095648","1095661","1095662","1095663","1095664","1095665","1095666","1095667","1095668","1095840","1095867","1095868","1095875","1095876","1095877","1095877","1095878","1095878","1095879","1095879","1095994","1096003","1096004","1096005","1096007","1096008","1096009","1096071","1096093","1096094","1096095","1096096","1096098","1096099","1096101","1096102","1096106","1096106","1096109","1096203","1096203","1096206","1096206","1096210","1096211","1096265","1096267","1096295","1096296","1096297","1096301","1096403","1096513","1096517","1097532","1098092","1098093","1098094","1098095","1098151","1098267","1098268","1098269","1098368","1098369","1098383","1098395","1098396","1098397","1098398","1098399","1098400","1098419","1098841","1098975","1102166","1102166","1102167","1102168","1102169","1102170","1102171","1102172","1102173","1102174","1102530","1103037","1103305","1103577","1104987","1104993","1105995","1106945","1107053","1107054","1107445","1107446","1108289","1108326","1108327","1108636","1109577","1110046","1110047","1111532","1111533","1111534","1111535","1111662","1112205","1112770","1114922","1114923","1114924","1114925","1114926","1114927","1115082","1115349","1115658","1115659","1115660","1115661","1115662","1115663","1115664","1115665","1115666","1115667","1115668","1115669","1115670","1115671","1115672","1115673","1115674","1115675","1115676","1115676","1115676","1115677","1115677","1115678","1115679","1115680","1115681","1115682","1115683","1115684","1115685","1115686","1115687","1115688","1115689","1115690","1115691","1115692","1115693","1115694","1115695","1115696","1115697","1115698","1115699","1115700","1115701","1115702","1116724","1117028","1117092","1117093","1117094","1117095","1117747","1118027","1118105","1118106","114943","123805","125066","129379","129382","129384","129385","134588","141269","141270","141271","141272","141273","141274","141275","141281","141282","141283","141284","141285","141286","141287","141288","141289","141290","141291","141357","141358","141359","141359","141376","141377","141378","141379","141380","141381","141382","141383","141384","141385","141386","141387","141501","141653","143998","143999","144000","144001","144828","144829","144831","147091","147134","147135","147136","147137","148225","151413","151414","151415","151416","151417","155758","159537","159540","159541","159542","161020","161021","167054","169680","172078","172502","172750","172768","172769","172887","172888","175624","176792","178119","178588","178589","178590","180441","182679","182680","182681","184250","184251","184497","184498","184499","184603","187845","189172","189579","189580","189581","189582","189583","189584","189585","189586","189587","189588","189589","189590","189591","189592","189593","189594","189595","189596","189597","189598","189599","189600","189601","189602","189603","189607","189608","189609","189610","189611","189612","189613","189614","189615","189616","189977","191990","191991","191992","191993","191994","191996","191997","194620","194622","194794","194795","194796","194797","194798","194799","194800","194801","194802","197062","197063","197064","197065","197066","197067","197068","198679","198680","198681","198682","198683","198684","198685","198686","199217","202184","202185","202186","202187","202188","202189","202190","202191","202192","203878","203879","203880","203881","203882","203883","205628","209116","211861","211862","211863","211864","211865","212375","212376","215774","218195","218197","218455","218456","218768","218769","218770","218771","218772","218773","219846","219847","219848","219920","227309","227315","235003","235008","235017","235020","235021","235022","235023","235024","235025","235026","235026","235027","235028","235029","235030","236216","240740","247585","247586","247593","247594","247889","247890","247891","247892","250405","250560","253656","256381","256729","256731","34151","37529","43190","52049","65781","74807","74824","74894","91055","97670","99807");
     //$updated = array("1006059");
-    //$updated = $ecommerce->get_inventory_for_update('listing_amazon', '1114946');
+    //$updated = Ecommerce::get_inventory_for_update('listing_amazon', '1114946');
     //print_r($updated);
     // /* Update Amazon Quantity per SKU */
     //$x = 1;
     //$stock_id = $updated['id'];
     //$sku_id = $updated['sku_id'];
     //$stock_qty = $updated['stock_qty'];
-    //$sku = $ecommerce->get_sku($sku_id);
+    //$sku = Ecommerce::get_sku($sku_id);
 
     //Create XML for Amazon
     //$amazon_xml = AmazonInventory::inventoryArray($sku, $stock_qty, $x);
@@ -573,7 +573,7 @@ if ($user_id == 838) {
     //foreach($updated as $u){
     //    $sku = $u;
     //    echo $sku . '<br>';
-    //    $price = $ecommerce->get_inventory_price($sku, 'listing_amazon');
+    //    $price = Ecommerce::get_inventory_price($sku, 'listing_amazon');
     //    if(!empty($price)){
     //        $amazon_price_xml = array_merge($amazon_price_xml, $amazon->create_inventory_price_update_item_xml($sku, $price, $x));
     //        $x++;
@@ -585,7 +585,7 @@ if ($user_id == 838) {
     //print_r($response);
     //echo '<br><br>';
 
-    //$results = $ecommerce->analyze_sales('');
+    //$results = Ecommerce::analyze_sales('');
     ////print_r($results);
     //$sold = array();
     //$z = 0;
@@ -687,8 +687,8 @@ if ($user_id == 838) {
     //    $html .= "</tr>";
     //    if($channel == 'Ebay' && $difference > 0){
     //        $differencetable .= "<tr><td>$sku</td><td>$total</td></tr>";
-    ////        $result = $ecommerce->update_price($sku, $total, 'listing_ebay');
-    ////        $result = $ecommerce->update_override($sku, '1', 'listing_ebay');
+    ////        $result = Ecommerce::update_price($sku, $total, 'listing_ebay');
+    ////        $result = Ecommerce::update_override($sku, '1', 'listing_ebay');
     ////        $item_id = $ebay->get_listing_id($sku);
     ////        $response = $ebay->update_all_ebay_inventory($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $item_id, $total);
     ////        print_r($response);
@@ -713,9 +713,9 @@ if ($user_id == 838) {
     //    if($order) {
     //        $file = file_get_contents($dir . $name);
     //        $items = substr_count($file, '<Item>');
-    //        $sku = $ecommerce->substring_between($file,'<ItemId>','</ItemId>');
-    //        $quantity = $ecommerce->substring_between($file,'<Qty>','</Qty>');
-    //        $return = $ecommerce->update_item_qty($order, $sku, $quantity);
+    //        $sku = Ecommerce::substring_between($file,'<ItemId>','</ItemId>');
+    //        $quantity = Ecommerce::substring_between($file,'<Qty>','</Qty>');
+    //        $return = Ecommerce::update_item_qty($order, $sku, $quantity);
     //        if ($return) {
     //            echo $order . ': ' . $sku . ', ' . $quantity . ' - Updated Successfully.<br>';
     //        }
@@ -725,14 +725,14 @@ if ($user_id == 838) {
     //            for($x = 1; $x < $items; $x++){
     ////                echo $itemIdClosingPos . '<br>';
     ////                echo $editedfile . '<br>';
-    //                $sku = $ecommerce->substring_between($editedfile,'<ItemId>','</ItemId>');
+    //                $sku = Ecommerce::substring_between($editedfile,'<ItemId>','</ItemId>');
     //                if($sku == 'SALES TAX IDAHO @ 6%'){
     //                    $itemIdClosingPos = strpos($editedfile, '</Item>');
     //                    $editedfile = substr($editedfile, $itemIdClosingPos);
     //                    continue;
     //                }
-    //                $quantity = $ecommerce->substring_between($editedfile,'<Qty>','</Qty>');
-    //                $return = $ecommerce->update_item_qty($order, $sku, $quantity);
+    //                $quantity = Ecommerce::substring_between($editedfile,'<Qty>','</Qty>');
+    //                $return = Ecommerce::update_item_qty($order, $sku, $quantity);
     //                if ($return) {
     //                    echo $order . ': ' . $sku . ', ' . $quantity . ' - Updated Successfully.<br>';
     //                }
@@ -768,13 +768,13 @@ if ($user_id == 838) {
     //}
 
 
-    //$revinv->get_reverb_products($reverb_auth, $reverb_store_id, $ecommerce);
+    //$revinv->get_reverb_products();
 
-    //$bigcommerce->get_bc_products($BC, $bc_store_id, $ecommerce);
+    //$bigcommerce->get_bc_products($BC);
 
 
     //$channel = 'Amazon';
-    //$accounts = $ecommerce->get_acct_num($channel);
+    //$accounts = Ecommerce::get_acct_num($channel);
     //print_r($accounts);
     //$co_one_acct = $accounts['co_one_acct'];
     //$co_two_acct = $accounts['co_two_acct'];
@@ -829,38 +829,38 @@ if ($user_id == 838) {
     //$response = curl_exec($request);
     ////print_r($response);
     //curl_close ($request);
-    //$listing_array = $ecommerce->get_items($response);
+    //$listing_array = Ecommerce::get_items($response);
     //print_r($listing_array);
     //echo '<br><br>';
     //foreach($listing_array as $key => $val){
-    //    $item_id = $ecommerce->substring_between($val, '<itemid>', '</itemid>');
+    //    $item_id = Ecommerce::substring_between($val, '<itemid>', '</itemid>');
     //    echo $item_id . '<br>';
     //    $response = $ebay->getSingleItem($eb_dev_id, $eb_app_id, $eb_cert_id, $eb_token, $item_id);
     //    print_r($response);
-    //    $country = $ecommerce->substring_between($response, '<country>', '</country>');
-    //    $description = $ecommerce->substring_between($response, '<description>', '</description>');
-    //    $price = $ecommerce->substring_between($response, '<startprice>', '</startprice>');
-    //    $url = $ecommerce->substring_between($response, '<viewitemurl>', '</viewitemurl>');
-    //    $listing_duration = $ecommerce->substring_between($response, '<listingduration>', '</listingduration>');
-    //    $listing_type = $ecommerce->substring_between($response, '<listingtype>', '</listingtype>');
-    //    $primary_category = $ecommerce->substring_between($response, '<categoryid>', '</categoryid>');
-    //    $category_name = $ecommerce->substring_between($response, '<categoryname>', '</categoryname>');
-    //    $quantity = $ecommerce->substring_between($response, '<quantity>', '</quantity>');
-    //    $isbn = $ecommerce->substring_between($response, '<isbn>', '</isbn>');
-    //    $stock_photo = $ecommerce->substring_between($response, '<stockphotourl>', '</stockphotourl>');
-    //    $global_shipping = $ecommerce->substring_between($response, '<globalshipping>', '</globalshipping>');
-    //    $free_shipping = $ecommerce->substring_between($response, '<freeshipping>', '</freeshipping>');
-    //    $shipping_cost = $ecommerce->substring_between($response, '<shippingservicecost>', '</shippingservicecost>');
-    //    $shipping_cost_additional = $ecommerce->substring_between($response, '<shippingserviceadditionalcost>', '</shippingserviceadditionalcost>');
-    //    $shipping_type = $ecommerce->substring_between($response, '<shippingtype>', '</shippingtype>');
-    //    $title = $ecommerce->substring_between($response, '<title>', '</title>');
-    //    $sku = $ecommerce->substring_between($response, '<sku>', '</sku>');
-    //    $photo_url = $ecommerce->substring_between($response, '<galleryurl>', '</galleryurl>');
-    //    $external_photo_url = $ecommerce->substring_between($response, '<externalpictureurl>', '</externalpictureurl>');
-    //    $refund_option = $ecommerce->substring_between($response, '<refundoption>', '</refundoption>');
-    //    $returnswithinoption = $ecommerce->substring_between($response, '<returnswithinoption>', '</returnswithinoption>');
-    //    $returnsacceptedoption = $ecommerce->substring_between($response, '<returnsacceptedoption>', '</returnsacceptedoption>');
-    //    $return_description = $ecommerce->substring_between($response, '</retunsaccepted><description>', '</description><shippingcostpaidyoption></shippingcostpaidyoption>');
+    //    $country = Ecommerce::substring_between($response, '<country>', '</country>');
+    //    $description = Ecommerce::substring_between($response, '<description>', '</description>');
+    //    $price = Ecommerce::substring_between($response, '<startprice>', '</startprice>');
+    //    $url = Ecommerce::substring_between($response, '<viewitemurl>', '</viewitemurl>');
+    //    $listing_duration = Ecommerce::substring_between($response, '<listingduration>', '</listingduration>');
+    //    $listing_type = Ecommerce::substring_between($response, '<listingtype>', '</listingtype>');
+    //    $primary_category = Ecommerce::substring_between($response, '<categoryid>', '</categoryid>');
+    //    $category_name = Ecommerce::substring_between($response, '<categoryname>', '</categoryname>');
+    //    $quantity = Ecommerce::substring_between($response, '<quantity>', '</quantity>');
+    //    $isbn = Ecommerce::substring_between($response, '<isbn>', '</isbn>');
+    //    $stock_photo = Ecommerce::substring_between($response, '<stockphotourl>', '</stockphotourl>');
+    //    $global_shipping = Ecommerce::substring_between($response, '<globalshipping>', '</globalshipping>');
+    //    $free_shipping = Ecommerce::substring_between($response, '<freeshipping>', '</freeshipping>');
+    //    $shipping_cost = Ecommerce::substring_between($response, '<shippingservicecost>', '</shippingservicecost>');
+    //    $shipping_cost_additional = Ecommerce::substring_between($response, '<shippingserviceadditionalcost>', '</shippingserviceadditionalcost>');
+    //    $shipping_type = Ecommerce::substring_between($response, '<shippingtype>', '</shippingtype>');
+    //    $title = Ecommerce::substring_between($response, '<title>', '</title>');
+    //    $sku = Ecommerce::substring_between($response, '<sku>', '</sku>');
+    //    $photo_url = Ecommerce::substring_between($response, '<galleryurl>', '</galleryurl>');
+    //    $external_photo_url = Ecommerce::substring_between($response, '<externalpictureurl>', '</externalpictureurl>');
+    //    $refund_option = Ecommerce::substring_between($response, '<refundoption>', '</refundoption>');
+    //    $returnswithinoption = Ecommerce::substring_between($response, '<returnswithinoption>', '</returnswithinoption>');
+    //    $returnsacceptedoption = Ecommerce::substring_between($response, '<returnsacceptedoption>', '</returnsacceptedoption>');
+    //    $return_description = Ecommerce::substring_between($response, '</retunsaccepted><description>', '</description><shippingcostpaidyoption></shippingcostpaidyoption>');
     //    echo '<br><br>';
     //}
 
@@ -871,7 +871,7 @@ if ($user_id == 838) {
     //$rev_store_id = $results['store_id'];
     //
     //$request = $reverb->get_auth($reverb_email, $reverb_password);
-    //$token = $ecommerce->substring_between($request,'"token":"','","paypal_email');
+    //$token = Ecommerce::substring_between($request,'"token":"','","paypal_email');
     //$request = $reverb->update_reverb_tracking($token, '683086', '9400110200829758630290', 'USPS', "false");
     //print_r($request);
 
@@ -924,17 +924,17 @@ if ($user_id == 838) {
     ////            echo 'Description: ' . $description . '<br>';
     ////            echo 'Price: ' . $price . '<br>';
     ////            echo 'URL: ' . $url . '<br>';
-    ////            $product_id = $ecommerce->product_soi($sku, $title, '', $description, '', '');
+    ////            $product_id = Ecommerce::product_soi($sku, $title, '', $description, '', '');
     ////            echo 'Product ID: ' . $product_id . '<br>';
-    ////            $ecommerce->availability_soi($product_id, 4);
-    ////            $sku_id = $ecommerce->sku_soi($sku);
-    ////            $condition_id = $ecommerce->condition_soi($condition);
-    ////            $stock_id = $ecommerce->stock_soi($sku_id, $condition_id);
+    ////            Ecommerce::availability_soi($product_id, 4);
+    ////            $sku_id = Ecommerce::sku_soi($sku);
+    ////            $condition_id = Ecommerce::condition_soi($condition);
+    ////            $stock_id = Ecommerce::stock_soi($sku_id, $condition_id);
     ////            $listing_array = array(
     ////
     //
     //             );
-    ////            $listing_id = $ecommerce->listing_soi('listing_reverb', $rev_store_id, $stock_id, $sku, $url, $title, $description);
+    ////            $listing_id = Ecommerce::listing_soi('listing_reverb', $rev_store_id, $stock_id, $sku, $url, $title, $description);
     ////            $x++;
     //            echo '<br><br>';
     //        }
@@ -981,29 +981,29 @@ if ($user_id == 838) {
     //            $tax = $principle * .06;
     //            $principle -= $tax;
     //        }
-    //        $item_xml = $ecommerce->create_item_xml($sku, $title, $ponumber, $quantity, $principle, $upc);
+    //        $item_xml = Ecommerce::create_item_xml($sku, $title, $ponumber, $quantity, $principle, $upc);
     //        if (strcasecmp($state, 'ID') == 0) {
     //            $ponumber++;
-    //            $item_xml .= $ecommerce->create_tax_item_xml($ponumber, $tax);
+    //            $item_xml .= Ecommerce::create_tax_item_xml($ponumber, $tax);
     //        }
     //        $total = $principle;
-    //        $state_id = $ecommerce->state_soi($state);
-    //        $zip_id = $ecommerce->zip_soi($zip, $state_id);
-    //        $city_id = $ecommerce->city_soi($city, $state_id);
-    //        $cust_id = $ecommerce->customer_soi($first_name, $last_name, ucwords(strtolower($address)),ucwords(strtolower($address2)),$city_id,$state_id,$zip_id);
-    //        $order_id = $ecommerce->save_order($rev_store_id, $cust_id, $order_num, $shipping);
-    //        $sku_id = $ecommerce->sku_soi($sku);
-    //        $ecommerce->save_order_items($order_id, $sku_id, $total);
-    //        $xml = $ecommerce->create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
-    //        $ecommerce->saveXmlToFTP($order_num, $xml, $folder, $channelName);
+    //        $state_id = Ecommerce::state_soi($state);
+    //        $zip_id = Ecommerce::zip_soi($zip, $state_id);
+    //        $city_id = Ecommerce::city_soi($city, $state_id);
+    //        $cust_id = Ecommerce::customer_soi($first_name, $last_name, ucwords(strtolower($address)),ucwords(strtolower($address2)),$city_id,$state_id,$zip_id);
+    //        $order_id = Ecommerce::save_order($rev_store_id, $cust_id, $order_num, $shipping);
+    //        $sku_id = Ecommerce::sku_soi($sku);
+    //        Ecommerce::save_order_items($order_id, $sku_id, $total);
+    //        $xml = Ecommerce::create_xml($channel_num, $channel_name, $order_num, $timestamp, $shipping_amount, $shipping, $order_date, $buyer_phone, $ship_to_name, $address, $address2, $city, $state, $zip, $country, $item_xml);
+    //        Ecommerce::saveXmlToFTP($order_num, $xml, $folder, $channelName);
     //    }
     //}
-    //$name = $ecommerce->substring_between($request, '"name":"', '","street_address"');
-    //$state = $ecommerce->substring_between($request, '"region":"', '","postal_code"');
-    //$zip = $ecommerce->substring_between($request, '"postal_code":"', '","country_code"');
-    //$city = $ecommerce->substring_between($request, '"locality":"', '","region"');
-    //$order_num = $ecommerce->substring_between($request, '"order_number":"', '","needs_feedback_for_buyer"');
-    //$city = $ecommerce->substring_between($request, '', '');
+    //$name = Ecommerce::substring_between($request, '"name":"', '","street_address"');
+    //$state = Ecommerce::substring_between($request, '"region":"', '","postal_code"');
+    //$zip = Ecommerce::substring_between($request, '"postal_code":"', '","country_code"');
+    //$city = Ecommerce::substring_between($request, '"locality":"', '","region"');
+    //$order_num = Ecommerce::substring_between($request, '"order_number":"', '","needs_feedback_for_buyer"');
+    //$city = Ecommerce::substring_between($request, '', '');
     //echo '<br><br>';
     //echo $name . '<br>';
 
@@ -1012,12 +1012,12 @@ if ($user_id == 838) {
     //echo $eb_app_id . "<br>";
     //echo $eb_cert_id . "<br>";
     //echo $eb_token . "<br><br>";
-    //$orders_last_day = $ecommerce->get_orders_in_last_day();
+    //$orders_last_day = Ecommerce::get_orders_in_last_day();
     //print_r($orders_last_day);
 
     //foreach($orders_last_day as $o){
     //    $order_num = $o['order_id'];
-    //    $order_id = $ecommerce->get_order_id($order_num);
+    //    $order_id = Ecommerce::get_order_id($order_num);
     //    $channel = $o['type'];
     //    $item_id = $o['item_id'];
     //    $trans_id = '';
@@ -1039,7 +1039,7 @@ if ($user_id == 838) {
     //echo $tracking_id;
     //    if(!empty($tracking_id)) {
     //        echo $order_id . ': ' . $tracking_id . '; Channel: ' . $channel . '<br>';
-    //        $result = $ecommerce->update_tracking_num($order_id, $tracking_id, $carrier);
+    //        $result = Ecommerce::update_tracking_num($order_id, $tracking_id, $carrier);
     //        echo $result . '<br>';
     //        if ($channel == 'BigCommerce') {
     //            //update BC
@@ -1047,7 +1047,7 @@ if ($user_id == 838) {
     //            print_r($response);
     //            echo '<br>';
     //            if($response){
-    //                $ecommerce->update_tracking_succesful($order_num);
+    //                Ecommerce::update_tracking_succesful($order_num);
     //                echo 'Tracking for MML order ' . $order_num . ' was updated!<br><br>';
     //            }
     //        } elseif ($channel == 'EBay') {
@@ -1057,7 +1057,7 @@ if ($user_id == 838) {
     //            print_r($response);
     //            echo '<br>';
     //            if(strpos($response, 'Success')){
-    //                $ecommerce->update_tracking_succesful($order_num);
+    //                Ecommerce::update_tracking_succesful($order_num);
     //                echo 'Tracking for eBay order ' . $order_num . ' was updated!<br><br>';
     //            }
     //        } elseif ($channel == 'Amazon') {
@@ -1066,7 +1066,7 @@ if ($user_id == 838) {
     //            print_r($response);
     //            echo '<br>';
     //            if(strpos($response, 'SUBMITTED')) {
-    //                $ecommerce->update_tracking_succesful($order_num);
+    //                Ecommerce::update_tracking_succesful($order_num);
     //                echo 'Tracking for Amazon order ' . $order_num . ' was updated!<br><br>';
     //            }
     //        }

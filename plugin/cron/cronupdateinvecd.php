@@ -26,7 +26,7 @@ $updated = Listing::getUpdated($table);
 $qohArray = [];
 for ($x = 1; $x <= count($updated); $x++) {
     if ($x % 25 == 0 || $x >= count($updated)) {
-        $response = $ecdinv->update_ecd_inventory($ecd_ocp_key, $ecd_sub_key, $qohArray, $ecommerce);
+        $response = $ecdinv->update_ecd_inventory($ecd_ocp_key, $ecd_sub_key, $qohArray);
         print_r($response);
         echo "Line: $x<br>";
         $qohArray = [];

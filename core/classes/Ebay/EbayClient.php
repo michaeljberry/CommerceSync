@@ -3,7 +3,7 @@
 namespace Ebay;
 
 use models\channels\Channel;
-use ecommerce\EcommerceInterface;
+use Ecommerce\EcommerceInterface;
 
 class EbayClient extends Ebay implements EcommerceInterface
 {

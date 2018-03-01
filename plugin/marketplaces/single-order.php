@@ -1,7 +1,7 @@
 <?php
 require '../../core/init.php';
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 
 if (isset($_POST['id']) && !empty($_POST['id'])) {
     $id = htmlentities($_POST['id']);

@@ -1,5 +1,4 @@
 <?php
-use ecommerce\Ecommerce;
 use models\channels\Inventory;
 use models\channels\Listing;
 use models\channels\SKU;
@@ -67,7 +66,7 @@ foreach ($updated as $u) {
         $price = '';
     }
 
-    $response = $wcinv->updateInventory($stock_id, $stock_qty, $price, $ecommerce, $woocommerce, $sku);
+    $response = $wcinv->updateInventory($stock_id, $stock_qty, $price, $woocommerce, $sku);
     print_r($response);
     extract($response);
 //    $id = $response['product']['id'];

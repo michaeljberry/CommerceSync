@@ -3,7 +3,7 @@
 namespace Walmart;
 
 use models\ModelDB as MDB;
-use ecommerce\ChannelInterface;
+use Ecommerce\ChannelInterface;
 use controllers\channels\ChannelSetup;
 
 class Walmart implements ChannelInterface

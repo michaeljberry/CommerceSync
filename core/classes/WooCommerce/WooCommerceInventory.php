@@ -2,7 +2,6 @@
 
 namespace WooCommerce;
 
-use ecommerce\Ecommerce;
 use models\channels\Listing;
 use models\channels\product\Product;
 use models\channels\product\ProductAvailability;
@@ -57,20 +56,20 @@ class WooCommerceInventory extends WooCommerce
         return ($response);
     }
 
-    public function get_wc_products(Ecommerce $ecommerce)
+    public function get_wc_products()
     {
         for ($page = 11; $page < 20; $page++) {
             $request = $this->getListings($page);
             $listings = json_decode($request);
-            $this->saveWCListing($listings, $ecommerce);
+            $this->saveWCListing($listings);
         }
     }
 
-    public function saveWCListing($listings, Ecommerce $ecommerce, $variation = null)
+    public function saveWCListing($listings, $variation = null)
     {
         foreach ($listings as $l) {
             if (!empty($l->variations)) {
-                $this->saveWCListing($l->variations, $ecommerce, true);
+                $this->saveWCListing($l->variations, true);
             } else {
                 $id = $l->id;
                 $request = $this->getListing($id);
@@ -97,15 +96,15 @@ class WooCommerceInventory extends WooCommerce
                 //add-product-availability
                 $availability_id = ProductAvailability::searchOrInsert($product_id, $this->store_id);
                 //find sku
-                $sku_id = $ecommerce->sku_soi($sku);
+                $sku_id = SKU::searchOrInsert($sku);
                 //add price
-                $price_id = $ecommerce->price_soi($sku_id, $price, $this->store_id);
+                $price_id = ProductPrice::searchOrInsert($sku_id, $price, $this->store_id);
                 //normalize condition
-                $condition = $ecommerce->normal_condition($product_condition);
+                $condition = ConditionController::normalCondition($product_condition);
                 //find condition id
-                $condition_id = $ecommerce->condition_soi($condition);
+                $condition_id = Condition::searchOrInsert($condition);
                 //add stock to sku
-                $stock_id = $ecommerce->stock_soi($sku_id, $condition_id);
+                $stock_id = Stock::searchOrInsert($sku_id, $condition_id);
 
                 if ($variation) {
                     $variation = 1;
@@ -132,7 +131,7 @@ class WooCommerceInventory extends WooCommerce
         }
     }
 
-    public function updateInventory($stock_id, $stock_qty, $price, Ecommerce $ecommerce, $woocommerce, $sku)
+    public function updateInventory($stock_id, $stock_qty, $price, $woocommerce, $sku)
     {
         $store_listing_id = Listing::getChannelListingIdByStockId($stock_id, 'listing_wc');
         $listing = $this->getWCListing($woocommerce, $store_listing_id);

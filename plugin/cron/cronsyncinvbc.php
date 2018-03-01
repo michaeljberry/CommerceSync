@@ -6,6 +6,6 @@ require WEBPLUGIN . 'bc/bcvar.php';
 $start = startClock();
 $user_id = 838;
 
-$bigcommerce->get_bc_products($BC, $ecommerce);
+$bigcommerce->get_bc_products($BC);
 
 endClock($start);

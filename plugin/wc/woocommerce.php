@@ -1,7 +1,7 @@
 <?php
 include 'header-woocommerce.php';
 
-print_r($wcinv->get_wc_products($ecommerce)); //25816 parent; 25837 variation
+print_r($wcinv->get_wc_products()); //25816 parent; 25837 variation
 ?>
     <div id="subcontainer">
         <div id='stats-table'></div>

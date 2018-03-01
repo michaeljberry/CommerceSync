@@ -1,5 +1,4 @@
 <?php
-use ecommerce\Ecommerce;
 use models\channels\Listing;
 use Ebay\EbayInventory;
 

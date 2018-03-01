@@ -1,5 +1,4 @@
 <?php
-use ecommerce\Ecommerce;
 use models\channels\Inventory;
 use models\channels\Listing;
 use models\channels\SKU;
@@ -27,7 +26,7 @@ foreach ($updated as $u) {
         $price = '';
     }
 
-    $response = $bcinv->update_bc_inventory($stock_id, $stock_qty, $price, $ecommerce);
+    $response = $bcinv->update_bc_inventory($stock_id, $stock_qty, $price);
     print_r($response);
     echo '<br>';
 }

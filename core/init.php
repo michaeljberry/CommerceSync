@@ -32,8 +32,6 @@ $ecd = new \ecd\ecdclass();
 $ecdord = new \ecdord\ecdordclass();
 $ecdinv = new \ecdinv\ecdinvclass();
 
-$ecommerce = new \ecommerce\Ecommerce();
-
 use PhpRbac\Rbac;
 
 $rbac = new Rbac();

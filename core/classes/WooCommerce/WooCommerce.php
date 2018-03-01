@@ -4,7 +4,7 @@ namespace WooCommerce;
 
 use Crypt;
 use models\ModelDB as MDB;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use Automattic\WooCommerce\Client;
 
 class WooCommerce

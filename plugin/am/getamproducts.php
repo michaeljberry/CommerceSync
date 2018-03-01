@@ -5,7 +5,6 @@ include __DIR__ . '/../../core/init.php';
 require WEBPLUGIN . 'am/amvar.php';
 
 use controllers\channels\ConditionController;
-use ecommerce\Ecommerce;
 use models\channels\Condition;
 use models\channels\Listing;
 use models\channels\product\Product;

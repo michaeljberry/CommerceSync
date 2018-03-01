@@ -1,5 +1,8 @@
 <?php
 require '../../core/init.php';
+
+use Ecommerce\Ecommerce;
+
 $start_time = microtime(true);
 
 if (!empty($_POST['channel'])) {
@@ -26,7 +29,7 @@ if (!empty($_POST['channel'])) {
         $search_array['last_name'] = htmlentities($_POST['last_name']);
     }
     if (!empty($_POST['date'])) {
-        $search_array['date'] = $ecommerce->createFormattedDate(htmlentities($_POST['date']));
+        $search_array['date'] = Ecommerce::createFormattedDate(htmlentities($_POST['date']));
     }
     $results = \models\channels\order\Order::getBySearch($search_array, $channel);
     $html = '';
@@ -36,7 +39,7 @@ if (!empty($_POST['channel'])) {
         $table .= "<tr>";
         $id = $r['id'];
         $order_num = $r['order_num'];
-        $date = $ecommerce->createFormattedDate($r['date'], 'm/d/Y');
+        $date = Ecommerce::createFormattedDate($r['date'], 'm/d/Y');
         $fname = $r['first_name'];
         $lname = $r['last_name'];
         $tracking = $r['tracking_num'];

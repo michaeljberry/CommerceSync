@@ -2,7 +2,7 @@
 
 namespace WooCommerce;
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use controllers\channels\CurlController;
 
 trait WooCommerceClientCurl

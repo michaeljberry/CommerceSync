@@ -1,6 +1,6 @@
 <?php
 
-namespace ecommerce;
+namespace Ecommerce;
 
 interface ChannelInterface
 {

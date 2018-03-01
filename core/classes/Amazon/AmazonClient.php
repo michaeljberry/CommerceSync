@@ -3,7 +3,7 @@
 namespace Amazon;
 
 use models\channels\Channel;
-use ecommerce\EcommerceInterface;
+use Ecommerce\EcommerceInterface;
 
 class AmazonClient extends Amazon implements EcommerceInterface
 {

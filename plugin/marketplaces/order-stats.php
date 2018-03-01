@@ -10,5 +10,5 @@ if (isset($_GET['channel']) && !empty($_GET['channel'])) {
 $results = OrderStats::get($channel);
 
 $jsonarray2 = \controllers\channels\order\OrderStatsController::prepareStatJson($results, 'daily');
-//\ecommerceclass\ecommerceclass::dd(json_encode($jsonarray2));
+//Ecommerce::dd(json_encode($jsonarray2));
 echo json_encode($jsonarray2);

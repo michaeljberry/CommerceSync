@@ -81,8 +81,6 @@ class ListOrders extends Orders
     protected static function requestRules()
     {
 
-        // static::requireParameterToBeSet("MarketplaceId");
-
         static::ensureDatesAreChronological("CreatedBefore", "CreatedAfter");
 
         static::ensureDatesAreChronological("LastUpdatedBefore", "LastUpdatedAfter");

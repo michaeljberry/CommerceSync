@@ -4,7 +4,7 @@ namespace BigCommerce;
 
 use controllers\channels\order\ChannelOrderTracking;
 use controllers\channels\order\ChannelTracking;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 
 class BigCommerceOrderTracking extends ChannelOrderTracking
 {

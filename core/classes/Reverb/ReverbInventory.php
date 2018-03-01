@@ -2,10 +2,8 @@
 
 namespace Reverb;
 
-use ecommerce\Ecommerce;
-use models\channels\Listing;
-use models\channels\product\Product;
-use models\channels\product\ProductAvailability;
+use models\channels\{Listing, SKU, Stock};
+use models\channels\product\{Product, ProductAvailability, ProductPrice};
 
 class ReverbInventory extends Reverb
 {
@@ -35,7 +33,7 @@ class ReverbInventory extends Reverb
         return $response;
     }
 
-    public function get_reverb_products(Ecommerce $ecommerce)
+    public function get_reverb_products()
     {
         for ($page = 1; $page < 370; $page++) { //340
             $request = ReverbInventory::getReverbListings($page);
@@ -67,15 +65,15 @@ class ReverbInventory extends Reverb
                     $availability_id = ProductAvailability::searchOrInsert($product_id,
                         ReverbClient::getStoreId());
                     //find sku
-                    $sku_id = $ecommerce->sku_soi($sku);
+                    $sku_id = SKU::searchOrInsert($sku);
                     //add price
-                    $price_id = $ecommerce->price_soi($sku_id, $price, ReverbClient::getStoreId());
+                    $price_id = ProductPrice::searchOrInsert($sku_id, $price, ReverbClient::getStoreId());
                     //normalize condition
-                    $condition = $ecommerce->normal_condition($product_condition);
+                    $condition = ConditionController::normalCondition($product_condition);
                     //find condition id
-                    $condition_id = $ecommerce->condition_soi($condition);
+                    $condition_id = Condition::searchOrInsert($condition);
                     //add stock to sku
-                    $stock_id = $ecommerce->stock_soi($sku_id, $condition_id);
+                    $stock_id = Stock::searchOrInsert($sku_id, $condition_id);
                     $channel_array = [
                         'store_id' => ReverbClient::getStoreId(),
                         'stock_id' => $stock_id,

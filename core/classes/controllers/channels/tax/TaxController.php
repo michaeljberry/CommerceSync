@@ -2,7 +2,7 @@
 
 namespace controllers\channels\tax;
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 
 class TaxController
 {

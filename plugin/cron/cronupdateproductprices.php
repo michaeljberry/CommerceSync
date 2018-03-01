@@ -2,7 +2,7 @@
 require __DIR__ . '/../../core/init.php';
 require WEBCORE . 'ibminit.php';
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\product\ProductPrice;
 use models\channels\SKU;
 

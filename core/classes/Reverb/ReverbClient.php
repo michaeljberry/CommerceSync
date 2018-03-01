@@ -2,7 +2,7 @@
 
 namespace Reverb;
 
-use ecommerce\EcommerceInterface;
+use Ecommerce\EcommerceInterface;
 use models\channels\Channel;
 
 class ReverbClient implements EcommerceInterface

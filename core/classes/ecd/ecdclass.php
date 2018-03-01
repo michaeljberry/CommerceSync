@@ -2,6 +2,7 @@
 
 namespace ecd;
 
+use Ecommerce\Ecommerce;
 use models\ModelDB as MDB;
 
 class ecdclass
@@ -57,11 +58,11 @@ class ecdclass
         curl_close($ch);
     }
 
-    public function wait_call($response, $ecd_ocp_key, $ecd_sub_key, $url, $parameters, $ecommerce, $method = 'post')
+    public function wait_call($response, $ecd_ocp_key, $ecd_sub_key, $url, $parameters, $method = 'post')
     {
         $responseJson = json_decode($response, true);
         if (isset($responseJson['statusCode']) && $responseJson['statusCode'] == '429') {
-            $time = $ecommerce->substring_between($responseJson['message'], 'Try again in ', ' seconds');
+            $time = Ecommerce::substring_between($responseJson['message'], 'Try again in ', ' seconds');
             echo "Seconds to wait: $time";
             sleep($time);
             if ($method == 'post') {

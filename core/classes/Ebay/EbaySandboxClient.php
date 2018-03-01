@@ -2,7 +2,7 @@
 
 namespace Ebay;
 
-use ecommerce\EcommerceInterface;
+use Ecommerce\EcommerceInterface;
 
 class EbaySandboxClient extends Ebay implements EcommerceInterface
 {

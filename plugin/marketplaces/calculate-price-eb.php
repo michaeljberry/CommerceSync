@@ -1,6 +1,6 @@
 <?php
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\Listing;
 use models\channels\order\OrderStats;
 use models\channels\SKU;
@@ -33,7 +33,7 @@ if ($_POST['price_sku']) {
         "sku", "quantity", "minimumProfitPercent", "minimumNetProfitPercent", "increment",
         "sku_id", "msrp", "pl10", "pl1", "cost", "override", "title", "upc"
     );
-//    \ecommerceclass\ecommerceclass::dd($priceVariables);
+//    Ecommerce::dd($priceVariables);
     $currentEbayListings = simplexml_load_string($ebinv->findItemsAdvanced($upc));
     $currentAmazonListings = simplexml_load_string($aminv->getLowestOfferListingsForSKU($sku));
     $ourAmazonPrice = simplexml_load_string($aminv->GetMyPriceForSKU($sku));
@@ -61,7 +61,7 @@ if ($_POST['price_sku']) {
         $pl10 = $response->Item->StartPrice;
     }
 
-    $currentPriceArray = $ebay->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged);
+    $currentPriceArray = $ebay->ebay_pricing($minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged);
 
     $label = "Current Pricing Model";
     $tableArray = $ebay->pricingTables($currentPriceArray);
@@ -70,7 +70,7 @@ if ($_POST['price_sku']) {
     echo "<br><br>";
 
     $label = "Proposed Pricing Model to Adjust Price";
-    $proposerdPriceArray = $ebay->ebay_pricing($ecommerce, $minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, 1);
+    $proposerdPriceArray = $ebay->ebay_pricing($minimumProfitPercent, $minimumNetProfitPercent, $increment, $sku, $quantity, $msrp, $pl10, $pl1, $cost, $shippingIncludedInPrice, $shippingCharged, 1);
     $tableArray = $ebay->pricingTables($proposerdPriceArray);
 
     echo Ecommerce::arrayToTable($tableArray, $label);

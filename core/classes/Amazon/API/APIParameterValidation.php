@@ -188,5 +188,3 @@ trait APIParameterValidation
         }
 
     }
-
-}

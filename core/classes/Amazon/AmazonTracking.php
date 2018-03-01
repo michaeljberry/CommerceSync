@@ -4,7 +4,7 @@ namespace Amazon;
 
 use controllers\channels\order\ChannelTracking;
 use controllers\channels\XMLController;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 
 class AmazonTracking extends ChannelTracking
 {

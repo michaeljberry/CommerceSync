@@ -2,7 +2,7 @@
 
 namespace models\channels\product;
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\ModelDB as MDB;
 use PDO;
 

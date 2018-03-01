@@ -3,7 +3,7 @@
 namespace models\channels\order;
 
 use controllers\channels\ChannelHelperController as CHC;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\ModelDB as MDB;
 use PDO;
 
@@ -15,7 +15,7 @@ class OrderStats
         $params = [
             ':time_period' => $time
         ];
-        $sql = "SELECT channel, stats_date, (sales/100) 
+        $sql = "SELECT channel, stats_date, (sales/100)
                 FROM order_stats
                 WHERE stats_date BETWEEN NOW() - INTERVAL :time_period $interval AND NOW()";
         $group = " GROUP BY DATE(stats_date)";
@@ -34,8 +34,8 @@ class OrderStats
 
     public static function save($channel, $date, $sales, $unitsSold)
     {
-        $sql = "INSERT INTO order_stats (channel, stats_date, sales, units_sold) 
-                VALUES (:channel, :date, :sales, :units_sold) 
+        $sql = "INSERT INTO order_stats (channel, stats_date, sales, units_sold)
+                VALUES (:channel, :date, :sales, :units_sold)
                 ON DUPLICATE KEY UPDATE sales = :sales2, units_sold = :units_sold2";
         $queryParams = [
             ':channel' => $channel,
@@ -50,11 +50,11 @@ class OrderStats
 
     public static function getWeek()
     {
-        $sql = "SELECT DATE(o.date) AS date, (SUM(oi.price)/100) AS sales, SUM(oi.quantity) AS units_sold, os.type AS channel 
-                FROM sync.order_item oi 
-                JOIN sync.order o ON o.id = oi.order_id 
-                JOIN order_sync os ON os.order_num = o.order_num 
-                WHERE o.date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 WEEK) AND NOW() 
+        $sql = "SELECT DATE(o.date) AS date, (SUM(oi.price)/100) AS sales, SUM(oi.quantity) AS units_sold, os.type AS channel
+                FROM sync.order_item oi
+                JOIN sync.order o ON o.id = oi.order_id
+                JOIN order_sync os ON os.order_num = o.order_num
+                WHERE o.date BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 WEEK) AND NOW()
                 GROUP BY DATE(o.date), os.type";
         return MDB::query($sql, [], 'fetchAll');
     }
@@ -94,20 +94,20 @@ class OrderStats
     public static function analyzeSales($sku)
     {
         if (empty($sku)) {
-            $sql = "SELECT sk.sku, c.name, o.date, (oi.price/100), o.shipping_amount, oi.quantity, (p.price/100) AS current_price, o.id 
-                    FROM order_item oi 
-                    JOIN sync.order o ON o.id = oi.order_id 
-                    JOIN store s ON s.id = o.store_id 
-                    JOIN channel c ON c.id = s.channel_id 
-                    JOIN sku sk ON sk.id = oi.sku_id 
+            $sql = "SELECT sk.sku, c.name, o.date, (oi.price/100), o.shipping_amount, oi.quantity, (p.price/100) AS current_price, o.id
+                    FROM order_item oi
+                    JOIN sync.order o ON o.id = oi.order_id
+                    JOIN store s ON s.id = o.store_id
+                    JOIN channel c ON c.id = s.channel_id
+                    JOIN sku sk ON sk.id = oi.sku_id
                     JOIN (
-                      SELECT p.sku_id, (p.price/100) 
-                      FROM product_price p 
+                      SELECT p.sku_id, (p.price/100)
+                      FROM product_price p
                       GROUP BY p.sku_id
-                      ) p 
-                    ON p.sku_id = sk.id 
-                    WHERE sk.sku <> '' 
-                    AND c.name = 'Ebay' 
+                      ) p
+                    ON p.sku_id = sk.id
+                    WHERE sk.sku <> ''
+                    AND c.name = 'Ebay'
                     ORDER BY sk.sku, o.date ASC";
             return MDB::query($sql, [], 'fetchAll');
         }
@@ -119,9 +119,9 @@ class OrderStats
      */
     public static function getSumTotal($timeCondition): array
     {
-        $sql = "SELECT channel, (SUM(sales)/100) AS sales, SUM(units_sold) AS units_sold 
-                    FROM order_stats 
-                    WHERE $timeCondition 
+        $sql = "SELECT channel, (SUM(sales)/100) AS sales, SUM(units_sold) AS units_sold
+                    FROM order_stats
+                    WHERE $timeCondition
                     GROUP BY channel";
         $queryParams = [];
         return array($sql, $queryParams);
@@ -134,9 +134,9 @@ class OrderStats
      */
     public static function getSumByChannel($channel, $timeCondition): array
     {
-        $sql = "SELECT channel, (SUM(sales)/100) AS sales, SUM(units_sold) AS units_sold 
-                    FROM order_stats 
-                    WHERE $timeCondition 
+        $sql = "SELECT channel, (SUM(sales)/100) AS sales, SUM(units_sold) AS units_sold
+                    FROM order_stats
+                    WHERE $timeCondition
                     AND channel = :channel";
         $queryParams = [
             ':channel' => $channel

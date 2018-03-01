@@ -3,7 +3,7 @@
 namespace controllers\channels\order;
 
 use controllers\channels\XMLController;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\order\Order;
 
 class OrderXMLController

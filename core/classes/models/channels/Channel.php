@@ -2,7 +2,7 @@
 
 namespace models\channels;
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use IBM;
 use controllers\channels\ChannelHelperController as CHC;
 use models\ModelDB as MDB;
@@ -68,9 +68,9 @@ class Channel
 
         $sql = "SELECT $columnSelect
                 FROM $table
-                INNER JOIN store ON $table.store_id = store.id 
-                INNER JOIN account ON account.company_id = store.company_id 
-                INNER JOIN channel ON channel.id = store.channel_id 
+                INNER JOIN store ON $table.store_id = store.id
+                INNER JOIN account ON account.company_id = store.company_id
+                INNER JOIN channel ON channel.id = store.channel_id
                 WHERE account.id = :user_id AND channel.name = :channel";
         $queryParams = [
             'user_id' => $user_id,
@@ -88,7 +88,7 @@ class Channel
 
         $table = CHC::sanitizeAPITableName($table);
 
-        $sql = "INSERT INTO $table ($columnInsert) 
+        $sql = "INSERT INTO $table ($columnInsert)
                 VALUES ($columnValues)
                 ON DUPLICATE KEY UPDATE $updateValues";
         Ecommerce::dd($sql);
@@ -110,8 +110,8 @@ class Channel
 
     public static function getAccounts($name)
     {
-        $sql = "SELECT co_one_acct, co_two_acct 
-                FROM channel 
+        $sql = "SELECT co_one_acct, co_two_acct
+                FROM channel
                 WHERE channel.name = :name";
         $queryParams = [
             ':name' => $name

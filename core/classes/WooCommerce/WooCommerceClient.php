@@ -2,7 +2,7 @@
 
 namespace WooCommerce;
 
-use ecommerce\EcommerceInterface;
+use Ecommerce\EcommerceInterface;
 use models\channels\Channel;
 
 class WooCommerceClient implements EcommerceInterface

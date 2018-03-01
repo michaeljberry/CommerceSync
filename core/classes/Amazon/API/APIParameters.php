@@ -3,7 +3,7 @@
 namespace Amazon\API;
 
 use Amazon\AmazonClient;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 
 trait APIParameters
 {

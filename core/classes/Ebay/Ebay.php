@@ -2,10 +2,9 @@
 
 namespace Ebay;
 
-use ecommerce\Ecommerce;
+use Ecommerce\{Ecommerce, ChannelInterface};
 use models\channels\Fee;
 use models\ModelDB as MDB;
-use ecommerce\ChannelInterface;
 use controllers\channels\ChannelSetup;
 
 class Ebay implements ChannelInterface

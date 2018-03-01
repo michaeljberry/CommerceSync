@@ -1,6 +1,5 @@
 <?php
 
-use ecommerce\Ecommerce;
 use models\channels\Listing;
 
 error_reporting(-1);

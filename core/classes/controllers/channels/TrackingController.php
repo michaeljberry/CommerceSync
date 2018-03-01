@@ -3,7 +3,7 @@
 namespace controllers\channels;
 
 use controllers\channels\order\ChannelOrderTracking;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use IBM;
 use models\channels\order\Order;
 use models\channels\Tracking;

@@ -2,7 +2,7 @@
 
 namespace Ebay;
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\Channel;
 use models\channels\order\Order;
 use models\channels\order\OrderItem;

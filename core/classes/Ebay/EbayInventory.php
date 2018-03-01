@@ -2,12 +2,8 @@
 
 namespace Ebay;
 
-use models\channels\Listing;
-use models\channels\product\Product;
-use models\channels\product\ProductAvailability;
-use models\channels\product\ProductPrice;
-use models\channels\SKU;
-use models\channels\Stock;
+use models\channels\{Listing, SKU, Stock};
+use models\channels\product\{Product, ProductAvailability, ProductPrice};
 
 class EbayInventory extends EbayClient
 {

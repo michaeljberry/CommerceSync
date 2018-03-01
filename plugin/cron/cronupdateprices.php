@@ -9,7 +9,7 @@ require WEBPLUGIN . 'eb/ebvar.php';
 // require WEBPLUGIN . 'rev/revvar.php';
 // require WEBPLUGIN . 'wm/wmvar.php';
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\channels\Listing;
 use models\channels\product\ProductPrice;
 use Ebay\EbayInventory;

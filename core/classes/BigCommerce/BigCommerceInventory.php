@@ -2,7 +2,6 @@
 
 namespace BigCommerce;
 
-use ecommerce\Ecommerce;
 use models\channels\Listing;
 use models\ModelDB as MDB;
 
@@ -23,7 +22,7 @@ class BigCommerceInventory extends BigCommerce
         return MDB::query($sql, $query_params, 'fetchAll');
     }
 
-    public function update_bc_inventory($stock_id, $stock_qty, $price, Ecommerce $ecommerce)
+    public function update_bc_inventory($stock_id, $stock_qty, $price)
     { //$BC
         $store_listing_id = Listing::getChannelListingIdByStockId($stock_id, 'listing_bigcommerce');
         echo 'Stock ID: ' . $stock_id . ', ID: ' . $store_listing_id . ', Price: ' . $price . ', Qty: ' . $stock_qty . '<br>';

@@ -3,7 +3,7 @@
 namespace controllers\channels\order;
 
 
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 
 class OrderController
 {

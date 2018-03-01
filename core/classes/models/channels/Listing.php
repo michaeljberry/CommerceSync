@@ -4,7 +4,7 @@ namespace models\channels;
 
 
 use controllers\channels\ChannelHelperController as CHC;
-use ecommerce\Ecommerce;
+use Ecommerce\Ecommerce;
 use models\ModelDB as MDB;
 use PDO;
 
@@ -13,11 +13,11 @@ class Listing
 
     public static function getAllFromChannels() //, $offset, $limit
     {
-        $sql = "SELECT a.sku, a.asin1 AS am_list, b.store_listing_id AS bc_list, e.store_listing_id AS eb_list, r.store_listing_id AS rev_list 
-                FROM sync.listing_amazon a 
-                LEFT JOIN listing_bigcommerce b ON b.sku = a.sku 
-                LEFT JOIN listing_ebay e ON e.sku = a.sku 
-                LEFT JOIN listing_reverb r ON r.sku = a.sku 
+        $sql = "SELECT a.sku, a.asin1 AS am_list, b.store_listing_id AS bc_list, e.store_listing_id AS eb_list, r.store_listing_id AS rev_list
+                FROM sync.listing_amazon a
+                LEFT JOIN listing_bigcommerce b ON b.sku = a.sku
+                LEFT JOIN listing_ebay e ON e.sku = a.sku
+                LEFT JOIN listing_reverb r ON r.sku = a.sku
                 ORDER BY sku ASC";
         // LIMIT $offset, $limit
         return MDB::query($sql, [], 'fetchAll');
@@ -26,8 +26,8 @@ class Listing
     public static function getBySku($sku, $table)
     {
         $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT * 
-                FROM $table 
+        $sql = "SELECT *
+                FROM $table
                 WHERE sku = :sku";
         $queryParams = [
             ':sku' => $sku
@@ -38,9 +38,9 @@ class Listing
     public static function getPriceBySku($sku, $table)
     {
         $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT price 
-                FROM $table 
-                WHERE sku = :sku 
+        $sql = "SELECT price
+                FROM $table
+                WHERE sku = :sku
                 AND override_price = 0";
         $queryParams = [
             'sku' => $sku
@@ -51,9 +51,9 @@ class Listing
     public static function getUpdatedBySku($table, $sku)
     {
         $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT st.id, st.sku_id, tb.inventory_level AS stock_qty 
-                FROM stock st 
-                JOIN $table tb ON tb.stock_id = st.id 
+        $sql = "SELECT st.id, st.sku_id, tb.inventory_level AS stock_qty
+                FROM stock st
+                JOIN $table tb ON tb.stock_id = st.id
                 WHERE tb.sku = :sku";
         $queryParams = [
             ':sku' => $sku
@@ -68,9 +68,9 @@ class Listing
         if ($table === 'listing_amazon') {
             $sql .= ",tb.asin1";
         }
-        $sql .= ", sk.sku 
-                FROM stock st 
-                JOIN $table tb ON tb.stock_id = st.id 
+        $sql .= ", sk.sku
+                FROM stock st
+                JOIN $table tb ON tb.stock_id = st.id
                 LEFT OUTER JOIN sku sk on sk.id = st.sku_id";
         //WHERE tb.last_edited >= DATE_SUB(NOW(), INTERVAL 2 HOUR)
         return MDB::query($sql, [], 'fetchAll');
@@ -79,8 +79,8 @@ class Listing
     public static function getUpdated($table)
     {
         $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT tb.sku, tb.inventory_level AS qty 
-                FROM $table tb 
+        $sql = "SELECT tb.sku, tb.inventory_level AS qty
+                FROM $table tb
                 WHERE tb.last_edited >= DATE_SUB(NOW(), INTERVAL 45 MINUTE)";
         return MDB::query($sql, [], 'fetchAll');
     }
@@ -88,8 +88,8 @@ class Listing
     public static function getChannelListingIdByStockId($stockID, $table)
     {
         $table_col = CHC::sanitize_table_name($table);
-        $sql = "SELECT store_listing_id 
-                FROM $table_col 
+        $sql = "SELECT store_listing_id
+                FROM $table_col
                 WHERE stock_id = :stock_id";
         $queryParams = [
             ':stock_id' => $stockID
@@ -100,8 +100,8 @@ class Listing
     public static function getIdBySku($sku, $table)
     {
         $table_col = CHC::sanitize_table_name($table);
-        $sql = "SELECT store_listing_id 
-                FROM $table_col 
+        $sql = "SELECT store_listing_id
+                FROM $table_col
                 WHERE stock_id = :stock_id";
         $queryParams = [
             ':sku' => $sku
@@ -111,9 +111,9 @@ class Listing
 
     public static function getIdByStockId($table, $stockID, $storeID)
     {
-        $sql = "SELECT id 
-                FROM $table 
-                WHERE stock_id = :stock_id 
+        $sql = "SELECT id
+                FROM $table
+                WHERE stock_id = :stock_id
                 AND store_id = :store_id";
         $queryParams = [
             ':stock_id' => $stockID,
@@ -124,8 +124,8 @@ class Listing
 
     public static function save($table, $columns, $values, $updateString, $queryParams)
     {
-        $sql = "INSERT INTO $table ($columns) 
-                VALUES ($values) 
+        $sql = "INSERT INTO $table ($columns)
+                VALUES ($values)
                 ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id),$updateString";
         return MDB::query($sql, $queryParams, 'id');
     }
@@ -149,7 +149,7 @@ class Listing
     public static function getInventory($table)
     {
         $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT sku, inventory_level 
+        $sql = "SELECT sku, inventory_level
                 FROM $table";
         return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }
@@ -157,8 +157,8 @@ class Listing
     public static function updateInventoryAndPrice($sku, $qty, $price, $table)
     {
         $table = CHC::sanitize_table_name($table);
-        $sql = "UPDATE $table tb 
-                SET tb.inventory_level = :qty, tb.price = :price 
+        $sql = "UPDATE $table tb
+                SET tb.inventory_level = :qty, tb.price = :price
                 WHERE tb.sku = :item";
         $queryParams = [
             ":qty" => $qty,
@@ -171,8 +171,8 @@ class Listing
     public static function updateInventory($sku, $qty, $table)
     {
         $table = CHC::sanitize_table_name($table);
-        $sql = "INSERT INTO $table (sku, inventory_level) 
-                VALUES(:sku, :qty) 
+        $sql = "INSERT INTO $table (sku, inventory_level)
+                VALUES(:sku, :qty)
                 ON DUPLICATE KEY UPDATE inventory_level = :qty2";
         $queryParams = [
             ":qty" => $qty,
@@ -186,11 +186,11 @@ class Listing
     {
         $fromTable = CHC::sanitize_table_name($fromTable);
         $toTable = CHC::sanitize_table_name($toTable);
-        $sql = "SELECT la.title, la.description, p.upc, sk.sku, la.inventory_level AS quantity, la.price, la.category_id, p.weight 
-                FROM sync.product p 
-                JOIN sku sk ON sk.product_id = p.id 
-                JOIN $fromTable la ON la.sku = sk.sku 
-                LEFT OUTER JOIN $toTable le ON le.sku = la.sku 
+        $sql = "SELECT la.title, la.description, p.upc, sk.sku, la.inventory_level AS quantity, la.price, la.category_id, p.weight
+                FROM sync.product p
+                JOIN sku sk ON sk.product_id = p.id
+                JOIN $fromTable la ON la.sku = sk.sku
+                LEFT OUTER JOIN $toTable le ON le.sku = la.sku
                 WHERE p.upc <> '' AND le.sku IS NULL";
         return MDB::query($sql, [], 'fetchAll');
     }
@@ -198,7 +198,7 @@ class Listing
     public static function getByChannel($table)
     {
         $table = CHC::sanitize_table_name($table);
-        $sql = "SELECT sku, store_listing_id as id 
+        $sql = "SELECT sku, store_listing_id as id
                 FROM $table";
         return MDB::query($sql, [], 'fetchAll', PDO::FETCH_GROUP | PDO::FETCH_UNIQUE | PDO::FETCH_ASSOC);
     }

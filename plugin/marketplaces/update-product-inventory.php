@@ -1,5 +1,4 @@
 <?php
-use ecommerce\Ecommerce;
 use models\channels\Inventory;
 use models\channels\Listing;
 use models\channels\SKU;
@@ -107,7 +106,7 @@ if ($_POST['inventory-sku']) {
             }
             echo 'eBay Quantity: ' . $stock_qty . '; eBay Price: ' . $price . '<br>';
 
-            $response = EbayInventory::updateEbayInventory($stock_id, $stock_qty, $price, $ecommerce);
+            $response = EbayInventory::updateEbayInventory($stock_id, $stock_qty, $price);
 
             if (strpos($response, 'Success')) {
                 echo 'eBay Inventory/Price Update was uploaded successfully';
@@ -151,7 +150,7 @@ if ($_POST['inventory-sku']) {
             }
             echo 'MML Quantity: ' . $stock_qty . '; MML Price: ' . $price . '<br>';
 
-            $response = $bcinv->update_bc_inventory($stock_id, $stock_qty, $price, $ecommerce);
+            $response = $bcinv->update_bc_inventory($stock_id, $stock_qty, $price);
             if (!empty($response)) {
                 echo 'MML Inventory/Price was uploaded successfully';
                 print_r($response);

@@ -22,9 +22,11 @@ class GetOrder extends Orders
     public function __construct($amazonOrderId)
     {
 
+        static::setParameters();
+
         static::setParameterByKey("AmazonOrderId.Id.1", $amazonOrderId);
 
-        static::setParameters();
+        static::verifyParameters();
 
     }
 

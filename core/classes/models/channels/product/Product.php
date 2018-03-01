@@ -4,13 +4,14 @@ namespace models\channels\product;
 
 use models\channels\SKU;
 use models\ModelDB as MDB;
+use Ecommerce\Ecommerce;
 
 class Product
 {
 
     public static function save($name, $subTitle, $description, $upc, $weight)
     {
-        $sql = "INSERT INTO product (product.name, subtitle, description, upc, weight) 
+        $sql = "INSERT INTO product (product.name, subtitle, description, upc, weight)
                 VALUES (:name, :subtitle, :description, :upc, :weight)";
         $queryParams = [
             ':name' => $name,
@@ -24,9 +25,9 @@ class Product
 
     public static function getBySku($sku)
     {
-        $sql = "SELECT product.id, product.upc, product.status 
-                FROM product 
-                JOIN sku ON sku.product_id = product.id 
+        $sql = "SELECT product.id, product.upc, product.status
+                FROM product
+                JOIN sku ON sku.product_id = product.id
                 WHERE sku.sku = :sku";
         $queryParams = [
             ':sku' => $sku
@@ -36,9 +37,9 @@ class Product
 
     public static function getIdBySku($sku)
     {
-        $sql = "SELECT product.id 
-                FROM product 
-                JOIN sku ON sku.product_id = product.id 
+        $sql = "SELECT product.id
+                FROM product
+                JOIN sku ON sku.product_id = product.id
                 WHERE sku.sku = :sku";
         $queryParams = [
             ':sku' => $sku
@@ -48,8 +49,8 @@ class Product
 
     public static function updateUpc($id, $upc)
     {
-        $sql = "UPDATE product 
-                SET upc = :upc 
+        $sql = "UPDATE product
+                SET upc = :upc
                 WHERE id = :id";
         $queryParams = [
             ':upc' => $upc,
@@ -60,8 +61,8 @@ class Product
 
     public static function updateStatus($id, $status)
     {
-        $sql = "UPDATE product 
-                SET status = :status 
+        $sql = "UPDATE product
+                SET status = :status
                 WHERE id = :id";
         $queryParams = [
             ':status' => $status,
@@ -76,6 +77,7 @@ class Product
         $productID = $results['id'];
         $upc2 = $results['upc'];
         $active = $results['status'];
+        Ecommerce::dd($results);
         if (empty($productID)) {
             $productID = Product::save($name, $subTitle, $description, $upc, $weight);
             $skuID = SKU::save($sku, $productID);
@@ -103,10 +105,10 @@ class Product
 
     public static function getAllInfo($sku)
     {
-        $sql = "SELECT * 
-                FROM product p 
-                JOIN sku sk ON p.id = sk.product_id 
-                JOIN stock st ON st.sku_id = sk.id 
+        $sql = "SELECT *
+                FROM product p
+                JOIN sku sk ON p.id = sk.product_id
+                JOIN stock st ON st.sku_id = sk.id
                 WHERE sk.sku = :sku";
         $queryParams = [
             ':sku' => $sku

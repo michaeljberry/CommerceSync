@@ -2,8 +2,6 @@
 
 namespace Amazon\API\Feeds;
 
-use Amazon\API\Feeds\Feeds;
-
 class GetFeedSubmissionCount extends Feeds
 {
 
@@ -32,14 +30,7 @@ class GetFeedSubmissionCount extends Feeds
 
         static::setParameters();
 
-        static::requestRules();
-
-    }
-
-    protected static function requestRules()
-    {
-
-        static::ensureSetParametersAreAllowed(static::$allowedParameters);
+        static::verifyParameters();
 
     }
 

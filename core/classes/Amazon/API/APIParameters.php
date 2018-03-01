@@ -185,12 +185,12 @@ trait APIParameters
     protected static function setBodyParameter()
     {
 
-        $body = static::getBody();
+        $feedContent = static::getFeedContent();
 
-        if($body)
+        if($feedContent)
         {
 
-            self::setParameterByKey("Body", $body);
+            self::setParameterByKey("FeedContent", $feedContent);
 
         }
 
@@ -231,6 +231,7 @@ trait APIParameters
     public static function setParameters()
     {
 
+        static::resetCurlParameters();
         static::combineRequiredParameters();
         static::combineRequiredAndAllowedParameters();
         static::setAwsAccessKeyParameter();
@@ -258,8 +259,21 @@ trait APIParameters
         static::setSignatureVersionParameter();
         static::setTimestampParameter();
         static::setVersionDateParameter();
+
+    }
+
+    public static function verifyParameters()
+    {
+
         static::ensureRequiredParametersAreSet();
         static::ensureSetParametersAreAllowed();
+
+        if(method_exists(get_called_class(), "requestRules"))
+        {
+
+            static::requestRules();
+
+        }
 
     }
 

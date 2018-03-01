@@ -9,37 +9,28 @@ class ListInventorySupply extends FulfillmentInventory
     protected static $restoreRate = 2;
     protected static $restoreRateTime = 1;
     protected static $restoreRateTimePeriod = "second";
-    protected static $quotaTimePeriod = "second";
     protected static $action = "ListInventorySupply";
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inventory/FBAInventory_ListInventorySupply.html";
-    protected static $responseGroup = "Basic";
+    protected static $requiredParameters = [
+        "SellerId"
+    ];
+    protected static $allowedParameters = [
+        "SellerSkus",
+        "QueryStartDateTime",
+        "ResponseGroup",
+        "MarketplaceId"
+    ];
 
     public function __construct($sku)
     {
 
-        static::setAdditionalParameters();
-
-        static::setParameterByKey("ResponseGroup", static::$responseGroup);
+        static::setParameters();
 
         static::setSkuParameters($sku);
 
-        static::requestRules();
-
-    }
-
-    protected static function setAdditionalParameters()
-    {
-
-        $additionalConfiguration = [
-            "Merchant",
-            "MarketplaceId.Id.1",
-            "PurgeAndReplace",
-            "MarketplaceId"
-        ];
-
-        static::setParameters($additionalConfiguration);
+        static::verifyParameters();
 
     }
 
@@ -67,27 +58,21 @@ class ListInventorySupply extends FulfillmentInventory
     protected static function requestRules()
     {
 
-        if(
-            null !== static::getParameterByKey("SellerSkus") &&
-            null !== static::getParameterByKey("QueryStartDateTime")
-        ){
+        static::ensureOneOrTheOtherIsSet("SellerSkus", "QueryStartDateTime");
 
-            throw new Exception("SellerSkus and QueryStartDateTime cannot both be set. Please correct and try again.");
+        static::validResponseGroupRule();
 
-        }
+    }
 
-        if(null !== static::getParameterByKey("ResponseGroup")){
+    protected static function validResponseGroupRule()
+    {
 
-            if(
-                "Basic" !== static::getParameterByKey("ResponseGroup") ||
-                "Detailed" !== static::getParameterByKey("ResponseGroup")
-            ){
+        $validResponseGroups = [
+            "Basic",
+            "Detailed"
+        ];
 
-                throw new Exception(static::getParameterByKey("ResponseGroup") . " is not a valid ResponseGroup. Please correct and try again.");
-
-            }
-
-        }
+        static::ensureParameterValuesAreValid("ResponseGroup", $validResponseGroups);
 
     }
 

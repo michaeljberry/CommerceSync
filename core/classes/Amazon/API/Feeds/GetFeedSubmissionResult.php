@@ -2,8 +2,6 @@
 
 namespace Amazon\API\Feeds;
 
-use Amazon\API\Feeds\Feeds;
-
 class GetFeedSubmissionResult extends Feeds
 {
 
@@ -26,9 +24,11 @@ class GetFeedSubmissionResult extends Feeds
     public function __construct($feedSubmissionId)
     {
 
+        static::setParameters();
+
         static::setParameterByKey("FeedSubmissionId", $feedSubmissionId);
 
-        static::setParameters();
+        static::verifyParameters();
 
     }
 

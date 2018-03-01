@@ -191,6 +191,7 @@ class AmazonOrder extends AmazonClient
         $tax = $Order->getTax()->get();
 
         Order::updateShippingAndTaxes($Order->getOrderId(), $Order->getShippingPrice(), $tax);
+        Ecommerce::dd($Order->getChannelAccount());
 
         $Order->setOrderXml($Order);
 
@@ -239,14 +240,14 @@ class AmazonOrder extends AmazonClient
             {
 
                 $orderItems = static::getMoreOrderItems($nextItemToken);
-                static::getItems($Order, $orderItems, true);
+                static::parseItems($Order, $orderItems, true);
 
             }
 
         } else {
 
             sleep(2);
-            static::getItems($Order);
+            static::parseItems($Order, static::getOrderItems($Order->getOrderNumber()));
 
         }
 

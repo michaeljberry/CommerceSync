@@ -5,7 +5,7 @@ namespace Amazon\API\Orders;
 use \DateTime;
 use \DateTimeZone;
 use Amazon\Amazon;
-use Amazon\API\Orders\Orders;
+use Ecommerce\Ecommerce;
 
 class ListOrders extends Orders
 {
@@ -39,13 +39,13 @@ class ListOrders extends Orders
     public function __construct($orderStatus = "")
     {
 
+        static::setParameters();
+
         static::setShippingParameters($orderStatus);
 
         static::setDateParameter();
 
-        static::setParameters();
-
-        static::requestRules();
+        static::verifyParameters();
 
     }
 

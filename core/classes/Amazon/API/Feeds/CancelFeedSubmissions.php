@@ -2,8 +2,6 @@
 
 namespace Amazon\API\Feeds;
 
-use Amazon\API\Feeds\Feeds;
-
 class CancelFeedSubmissions extends Feeds
 {
 
@@ -31,6 +29,8 @@ class CancelFeedSubmissions extends Feeds
     {
 
         static::setParameters();
+
+        static::verifyParameters();
 
     }
 

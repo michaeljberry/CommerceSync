@@ -2,8 +2,6 @@
 
 namespace Amazon\API\Feeds;
 
-use Amazon\API\Feeds\Feeds;
-
 class GetFeedSubmissionListByNextToken extends Feeds
 {
 
@@ -26,9 +24,11 @@ class GetFeedSubmissionListByNextToken extends Feeds
     public function __construct($nextToken)
     {
 
+        static::setParameters();
+
         static::setParameterByKey("NextToken", $nextToken);
 
-        static::setParameters();
+        static::verifyParameters();
 
     }
 

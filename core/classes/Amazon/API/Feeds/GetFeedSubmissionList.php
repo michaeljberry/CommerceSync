@@ -2,8 +2,6 @@
 
 namespace Amazon\API\Feeds;
 
-use Amazon\API\Feeds\Feeds;
-
 class GetFeedSubmissionList extends Feeds
 {
 
@@ -33,6 +31,8 @@ class GetFeedSubmissionList extends Feeds
     {
 
         static::setParameters();
+
+        static::verifyParameters();
 
     }
 

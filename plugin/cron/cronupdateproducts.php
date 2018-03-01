@@ -9,7 +9,7 @@ use models\channels\product\ProductPrice;
 $start = startClock();
 
 $debug = false;
-$testSku = 'z11102-95-p-blk-7str';
+$testSku = '1127047';
 if (!$debug) {
     $count = IBM::getCount();
     echo $count . '<br>';
@@ -18,6 +18,9 @@ if (!$debug) {
         $vaidata = IBM::syncVAI($low, $high);
         foreach ($vaidata as $v) {
             $sku = trim($v['ICITEM']);
+            if($sku !== $testSku){
+                continue;
+            }
             $name = trim($v['ICTITL']);
             $subTitle = trim($v['ICSUBT']);
             $description = trim($v['ICDSC1']);
@@ -28,7 +31,6 @@ if (!$debug) {
                 $status = 1;
             }
             $sku_id = Product::searchOrInsertBySku($sku, $name, $subTitle, $description, $upc, $weight, $status);
-
             $sku = str_replace("'", "''", $sku);
             $money = IBM::syncVAIPrices($sku, '1');
             if (isset($money[0])) {
@@ -69,7 +71,7 @@ if (!$debug) {
         $status = 1;
     }
     $sku_id = Product::searchOrInsert($sku, $name, $subTitle, $description, $upc, $weight, $status);
-
+    Ecommerce::dd($sku_id);
     $sku = str_replace("'", "''", $sku);
     $money = IBM::syncVAIPrices($sku, '1');
     if (!isset($money[0])) {

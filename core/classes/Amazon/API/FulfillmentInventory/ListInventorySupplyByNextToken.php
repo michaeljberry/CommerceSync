@@ -1,30 +1,28 @@
 <?php
 
-namespace Amazon\API\Orders;
+namespace Amazon\API\FulfillmentInventory;
 
-class ListOrdersByNextToken extends Orders
+class ListInventorySupplyByNextToken extends FulfillmentInventory
 {
 
     protected static $requestQuota = 30;
     protected static $restoreRate = 2;
     protected static $restoreRateTime = 1;
-    protected static $restoreRateTimePeriod = "minute";
-    protected static $action = "ListOrdersByNextToken";
+    protected static $restoreRatePeriod = "second";
+    protected static $action = "ListInventorySupplyByNextToken";
     protected static $method = "POST";
     private static $curlParameters = [];
-    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrdersByNextToken.html";
+    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inventory/FBAInventory_ListInventorySupplyByNextToken.html";
     protected static $requiredParameters = [
         "SellerId",
         "NextToken"
     ];
     protected static $allowedParameters = [];
 
-    public function __construct($nextToken)
+    public function __construct()
     {
 
         static::setParameters();
-
-        static::setParameterByKey("NextToken", $nextToken);
 
         static::verifyParameters();
 

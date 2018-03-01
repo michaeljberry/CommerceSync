@@ -22,10 +22,10 @@ trait APIMethods
 
     }
 
-    protected static function setBody($body)
+    protected static function setFeedContent($feedContent)
     {
 
-        static::$body = $body;
+        static::$feedContent = $feedContent;
 
     }
 
@@ -50,10 +50,10 @@ trait APIMethods
 
     }
 
-    public static function getBody()
+    public static function getFeedContent()
     {
 
-        return static::$body;
+        return static::$feedContent;
 
     }
 

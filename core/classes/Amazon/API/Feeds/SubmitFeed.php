@@ -2,8 +2,6 @@
 
 namespace Amazon\API\Feeds;
 
-use Amazon\API\Feeds\Feeds;
-
 class SubmitFeed extends Feeds
 {
 
@@ -15,14 +13,14 @@ class SubmitFeed extends Feeds
     protected static $action = "SubmitFeed";
     protected static $method = "POST";
     protected static $feedType;
-    protected static $body;
+    protected static $feedContent;
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_SubmitFeed.html";
     protected static $requiredParameters = [
         "MarketplaceId",
         "SellerId",
         "FeedType",
-        "Body"
+        "FeedContent"
     ];
     protected static $allowedParameters = [
         "MarketetplaceIdList.Id",
@@ -30,14 +28,16 @@ class SubmitFeed extends Feeds
         "ContentMD5Value"
     ];
 
-    public function __construct($feedType, $body)
+    public function __construct($feedType, $feedContent)
     {
+
+        static::setParameters();
 
         static::setFeedType($feedType);
 
-        static::setBody($body);
+        static::setFeedContent($feedContent);
 
-        static::setParameters();
+        static::verifyParameters();
 
     }
 

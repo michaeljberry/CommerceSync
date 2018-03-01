@@ -5,6 +5,7 @@ namespace Amazon\API;
 use \Exception;
 use \DateTime;
 use \DateInterval;
+use Ecommerce\Ecommerce;
 
 trait APIParameterValidation
 {
@@ -53,6 +54,7 @@ trait APIParameterValidation
         {
 
             $date = new DateTime(static::getParameterByKey($baseDate));
+
             if($direction !== "earlier")
             {
 
@@ -79,6 +81,22 @@ trait APIParameterValidation
                 throw new Exception($exceptionNotice);
 
             }
+
+        }
+
+    }
+    public static function ensureDatesNotOutsideInterval($earlierDate, $laterDate, $interval)
+    {
+
+        if(
+            null !== static::getParameterByKey($earlierDate) &&
+            null !== static::getParameterByKey($laterDate)
+        ){
+
+            $earlierDate = new DateTime($earlierDate);
+            $laterDate = new DateTime($laterDate);
+            $difference = $earlierDate->diff($laterDate);
+
 
         }
 
@@ -188,3 +206,5 @@ trait APIParameterValidation
         }
 
     }
+
+}

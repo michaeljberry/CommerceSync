@@ -23,7 +23,9 @@ class ListOrders extends Orders
         "SellerId",
     ];
     protected static $allowedParameters = [
+        "CreatedAfter",
         "CreatedBefore",
+        "LastUpdatedAfter",
         "LastUpdatedBefore",
         "OrderStatus.Status",
         "FulfillmentChannel",
@@ -79,7 +81,7 @@ class ListOrders extends Orders
     protected static function requestRules()
     {
 
-        static::requireParameterToBeSet("MarketplaceId");
+        // static::requireParameterToBeSet("MarketplaceId");
 
         static::ensureDatesAreChronological("CreatedBefore", "CreatedAfter");
 

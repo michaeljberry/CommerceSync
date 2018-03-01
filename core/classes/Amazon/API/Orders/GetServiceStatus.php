@@ -15,6 +15,8 @@ class GetServiceStatus extends Orders
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/MWS_GetServiceStatus.html";
+    protected static $requiredParameters = [];
+    protected static $allowedParameters = [];
 
     public function __construct()
     {

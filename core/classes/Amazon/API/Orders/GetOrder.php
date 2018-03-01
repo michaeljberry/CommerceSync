@@ -13,33 +13,19 @@ class GetOrder extends Orders
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_GetOrder.html";
+    protected static $requiredParameters = [
+        "SellerId",
+        "AmazonOrderId.Id"
+    ];
+    protected static $allowedParameters = [];
 
     public function __construct($amazonOrderId)
     {
 
-        static::setAdditionalParameters();
-
         static::setParameterByKey("AmazonOrderId.Id.1", $amazonOrderId);
 
-        static::requestRules();
+        static::setParameters();
 
-    }
-
-    protected static function setAdditionalParameters()
-    {
-
-        $additionalConfiguration = [
-            "SellerId"
-        ];
-
-        static::setParameters($additionalConfiguration);
-
-    }
-
-    protected static function requestRules()
-    {
-
-        static::requireParameterToBeSet("AmazonOrderId.Id");
     }
 
 }

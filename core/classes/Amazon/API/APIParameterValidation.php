@@ -85,7 +85,7 @@ trait APIParameterValidation
         }
 
     }
-    public static function ensureDatesNotOutsideInterval($earlierDate, $laterDate, $interval)
+    public static function ensureDatesNotOutsideInterval($earlierDate, $laterDate, $intervalInDays)
     {
 
         if(
@@ -96,7 +96,12 @@ trait APIParameterValidation
             $earlierDate = new DateTime($earlierDate);
             $laterDate = new DateTime($laterDate);
             $difference = $earlierDate->diff($laterDate);
+            if($difference->format('%a') > $intervalInDays)
+            {
 
+                throw new Exception("These dates are greater than $intervalInDays days apart. Please correct and try again.");
+
+            }
 
         }
 
@@ -106,8 +111,13 @@ trait APIParameterValidation
     {
 
         if(
-            null === static::getParameterByKey($firstParameter) &&
-            null === static::getParameterByKey($secondParameter)
+            (
+                null === static::getParameterByKey($firstParameter) &&
+                null === static::getParameterByKey($secondParameter)
+            ) || (
+                null !== static::getParameterByKey($firstParameter) &&
+                null !== static::getParameterByKey($secondParameter)
+            )
         ){
 
             throw new Exception("$firstParameter or $secondParameter must be set. Please correct and try again.");
@@ -200,6 +210,22 @@ trait APIParameterValidation
             {
 
                 throw new Exception("$parameterToCheck must be between $min and $max");
+
+            }
+
+        }
+
+    }
+    public static function ensureParameterIsInFormat($parameterToCheck, $format)
+    {
+
+        if(null !== static::getParameterByKey($parameterToCheck))
+        {
+
+            if(!preg_match($format, $parameterToCheck))
+            {
+
+                throw new Exception("$parameterToCheck does not match the format: $format. Please correct and try again.");
 
             }
 

@@ -43,7 +43,7 @@ class ListOrders extends Orders
 
         static::setShippingParameters($orderStatus);
 
-        static::setDateParameter();
+        static::setDate();
 
         static::verifyParameters();
 
@@ -66,15 +66,16 @@ class ListOrders extends Orders
 
     }
 
-    protected static function setDateParameter()
+    protected static function setDate()
     {
 
         $from = Amazon::getApiOrderDays();
+
         $from = $from["api_from"];
+
         $from .= " days";
-        $createdAfter = new DateTime($from, new DateTimeZone("America/Boise"));
-        $createdAfter = $createdAfter->format("Y-m-d\TH:i:s\Z");
-        static::setParameterByKey("CreatedAfter", $createdAfter);
+
+        static::setDateParameter("CreatedAfter", $from);
 
     }
 

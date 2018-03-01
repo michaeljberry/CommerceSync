@@ -4,11 +4,15 @@ namespace Amazon\API;
 
 use Amazon\AmazonClient;
 use Ecommerce\Ecommerce;
+use DateTime;
+use DateTimeZone;
 
 trait APIParameters
 {
 
     private static $curlParameters = [];
+    private static $orderNumberFormat = '^[0-9]{3}\-[0-9]{7}\-[0-9]{7}$';
+
     private static $requiredParameters = [
         "AWSAccessKeyId",
         "Action",
@@ -34,6 +38,13 @@ trait APIParameters
         }
 
         return self::$requiredParameters;
+
+    }
+
+    public static function getOrderNumberFormat()
+    {
+
+        return self::$orderNumberFormat;
 
     }
 
@@ -182,7 +193,7 @@ trait APIParameters
 
     }
 
-    protected static function setBodyParameter()
+    protected static function setFeedContentParameter()
     {
 
         $feedContent = static::getFeedContent();
@@ -193,6 +204,22 @@ trait APIParameters
             self::setParameterByKey("FeedContent", $feedContent);
 
         }
+
+    }
+
+    protected static function setDateParameter($parameter, $date, $format = null)
+    {
+
+        $newDate = new DateTime($date, new DateTimeZone("America/Boise"));
+
+        if(!$format)
+        {
+
+            $format = "Y-m-d\TH:i:s";
+
+        }
+
+        static::setParameterByKey($parameter, $newDate->format($format));
 
     }
 
@@ -253,7 +280,7 @@ trait APIParameters
             static::setPurgeAndReplaceParameter();
 
         static::setFeedTypeParameter();
-        static::setBodyParameter();
+        static::setFeedContentParameter();
 
         static::setSignatureMethodParameter();
         static::setSignatureVersionParameter();
@@ -267,6 +294,8 @@ trait APIParameters
 
         static::ensureRequiredParametersAreSet();
         static::ensureSetParametersAreAllowed();
+
+        static::ensureParameterIsInFormat("AmazonOrderId", static::getOrderNumberFormat());
 
         if(method_exists(get_called_class(), "requestRules"))
         {

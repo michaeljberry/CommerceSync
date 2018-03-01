@@ -2,6 +2,9 @@
 
 namespace Amazon\API\Finances;
 
+use Ecommerce\Ecommerce;
+
+
 class ListFinancialEventGroups extends Finances
 {
 
@@ -9,6 +12,7 @@ class ListFinancialEventGroups extends Finances
     protected static $restoreRate = 1;
     protected static $restoreRateTime = 2;
     protected static $restoreRateTimePeriod = "second";
+    protected static $hourlyRequestQuota = 1800;
     protected static $action = "ListFinancialEventGroups";
     protected static $method = "POST";
     private static $curlParameters = [];
@@ -27,6 +31,8 @@ class ListFinancialEventGroups extends Finances
 
         static::setParameters();
 
+        static::setDateParameter("FinancialEventGroupStartedAfter", "-3 days");
+
         static::verifyParameters();
 
     }
@@ -39,6 +45,8 @@ class ListFinancialEventGroups extends Finances
         static::ensureIntervalBetweenDates("FinancialEventGroupStartedAfter", "Timestamp", "PT2M");
 
         static::ensureDatesAreChronological("FinancialEventGroupStartedBefore", "FinancialEventGroupStartedAfter");
+
+        static::ensureDatesNotOutsideInterval("FinancialEventGroupStartedBefore", "FinancialEventGroupStartedAfter", 180);
 
     }
 

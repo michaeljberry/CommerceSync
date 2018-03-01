@@ -173,12 +173,12 @@ trait AmazonClientCurl
 
         $amazonXML = '';
 
-        if ($amazonAPI::getBody())
+        if ($amazonAPI::getFeedContent())
         {
 
             $amazonXML = XMLController::xmlOpenTag();
             $amazonXML .= static::xmlAmazonEnvelopeHeader();
-            $amazonXML .= static::parseXML($amazonAPI::getBody());
+            $amazonXML .= static::parseXML($amazonAPI::getFeedContent());
             $amazonXML .= static::xmlAmazonEnvelopeFooter();
 
         }

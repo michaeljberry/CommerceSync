@@ -26,6 +26,18 @@ class ListInventorySupply extends FulfillmentInventory
     public function __construct($sku)
     {
 
+        /*
+        [
+            SellerSkus => ['member', $sku],
+            QueryStartDateTime => $date,
+
+        ]
+
+        if(is_array($value)){
+
+        }
+        */
+
         static::setParameters();
 
         static::setSkuParameters($sku);

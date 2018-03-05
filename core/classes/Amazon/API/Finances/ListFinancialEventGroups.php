@@ -4,7 +4,6 @@ namespace Amazon\API\Finances;
 
 use Ecommerce\Ecommerce;
 
-
 class ListFinancialEventGroups extends Finances
 {
 
@@ -26,12 +25,10 @@ class ListFinancialEventGroups extends Finances
         "FinancialEventGroupStartedBefore"
     ];
 
-    public function __construct()
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
-
-        static::setDateParameter("FinancialEventGroupStartedAfter", "-3 days");
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

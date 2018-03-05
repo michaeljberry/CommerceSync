@@ -36,55 +36,21 @@ class ListOrders extends Orders
         "TFMShipmentStatus"
     ];
 
-    public function __construct($orderStatus = "")
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
-
-        static::setShippingParameters($orderStatus);
-
-        static::setDate();
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
-
-    }
-
-    protected static function setShippingParameters($orderStatus)
-    {
-
-        if($orderStatus)
-        {
-
-            for($x = 1; $x <= count($orderStatus); $x++)
-            {
-
-                static::setParameterByKey("OrderStatus.Status.$x", $orderStatus[$x-1]);
-
-            }
-
-        }
-
-    }
-
-    protected static function setDate()
-    {
-
-        $from = Amazon::getApiOrderDays();
-
-        $from = $from["api_from"];
-
-        $from .= " days";
-
-        static::setDateParameter("CreatedAfter", $from);
 
     }
 
     protected static function requestRules()
     {
 
-        static::ensureDatesAreChronological("CreatedBefore", "CreatedAfter");
+        static::ensureDatesAreChronological("CreatedAfter", "CreatedBefore");
 
-        static::ensureDatesAreChronological("LastUpdatedBefore", "LastUpdatedAfter");
+        static::ensureDatesAreChronological("LastUpdatedAfter", "LastUpdatedBefore");
 
         static::ensureOneOrTheOtherIsSet("CreatedAfter", "LastUpdatedAfter");
 

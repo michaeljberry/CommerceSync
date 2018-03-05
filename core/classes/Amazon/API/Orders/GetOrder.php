@@ -19,12 +19,10 @@ class GetOrder extends Orders
     ];
     protected static $allowedParameters = [];
 
-    public function __construct($amazonOrderId)
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
-
-        static::setParameterByKey("AmazonOrderId.Id.1", $amazonOrderId);
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

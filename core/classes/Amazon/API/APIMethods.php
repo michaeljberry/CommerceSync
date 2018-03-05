@@ -29,6 +29,27 @@ trait APIMethods
 
     }
 
+    public static function getCountry()
+    {
+
+        return self::$country;
+
+    }
+
+    public static function getEndpoint()
+    {
+
+        return self::$marketplaces[static::getCountry()]["endpoint"];
+
+    }
+
+    public static function getMarketplaceId()
+    {
+
+        return self::$marketplaces[static::getCountry()]["MarketplaceId"];
+
+    }
+
     public static function getMethod()
     {
 

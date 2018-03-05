@@ -9,6 +9,7 @@ class ListFinancialEvents extends Finances
     protected static $restoreRate = 1;
     protected static $restoreRateTime = 2;
     protected static $restoreRateTimePeriod = "second";
+    protected static $hourlyRequestQuota = 1800;
     protected static $action = "ListFinancialEvents";
     protected static $method = "POST";
     private static $curlParameters = [];
@@ -24,10 +25,10 @@ class ListFinancialEvents extends Finances
         "PostedBefore"
     ];
 
-    public function __construct()
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

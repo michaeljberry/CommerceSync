@@ -23,47 +23,12 @@ class ListInventorySupply extends FulfillmentInventory
         "MarketplaceId"
     ];
 
-    public function __construct($sku)
+    public function __construct($parametersToSet = null)
     {
 
-        /*
-        [
-            SellerSkus => ['member', $sku],
-            QueryStartDateTime => $date,
-
-        ]
-
-        if(is_array($value)){
-
-        }
-        */
-
-        static::setParameters();
-
-        static::setSkuParameters($sku);
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
-
-    }
-
-    protected static function setSkuParameters($sku)
-    {
-
-        if (is_array($sku)) {
-
-            for ($i = 0; $i < count($sku); $i++) {
-
-                $n_sku = $sku[$i];
-                $item = $i + 1;
-                static::setParameterByKey("SellerSkus.member.$item", trim($n_sku));
-
-            }
-
-        } else {
-
-            static::setParameterByKey("SellerSkus.member.1", $sku);
-
-        }
 
     }
 

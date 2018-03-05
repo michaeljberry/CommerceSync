@@ -1,21 +1,19 @@
 <?php
 
-namespace Amazon\API\FulfillmentInventory;
+namespace Amazon\API\Finances;
 
-class GetServiceStatus extends FulfillmentInventory
+class GetServiceStatus extends Finances
 {
 
-    protected static $requestQuote = 2;
+    protected static $requestQuota = 2;
     protected static $restoreRate = 1;
     protected static $restoreRateTime = 5;
     protected static $restoreRateTimePeriod = "minute";
     protected static $action = "GetServiceStatus";
     protected static $method = "POST";
     private static $curlParameters = [];
-    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inventory/MWS_GetServiceStatus.html";
-    protected static $requiredParameters = [
-        "SellerId"
-    ];
+    private static $apiUrl = "";
+    protected static $requiredParameters = [];
     protected static $allowedParameters = [];
 
     public function __construct($parametersToSet = null)

@@ -14,37 +14,62 @@ class AmazonOrder extends AmazonClient
     public static function getOrderById($amazonOrderId)
     {
 
-        return AmazonClient::amazonCurl(new GetOrder($amazonOrderId));
+        $order = [
+            "AmazonOrderId" => $amazonOrderId
+        ];
+
+        return AmazonClient::amazonCurl(new GetOrder($order));
 
     }
 
     protected static function getMoreOrders($nextToken)
     {
 
-        return AmazonClient::amazonCurl(new ListOrdersByNextToken($nextToken));
+        $moreOrders = [
+            "NextToken" => $nextToken
+        ];
+
+        return AmazonClient::amazonCurl(new ListOrdersByNextToken($moreOrders));
 
     }
 
     public static function getOrderItems($orderNumber)
     {
 
-        return AmazonClient::amazonCurl(new ListOrderItems($orderNumber));
+        $order = [
+            "AmazonOrderId" => $orderNumber
+        ];
+
+        return AmazonClient::amazonCurl(new ListOrderItems($order));
 
     }
 
     public static function getMoreOrderItems($nextItemToken)
     {
 
-        return AmazonClient::amazonCurl(new ListOrderItemsByNextToken($nextItemToken));
+        $nextToken = [
+            "NextToken" => $nextItemToken
+        ];
+
+        return AmazonClient::amazonCurl(new ListOrderItemsByNextToken($nextToken));
 
     }
 
     public static function getUnshippedOrders()
     {
 
+        $from = Amazon::getApiOrderDays();
+
+        $from = $from["api_from"];
+
+        $from .= " days";
+
         $orderStatus = [
-            'Unshipped',
-            'PartiallyShipped'
+            "OrderStatus" => [
+                "Unshipped",
+                "PartiallyShipped"
+            ],
+            "CreatedAfter" => $from
         ];
 
         return AmazonClient::amazonCurl(new ListOrders($orderStatus));
@@ -232,6 +257,7 @@ class AmazonOrder extends AmazonClient
             {
 
                 $nextItemToken = (string)$orderItems->{$itemPage}->NextToken;
+
                 Ecommerce::dd("Next Item Token: $nextToken");
 
             }
@@ -240,6 +266,7 @@ class AmazonOrder extends AmazonClient
             {
 
                 $orderItems = static::getMoreOrderItems($nextItemToken);
+
                 static::parseItems($Order, $orderItems, true);
 
             }
@@ -247,6 +274,7 @@ class AmazonOrder extends AmazonClient
         } else {
 
             sleep(2);
+
             static::parseItems($Order, static::getOrderItems($Order->getOrderNumber()));
 
         }

@@ -35,6 +35,13 @@ class Ecommerce
 
     }
 
+    public static function removeUrlProtocol($url)
+    {
+
+        return implode(array_slice(explode("/", preg_replace("/https?:\/\//", "", $url)), 0, 1));
+
+    }
+
     protected static function cellOpeningTag($value, $cellType)
     {
         $openTag = '';

@@ -1,21 +1,22 @@
 <?php
 
-namespace Amazon\API\Orders;
+namespace Amazon\API\Finances;
 
-class ListOrderItems extends Orders
+class ListFinancialEventsByNextToken extends Finances
 {
 
     protected static $requestQuota = 30;
     protected static $restoreRate = 1;
     protected static $restoreRateTime = 2;
     protected static $restoreRateTimePeriod = "second";
-    protected static $action = "ListOrderItems";
+    protected static $hourlyRequestQuota = 1800;
+    protected static $action = "ListFinancialEventsByNextToken";
     protected static $method = "POST";
     private static $curlParameters = [];
-    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrderItems.html";
+    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/finances/Finances_ListFinancialEventsByNextToken.html";
     protected static $requiredParameters = [
         "SellerId",
-        "AmazonOrderId"
+        "NextToken"
     ];
     protected static $allowedParameters = [];
 

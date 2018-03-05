@@ -19,12 +19,10 @@ class ListOrderItemsByNextToken extends Orders
     ];
     protected static $allowedParameters = [];
 
-    public function __construct($nextItemToken)
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
-
-        static::setParameterByKey("NextToken", $nextItemToken);
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

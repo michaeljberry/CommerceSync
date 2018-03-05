@@ -222,7 +222,7 @@ trait APIParameterValidation
         if(null !== static::getParameterByKey($parameterToCheck))
         {
 
-            if(!preg_match($format, $parameterToCheck))
+            if(preg_match($format, $parameterToCheck) === false)
             {
 
                 throw new Exception("$parameterToCheck does not match the format: $format. Please correct and try again.");

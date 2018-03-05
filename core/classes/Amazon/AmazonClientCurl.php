@@ -14,8 +14,8 @@ trait AmazonClientCurl
 
         $sign = $amazonAPI::getMethod();
         $sign .= "\n";
-        $sign .= "mws.amazonservices.com\n";
-        $sign .= "/";
+        $sign .= Ecommerce::removeUrlProtocol($amazonAPI::getEndpoint());
+        $sign .= "\n/";
         $sign .= $amazonAPI::getFeed();
         $sign .= "/";
         $sign .= $amazonAPI::getParameterByKey('Version');
@@ -111,12 +111,22 @@ trait AmazonClientCurl
 
         $signature = static::encodeSignature($sign);
 
-        $link = "https://mws.amazonservices.com/";
+        $link = $amazonAPI::getEndpoint();
+        $link .= "/";
         $link .= $amazonAPI::getFeed();
         $link .= "/";
         $link .= $amazonAPI::getParameterByKey('Version');
         $link .= "?$arr&Signature=$signature";
         return $link;
+
+    }
+
+    protected static function cmp($a, $b)
+    {
+
+        $a = substr($a, 0, strpos($a, "="));
+        $b = substr($b, 0, strpos($b, "="));
+        return ($a < $b) ? -1 : 1;
 
     }
 
@@ -197,15 +207,6 @@ trait AmazonClientCurl
         $request = static::setCurlOptions($link, $httpHeader, $amazonXmlFeed);
         // curl_setopt($request, CURLINFO_HEADER_OUT, true);
         return CurlController::request($request);
-
-    }
-
-    protected static function cmp($a, $b)
-    {
-
-        $a = substr($a, 0, strpos($a, "="));
-        $b = substr($b, 0, strpos($b, "="));
-        return ($a < $b) ? -1 : 1;
 
     }
 

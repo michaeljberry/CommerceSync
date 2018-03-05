@@ -11,7 +11,10 @@ trait APIParameters
 {
 
     private static $curlParameters = [];
-    private static $orderNumberFormat = '^[0-9]{3}\-[0-9]{7}\-[0-9]{7}$';
+    public static $x = 0;
+    public static $y = 5;
+    private static $orderNumberFormat = "/^[0-9]{3}\-[0-9]{7}\-[0-9]{7}$/";
+    private static $country = "US";
     private static $marketplaces = [
         "US" => [
             "endpoint" => "https://mws.amazonservices.com",
@@ -85,12 +88,19 @@ trait APIParameters
         "FeedSubmissionIdList" => "Id",
         "FeedTypeList" => "Type",
         "FulfillmentChannel" => "Channel",
+        "InboundShipmentPlanRequest" => "member",
         "MarketplaceId" => "Id",
         "MarketplaceIdList" => "Id",
         "OrderStatus" => "Status",
         "PaymentMethod" => "Method",
         "SellerSKUList" => "Id",
         "SellerSkus" => "member"
+    ];
+    private static $dateParameters = [
+        "CreatedAfter",
+        "CreatedBefore",
+        "LastUpdatedAfter",
+        "LastUpdatedBefore"
     ];
     private static $requiredParameters = [
         "AWSAccessKeyId",
@@ -101,6 +111,27 @@ trait APIParameters
         "Timestamp",
         "Version"
     ];
+
+    protected static function getIncrementors()
+    {
+
+        return self::$incrementors;
+
+    }
+
+    protected static function getIncrementorByKey($parameterToCheck)
+    {
+
+        if(in_array($parameterToCheck, array_keys(self::$incrementors)))
+        {
+
+            return self::$incrementors[$parameterToCheck];
+
+        }
+
+        return false;
+
+    }
 
     protected static function setRequiredParameter($parameter)
     {
@@ -140,7 +171,63 @@ trait APIParameters
         if($value)
         {
 
-            self::$curlParameters[$key] = $value;
+            if(in_array($key, self::$dateParameters) && !in_array($key, self::$curlParameters))
+            {
+
+                static::setDateParameter($key, $value);
+
+            } else {
+
+                self::$curlParameters[$key] = $value;
+
+            }
+
+        }
+
+    }
+
+    public static function setPassedParameters($parametersToSet)
+    {
+
+        foreach ($parametersToSet as $key => $value)
+        {
+
+            if(static::getIncrementorByKey($key))
+            {
+                echo "$key is in incrementor<br>";
+
+                $incrementor = static::getIncrementorByKey($key);
+
+                if(is_array($value))
+                {
+
+                    echo "Value is an array<br>";
+
+                    for($x = 1; $x <= count($value); $x++)
+                    {
+
+                        static::setParameterByKey($key . "." . $incrementor . "." . $x, $value[$x - 1]);
+
+                    }
+
+                } else {
+                    if($key === "AmazonOrderId.Id.1")
+                    die;
+
+                    echo "$value is not an array<br>";
+
+                    static::setParameterByKey($key . "." . $incrementor . ".1", $value);
+
+                }
+
+
+            } else {
+
+                echo "$key is not incrementor<br>";
+
+                static::setParameterByKey($key, $value);
+
+            }
 
         }
 
@@ -172,13 +259,26 @@ trait APIParameters
 
         if(!$allowedParameters)
         {
+
             $allowedParameters = static::getCurlParameters();
+
         }
 
         return array_filter(
             $allowedParameters,
-            function($k) use ($parameterToCheck){
-                return strpos($parameterToCheck, $k) !== false;
+            function($k) use ($parameterToCheck)
+            {
+
+                if(
+                    strpos($parameterToCheck, $k) !== false ||
+                    strpos($k, $parameterToCheck) !== false
+                ){
+
+                    return true;
+
+                }
+
+                return false;
             },
             ARRAY_FILTER_USE_KEY
         );
@@ -238,6 +338,7 @@ trait APIParameters
     {
 
         self::setParameterByKey($key, AmazonClient::getMerchantId());
+
         self::setRequiredParameter($key);
 
     }
@@ -246,6 +347,7 @@ trait APIParameters
     {
 
         self::setParameterByKey('PurgeAndReplace', 'false');
+
         self::setRequiredParameter('PurgeAndReplace');
 
     }
@@ -253,7 +355,8 @@ trait APIParameters
     protected static function setMarketplaceIdParameter($key)
     {
 
-        self::setParameterByKey($key, AmazonClient::getMarketplaceId());
+        self::setParameterByKey($key, self::getMarketplaceId());
+
         self::setRequiredParameter($key);
 
     }
@@ -298,7 +401,7 @@ trait APIParameters
 
         }
 
-        static::setParameterByKey($parameter, $newDate->format($format));
+        self::$curlParameters[$parameter] = $newDate->format($format);
 
     }
 
@@ -313,6 +416,7 @@ trait APIParameters
     {
 
         $parentRequiredParameters = static::getRequiredParameters(true);
+
         $requiredParameters = static::getRequiredParameters();
 
         foreach($parentRequiredParameters as $parameter)
@@ -334,13 +438,17 @@ trait APIParameters
 
     }
 
-    public static function setParameters()
+    public static function setParameters($parametersToSet = null)
     {
 
         static::resetCurlParameters();
+
         static::combineRequiredParameters();
+
         static::combineRequiredAndAllowedParameters();
+
         static::setAwsAccessKeyParameter();
+
         static::setActionParameter();
 
         if (in_array('Merchant', static::getRequiredParameters()))
@@ -359,12 +467,25 @@ trait APIParameters
             static::setPurgeAndReplaceParameter();
 
         static::setFeedTypeParameter();
+
         static::setFeedContentParameter();
 
         static::setSignatureMethodParameter();
+
         static::setSignatureVersionParameter();
+
         static::setTimestampParameter();
+
         static::setVersionDateParameter();
+
+        if($parametersToSet)
+        {
+
+            static::setPassedParameters($parametersToSet);
+
+        }
+
+        print_r(self::getCurlParameters());
 
     }
 
@@ -374,7 +495,7 @@ trait APIParameters
         static::ensureRequiredParametersAreSet();
         static::ensureSetParametersAreAllowed();
 
-        static::ensureParameterIsInFormat("AmazonOrderId", static::getOrderNumberFormat());
+        static::ensureParameterIsInFormat("AmazonOrderId", self::getOrderNumberFormat());
 
         if(method_exists(get_called_class(), "requestRules"))
         {

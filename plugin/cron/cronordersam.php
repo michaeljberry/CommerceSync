@@ -11,8 +11,9 @@ require WEBPLUGIN . 'am/amvar.php';
 
 $start = startClock();
 
-// AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
+AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
+// Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
 
-Ecommerce::ddXml(\Amazon\AmazonClient::amazonCurl(new \Amazon\API\Finances\ListFinancialEventGroups()));
+// Ecommerce::ddXml(\Amazon\AmazonClient::amazonCurl(new \Amazon\API\FulfillmentInboundShipment\GetInboundGuidanceForSKU()));
 
 endClock($start);

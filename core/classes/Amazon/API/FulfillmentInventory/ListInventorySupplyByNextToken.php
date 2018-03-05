@@ -19,10 +19,10 @@ class ListInventorySupplyByNextToken extends FulfillmentInventory
     ];
     protected static $allowedParameters = [];
 
-    public function __construct()
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

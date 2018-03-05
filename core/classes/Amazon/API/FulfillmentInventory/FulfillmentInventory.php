@@ -9,6 +9,7 @@ class FulfillmentInventory extends API
 
     use APIMethods;
     use APIParameters;
+    use APIProperties;
     use APIParameterValidation;
 
     protected static $feedType = "";

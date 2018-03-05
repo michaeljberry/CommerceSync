@@ -11,97 +11,7 @@ trait APIParameters
 {
 
     private static $curlParameters = [];
-    public static $x = 0;
-    public static $y = 5;
-    private static $orderNumberFormat = "/^[0-9]{3}\-[0-9]{7}\-[0-9]{7}$/";
-    private static $country = "US";
-    private static $marketplaces = [
-        "US" => [
-            "endpoint" => "https://mws.amazonservices.com",
-            "MarketplaceId" => "ATVPDKIKX0DER",
-            "countrycode" => "US"
-        ],
-        "Canada" => [
-            "endpoint" => "https://mws.amazonservices.com",
-            "MarketplaceId" => "A2EUQ1WTGCTBG2",
-            "countrycode" => "CA"
-        ],
-        "Mexico" => [
-            "endpoint" => "https://mws.amazonservices.com",
-            "MarketplaceId" => "A1AM78C64UM0Y8",
-            "countrycode" => "MX"
-        ],
-        "Spain" => [
-            "endpoint" => "https://mws-eu.amazonservices.com",
-            "MarketplaceId" => "A1RKKUPIHCS9HS",
-            "countrycode" => "ES"
-        ],
-        "UK" => [
-            "endpoint" => "https://mws-eu.amazonservices.com",
-            "MarketplaceId" => "A1F83G8C2ARO7P",
-            "countrycode" => "UK"
-        ],
-        "France" => [
-            "endpoint" => "https://mws-eu.amazonservices.com",
-            "MarketplaceId" => "A13V1IB3VIYZZH",
-            "countrycode" => "FR"
-        ],
-        "Germany" => [
-            "endpoint" => "https://mws-eu.amazonservices.com",
-            "MarketplaceId" => "A1PA6795UKMFR9",
-            "countrycode" => "DE"
-        ],
-        "Italy" => [
-            "endpoint" => "https://mws-eu.amazonservices.com",
-            "MarketplaceId" => "APJ6JRA9NG5V4",
-            "countrycode" => "IT"
-        ],
-        "Brazil" => [
-            "endpoint" => "https://mws.amazonservices.com",
-            "MarketplaceId" => "A2Q3Y263D00KWC",
-            "countrycode" => "BR"
-        ],
-        "India" => [
-            "endpoint" => "https://mws.amazonservices.in",
-            "MarketplaceId" => "A21TJRUUN4KGV",
-            "countrycode" => "IN"
-        ],
-        "China" => [
-            "endpoint" => "https://mws.amazonservices.com.cn",
-            "MarketplaceId" => "AAHKV2X7AFYLW",
-            "countrycode" => "CN"
-        ],
-        "Japan" => [
-            "endpoint" => "https://mws.amazonservices.jp",
-            "MarketplaceId" => "A1VC38T7YXB528",
-            "countrycode" => "JP"
-        ],
-        "Australia" => [
-            "endpoint" => "https://mws.amazonservices.com.au",
-            "MarketplaceId" => "A39IBJ37TRP1C6",
-            "countrycode" => "AU"
-        ]
-    ];
-    private static $incrementors = [
-        "AmazonOrderId" => "Id",
-        "FeedProcessingStatusList" => "Status",
-        "FeedSubmissionIdList" => "Id",
-        "FeedTypeList" => "Type",
-        "FulfillmentChannel" => "Channel",
-        "InboundShipmentPlanRequest" => "member",
-        "MarketplaceId" => "Id",
-        "MarketplaceIdList" => "Id",
-        "OrderStatus" => "Status",
-        "PaymentMethod" => "Method",
-        "SellerSKUList" => "Id",
-        "SellerSkus" => "member"
-    ];
-    private static $dateParameters = [
-        "CreatedAfter",
-        "CreatedBefore",
-        "LastUpdatedAfter",
-        "LastUpdatedBefore"
-    ];
+
     private static $requiredParameters = [
         "AWSAccessKeyId",
         "Action",
@@ -115,17 +25,17 @@ trait APIParameters
     protected static function getIncrementors()
     {
 
-        return self::$incrementors;
+        return static::$incrementors;
 
     }
 
     protected static function getIncrementorByKey($parameterToCheck)
     {
 
-        if(in_array($parameterToCheck, array_keys(self::$incrementors)))
+        if(in_array($parameterToCheck, array_keys(static::$incrementors)))
         {
 
-            return self::$incrementors[$parameterToCheck];
+            return static::$incrementors[$parameterToCheck];
 
         }
 
@@ -154,7 +64,7 @@ trait APIParameters
     public static function getOrderNumberFormat()
     {
 
-        return self::$orderNumberFormat;
+        return static::$orderNumberFormat;
 
     }
 
@@ -171,7 +81,7 @@ trait APIParameters
         if($value)
         {
 
-            if(in_array($key, self::$dateParameters) && !in_array($key, self::$curlParameters))
+            if(in_array($key, static::$dateParameters) && !in_array($key, self::$curlParameters))
             {
 
                 static::setDateParameter($key, $value);
@@ -186,22 +96,19 @@ trait APIParameters
 
     }
 
-    public static function setPassedParameters($parametersToSet)
+    public static function setPassedParameters($parametersToSet, $incrementParameter)
     {
 
         foreach ($parametersToSet as $key => $value)
         {
 
-            if(static::getIncrementorByKey($key))
+            if(static::getIncrementorByKey($key) && $incrementParameter !== false)
             {
-                echo "$key is in incrementor<br>";
 
                 $incrementor = static::getIncrementorByKey($key);
 
                 if(is_array($value))
                 {
-
-                    echo "Value is an array<br>";
 
                     for($x = 1; $x <= count($value); $x++)
                     {
@@ -211,10 +118,6 @@ trait APIParameters
                     }
 
                 } else {
-                    if($key === "AmazonOrderId.Id.1")
-                    die;
-
-                    echo "$value is not an array<br>";
 
                     static::setParameterByKey($key . "." . $incrementor . ".1", $value);
 
@@ -222,8 +125,6 @@ trait APIParameters
 
 
             } else {
-
-                echo "$key is not incrementor<br>";
 
                 static::setParameterByKey($key, $value);
 
@@ -438,7 +339,7 @@ trait APIParameters
 
     }
 
-    public static function setParameters($parametersToSet = null)
+    public static function setParameters($parametersToSet = null, $incrementParameter = null)
     {
 
         static::resetCurlParameters();
@@ -481,11 +382,9 @@ trait APIParameters
         if($parametersToSet)
         {
 
-            static::setPassedParameters($parametersToSet);
+            static::setPassedParameters($parametersToSet, $incrementParameter);
 
         }
-
-        print_r(self::getCurlParameters());
 
     }
 

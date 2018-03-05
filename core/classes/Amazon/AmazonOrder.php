@@ -216,7 +216,6 @@ class AmazonOrder extends AmazonClient
         $tax = $Order->getTax()->get();
 
         Order::updateShippingAndTaxes($Order->getOrderId(), $Order->getShippingPrice(), $tax);
-        Ecommerce::dd($Order->getChannelAccount());
 
         $Order->setOrderXml($Order);
 

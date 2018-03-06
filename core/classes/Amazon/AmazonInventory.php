@@ -14,7 +14,11 @@ class AmazonInventory extends AmazonClient
     public static function getFbaInventory($sku)
     {
 
-        return AmazonClient::amazonCurl(new ListInventorySupply($sku));
+        $inventory = [
+            "SellerSkus" => $sku
+        ];
+
+        return AmazonClient::amazonCurl(new ListInventorySupply($inventory));
 
     }
 
@@ -29,7 +33,12 @@ class AmazonInventory extends AmazonClient
 
         $body = array_merge($xmlArray, $xml1);
 
-        return AmazonClient::amazonCurl(new SubmitFeed($feedType, $body));
+        $feed = [
+            "FeedType" => $feedType,
+            "FeedContent" => $body
+        ];
+
+        return AmazonClient::amazonCurl(new SubmitFeed($feed));
 
     }
 
@@ -44,7 +53,12 @@ class AmazonInventory extends AmazonClient
 
         $body = array_merge($xmlArray, $xml1);
 
-        return AmazonClient::amazonCurl(new SubmitFeed($feedType, $body));
+        $feed = [
+            "FeedType" => $feedType,
+            "FeedContent" => $body
+        ];
+
+        return AmazonClient::amazonCurl(new SubmitFeed($feed));
 
     }
 
@@ -245,7 +259,7 @@ class AmazonInventory extends AmazonClient
 
     }
 
-    public static function priceArray($sku, $price, $num)
+    public static function priceArray($sku, $price, $num = null)
     {
         if(!$num)
         {

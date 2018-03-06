@@ -74,7 +74,7 @@ trait AmazonClientCurl
         foreach ($parameters as $key => $val)
         {
 
-            if($key === "Body")
+            if($key === "FeedContent")
             {
 
                 continue;
@@ -183,12 +183,12 @@ trait AmazonClientCurl
 
         $amazonXML = '';
 
-        if ($amazonAPI::getFeedContent())
+        if ($amazonAPI::getParameterByKey("FeedContent"))
         {
 
             $amazonXML = XMLController::xmlOpenTag();
             $amazonXML .= static::xmlAmazonEnvelopeHeader();
-            $amazonXML .= static::parseXML($amazonAPI::getFeedContent());
+            $amazonXML .= static::parseXML($amazonAPI::getParameterByKey("FeedContent"));
             $amazonXML .= static::xmlAmazonEnvelopeFooter();
 
         }

@@ -2,7 +2,7 @@
 
 namespace Amazon\API\FulfillmentInventory;
 
-use Amazon\API\{APIMethods, APIParameters, APIParameterValidation};
+use Amazon\API\{APIMethods, APIParameters, APIParameterValidation, APIProperties};
 
 class FulfillmentInventory extends API
 {

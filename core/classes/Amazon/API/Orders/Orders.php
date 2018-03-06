@@ -2,8 +2,7 @@
 
 namespace Amazon\API\Orders;
 
-use Amazon\API\{APIMethods, APIParameters, APIParameterValidation};
-use Amazon\API\APIProperties;
+use Amazon\API\{APIMethods, APIParameters, APIParameterValidation, APIProperties};
 
 class Orders
 {

@@ -2,13 +2,14 @@
 
 namespace Amazon\API\Feeds;
 
-use Amazon\API\{APIMethods, APIParameters, APIParameterValidation};
+use Amazon\API\{APIMethods, APIParameters, APIParameterValidation, APIProperties};
 
 class Feeds
 {
 
     use APIMethods;
     use APIParameters;
+    use APIProperties;
     use APIParameterValidation;
 
     protected static $feedType = "";

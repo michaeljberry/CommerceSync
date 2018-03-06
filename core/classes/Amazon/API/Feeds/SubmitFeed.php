@@ -28,14 +28,10 @@ class SubmitFeed extends Feeds
         "ContentMD5Value"
     ];
 
-    public function __construct($feedType, $feedContent)
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
-
-        static::setFeedType($feedType);
-
-        static::setFeedContent($feedContent);
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

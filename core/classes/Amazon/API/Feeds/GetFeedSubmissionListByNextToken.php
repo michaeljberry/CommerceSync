@@ -21,12 +21,10 @@ class GetFeedSubmissionListByNextToken extends Feeds
     ];
     protected static $allowedParameters = [];
 
-    public function __construct($nextToken)
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
-
-        static::setParameterByKey("NextToken", $nextToken);
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

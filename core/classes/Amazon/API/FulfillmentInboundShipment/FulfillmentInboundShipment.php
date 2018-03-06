@@ -2,7 +2,7 @@
 
 namespace Amazon\API\FulfillmentInboundShipment;
 
-use Amazon\API\{APIMethods, APIParameters, APIParameterValidation};
+use Amazon\API\{APIMethods, APIParameters, APIParameterValidation, APIProperties};
 
 class FulfillmentInboundShipment
 {

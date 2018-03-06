@@ -25,10 +25,10 @@ class GetFeedSubmissionCount extends Feeds
         "SubmittedToDate"
     ];
 
-    public function __construct()
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

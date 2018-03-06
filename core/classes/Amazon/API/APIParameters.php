@@ -262,33 +262,33 @@ trait APIParameters
 
     }
 
-    protected static function setFeedTypeParameter()
-    {
+    // protected static function setFeedTypeParameter()
+    // {
 
-        $feedType = static::getFeedType();
+    //     $feedType = static::getFeedType();
 
-        if ($feedType)
-        {
+    //     if ($feedType)
+    //     {
 
-            self::setParameterByKey('FeedType', $feedType);
+    //         self::setParameterByKey('FeedType', $feedType);
 
-        }
+    //     }
 
-    }
+    // }
 
-    protected static function setFeedContentParameter()
-    {
+    // protected static function setFeedContentParameter()
+    // {
 
-        $feedContent = static::getFeedContent();
+    //     $feedContent = static::getFeedContent();
 
-        if($feedContent)
-        {
+    //     if($feedContent)
+    //     {
 
-            self::setParameterByKey("FeedContent", $feedContent);
+    //         self::setParameterByKey("FeedContent", $feedContent);
 
-        }
+    //     }
 
-    }
+    // }
 
     protected static function setDateParameter($parameter, $date, $format = null)
     {
@@ -367,9 +367,9 @@ trait APIParameters
         if (in_array('PurgeAndReplace', static::getRequiredParameters()))
             static::setPurgeAndReplaceParameter();
 
-        static::setFeedTypeParameter();
+        // static::setFeedTypeParameter();
 
-        static::setFeedContentParameter();
+        // static::setFeedContentParameter();
 
         static::setSignatureMethodParameter();
 

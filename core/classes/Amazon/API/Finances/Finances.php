@@ -2,7 +2,7 @@
 
 namespace Amazon\API\Finances;
 
-use Amazon\API\{APIMethods, APIParameters, APIParameterValidation};
+use Amazon\API\{APIMethods, APIParameters, APIParameterValidation, APIProperties};
 
 class Finances
 {

@@ -21,12 +21,10 @@ class GetFeedSubmissionResult extends Feeds
     ];
     protected static $allowedParameters = [];
 
-    public function __construct($feedSubmissionId)
+    public function __construct($parametersToSet = null)
     {
 
-        static::setParameters();
-
-        static::setParameterByKey("FeedSubmissionId", $feedSubmissionId);
+        static::setParameters($parametersToSet);
 
         static::verifyParameters();
 

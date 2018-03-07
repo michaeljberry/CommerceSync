@@ -71,6 +71,31 @@ trait APIParameters
 
     }
 
+    protected static function findParametersWithIncompatibilities()
+    {
+
+        $parameters = static::getParameters();
+
+        Ecommerce::dd($parameters);
+
+        return array_filter(
+
+            $parameters,
+
+            function ($v, $k) use ($parameters) {
+
+                Ecommerce::dd($parameters[$k]);
+
+                return in_array("incompatibleWith", $parameters[$k]);
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
     protected static function getRequiredParameters($parent = null)
     {
 
@@ -434,6 +459,8 @@ trait APIParameters
         static::ensureSetParametersAreAllowed();
 
         static::ensureParameterIsInFormat("AmazonOrderId", self::getOrderNumberFormat());
+
+        Ecommerce::dd(static::findParametersWithIncompatibilities());
 
         if(method_exists(get_called_class(), "requestRules"))
         {

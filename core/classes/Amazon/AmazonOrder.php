@@ -70,7 +70,8 @@ class AmazonOrder extends AmazonClient
                 "PartiallyShipped"
             ],
             "CreatedAfter" => $from,
-            "MarketplaceId" => ""
+            "MarketplaceId" => "",
+            "SellerOrderId" => "111-1234567-9876543"
         ];
 
         Ecommerce::dd(new ListOrders($orderStatus));

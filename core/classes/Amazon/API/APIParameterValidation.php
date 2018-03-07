@@ -85,6 +85,7 @@ trait APIParameterValidation
         }
 
     }
+
     public static function ensureDatesNotOutsideInterval($earlierDate, $laterDate, $intervalInDays)
     {
 
@@ -96,6 +97,7 @@ trait APIParameterValidation
             $earlierDate = new DateTime($earlierDate);
             $laterDate = new DateTime($laterDate);
             $difference = $earlierDate->diff($laterDate);
+
             if($difference->format('%a') > $intervalInDays)
             {
 
@@ -209,13 +211,31 @@ trait APIParameterValidation
             if($parameterToCheck < $min && $parameterToCheck > $max)
             {
 
-                throw new Exception("$parameterToCheck must be between $min and $max");
+                throw new Exception("$parameterToCheck must be between $min and $max. Please correct and try again.");
 
             }
 
         }
 
     }
+
+    public static function ensureParameterIsNoLongerThanMaximum($parameterToCheck, $max)
+    {
+
+        if(null !== static::getParameterByKey($parameterToCheck))
+        {
+
+            if(strlen($parameterToCheck) > $max)
+            {
+
+                throw new Exception("$parameterToCheck must be shorter than $max characters. Please correct and try again.");
+
+            }
+
+        }
+
+    }
+
     public static function ensureParameterIsInFormat($parameterToCheck, $format)
     {
 

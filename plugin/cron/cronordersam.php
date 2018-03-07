@@ -11,14 +11,14 @@ require WEBPLUGIN . 'am/amvar.php';
 
 $start = startClock();
 
-// AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
+AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
 
-// Ecommerce::dd(
+// Ecommerce::ddXml(
 //     \Amazon\AmazonInventory::updateInventory(
 //         \Amazon\AmazonInventory::priceArray(
 //             "KG6W",
-//             "19.95"
+//             "19.99"
 //         )
 //     )
 // );

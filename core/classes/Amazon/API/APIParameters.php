@@ -50,11 +50,34 @@ trait APIParameters
 
     }
 
+    protected static function findRequiredParameters()
+    {
+
+        $parameters = static::getParameters();
+
+        return array_filter(
+
+            $parameters,
+
+            function ($v, $k) use ($parameters) {
+
+                return in_array("required", $parameters[$k]);
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
     protected static function getRequiredParameters($parent = null)
     {
 
         if (!$parent) {
+
             return static::$requiredParameters;
+
         }
 
         return self::$requiredParameters;
@@ -72,6 +95,13 @@ trait APIParameters
     {
 
         return static::$allowedParameters;
+
+    }
+
+    public static function getParameters()
+    {
+
+        return static::$parameters;
 
     }
 
@@ -166,13 +196,18 @@ trait APIParameters
         }
 
         return array_filter(
+
             $allowedParameters,
+
             function($k) use ($parameterToCheck)
             {
 
                 if(
+
                     strpos($parameterToCheck, $k) !== false ||
+
                     strpos($k, $parameterToCheck) !== false
+
                 ){
 
                     return true;
@@ -180,8 +215,11 @@ trait APIParameters
                 }
 
                 return false;
+
             },
+
             ARRAY_FILTER_USE_KEY
+
         );
 
     }
@@ -240,7 +278,7 @@ trait APIParameters
 
         self::setParameterByKey($key, AmazonClient::getMerchantId());
 
-        self::setRequiredParameter($key);
+        // self::setRequiredParameter($key);
 
     }
 
@@ -249,7 +287,7 @@ trait APIParameters
 
         self::setParameterByKey('PurgeAndReplace', 'false');
 
-        self::setRequiredParameter('PurgeAndReplace');
+        // self::setRequiredParameter('PurgeAndReplace');
 
     }
 
@@ -258,37 +296,9 @@ trait APIParameters
 
         self::setParameterByKey($key, self::getMarketplaceId());
 
-        self::setRequiredParameter($key);
+        // self::setRequiredParameter($key);
 
     }
-
-    // protected static function setFeedTypeParameter()
-    // {
-
-    //     $feedType = static::getFeedType();
-
-    //     if ($feedType)
-    //     {
-
-    //         self::setParameterByKey('FeedType', $feedType);
-
-    //     }
-
-    // }
-
-    // protected static function setFeedContentParameter()
-    // {
-
-    //     $feedContent = static::getFeedContent();
-
-    //     if($feedContent)
-    //     {
-
-    //         self::setParameterByKey("FeedContent", $feedContent);
-
-    //     }
-
-    // }
 
     protected static function setDateParameter($parameter, $date, $format = null)
     {
@@ -318,9 +328,16 @@ trait APIParameters
 
         $parentRequiredParameters = static::getRequiredParameters(true);
 
-        $requiredParameters = static::getRequiredParameters();
+        $parameters = static::findRequiredParameters();
 
         foreach($parentRequiredParameters as $parameter)
+        {
+
+            static::setRequiredParameter($parameter);
+
+        }
+
+        foreach ($parameters as $parameter => $value)
         {
 
             static::setRequiredParameter($parameter);
@@ -333,8 +350,11 @@ trait APIParameters
     {
 
         static::$allowedParameters = array_merge(
+
             static::getRequiredParameters(),
-            static::getAllowedParameters()
+
+            array_keys(static::getParameters())
+
         );
 
     }
@@ -348,28 +368,46 @@ trait APIParameters
 
         static::combineRequiredAndAllowedParameters();
 
+        Ecommerce::dd(static::getRequiredParameters());
+
         static::setAwsAccessKeyParameter();
 
         static::setActionParameter();
 
         if (in_array('Merchant', static::getRequiredParameters()))
+        {
+
             static::setMerchantIdParameter('Merchant');
 
+        }
+
         if (in_array('SellerId', static::getRequiredParameters()))
+        {
+
             static::setMerchantIdParameter('SellerId');
 
+        }
+
         if (in_array('MarketplaceId.Id.1', static::getRequiredParameters()))
+        {
+
             static::setMarketplaceIdParameter('MarketplaceId.Id.1');
 
+        }
+
         if (in_array('MarketplaceId', static::getRequiredParameters()))
+        {
+
             static::setMarketplaceIdParameter('MarketplaceId');
 
+        }
+
         if (in_array('PurgeAndReplace', static::getRequiredParameters()))
+        {
+
             static::setPurgeAndReplaceParameter();
 
-        // static::setFeedTypeParameter();
-
-        // static::setFeedContentParameter();
+        }
 
         static::setSignatureMethodParameter();
 
@@ -392,6 +430,7 @@ trait APIParameters
     {
 
         static::ensureRequiredParametersAreSet();
+
         static::ensureSetParametersAreAllowed();
 
         static::ensureParameterIsInFormat("AmazonOrderId", self::getOrderNumberFormat());
@@ -399,7 +438,7 @@ trait APIParameters
         if(method_exists(get_called_class(), "requestRules"))
         {
 
-            static::requestRules();
+            // static::requestRules();
 
         }
 

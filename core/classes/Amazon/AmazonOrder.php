@@ -69,10 +69,13 @@ class AmazonOrder extends AmazonClient
                 "Unshipped",
                 "PartiallyShipped"
             ],
-            "CreatedAfter" => $from
+            "CreatedAfter" => $from,
+            "MarketplaceId" => ""
         ];
 
-        return AmazonClient::amazonCurl(new ListOrders($orderStatus));
+        Ecommerce::dd(new ListOrders($orderStatus));
+
+        // return AmazonClient::amazonCurl();
 
     }
 

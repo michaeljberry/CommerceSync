@@ -89,10 +89,18 @@ trait APIProperties
         "SellerSkus" => "member"
     ];
     protected static $dateParameters = [
+        "CompletedProcessingDate",
         "CreatedAfter",
         "CreatedBefore",
         "LastUpdatedAfter",
-        "LastUpdatedBefore"
+        "LastUpdatedBefore",
+        "SubmittedDate",
+        "StartedProcessingDate"
+    ];
+    protected static $currencyParameters = [
+        "Amount",
+        "FeePerUnit",
+        "TotalFee"
     ];
 
 }

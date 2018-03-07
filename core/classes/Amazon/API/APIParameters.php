@@ -32,7 +32,7 @@ trait APIParameters
     protected static function getIncrementorByKey($parameterToCheck)
     {
 
-        if(in_array($parameterToCheck, array_keys(static::$incrementors)))
+        if(array_key_exists($parameterToCheck, static::$incrementors))
         {
 
             return static::$incrementors[$parameterToCheck];
@@ -71,22 +71,50 @@ trait APIParameters
 
     }
 
-    protected static function findParametersWithIncompatibilities()
+    protected static function testParametersWithIncompatibilities()
     {
 
         $parameters = static::getParameters();
 
-        Ecommerce::dd($parameters);
-
-        return array_filter(
+        array_filter(
 
             $parameters,
 
             function ($v, $k) use ($parameters) {
 
-                Ecommerce::dd($parameters[$k]);
+                if(array_key_exists("incompatibleWith", $v))
+                {
 
-                return in_array("incompatibleWith", $parameters[$k]);
+                    static::ensureIncompatibleParametersNotSet($k, $v['incompatibleWith']);
+
+                }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    protected static function testParametersAreValid()
+    {
+
+        $parameters = static::getParameters();
+
+        array_filter(
+
+            $parameters,
+
+            function ($v, $k) use ($parameters) {
+
+                if (array_key_exists("validWith", $v)) {
+
+                    // Ecommerce::dd($v['validWith']);
+
+                    static::ensureParameterValuesAreValid($k, $v['validWith']);
+
+                }
 
             },
 
@@ -151,37 +179,41 @@ trait APIParameters
 
     }
 
+    public static function incrementParameter($parameter, $value)
+    {
+
+        $incrementor = static::getIncrementorByKey($parameter);
+
+        if (is_array($value)) {
+
+            for ($x = 1; $x <= count($value); $x++) {
+
+                static::setParameterByKey($parameter . "." . $incrementor . "." . $x, $value[$x - 1]);
+
+            }
+
+        } else {
+
+            static::setParameterByKey($parameter . "." . $incrementor . ".1", $value);
+
+        }
+
+    }
+
     public static function setPassedParameters($parametersToSet, $incrementParameter)
     {
 
-        foreach ($parametersToSet as $key => $value)
+        foreach ($parametersToSet as $parameter => $value)
         {
 
-            if(static::getIncrementorByKey($key) && $incrementParameter !== false)
+            if(static::getIncrementorByKey($parameter) && $incrementParameter !== false)
             {
 
-                $incrementor = static::getIncrementorByKey($key);
-
-                if(is_array($value))
-                {
-
-                    for($x = 1; $x <= count($value); $x++)
-                    {
-
-                        static::setParameterByKey($key . "." . $incrementor . "." . $x, $value[$x - 1]);
-
-                    }
-
-                } else {
-
-                    static::setParameterByKey($key . "." . $incrementor . ".1", $value);
-
-                }
-
+                static::incrementParameter($parameter, $value);
 
             } else {
 
-                static::setParameterByKey($key, $value);
+                static::setParameterByKey($parameter, $value);
 
             }
 
@@ -393,8 +425,6 @@ trait APIParameters
 
         static::combineRequiredAndAllowedParameters();
 
-        Ecommerce::dd(static::getRequiredParameters());
-
         static::setAwsAccessKeyParameter();
 
         static::setActionParameter();
@@ -423,7 +453,7 @@ trait APIParameters
         if (in_array('MarketplaceId', static::getRequiredParameters()))
         {
 
-            static::setMarketplaceIdParameter('MarketplaceId');
+            static::setMarketplaceIdParameter('MarketplaceId.Id.1');
 
         }
 
@@ -460,7 +490,9 @@ trait APIParameters
 
         static::ensureParameterIsInFormat("AmazonOrderId", self::getOrderNumberFormat());
 
-        Ecommerce::dd(static::findParametersWithIncompatibilities());
+        static::testParametersWithIncompatibilities();
+
+        static::testParametersAreValid();
 
         if(method_exists(get_called_class(), "requestRules"))
         {

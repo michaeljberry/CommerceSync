@@ -60,7 +60,7 @@ class ListOrders extends Orders
         "CreatedAfter" => [
             "earlierThan" => "Timestamp",
             "format" => "date",
-            "incompatibleWith" => "LastUpdateAfter",
+            "incompatibleWith" => "LastUpdatedAfter",
             "laterThan" => "CreatedBefore",
             "requiredIfNotSet" => "LastUpdatedAfter"
         ],
@@ -156,9 +156,6 @@ class ListOrders extends Orders
 
         static::setParameters($parametersToSet);
 
-        Ecommerce::dd(static::getCurlParameters());
-        Ecommerce::dd(static::exclusiveSellerOrderId());
-
         static::verifyParameters();
 
     }
@@ -201,7 +198,7 @@ class ListOrders extends Orders
             "LastUpdatedAfter"
         ];
 
-        static::ensureMutuallyExclusiveParametersNotSet("CreatedAfter", $restrictedParameters);
+        static::ensureIncompatibleParametersNotSet("CreatedAfter", $restrictedParameters);
     }
 
     protected static function exclusiveBuyerEmail()
@@ -216,7 +213,7 @@ class ListOrders extends Orders
             "SellerOrderId"
         ];
 
-        static::ensureMutuallyExclusiveParametersNotSet("BuyerEmail", $restrictedParameters);
+        static::ensureIncompatibleParametersNotSet("BuyerEmail", $restrictedParameters);
 
     }
 
@@ -228,7 +225,7 @@ class ListOrders extends Orders
             "SellerOrderId"
         ];
 
-        static::ensureMutuallyExclusiveParametersNotSet("LastUpdatedAfter", $restrictedParameters);
+        static::ensureIncompatibleParametersNotSet("LastUpdatedAfter", $restrictedParameters);
 
     }
 
@@ -244,7 +241,7 @@ class ListOrders extends Orders
             "BuyerEmail"
         ];
 
-        static::ensureMutuallyExclusiveParametersNotSet("SellerOrderId", $restrictedParameters);
+        static::ensureIncompatibleParametersNotSet("SellerOrderId", $restrictedParameters);
 
     }
 

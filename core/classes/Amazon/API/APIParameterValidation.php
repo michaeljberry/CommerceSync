@@ -128,19 +128,33 @@ trait APIParameterValidation
 
     }
 
-    public static function ensureMutuallyExclusiveParametersNotSet($parameterToCheck, $restrictedParameters)
+    public static function ensureIncompatibleParametersNotSet($parameterToCheck, $restrictedParameters)
     {
+
 
         if(null !== static::getParameterByKey($parameterToCheck))
         {
 
-            foreach($restrictedParameters as $restricted)
-            {
+            if(is_array($restrictedParameters)){
 
-                if(null !== static::getParameterByKey($restricted))
+                foreach($restrictedParameters as $restricted)
                 {
 
-                    throw new Exception("$restricted cannot be set at the same time as $parameterToCheck. Please correct and try again.");
+                    if(null !== static::getParameterByKey($restricted))
+                    {
+
+                        throw new Exception("$restricted cannot be set at the same time as $parameterToCheck. Please correct and try again.");
+
+                    }
+
+                }
+
+            } else {
+
+                if(null !== static::getParameterByKey($restrictedParameters))
+                {
+
+                    throw new Exception("$restrictedParameters cannot be set at the same time as $parameterToCheck. Please correct and try again.");
 
                 }
 
@@ -153,10 +167,14 @@ trait APIParameterValidation
     public static function ensureParameterValuesAreValid($parameterToCheck, $validParameterValues = null)
     {
 
+
         $matchingParameters = static::searchCurlParameters($parameterToCheck);
 
         if(!empty($matchingParameters))
         {
+            Ecommerce::dd($matchingParameters);
+            Ecommerce::dd($parameterToCheck);
+            Ecommerce::dd($validParameterValues);
 
             $allowedParameterValues = array_intersect($matchingParameters, $validParameterValues);
 

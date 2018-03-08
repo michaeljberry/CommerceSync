@@ -49,13 +49,15 @@ trait APIParameterValidation
 
     }
 
-    public static function ensureIntervalBetweenDates($dateToEnsureInterval, $baseDate = "Timestamp", $interval = "PT2M", $direction = "earlier")
+    public static function ensureIntervalBetweenDates($dateToEnsureInterval, $baseDate = "Timestamp", $direction = "earlier", $interval = "PT2M")
     {
 
         if(null !== static::getParameterByKey($dateToEnsureInterval))
         {
 
+
             $date = new DateTime(static::getParameterByKey($baseDate, new DateTimeZone("America/Boise")));
+
             $formattedInterval = new DateInterval($interval);
 
             if($direction !== "earlier")
@@ -71,20 +73,27 @@ trait APIParameterValidation
 
             $dateToEnsure = new DateTime(static::getParameterByKey($dateToEnsureInterval), new DateTimeZone("America/Boise"));
 
-            if($dateToEnsure > $adjustedDate)
+            if($dateToEnsure > $adjustedDate && $direction === "earlier")
             {
 
-                $exceptionNotice = "$dateToEnsureInterval must be ";
-                $exceptionNotice .= $direction !== "earlier" ? "later" : "earlier";
-                $exceptionNotice .= " than ";
+                $exceptionNotice = "$dateToEnsureInterval must be earlier than ";
                 $exceptionNotice .= $formattedInterval->format('%i minutes');
-                $exceptionNotice .= $direction !== "earlier" ? " after " : " before ";
+                $exceptionNotice .= " before ";
+                $exceptionNotice .= "$baseDate. Please correct and try again.";
+
+                throw new Exception($exceptionNotice);
+
+            } elseif($adjustedDate > $dateToEnsure && $direction === "later")
+            {
+
+                $exceptionNotice = "$dateToEnsureInterval must be later than ";
+                $exceptionNotice .= $formattedInterval->format('%i minutes');
+                $exceptionNotice .= " after ";
                 $exceptionNotice .= "$baseDate. Please correct and try again.";
 
                 throw new Exception($exceptionNotice);
 
             }
-
         }
 
     }
@@ -105,6 +114,23 @@ trait APIParameterValidation
             {
 
                 throw new Exception("These dates are greater than $intervalInDays days apart. Please correct and try again.");
+
+            }
+
+        }
+
+    }
+
+    public static function ensureDatesAreInProperFormat($parameterToCheck)
+    {
+
+        if(null !== static::getParameterByKey($parameterToCheck))
+        {
+
+            if (!preg_match("/^\d{4}-\d{2}-\d{2}T[0-2][0-3]:[0-5][0-9]:[0-5][0-9]Z$/", static::getParameterByKey($parameterToCheck)))
+            {
+
+                throw new Exception("Dates must be in this format: YYYY-MM-DDTHH:II:SSZ. Please correct and try again.");
 
             }
 
@@ -178,7 +204,8 @@ trait APIParameterValidation
         if(null !== static::getParameterByKey($parameterToCheck))
         {
 
-            if(is_array($restrictedParameters)){
+            if(is_array($restrictedParameters))
+            {
 
                 foreach($restrictedParameters as $restricted)
                 {

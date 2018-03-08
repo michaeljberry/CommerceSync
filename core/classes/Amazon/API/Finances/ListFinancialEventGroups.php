@@ -39,7 +39,7 @@ class ListFinancialEventGroups extends Finances
 
         static::ensureParameterIsInRange("MaxResultsPerPage", 1, 100);
 
-        static::ensureIntervalBetweenDates("FinancialEventGroupStartedAfter", "Timestamp", "PT2M");
+        static::ensureIntervalBetweenDates("FinancialEventGroupStartedAfter");
 
         static::ensureDatesAreChronological("FinancialEventGroupStartedBefore", "FinancialEventGroupStartedAfter");
 

@@ -54,13 +54,11 @@ trait APIParameters
     protected static function testParametersWithIncompatibilities()
     {
 
-        $parameters = static::getParameters();
-
         array_filter(
 
-            $parameters,
+            static::getParameters(),
 
-            function ($v, $k) use ($parameters)
+            function ($v, $k)
             {
 
                 if(array_key_exists("incompatibleWith", $v))
@@ -78,14 +76,35 @@ trait APIParameters
 
     }
 
-    protected static function testParametersAreWithinGivenRange()
+    protected static function testOneOrTheOtherIsSet()
     {
-
-        $parameters = static::getParameters();
 
         array_filter(
 
-            $parameters,
+            static::getParameters(),
+
+            function ($v, $k) {
+
+                if (array_key_exists("requiredIfNotSet", $v)) {
+
+                    static::ensureOneOrTheOtherIsSet($k, $v['requiredIfNotSet']);
+
+                }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    protected static function testParametersAreWithinGivenRange()
+    {
+
+        array_filter(
+
+            static::getParameters(),
 
             function ($v, $k)
             {
@@ -108,11 +127,9 @@ trait APIParameters
     protected static function testParametersAreNoLongerThanMaximum()
     {
 
-        $parameters = static::getParameters();
-
         array_filter(
 
-            $parameters,
+            static::getParameters(),
 
             function ($v, $k)
             {
@@ -132,25 +149,88 @@ trait APIParameters
 
     }
 
-    protected static function testDatesAreLaterThan()
+    protected static function testDatesAreEarlierThan()
     {
-
-        $parameters = static::getParameters();
 
         array_filter(
 
-            $parameters,
+            static::getParameters(),
 
-            function ($v, $k) {
+            function ($v, $k)
+            {
 
-                if (array_key_exists("laterThan", $v)) {
+                if (array_key_exists("earlierThan", $v))
+                {
 
-                    // Ecommerce::dd($v);
-                    // Ecommerce::dd($k);
+                    if(is_array($v["earlierThan"]))
+                    {
 
-                    static::ensureIntervalBetweenDates($k);
+                        array_filter(
+
+                            $v["earlierThan"],
+                            function ($vv, $kk) use ($k)
+                            {
+
+                                static::ensureIntervalBetweenDates($k, $vv);
+
+                            },
+                            ARRAY_FILTER_USE_BOTH
+                        );
+
+                    } else {
+
+                        static::ensureIntervalBetweenDates($k);
+
+                    }
 
                 }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    protected static function testDatesAreLaterThan()
+    {
+
+        array_filter(
+
+            static::getParameters(),
+
+            function ($v, $k)
+            {
+
+                if (array_key_exists("laterThan", $v))
+                {
+
+                    static::ensureIntervalBetweenDates($k, $v["laterThan"], "later");
+
+                }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    protected static function testDatesAreInProperFormat()
+    {
+
+        $dateParameters = static::getDateParameters();
+
+        array_filter(
+
+            $dateParameters,
+
+            function ($v, $k)
+            {
+
+                static::ensureDatesAreInProperFormat($k);
 
             },
 
@@ -163,11 +243,9 @@ trait APIParameters
     protected static function testParametersAreValid()
     {
 
-        $parameters = static::getParameters();
-
         array_filter(
 
-            $parameters,
+            static::getParameters(),
 
             function ($v, $k)
             {
@@ -190,11 +268,9 @@ trait APIParameters
     protected static function findRequiredParameters()
     {
 
-        $parameters = static::getParameters();
-
         return array_filter(
 
-            $parameters,
+            static::getParameters(),
 
             function ($v, $k)
             {
@@ -244,13 +320,33 @@ trait APIParameters
 
     }
 
+    public static function getDateParameters()
+    {
+
+        return array_filter(
+
+            static::getParameters(),
+
+            function ($v, $k)
+            {
+
+                return array_key_exists("format", $v)&& $v["format"] == "date";
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
     public static function setParameterByKey($key, $value)
     {
 
         if($value)
         {
 
-            if(in_array($key, static::$dateParameters) && !in_array($key, self::$curlParameters))
+            if(array_key_exists($key, static::getDateParameters()) && !in_array($key, self::$curlParameters))
             {
 
                 static::setDateParameter($key, $value);
@@ -344,7 +440,7 @@ trait APIParameters
 
             $allowedParameters,
 
-            function($k) use ($parameterToCheck)
+            function ($k) use ($parameterToCheck)
             {
 
                 if(
@@ -586,7 +682,13 @@ trait APIParameters
 
         static::testParametersAreNoLongerThanMaximum();
 
+        static::testDatesAreEarlierThan();
+
         static::testDatesAreLaterThan();
+
+        static::testDatesAreInProperFormat();
+
+        static::testOneOrTheOtherIsSet();
 
         if(method_exists(get_called_class(), "requestRules"))
         {

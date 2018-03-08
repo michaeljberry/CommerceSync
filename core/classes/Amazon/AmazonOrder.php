@@ -69,8 +69,7 @@ class AmazonOrder extends AmazonClient
                 "Unshipped",
                 "PartiallyShipped"
             ],
-            // "CreatedAfter" => $from
-            "CreatedAfter" => "-1 minutes"
+            "CreatedAfter" => $from
         ];
 
         Ecommerce::dd(new ListOrders($orderStatus));

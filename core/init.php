@@ -2,6 +2,7 @@
 // phpinfo();
 session_start();
 ini_set('display_errors', '1');
+date_default_timezone_set("America/Boise");
 $userID = 838;
 require 'config.php';
 require WEBVENDOR . 'autoload.php';

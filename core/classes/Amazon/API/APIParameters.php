@@ -50,26 +50,6 @@ trait APIParameters
 
     }
 
-    protected static function findRequiredParameters()
-    {
-
-        $parameters = static::getParameters();
-
-        return array_filter(
-
-            $parameters,
-
-            function ($v, $k) use ($parameters) {
-
-                return in_array("required", $parameters[$k]);
-
-            },
-
-            ARRAY_FILTER_USE_BOTH
-
-        );
-
-    }
 
     protected static function testParametersWithIncompatibilities()
     {
@@ -80,12 +60,95 @@ trait APIParameters
 
             $parameters,
 
-            function ($v, $k) use ($parameters) {
+            function ($v, $k) use ($parameters)
+            {
 
                 if(array_key_exists("incompatibleWith", $v))
                 {
 
                     static::ensureIncompatibleParametersNotSet($k, $v['incompatibleWith']);
+
+                }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    protected static function testParametersAreWithinGivenRange()
+    {
+
+        $parameters = static::getParameters();
+
+        array_filter(
+
+            $parameters,
+
+            function ($v, $k)
+            {
+
+                if (array_key_exists("rangeWithin", $v))
+                {
+
+                    static::ensureParameterIsInRange($k, $v['rangeWithin']['min'], $v['rangeWithin']['max']);
+
+                }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    protected static function testParametersAreNoLongerThanMaximum()
+    {
+
+        $parameters = static::getParameters();
+
+        array_filter(
+
+            $parameters,
+
+            function ($v, $k)
+            {
+
+                if (array_key_exists("maximumLength", $v))
+                {
+
+                    static::ensureParameterIsNoLongerThanMaximum($k, $v['maximumLength']);
+
+                }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    protected static function testDatesAreLaterThan()
+    {
+
+        $parameters = static::getParameters();
+
+        array_filter(
+
+            $parameters,
+
+            function ($v, $k) {
+
+                if (array_key_exists("laterThan", $v)) {
+
+                    // Ecommerce::dd($v);
+                    // Ecommerce::dd($k);
+
+                    static::ensureIntervalBetweenDates($k);
 
                 }
 
@@ -106,11 +169,11 @@ trait APIParameters
 
             $parameters,
 
-            function ($v, $k) use ($parameters) {
+            function ($v, $k)
+            {
 
-                if (array_key_exists("validWith", $v)) {
-
-                    // Ecommerce::dd($v['validWith']);
+                if (array_key_exists("validWith", $v))
+                {
 
                     static::ensureParameterValuesAreValid($k, $v['validWith']);
 
@@ -124,10 +187,33 @@ trait APIParameters
 
     }
 
+    protected static function findRequiredParameters()
+    {
+
+        $parameters = static::getParameters();
+
+        return array_filter(
+
+            $parameters,
+
+            function ($v, $k)
+            {
+
+                return in_array("required", $v);
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
     protected static function getRequiredParameters($parent = null)
     {
 
-        if (!$parent) {
+        if (!$parent)
+        {
 
             return static::$requiredParameters;
 
@@ -184,9 +270,11 @@ trait APIParameters
 
         $incrementor = static::getIncrementorByKey($parameter);
 
-        if (is_array($value)) {
+        if (is_array($value))
+        {
 
-            for ($x = 1; $x <= count($value); $x++) {
+            for ($x = 1; $x <= count($value); $x++)
+            {
 
                 static::setParameterByKey($parameter . "." . $incrementor . "." . $x, $value[$x - 1]);
 
@@ -312,7 +400,7 @@ trait APIParameters
     protected static function setTimestampParameter()
     {
 
-        self::setParameterByKey('Timestamp', gmdate("Y-m-d\TH:i:s\Z", time()));
+        self::setParameterByKey('Timestamp', date("Y-m-d\TH:i:s\Z", time()));
 
     }
 
@@ -365,7 +453,7 @@ trait APIParameters
         if(!$format)
         {
 
-            $format = "Y-m-d\TH:i:s";
+            $format = "Y-m-d\TH:i:s\Z";
 
         }
 
@@ -493,6 +581,12 @@ trait APIParameters
         static::testParametersWithIncompatibilities();
 
         static::testParametersAreValid();
+
+        static::testParametersAreWithinGivenRange();
+
+        static::testParametersAreNoLongerThanMaximum();
+
+        static::testDatesAreLaterThan();
 
         if(method_exists(get_called_class(), "requestRules"))
         {

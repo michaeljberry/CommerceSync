@@ -169,7 +169,7 @@ class ListOrders extends Orders
 
         static::ensureOneOrTheOtherIsSet("CreatedAfter", "LastUpdatedAfter");
 
-        static::lastUpdatedAfterExclusivityRule();
+        static::lastUpdatedAfterExclusivityRule()   ;
 
         static::ensureIntervalBetweenDates("CreatedAfter", "Timestamp", "PT2M");
 

@@ -16,16 +16,24 @@ class SubmitFeed extends Feeds
     protected static $feedContent;
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_SubmitFeed.html";
-    protected static $requiredParameters = [
-        "MarketplaceId",
-        "SellerId",
-        "FeedType",
-        "FeedContent"
-    ];
-    protected static $allowedParameters = [
-        "MarketetplaceIdList.Id",
+    protected static $requiredParameters = [];
+    protected static $allowedParameters = [];
+    protected static $parameters = [
+        "ContentMD5Value",
+        "FeedContent" => [
+            "required"
+        ],
+        "FeedType" => [
+            "required"
+        ],
+        "MarketplaceId" => [
+            "required"
+        ],
+        "MarketplaceIdList",
         "PurgeAndReplace",
-        "ContentMD5Value"
+        "SellerId" => [
+            "required"
+        ]
     ];
 
     public function __construct($parametersToSet = null)

@@ -14,17 +14,22 @@ class GetFeedSubmissionList extends Feeds
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_GetFeedSubmissionList.html";
-    protected static $requiredParameters = [
-        "MarketplaceId",
-        "SellerId"
-    ];
-    protected static $allowedParameters = [
-        "FeedSubmissionIdList.Id",
-        "MaxCount",
-        "FeedTypeList",
+    protected static $requiredParameters = [];
+    protected static $allowedParameters = [];
+    protected static $parameters = [
         "FeedProcessingStatusList",
+        "FeedSubmissionIdList",
+        "FeedTypeList",
+        "MarketplaceId" => [
+            "required"
+        ],
+        "MaxCount",
+        "SellerId" => [
+            "required"
+        ],
         "SubmittedFromDate",
         "SubmittedToDate"
+
     ];
 
     public function __construct($parametersToSet = null)

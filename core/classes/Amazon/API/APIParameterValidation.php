@@ -55,8 +55,7 @@ trait APIParameterValidation
         if(null !== static::getParameterByKey($dateToEnsureInterval))
         {
 
-
-            $date = new DateTime(static::getParameterByKey($baseDate, new DateTimeZone("America/Boise")));
+            $date = new DateTime(static::getParameterByKey($baseDate));
 
             $formattedInterval = new DateInterval($interval);
 
@@ -71,7 +70,7 @@ trait APIParameterValidation
 
             }
 
-            $dateToEnsure = new DateTime(static::getParameterByKey($dateToEnsureInterval), new DateTimeZone("America/Boise"));
+            $dateToEnsure = new DateTime(static::getParameterByKey($dateToEnsureInterval));
 
             if($dateToEnsure > $adjustedDate && $direction === "earlier")
             {
@@ -127,7 +126,7 @@ trait APIParameterValidation
         if(null !== static::getParameterByKey($parameterToCheck))
         {
 
-            if (!preg_match("/^\d{4}-\d{2}-\d{2}T[0-2][0-3]:[0-5][0-9]:[0-5][0-9]Z$/", static::getParameterByKey($parameterToCheck)))
+            if (!preg_match("/^\d{4}-\d{2}-\d{2}T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]Z$/", static::getParameterByKey($parameterToCheck)))
             {
 
                 throw new Exception("Dates must be in this format: YYYY-MM-DDTHH:II:SSZ. Please correct and try again.");
@@ -319,9 +318,6 @@ trait APIParameterValidation
 
     public static function ensureParameterIsInRange($parameterToCheck, $min, $max)
     {
-
-        Ecommerce::dd(static::getParameterByKey($parameterToCheck));
-
 
         if(null !== static::getParameterByKey($parameterToCheck))
         {

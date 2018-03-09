@@ -496,7 +496,9 @@ trait APIParameters
     protected static function setTimestampParameter()
     {
 
-        self::setParameterByKey('Timestamp', date("Y-m-d\TH:i:s\Z", time()));
+        $date = new DateTime(date("Y-m-d H:i:s"));
+
+        self::setParameterByKey('Timestamp', $date->format("Y-m-d\TH:i:s\Z"));
 
     }
 
@@ -519,16 +521,12 @@ trait APIParameters
 
         self::setParameterByKey($key, AmazonClient::getMerchantId());
 
-        // self::setRequiredParameter($key);
-
     }
 
     protected static function setPurgeAndReplaceParameter()
     {
 
         self::setParameterByKey('PurgeAndReplace', 'false');
-
-        // self::setRequiredParameter('PurgeAndReplace');
 
     }
 
@@ -537,21 +535,12 @@ trait APIParameters
 
         self::setParameterByKey($key, self::getMarketplaceId());
 
-        // self::setRequiredParameter($key);
-
     }
 
-    protected static function setDateParameter($parameter, $date, $format = null)
+    protected static function setDateParameter($parameter, $date, $format = "Y-m-d\TH:i:s\Z")
     {
 
-        $newDate = new DateTime($date, new DateTimeZone("America/Boise"));
-
-        if(!$format)
-        {
-
-            $format = "Y-m-d\TH:i:s\Z";
-
-        }
+        $newDate = new DateTime($date);
 
         self::$curlParameters[$parameter] = $newDate->format($format);
 

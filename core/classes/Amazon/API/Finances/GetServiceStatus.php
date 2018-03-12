@@ -15,6 +15,7 @@ class GetServiceStatus extends Finances
     private static $apiUrl = "";
     protected static $requiredParameters = [];
     protected static $allowedParameters = [];
+    protected static $parameters = [];
 
     public function __construct($parametersToSet = null)
     {

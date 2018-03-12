@@ -16,13 +16,17 @@ class ListFinancialEventGroups extends Finances
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/finances/Finances_ListFinancialEventGroups.html";
-    protected static $requiredParameters = [
-        "SellerId",
-        "FinancialEventGroupStartedAfter"
-    ];
-    protected static $allowedParameters = [
+    protected static $requiredParameters = [];
+    protected static $allowedParameters = [];
+    protected static $parameters = [
+        "FinancialEventGroupStartedAfter" => [
+            "required"
+        ],
+        "FinancialEventGroupStartedBefore",
         "MaxResultsPerPage",
-        "FinancialEventGroupStartedBefore"
+        "SellerId" => [
+            "required"
+        ]
     ];
 
     public function __construct($parametersToSet = null)

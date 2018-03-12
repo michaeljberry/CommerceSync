@@ -61,7 +61,7 @@ trait APIParameters
             function ($v, $k)
             {
 
-                if(array_key_exists("incompatibleWith", $v))
+                if(is_array($v) && array_key_exists("incompatibleWith", $v))
                 {
 
                     static::ensureIncompatibleParametersNotSet($k, $v['incompatibleWith']);
@@ -85,7 +85,7 @@ trait APIParameters
 
             function ($v, $k) {
 
-                if (array_key_exists("requiredIfNotSet", $v)) {
+                if (is_array($v) && array_key_exists("requiredIfNotSet", $v)) {
 
                     static::ensureOneOrTheOtherIsSet($k, $v['requiredIfNotSet']);
 
@@ -109,7 +109,7 @@ trait APIParameters
             function ($v, $k)
             {
 
-                if (array_key_exists("rangeWithin", $v))
+                if (is_array($v) && array_key_exists("rangeWithin", $v))
                 {
 
                     static::ensureParameterIsInRange($k, $v['rangeWithin']['min'], $v['rangeWithin']['max']);
@@ -134,7 +134,7 @@ trait APIParameters
             function ($v, $k)
             {
 
-                if (array_key_exists("maximumLength", $v))
+                if (is_array($v) && array_key_exists("maximumLength", $v))
                 {
 
                     static::ensureParameterIsNoLongerThanMaximum($k, $v['maximumLength']);
@@ -159,7 +159,7 @@ trait APIParameters
             function ($v, $k)
             {
 
-                if (array_key_exists("earlierThan", $v))
+                if (is_array($v) && array_key_exists("earlierThan", $v))
                 {
 
                     if(is_array($v["earlierThan"]))
@@ -203,7 +203,7 @@ trait APIParameters
             function ($v, $k)
             {
 
-                if (array_key_exists("laterThan", $v))
+                if (is_array($v) && array_key_exists("laterThan", $v))
                 {
 
                     static::ensureIntervalBetweenDates($k, $v["laterThan"], "later");
@@ -250,7 +250,7 @@ trait APIParameters
             function ($v, $k)
             {
 
-                if (array_key_exists("validWith", $v))
+                if (is_array($v) && array_key_exists("validWith", $v))
                 {
 
                     static::ensureParameterValuesAreValid($k, $v['validWith']);
@@ -275,7 +275,7 @@ trait APIParameters
             function ($v, $k)
             {
 
-                return in_array("required", $v);
+                return is_array($v) && in_array("required", $v);
 
             },
 
@@ -330,7 +330,7 @@ trait APIParameters
             function ($v, $k)
             {
 
-                return array_key_exists("format", $v)&& $v["format"] == "date";
+                return is_array($v) && array_key_exists("format", $v) && $v["format"] == "date";
 
             },
 

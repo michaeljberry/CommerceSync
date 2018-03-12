@@ -27,8 +27,12 @@ class GetFeedSubmissionList extends Feeds
         "SellerId" => [
             "required"
         ],
-        "SubmittedFromDate",
-        "SubmittedToDate"
+        "SubmittedFromDate" => [
+            "format" => "date"
+        ],
+        "SubmittedToDate" => [
+            "format" => "date"
+        ]
 
     ];
 

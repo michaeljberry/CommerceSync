@@ -18,5 +18,17 @@ class Feeds
     protected static $versionDate = "2009-01-01";
     private static $overviewUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_Overview.html";
     private static $libraryUpdateUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_ClientLibraries.html";
-
+    protected static $parameters = [
+        "FeedProcessingStatusList" => [
+            "validWith" => [
+                "_AWAITING_ASYNCHRONOUS_REPLY_",
+                "_CANCELLED_",
+                "_DONE_",
+                "_IN_PROGRESS_",
+                "_IN_SAFETY_NET_",
+                "_SUBMITTED_",
+                "_UNCONFIRMED_"
+            ]
+        ]
+    ];
 }

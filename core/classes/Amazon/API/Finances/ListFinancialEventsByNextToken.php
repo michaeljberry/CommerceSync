@@ -14,11 +14,16 @@ class ListFinancialEventsByNextToken extends Finances
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/finances/Finances_ListFinancialEventsByNextToken.html";
-    protected static $requiredParameters = [
-        "SellerId",
-        "NextToken"
-    ];
+    protected static $requiredParameters = [];
     protected static $allowedParameters = [];
+    protected static $parameters = [
+        "NextToken" => [
+            "required"
+        ],
+        "SellerId" => [
+            "required"
+        ]
+    ];
 
     public function __construct($parametersToSet = null)
     {

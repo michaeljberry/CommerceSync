@@ -24,10 +24,8 @@ class SubmitFeed extends Feeds
             "required"
         ],
         "FeedType" => [
-            "required"
-        ],
-        "MarketplaceId" => [
-            "required"
+            "required",
+            "parent"
         ],
         "MarketplaceIdList",
         "PurgeAndReplace",

@@ -17,11 +17,12 @@ class GetFeedSubmissionList extends Feeds
     protected static $requiredParameters = [];
     protected static $allowedParameters = [];
     protected static $parameters = [
-        "FeedProcessingStatusList",
+        "FeedProcessingStatusList" => [
+            "parent"
+        ],
         "FeedSubmissionIdList",
-        "FeedTypeList",
-        "MarketplaceId" => [
-            "required"
+        "FeedTypeList" => [
+            "parent" => "FeedType"
         ],
         "MaxCount",
         "SellerId" => [

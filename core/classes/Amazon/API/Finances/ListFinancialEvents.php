@@ -17,11 +17,50 @@ class ListFinancialEvents extends Finances
     protected static $requiredParameters = [];
     protected static $allowedParameters = [];
     protected static $parameters = [
-        "AmazonOrderId",
-        "FinancialEventGroupId",
-        "MaxResultsPerPage",
-        "PostedAfter",
-        "PostedBefore",
+        "AmazonOrderId" => [
+            "incompatibleWith" => [
+                "FinancialEventGroupId",
+                "PostedAfter",
+                "PostedBefore"
+            ]
+        ],
+        "FinancialEventGroupId" => [
+            "incompatibleWith" => [
+                "AmazonOrderId",
+                "PostedAfter",
+                "PostedBefore"
+            ]
+        ],
+        "MaxResultsPerPage" => [
+            "rangeWithin" => [
+                "min" => 1,
+                "max" => 100
+            ]
+        ],
+        "PostedAfter" => [
+            "earlierThan" => [
+                "PostedBefore",
+                "Timestamp"
+            ],
+            "format" => "date",
+            "incompatibleWith" => [
+                "AmazonOrderId",
+                "FinancialEventGroupId"
+            ]
+        ],
+        "PostedBefore" => [
+            "earlierThan" => "Timestamp",
+            "format" => "date",
+            "incompatibleWith" => [
+                "AmazonOrderId",
+                "FinancialEventGroupId"
+            ],
+            "laterThan" => "PostedAfter",
+            "notFartherApartThan" => [
+                "days" => 180,
+                "from" => "FinancialEventGroupStartedAfter",
+            ]
+        ],
         "SellerId" => [
             "required"
         ]

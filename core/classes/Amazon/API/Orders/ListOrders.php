@@ -21,31 +21,33 @@ class ListOrders extends Orders
     protected static $requiredParameters = [];
     protected static $allowedParameters = [];
     //dependentOn
-    //earlierThan -- if Timestamp default to interval PT2M
+    //earlierThan -- Timestamp default interval is "PT2M"
     //format
     //incompatibleWith
-    //laterThan -- if Timestamp default to interval PT2M
+    //laterThan -- Timestamp default interval is "PT2M"
     //maximumLength
-    //notMoreThanDaysApartFrom
+    //maximumCount
+    //notFartherApartThan
     //rangeWithin
     //required
     //requiredIfNotSet
-    //validWith
+    //validWith - key => value
+    //parent - Key => value || value
     protected static $parameters = [
         "BuyerEmail" => [
             "incompatibleWith" => [
                 "FulfillmentChannel",
-                "OrderStatus",
-                "PaymentMethod",
                 "LastUpdatedAfter",
                 "LastUpdatedBefore",
+                "OrderStatus",
+                "PaymentMethod",
                 "SellerOrderId"
             ]
         ],
         "CreatedAfter" => [
             "earlierThan" => [
-                "Timestamp",
-                "CreatedBefore"
+                "CreatedBefore",
+                "Timestamp"
             ],
             "format" => "date",
             "incompatibleWith" => "LastUpdatedAfter",
@@ -64,8 +66,8 @@ class ListOrders extends Orders
         ],
         "LastUpdatedAfter" => [
             "earlierThan" => [
-                "Timestamp",
-                "LastUpdatedBefore"
+                "LastUpdatedBefore",
+                "Timestamp"
             ],
             "format" => "date",
             "incompatibleWith" => [

@@ -13,12 +13,20 @@ class GetInboundGuidanceForSKU extends FulfillmentInboundShipment
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "docs.developer.amazonservices.com/en_US/fba_inbound/FBAInbound_GetInboundGuidanceForSKU.html";
-    protected static $requiredParameters = [
-        "MarketplaceId",
-        "SellerId",
-        "SellerSKUList"
-    ];
+    protected static $requiredParameters = [];
     protected static $allowedParameters = [];
+    protected static $parameters = [
+        "MarketplaceId" => [
+            "required"
+        ],
+        "SellerId" => [
+            "required"
+        ],
+        "SellerSKUList" => [
+            "maximumCount" => 50,
+            "required"
+        ]
+    ];
 
     public function __construct($parametersToSet = null)
     {

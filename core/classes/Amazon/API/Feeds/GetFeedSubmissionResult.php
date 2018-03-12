@@ -20,9 +20,6 @@ class GetFeedSubmissionResult extends Feeds
         "FeedSubmissionId" => [
             "required"
         ],
-        "MarketplaceId" => [
-            "required"
-        ],
         "SellerId" => [
             "required"
         ]

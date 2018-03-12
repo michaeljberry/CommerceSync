@@ -105,14 +105,14 @@ trait APIParameterValidation
             null !== static::getParameterByKey($laterDate)
         ){
 
-            $earlierDate = new DateTime($earlierDate);
-            $laterDate = new DateTime($laterDate);
-            $difference = $earlierDate->diff($laterDate);
+            $earlyDate = new DateTime(static::getParameterByKey($earlierDate));
+            $lateDate = new DateTime(static::getParameterByKey($laterDate));
+            $difference = $earlyDate->diff($lateDate);
 
             if($difference->format('%a') > $intervalInDays)
             {
 
-                throw new Exception("These dates are greater than $intervalInDays days apart. Please correct and try again.");
+                throw new Exception("These dates: $earlierDate, $laterDate are greater than $intervalInDays days apart. Please correct and try again.");
 
             }
 
@@ -150,24 +150,9 @@ trait APIParameterValidation
 
                 $dependentParameter = "The following must all be set: ";
 
-                foreach ($dependentParametersCopy as $value)
-                {
+                $dependentParameter .= Ecommerce::arrayToString($dependentParametersCopy);
 
-                    if(current($dependentParametersCopy) === end($dependentParametersCopy))
-                    {
-
-                        $dependentParameter .= "$value";
-
-                    } else {
-
-                        $dependentParameter .= "$value, ";
-
-                    }
-
-
-                }
-
-                $dependentParameter .= ". Please correct and try again.";
+                $dependentParameter .= "Please correct and try again.";
 
                 throw new Exception($dependentParameter);
 
@@ -246,8 +231,10 @@ trait APIParameterValidation
 
             foreach($validParameterValues as $key => $value)
             {
+
                 if(is_array($value))
                 {
+
                     $validParameterValue[] = $key;
 
                     if(array_key_exists("dependentOn", $value))
@@ -270,7 +257,13 @@ trait APIParameterValidation
             if(empty($allowedParameterValues))
             {
 
-                throw new Exception("The value/s for $parameterToCheck is/are not valid. Please correct and try again.");
+                $exception = "The value for $parameterToCheck must be one of the following: ";
+
+                $exception .= Ecommerce::arrayToString($validParameterValue);
+
+                $exception .= "Please correct and try again.";
+
+                throw new Exception($exception);
 
             }
 
@@ -346,6 +339,23 @@ trait APIParameterValidation
             {
 
                 throw new Exception("$parameterToCheck must be shorter than $max characters. Please correct and try again.");
+
+            }
+
+        }
+
+    }
+
+    public static function ensureParameterCountIsLessThanMaximum($parameterToCheck, $maxCount)
+    {
+
+        if(null !== static::searchCurlParameters($parameterToCheck))
+        {
+
+            if(count(static::searchCurlParameters($parameterToCheck)) > 50)
+            {
+
+                throw new Exception("$parameterToCheck must have less than $maxCount values. Please correct and try again.");
 
             }
 

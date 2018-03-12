@@ -20,10 +20,28 @@ class ListFinancialEventGroups extends Finances
     protected static $allowedParameters = [];
     protected static $parameters = [
         "FinancialEventGroupStartedAfter" => [
+            "earlierThan" => [
+                "Timestamp",
+                "FinancialEventGroupStartedBefore"
+            ],
+            "format" => "date",
             "required"
         ],
-        "FinancialEventGroupStartedBefore",
-        "MaxResultsPerPage",
+        "FinancialEventGroupStartedBefore" => [
+            "earlierThan" => "Timestamp",
+            "format" => "date",
+            "laterThan" => "FinancialEventGroupStartedAfter",
+            "notFartherApartThan" => [
+                "days" => 180,
+                "from" => "FinancialEventGroupStartedAfter",
+            ]
+        ],
+        "MaxResultsPerPage" => [
+            "rangeWithin" => [
+                "min" => 1,
+                "max" => 100
+            ]
+        ],
         "SellerId" => [
             "required"
         ]

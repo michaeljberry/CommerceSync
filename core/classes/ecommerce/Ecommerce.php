@@ -35,6 +35,29 @@ class Ecommerce
 
     }
 
+    public static function arrayToString($array)
+    {
+
+        $newString = "";
+
+        foreach ($array as $value) {
+
+            if ($value === end($array)) {
+
+                $newString .= "$value. ";
+
+            } else {
+
+                $newString .= "$value, ";
+
+            }
+
+        }
+
+        return $newString;
+
+    }
+
     public static function removeUrlProtocol($url)
     {
 

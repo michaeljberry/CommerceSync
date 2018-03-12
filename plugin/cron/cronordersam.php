@@ -2,6 +2,7 @@
 
 use Amazon\AmazonOrder;
 use Ecommerce\Ecommerce;
+
 use Amazon\AmazonClient;
 
 error_reporting(-1);
@@ -14,11 +15,12 @@ $start = startClock();
 
 // AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
-
+$array = [
+];
 Ecommerce::dd(
-    AmazonClient::amazonCurl(
-        new \Amazon\API\Feeds\GetFeedSubmissionCount()
-    )
+    // AmazonClient::amazonCurl(
+        new \Amazon\API\FulfillmentInboundShipment\GetInboundGuidanceForSKU($array)
+    // )
 );
 
 endClock($start);

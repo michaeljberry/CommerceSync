@@ -7,6 +7,8 @@ use Ecommerce\Ecommerce;
 use DateTime;
 use DateTimeZone;
 
+use ReflectionClass;
+
 trait APIParameters
 {
 
@@ -83,9 +85,11 @@ trait APIParameters
 
             static::getParameters(),
 
-            function ($v, $k) {
+            function ($v, $k)
+            {
 
-                if (is_array($v) && array_key_exists("requiredIfNotSet", $v)) {
+                if (is_array($v) && array_key_exists("requiredIfNotSet", $v))
+                {
 
                     static::ensureOneOrTheOtherIsSet($k, $v['requiredIfNotSet']);
 
@@ -137,7 +141,7 @@ trait APIParameters
                 if (is_array($v) && array_key_exists("maximumLength", $v))
                 {
 
-                    static::ensureParameterIsNoLongerThanMaximum($k, $v['maximumLength']);
+                    static::ensureParameterIsNoLongerThanMaximum($k, $v["maximumLength"]);
 
                 }
 
@@ -145,6 +149,30 @@ trait APIParameters
 
             ARRAY_FILTER_USE_BOTH
 
+        );
+
+    }
+
+    protected static function testParameterCountIsLessThanMaximum()
+    {
+
+        array_filter(
+
+            static::getParameters(),
+
+            function($v, $k)
+            {
+
+                if(is_array($v) && array_key_exists("maximumCount", $v))
+                {
+
+                    static::ensureParameterCountIsLessThanMaximum($k, $v["maximumCount"]);
+
+                }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
         );
 
     }
@@ -168,12 +196,14 @@ trait APIParameters
                         array_filter(
 
                             $v["earlierThan"],
+
                             function ($vv, $kk) use ($k)
                             {
 
                                 static::ensureIntervalBetweenDates($k, $vv);
 
                             },
+
                             ARRAY_FILTER_USE_BOTH
                         );
 
@@ -240,6 +270,32 @@ trait APIParameters
 
     }
 
+    protected static function testDatesNotOutsideInterval()
+    {
+
+        array_filter(
+
+            static::getParameters(),
+
+            function ($v, $k)
+            {
+
+
+                if (is_array($v) && array_key_exists("notFartherApartThan", $v))
+                {
+
+                    static::ensureDatesNotOutsideInterval($k, $v["notFartherApartThan"]["from"], $v["notFartherApartThan"]["days"]);
+
+                }
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
     protected static function testParametersAreValid()
     {
 
@@ -282,6 +338,62 @@ trait APIParameters
             ARRAY_FILTER_USE_BOTH
 
         );
+
+    }
+
+    protected static function getParentClassParameters($parameterToCheck = "parameters")
+    {
+
+        return static::${"parent" . ucfirst($parameterToCheck)} ?? null;
+
+    }
+
+    protected static function findParentParameters()
+    {
+
+        return array_filter(
+
+            static::getParameters(),
+
+            function($v, $k)
+            {
+
+                return is_array($v) && (array_key_exists("parent", $v) || in_array("parent", $v));
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    protected static function combineParentParametersWithChild()
+    {
+
+        $allParentParameters = static::getParentClassParameters();
+
+        $parametersWithParents = static::findParentParameters();
+
+        foreach ($parametersWithParents as $k => $v)
+        {
+
+            if(array_key_exists("parent", $v))
+            {
+
+                $parent = $v["parent"];
+
+            } else {
+
+                $parent = $k;
+
+            }
+
+            $parentParameters = $allParentParameters[$parent];
+
+            static::$parameters[$k] = static::$parameters[$k] + $parentParameters;
+
+        }
 
     }
 
@@ -594,6 +706,8 @@ trait APIParameters
 
         static::resetCurlParameters();
 
+        static::combineParentParametersWithChild();
+
         static::combineRequiredParameters();
 
         static::combineRequiredAndAllowedParameters();
@@ -671,11 +785,15 @@ trait APIParameters
 
         static::testParametersAreNoLongerThanMaximum();
 
+        static::testParameterCountIsLessThanMaximum();
+
         static::testDatesAreEarlierThan();
 
         static::testDatesAreLaterThan();
 
         static::testDatesAreInProperFormat();
+
+        static::testDatesNotOutsideInterval();
 
         static::testOneOrTheOtherIsSet();
 

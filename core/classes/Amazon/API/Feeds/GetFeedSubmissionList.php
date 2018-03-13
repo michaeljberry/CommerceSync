@@ -20,11 +20,15 @@ class GetFeedSubmissionList extends Feeds
         "FeedProcessingStatusList" => [
             "parent"
         ],
-        "FeedSubmissionIdList",
+        "FeedSubmissionIdList" => [
+            "maximumCount" => 100
+        ],
         "FeedTypeList" => [
             "parent" => "FeedType"
         ],
-        "MaxCount",
+        "MaxCount" => [
+            "maximumCount" => 100
+        ],
         "SellerId" => [
             "required"
         ],

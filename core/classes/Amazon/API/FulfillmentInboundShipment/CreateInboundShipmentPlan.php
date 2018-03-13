@@ -30,6 +30,40 @@ class CreateInboundShipmentPlan extends FulfillmentInboundShipment
         "ShipFromAddress.PostalCode",
         "LabelPrepPreference"
     ];
+    protected static $parameters = [
+        "LabelPrepPreference" => [
+            "validWith" => [
+                "AMAZON_LABEL_ONLY",
+                "AMAZON_LABEL_PREFERRED",
+                "SELLER_LABEL"
+            ]
+        ],
+        "InboundShipmentPlanRequestItems" => [
+            "required"
+        ],
+        "ShipFromAddress" => [
+            "format" => "Address",
+            "required"
+        ],
+        "ShipToCountryCode" => [
+            "incompatibleWith" => "ShipToCountrySubdivisionCode",
+            "maximumLength" => 2,
+            "validWith" => [
+                "CA",
+                "DE",
+                "ES",
+                "FR",
+                "GB",
+                "IT",
+                "MX",
+                "US"
+            ]
+        ],
+        "ShipToCountrySubdivisionCode" => [
+            "incompatibleWith" => "ShipToCountryCode",
+            "maximumLength" => 2
+        ]
+    ];
 
     public function __construct($parametersToSet = null)
     {

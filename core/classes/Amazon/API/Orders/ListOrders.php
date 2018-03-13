@@ -27,6 +27,7 @@ class ListOrders extends Orders
     //laterThan -- Timestamp default interval is "PT2M"
     //maximumLength
     //maximumCount
+    //multipleValuesAllowed
     //notFartherApartThan
     //rangeWithin
     //required

@@ -88,10 +88,5 @@ trait APIProperties
         "SellerSKUList" => "Id",
         "SellerSkus" => "member"
     ];
-    protected static $currencyParameters = [
-        "Amount",
-        "FeePerUnit",
-        "TotalFee"
-    ];
 
 }

@@ -16,6 +16,11 @@ $start = startClock();
 // AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
 $array = [
+    "SellerSKUList" => [
+        "1",
+        "2",
+        "3"
+    ]
 ];
 Ecommerce::dd(
     // AmazonClient::amazonCurl(

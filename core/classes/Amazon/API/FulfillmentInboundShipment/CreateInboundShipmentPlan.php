@@ -13,23 +13,8 @@ class CreateInboundShipmentPlan extends FulfillmentInboundShipment
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inbound/FBAInbound_CreateInboundShipmentPlan.html";
-    protected static $requiredParameters = [
-        "SellerId",
-        "ShipFromAddress.Name",
-        "ShipFromAddress.AddressLine1",
-        "ShipFromAddress.City",
-        "ShipFromAddress.CountryCode",
-        "InboundShipmentPlanRequestItems"
-    ];
-    protected static $allowedParameters = [
-        "ShipToCountryCode",
-        "ShipToCountrySubdivisionCode",
-        "ShipFromAddress.AddressLine2",
-        "ShipFromAddress.DistrictOrCounty",
-        "ShipFromAddress.StateOrProvinceCode",
-        "ShipFromAddress.PostalCode",
-        "LabelPrepPreference"
-    ];
+    protected static $requiredParameters = [];
+    protected static $allowedParameters = [];
     protected static $parameters = [
         "LabelPrepPreference" => [
             "validWith" => [
@@ -39,6 +24,10 @@ class CreateInboundShipmentPlan extends FulfillmentInboundShipment
             ]
         ],
         "InboundShipmentPlanRequestItems" => [
+            "format" => "InboundShipmentPlanRequestItem",
+            "required"
+        ],
+        "SellerId" => [
             "required"
         ],
         "ShipFromAddress" => [

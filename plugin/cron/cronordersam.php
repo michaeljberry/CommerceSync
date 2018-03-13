@@ -14,17 +14,30 @@ require WEBPLUGIN . 'am/amvar.php';
 $start = startClock();
 
 // AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
+// Ecommerce::ddXml(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
 $array = [
-    "SellerSKUList" => [
-        "1",
-        "2",
-        "3"
+    "InboundShipmentPlanRequestItems" => [
+        [
+            "SellerSKU" => "SKU1",
+            "Quantity" => 1
+        ],
+        [
+            "SellerSKU" => "SKU2",
+            "Quantity" => 1,
+            "PrepDetailsList" => [
+                "PrepInstruction" => "Taping",
+                "PrepOwner" => "AMAZON"
+            ]
+        ]
+    ],
+    "ShipFromAddress" => [
+        "Name" => "Ben Parker"
     ]
 ];
 Ecommerce::dd(
     // AmazonClient::amazonCurl(
-        new \Amazon\API\FulfillmentInboundShipment\GetInboundGuidanceForSKU($array)
+        new \Amazon\API\FulfillmentInboundShipment\CreateInboundShipmentPlan($array)
     // )
 );
 

@@ -452,6 +452,49 @@ trait APIParameters
 
     }
 
+    public static function getParametersWithFormat()
+    {
+
+        return array_filter(
+
+            static::getParameters(),
+
+            function ($v, $k)
+            {
+
+                return is_array($v) && array_key_exists("format", $v) && $v["format"] !== "date";
+
+            },
+
+            ARRAY_FILTER_USE_BOTH
+
+        );
+
+    }
+
+    public static function combineFormatWithParameters()
+    {
+
+        $parametersWithFormat = static::getParametersWithFormat();
+        // Ecommerce::dd($parametersWithFormat);
+
+        $dataTypes = static::$dataTypes;
+        // Ecommerce::dd($dataTypes);
+
+        foreach($parametersWithFormat as $key => $value)
+        {
+
+            // Ecommerce::dd(static::getCurlParameters());
+
+            // Ecommerce::dd($key);
+            // Ecommerce::dd($value["format"]);
+
+            // Ecommerce::dd($dataTypes[$value["format"]]);
+
+        }
+
+    }
+
     public static function setParameterByKey($key, $value)
     {
 
@@ -473,26 +516,79 @@ trait APIParameters
 
     }
 
-    public static function incrementParameter($parameter, $value)
+    public static function incrementParameter($parameter, $value, $parentParameterKey = null, $x = 1)
     {
 
         $incrementor = static::getIncrementorByKey($parameter);
+        // Ecommerce::dd("Parameter:$parameter");
+        // Ecommerce::dd($incrementor);
+        // Ecommerce::dd($value);
 
         if (is_array($value))
         {
 
-            for ($x = 1; $x <= count($value); $x++)
+            foreach($value as $key => $val)
             {
 
-                static::setParameterByKey($parameter . "." . $incrementor . "." . $x, $value[$x - 1]);
+                if($parentParameterKey)
+                {
 
+                    $parameterKey = "$parentParameterKey.$parameter.$incrementor.$x";
+
+                } else {
+
+                    $parameterKey = "$parameter.$incrementor.$x";
+
+                }
+
+                if(is_array($val))
+                {
+                    $y = 0;
+
+                    foreach($val as $newParameter => $v)
+                    {
+
+                        if(is_array($v))
+                        {
+                            Ecommerce::dd($parameterKey);
+                            Ecommerce::dd($newParameter);
+                            Ecommerce::dd($v);
+                            Ecommerce::dd($x);
+
+                            static::incrementParameter($newParameter, $v, $parameterKey, $y);
+
+                            $y++;
+
+                        } else {
+
+
+                            static::setParameterByKey($parameterKey . "." . $newParameter, $v);
+
+                        }
+
+
+                    }
+
+                } else {
+
+                    static::setParameterByKey("$parameterKey.$key", $val);
+
+                }
+
+
+                $x++;
             }
+
 
         } else {
 
-            static::setParameterByKey($parameter . "." . $incrementor . ".1", $value);
+            $parameterKey = "$parameter.$incrementor.$x";
+
+            static::setParameterByKey($parameterKey, $value);
 
         }
+
+        Ecommerce::dd(static::getCurlParameters());
 
     }
 
@@ -765,6 +861,8 @@ trait APIParameters
             static::setPassedParameters($parametersToSet, $incrementParameter);
 
         }
+
+        static::combineFormatWithParameters();
 
     }
 

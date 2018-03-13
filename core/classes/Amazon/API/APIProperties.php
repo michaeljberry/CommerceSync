@@ -81,10 +81,12 @@ trait APIProperties
         "FeedTypeList" => "Type",
         "FulfillmentChannel" => "Channel",
         "InboundShipmentPlanRequest" => "member",
+        "InboundShipmentPlanRequestItems" => "member",
         "MarketplaceId" => "Id",
         "MarketplaceIdList" => "Id",
         "OrderStatus" => "Status",
         "PaymentMethod" => "Method",
+        "PrepDetailsList" => "member",
         "SellerSKUList" => "Id",
         "SellerSkus" => "member"
     ];

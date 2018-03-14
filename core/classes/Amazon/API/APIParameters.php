@@ -543,17 +543,13 @@ trait APIParameters
 
                 if(is_array($val))
                 {
-                    $y = 0;
+                    $y = 1;
 
                     foreach($val as $newParameter => $v)
                     {
 
                         if(is_array($v))
                         {
-                            Ecommerce::dd($parameterKey);
-                            Ecommerce::dd($newParameter);
-                            Ecommerce::dd($v);
-                            Ecommerce::dd($x);
 
                             static::incrementParameter($newParameter, $v, $parameterKey, $y);
 
@@ -561,13 +557,13 @@ trait APIParameters
 
                         } else {
 
-
                             static::setParameterByKey($parameterKey . "." . $newParameter, $v);
 
                         }
 
-
                     }
+
+                    $x++;
 
                 } else {
 
@@ -575,8 +571,6 @@ trait APIParameters
 
                 }
 
-
-                $x++;
             }
 
 

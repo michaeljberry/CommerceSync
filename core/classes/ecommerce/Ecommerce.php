@@ -58,6 +58,38 @@ class Ecommerce
 
     }
 
+    public static function multiKeyExists(array $arr, $key)
+    {
+
+        if(array_key_exists($key, $arr))
+        {
+
+            return true;
+
+        }
+
+        foreach($arr as $element)
+        {
+
+            if(is_array($element))
+            {
+
+                if(static::
+                    multiKeyExists($element, $key))
+                {
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+        return false;
+
+    }
+
     public static function removeUrlProtocol($url)
     {
 

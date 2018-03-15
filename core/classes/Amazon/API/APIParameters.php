@@ -24,6 +24,46 @@ trait APIParameters
         "Version"
     ];
 
+    protected static function arrayFilterRecursive($method, $array, $removeEmptyArrays = false, $callback = null, $class = "static")
+    {
+
+        foreach ($array as $key => &$value)
+        {
+
+            // Ecommerce::dd($value);
+            if (is_array($value)) {
+
+                $value = static::arrayFilterRecursive($method, $value, $removeEmptyArrays, call_user_func_array([$class, $method], $value));
+
+                if ($removeEmptyArrays && !(bool)$value)
+                {
+
+                    unset($array[$key]);
+
+                }
+
+            } else {
+
+                if (!is_null($callback) && !call_user_func_array([$class, $method], [$value, $key]))
+                {
+
+                    unset($array[$key]);
+
+                } elseif (!(bool)$value) {
+
+                    unset($array[$key]);
+
+                }
+
+            }
+
+        }
+
+        unset($value);
+        return $array;
+
+    }
+
     protected static function getIncrementors()
     {
 
@@ -45,10 +85,20 @@ trait APIParameters
 
     }
 
-    protected static function setRequiredParameter($parameter)
+    protected static function setRequiredParameter($parameter, $value = null, $isArray = false)
     {
 
-        static::$requiredParameters[] = $parameter;
+        if(!$isArray)
+        {
+
+            static::$requiredParameters[] = $parameter;
+
+        } else {
+
+            static::$requiredParameters[$parameter] = $value;
+
+        }
+
 
     }
 
@@ -321,23 +371,33 @@ trait APIParameters
 
     }
 
+    protected static function required($v)
+    {
+            // return is_array($v) && in_array("required", $v);
+        return $v === "required";
+    }
+
     protected static function findRequiredParameters()
     {
 
-        return array_filter(
+        $parameters = static::getParameters();
 
-            static::getParameters(),
+        return static::arrayFilterRecursive("required", $parameters, true);
 
-            function ($v, $k)
-            {
+        // return array_filter(
 
-                return is_array($v) && in_array("required", $v);
+        //     static::getParameters(),
 
-            },
+        //     function ($v, $k)
+        //     {
 
-            ARRAY_FILTER_USE_BOTH
+        //         return is_array($v) && in_array("required", $v);
 
-        );
+        //     },
+
+        //     ARRAY_FILTER_USE_BOTH
+
+        // );
 
     }
 
@@ -816,7 +876,16 @@ trait APIParameters
         foreach ($parameters as $parameter => $value)
         {
 
-            static::setRequiredParameter($parameter);
+
+            if(is_array($value)){
+
+                static::setRequiredParameter($parameter, $value, true);
+
+            } else {
+
+                static::setRequiredParameter($parameter);
+
+            }
 
         }
 
@@ -842,7 +911,10 @@ trait APIParameters
 
         static::combineParentParametersWithChild();
 
+        static::$parameters = static::combineFormatWithParameters(static::$parameters);
+
         static::combineRequiredParameters();
+        Ecommerce::dd(static::$requiredParameters);
 
         static::combineRequiredAndAllowedParameters();
 
@@ -850,35 +922,35 @@ trait APIParameters
 
         static::setActionParameter();
 
-        if (in_array('Merchant', static::getRequiredParameters()))
+        if (array_key_exists('Merchant', static::getRequiredParameters()))
         {
 
             static::setMerchantIdParameter('Merchant');
 
         }
 
-        if (in_array('SellerId', static::getRequiredParameters()))
+        if (array_key_exists('SellerId', static::getRequiredParameters()))
         {
 
             static::setMerchantIdParameter('SellerId');
 
         }
 
-        if (in_array('MarketplaceId.Id.1', static::getRequiredParameters()))
+        if (array_key_exists('MarketplaceId.Id.1', static::getRequiredParameters()))
         {
 
             static::setMarketplaceIdParameter('MarketplaceId.Id.1');
 
         }
 
-        if (in_array('MarketplaceId', static::getRequiredParameters()))
+        if (array_key_exists('MarketplaceId', static::getRequiredParameters()))
         {
 
             static::setMarketplaceIdParameter('MarketplaceId.Id.1');
 
         }
 
-        if (in_array('PurgeAndReplace', static::getRequiredParameters()))
+        if (array_key_exists('PurgeAndReplace', static::getRequiredParameters()))
         {
 
             static::setPurgeAndReplaceParameter();
@@ -900,7 +972,6 @@ trait APIParameters
 
         }
 
-        static::$parameters = static::combineFormatWithParameters(static::$parameters);
 
     }
 

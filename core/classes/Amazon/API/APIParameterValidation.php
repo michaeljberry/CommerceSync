@@ -297,13 +297,39 @@ trait APIParameterValidation
 
     }
 
-    public static function ensureRequiredParametersAreSet()
+    public static function ensureRequiredParametersAreSet($requiredParameters = null, $parentKey = null)
     {
 
-        foreach (static::$requiredParameters as $key => $parameter)
+        if(!$requiredParameters)
         {
 
-            static::requireParameterToBeSet($parameter);
+            $requiredParameters = static::$requiredParameters;
+
+        }
+
+        foreach ($requiredParameters as $key => $parameter)
+        {
+            Ecommerce::dd($key);
+            Ecommerce::dd($parameter);
+
+            if(is_array($parameter))
+            {
+
+                static::ensureRequiredParametersAreSet($parameter, $key);
+
+            } else {
+
+                if($parentKey)
+                {
+
+                    static::requireParameterToBeSet($parentKey);
+
+                } else {
+
+                    static::requireParameterToBeSet($parameter);
+
+                }
+            }
 
         }
 

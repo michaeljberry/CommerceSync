@@ -432,23 +432,10 @@ trait APIParameters
 
     }
 
-    public static function setClassParameterByKey($key, $value, $recurse = null)
+    public static function setClassParameterByKey($key, $value)
     {
-        if(!$recurse)
-        {
 
-            static::$parameters[$key] = $value;
-
-        } else {
-
-            foreach(static::$parameters as $parameterKey => $parameterValue)
-            {
-
-
-
-            }
-
-        }
+        static::$parameters[$key] = $value;
 
     }
 
@@ -513,60 +500,38 @@ trait APIParameters
 
     }
 
-    public static function combineFormatWithParameters($parentParameters = null)
+    public static function combineFormatWithParameters($array, $find = null, $replace = null)
     {
 
         $dataTypes = static::$dataTypes;
-        // Ecommerce::dd($dataTypes);
-        // Ecommerce::dd(static::getParameters());
 
-        if(!$parentParameters)
+        $parametersWithFormats = static::getParametersWithFormat($replace);
+
+        foreach ($array as $key => $value)
         {
 
-            $parametersWithFormats = static::getParametersWithFormat();
-
-        } else {
-
-            $parametersWithFormats = $parentParameters;
-
-        }
-        // Ecommerce::dd($parametersWithFormats);
-
-        foreach ($parametersWithFormats as $key => $value) {
-            Ecommerce::dd($key);
-            Ecommerce::dd($value);
-            $format = $value["format"];
-            $dataType = $dataTypes[$format];
-            Ecommerce::dd($dataType);
-
-            unset($parametersWithFormats[$key]["format"]);
-            $newValue = array_merge($parametersWithFormats[$key], $dataType);
-
-            if(!$parentParameters)
+            if(array_key_exists($key, $parametersWithFormats))
             {
 
-                static::setClassParameterByKey($key, $newValue);
+                $format = $value["format"];
+                $dataType = $dataTypes[$format];
+                $newValue = array_merge($array[$key], $dataType);
+                $array[$key] = $newValue;
 
-            } else {
+                unset($array[$key]["format"]);
 
-                echo "howdy!";
-                static::setClassParameterByKey($key, $newValue, true);
+                if(is_array($array[$key]))
+                {
 
-            }
+                    $array[$key] = static::combineFormatWithParameters($array[$key], $key, $dataType);
 
-            $newParametersWithFormats = static::getParametersWithFormat($dataType);
-            Ecommerce::dd($newParametersWithFormats);
-
-            if($newParametersWithFormats)
-            {
-
-                static::combineFormatWithParameters($newParametersWithFormats);
+                }
 
             }
 
         }
 
-        Ecommerce::dd(static::getParameters());
+        return $array;
 
     }
 
@@ -935,7 +900,7 @@ trait APIParameters
 
         }
 
-        static::combineFormatWithParameters();
+        static::$parameters = static::combineFormatWithParameters(static::$parameters);
 
     }
 

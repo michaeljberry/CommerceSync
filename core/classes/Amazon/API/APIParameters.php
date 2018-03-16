@@ -24,7 +24,7 @@ trait APIParameters
         "Version"
     ];
 
-    protected static function arrayFilterRecursive($method, $array, $removeEmptyArrays = false, $callback = null, $class = "static")
+    protected static function arrayFilterRecursive($method, $array, $removeEmptyArrays = false, $arg = null, $callback = null, $class = "static")
     {
 
         foreach ($array as $key => &$value)
@@ -33,7 +33,7 @@ trait APIParameters
             // Ecommerce::dd($value);
             if (is_array($value)) {
 
-                $value = static::arrayFilterRecursive($method, $value, $removeEmptyArrays, call_user_func_array([$class, $method], $value));
+                $value = static::arrayFilterRecursive($method, $value, $removeEmptyArrays, call_user_func_array([$class, $method], [$value, $key, $arg]));
 
                 if ($removeEmptyArrays && !(bool)$value)
                 {
@@ -44,7 +44,7 @@ trait APIParameters
 
             } else {
 
-                if (!is_null($callback) && !call_user_func_array([$class, $method], [$value, $key]))
+                if (!is_null($callback) && !call_user_func_array([$class, $method], [$value, $key, $arg]))
                 {
 
                     unset($array[$key]);
@@ -732,42 +732,63 @@ trait APIParameters
 
     }
 
-    public static function searchCurlParameters($parameterToCheck, $allowedParameters = null)
+    protected static function searchParameters($v, $k, $parameterToCheck)
     {
 
-        if(!$allowedParameters)
-        {
+        if (
 
-            $allowedParameters = static::getCurlParameters();
+            strpos($parameterToCheck, $k) !== false ||
+
+            strpos($k, $parameterToCheck) !== false
+
+        ){
+
+            return true;
 
         }
 
-        return array_filter(
+        return false;
 
-            $allowedParameters,
+    }
 
-            function ($k) use ($parameterToCheck)
-            {
+    public static function searchCurlParameters($parameterToCheck, $parameters = null)
+    {
 
-                if(
+        if(!$parameters)
+        {
 
-                    strpos($parameterToCheck, $k) !== false ||
+            $parameters = static::getCurlParameters();
 
-                    strpos($k, $parameterToCheck) !== false
+        }
 
-                ){
+        return static::arrayFilterRecursive("searchParameters", $parameters, true, $parameterToCheck);
 
-                    return true;
+        // return array_filter(
 
-                }
+        //     $parameters,
 
-                return false;
+        //     function ($k) use ($parameterToCheck)
+        //     {
 
-            },
+        //         if(
 
-            ARRAY_FILTER_USE_KEY
+        //             strpos($parameterToCheck, $k) !== false ||
 
-        );
+        //             strpos($k, $parameterToCheck) !== false
+
+        //         ){
+
+        //             return true;
+
+        //         }
+
+        //         return false;
+
+        //     },
+
+        //     ARRAY_FILTER_USE_KEY
+
+        // );
 
     }
 
@@ -898,7 +919,7 @@ trait APIParameters
 
             static::getRequiredParameters(),
 
-            array_keys(static::getParameters())
+            static::getParameters()
 
         );
 
@@ -914,7 +935,6 @@ trait APIParameters
         static::$parameters = static::combineFormatWithParameters(static::$parameters);
 
         static::combineRequiredParameters();
-        Ecommerce::dd(static::$requiredParameters);
 
         static::combineRequiredAndAllowedParameters();
 

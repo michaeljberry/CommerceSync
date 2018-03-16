@@ -32,7 +32,10 @@ $array = [
         ]
     ],
     "ShipFromAddress" => [
-        "Name" => "Ben Parker"
+        "Name" => "Ben Parker",
+        "AddressLine1" => "123 Main St.",
+        "City" => "New York",
+        "CountryCode" => "US"
     ]
 ];
 Ecommerce::dd(

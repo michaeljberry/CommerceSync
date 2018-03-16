@@ -278,13 +278,23 @@ trait APIParameterValidation
 
     }
 
-    public static function ensureSetParametersAreAllowed()
+    public static function ensureSetParametersAreAllowed($parameters = null)
     {
 
-        foreach(static::getCurlParameters() as $parameterToCheck => $value)
-        {
+        if (!$parameters) {
 
-            $parameter = static::searchCurlParameters($parameterToCheck, array_fill_keys(static::getAllowedParameters(), " "));
+            $parameters = static::getCurlParameters();
+
+        }
+
+        Ecommerce::dd(static::getAllowedParameters());
+
+        foreach($parameters as $parameterToCheck => $value)
+        {
+            Ecommerce::dd($parameterToCheck);
+            Ecommerce::dd($value);
+
+            $parameter = static::searchCurlParameters($parameterToCheck, static::getAllowedParameters());
 
             if(!$parameter)
             {
@@ -309,8 +319,6 @@ trait APIParameterValidation
 
         foreach ($requiredParameters as $key => $parameter)
         {
-            Ecommerce::dd($key);
-            Ecommerce::dd($parameter);
 
             if(is_array($parameter))
             {

@@ -27,13 +27,12 @@ trait APIParameters
     protected static function arrayFilterRecursive($method, $array, $removeEmptyArrays = false, $arg = null, $callback = null, $class = "static")
     {
 
-        foreach ($array as $key => &$value)
+        foreach ($array as $key => $value)
         {
 
-            // Ecommerce::dd($value);
             if (is_array($value)) {
 
-                $value = static::arrayFilterRecursive($method, $value, $removeEmptyArrays, call_user_func_array([$class, $method], [$value, $key, $arg]));
+                $value = static::arrayFilterRecursive($method, $value, $removeEmptyArrays, $arg, call_user_func_array([$class, $method], [$value, $key, $arg]));
 
                 if ($removeEmptyArrays && !(bool)$value)
                 {
@@ -51,7 +50,7 @@ trait APIParameters
 
                 } elseif (!(bool)$value) {
 
-                    unset($array[$key]);
+                    // unset($array[$key]);
 
                 }
 
@@ -91,14 +90,13 @@ trait APIParameters
         if(!$isArray)
         {
 
-            static::$requiredParameters[] = $parameter;
+            static::$requiredParameters[$parameter] = $value;
 
         } else {
 
             static::$requiredParameters[$parameter] = $value;
 
         }
-
 
     }
 
@@ -735,19 +733,21 @@ trait APIParameters
     protected static function searchParameters($v, $k, $parameterToCheck)
     {
 
-        if (
+        // if (
 
-            strpos($parameterToCheck, $k) !== false ||
+        //     strpos($parameterToCheck, $k) !== false ||
 
-            strpos($k, $parameterToCheck) !== false
+        //     strpos($k, $parameterToCheck) !== false
 
-        ){
+        // ){
 
-            return true;
+        //     return true;
 
-        }
+        // }
 
-        return false;
+        // return false;
+
+        return strpos($parameterToCheck, $k) !== false || strpos($k, $parameterToCheck) !== false;
 
     }
 
@@ -883,14 +883,15 @@ trait APIParameters
     protected static function combineRequiredParameters()
     {
 
-        $parentRequiredParameters = static::getRequiredParameters(true);
+        $parentRequiredParameters = array_flip(static::getRequiredParameters(true));
+        // $parentRequiredParameters = static::getRequiredParameters(true);
 
         $parameters = static::findRequiredParameters();
 
-        foreach($parentRequiredParameters as $parameter)
+        foreach($parentRequiredParameters as $parameter => $value)
         {
 
-            static::setRequiredParameter($parameter);
+            static::setRequiredParameter($parameter, $value);
 
         }
 
@@ -904,7 +905,7 @@ trait APIParameters
 
             } else {
 
-                static::setRequiredParameter($parameter);
+                static::setRequiredParameter($parameter, $value);
 
             }
 
@@ -992,37 +993,36 @@ trait APIParameters
 
         }
 
-
     }
 
     public static function verifyParameters()
     {
 
-        static::ensureRequiredParametersAreSet();
+        // static::ensureRequiredParametersAreSet();
 
         static::ensureSetParametersAreAllowed();
 
-        static::ensureParameterIsInFormat("AmazonOrderId", self::getOrderNumberFormat());
+        // static::ensureParameterIsInFormat("AmazonOrderId", self::getOrderNumberFormat());
 
-        static::testParametersWithIncompatibilities();
+        // static::testParametersWithIncompatibilities();
 
-        static::testParametersAreValid();
+        // static::testParametersAreValid();
 
-        static::testParametersAreWithinGivenRange();
+        // static::testParametersAreWithinGivenRange();
 
-        static::testParametersAreNoLongerThanMaximum();
+        // static::testParametersAreNoLongerThanMaximum();
 
-        static::testParameterCountIsLessThanMaximum();
+        // static::testParameterCountIsLessThanMaximum();
 
-        static::testDatesAreEarlierThan();
+        // static::testDatesAreEarlierThan();
 
-        static::testDatesAreLaterThan();
+        // static::testDatesAreLaterThan();
 
-        static::testDatesAreInProperFormat();
+        // static::testDatesAreInProperFormat();
 
-        static::testDatesNotOutsideInterval();
+        // static::testDatesNotOutsideInterval();
 
-        static::testOneOrTheOtherIsSet();
+        // static::testOneOrTheOtherIsSet();
 
         if(method_exists(get_called_class(), "requestRules"))
         {

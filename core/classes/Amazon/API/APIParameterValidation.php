@@ -288,15 +288,17 @@ trait APIParameterValidation
         }
 
         Ecommerce::dd(static::getAllowedParameters());
+        Ecommerce::dd(static::getCurlParameters());
 
         foreach($parameters as $parameterToCheck => $value)
         {
-            Ecommerce::dd($parameterToCheck);
-            Ecommerce::dd($value);
 
-            $parameter = static::searchCurlParameters($parameterToCheck, static::getAllowedParameters());
+            $parameter = static::arrayFilterRecursive("searchParameters", static::getAllowedParameters()    , false, $parameterToCheck);
 
-            if(!$parameter)
+            // $parameter = static::searchCurlParameters($parameterToCheck, static::getAllowedParameters());
+            Ecommerce::dd($parameter);
+
+            if(!in_array($parameterToCheck, $parameter))
             {
 
                 throw new Exception("The $parameterToCheck parameter is not allowed. Please correct and try again.");
@@ -369,7 +371,7 @@ trait APIParameterValidation
         if(null !== static::searchCurlParameters($parameterToCheck))
         {
 
-            if(strlen(static::getParameterByKey(key(static::searchCurlParameters($parameterToCheck)))) > $max)
+            if(strlen(static::getParameterByKey($parameterToCheck)) > $max)
             {
 
                 throw new Exception("$parameterToCheck must be shorter than $max characters. Please correct and try again.");

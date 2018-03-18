@@ -36,7 +36,10 @@ $array = [
         "AddressLine1" => "123 Main St.",
         "City" => "New York",
         "CountryCode" => "US"
-    ]
+    ],
+    "LabelPrepPreference" => "SELLER_LABEL",
+    "ShipToCountryCode" => "US",
+    "RandomParameter" => "Blah"
 ];
 Ecommerce::dd(
     // AmazonClient::amazonCurl(

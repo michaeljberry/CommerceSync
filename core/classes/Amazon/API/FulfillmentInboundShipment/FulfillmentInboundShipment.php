@@ -74,7 +74,7 @@ class FulfillmentInboundShipment
                 ]
             ],
             "PrepDetailsList" => [
-                "format" => "PrepDetails"
+                "format" => "PrepDetails",
             ],
             "Quantity" => [
                 "required"

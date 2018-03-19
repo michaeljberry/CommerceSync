@@ -24,7 +24,31 @@ trait APIParameters
         "Version"
     ];
 
-    protected static function arrayFilterRecursive($method, $array, $removeEmptyArrays = false, $arg = null, $callback = null, $class = "static")
+    protected static function arrayFilterRecursiveBoolean($method, $array, $arg = null, $inArray = false, $class = "static")
+    {
+
+        foreach ($array as $key => $value)
+        {
+
+            if (!is_numeric($key) && call_user_func_array([$class, $method], [$value, $key, $arg]) === true)
+            {
+
+                $inArray = true;
+                break;
+
+            } elseif (is_array($value)) {
+
+                static::arrayFilterRecursiveBoolean($method, $value, $arg, $inArray);
+
+            }
+
+        }
+
+        return $inArray;
+
+    }
+
+    protected static function arrayFilterRecursive($method, $array, $removeEmptyArrays = false, $arg = null, $callback = false, $class = "static")
     {
 
         foreach ($array as $key => $value)
@@ -32,27 +56,22 @@ trait APIParameters
 
             if (is_array($value)) {
 
-                $value = static::arrayFilterRecursive($method, $value, $removeEmptyArrays, $arg, call_user_func_array([$class, $method], [$value, $key, $arg]));
+                $array[$key] = static::arrayFilterRecursive($method, $value, $removeEmptyArrays, $arg, call_user_func_array([$class, $method], [$value, $key, $arg]));
 
-                if ($removeEmptyArrays && !(bool)$value)
-                {
+                if ($removeEmptyArrays && !(bool)$array[$key]) {
 
                     unset($array[$key]);
 
                 }
 
-            } else {
+            } elseif (!call_user_func_array([$class, $method], [$value, $key, $arg]))
+            {
 
-                if (!is_null($callback) && !call_user_func_array([$class, $method], [$value, $key, $arg]))
-                {
+                unset($array[$key]);
 
-                    unset($array[$key]);
+            } elseif (!(bool)$value) {
 
-                } elseif (!(bool)$value) {
-
-                    // unset($array[$key]);
-
-                }
+                unset($array[$key]);
 
             }
 
@@ -60,6 +79,7 @@ trait APIParameters
 
         unset($value);
         return $array;
+
 
     }
 
@@ -344,35 +364,69 @@ trait APIParameters
 
     }
 
-    protected static function testParametersAreValid()
+    protected static function validWith($v, $k)
     {
 
-        array_filter(
+        if (is_array($v) && array_key_exists("validWith", $v))
+        {
 
-            static::getParameters(),
+            Ecommerce::dd($k);
+            Ecommerce::dd($v["validWith"]);
 
-            function ($v, $k)
-            {
+            static::ensureParameterValuesAreValid($k, $v['validWith']);
 
-                if (is_array($v) && array_key_exists("validWith", $v))
-                {
+            return true;
 
-                    static::ensureParameterValuesAreValid($k, $v['validWith']);
 
-                }
+        }
 
-            },
-
-            ARRAY_FILTER_USE_BOTH
-
-        );
+        return false;
 
     }
 
-    protected static function required($v)
+    protected static function testParametersAreValid()
     {
-            // return is_array($v) && in_array("required", $v);
-        return $v === "required";
+
+        // array_filter(
+
+        //     static::getParameters(),
+
+        //     function ($v, $k)
+        //     {
+
+        //         if (is_array($v) && array_key_exists("validWith", $v)) {
+
+        //             static::ensureParameterValuesAreValid($k, $v['validWith']);
+
+        //         }
+
+        //     },
+
+        //     ARRAY_FILTER_USE_BOTH
+
+        // );
+        $parameters = static::getParameters();
+
+        $validWithParameters = static::arrayFilterRecursive("validWith", $parameters, false);
+
+    }
+
+    protected static function required($v, $k, $parameterToCheck)
+    {
+
+        if(is_array($v) && in_array("required", $v))
+        {
+
+            return true;
+
+        } elseif($v === "required") {
+
+            return true;
+
+        }
+
+        return false;
+
     }
 
     protected static function findRequiredParameters()
@@ -381,21 +435,6 @@ trait APIParameters
         $parameters = static::getParameters();
 
         return static::arrayFilterRecursive("required", $parameters, true);
-
-        // return array_filter(
-
-        //     static::getParameters(),
-
-        //     function ($v, $k)
-        //     {
-
-        //         return is_array($v) && in_array("required", $v);
-
-        //     },
-
-        //     ARRAY_FILTER_USE_BOTH
-
-        // );
 
     }
 
@@ -733,21 +772,20 @@ trait APIParameters
     protected static function searchParameters($v, $k, $parameterToCheck)
     {
 
-        // if (
+        $explodedKey = explode(".", $k);
+        $parentParameter = $explodedKey[0];
+        $last = last($explodedKey);
 
-        //     strpos($parameterToCheck, $k) !== false ||
+        if(strpos($k, ".") !== false || strpos($parameterToCheck, ".") !== false)
+        {
 
-        //     strpos($k, $parameterToCheck) !== false
+            return strpos($parameterToCheck, $k) !== false || strpos($k, $parameterToCheck) !== false;
 
-        // ){
+        } else {
 
-        //     return true;
+            return $parameterToCheck === $last;
 
-        // }
-
-        // return false;
-
-        return strpos($parameterToCheck, $k) !== false || strpos($k, $parameterToCheck) !== false;
+        }
 
     }
 
@@ -761,34 +799,21 @@ trait APIParameters
 
         }
 
-        return static::arrayFilterRecursive("searchParameters", $parameters, true, $parameterToCheck);
+        return static::arrayFilterRecursiveBoolean("searchParameters", $parameters, $parameterToCheck);
 
-        // return array_filter(
+    }
 
-        //     $parameters,
+    public static function searchCurlParametersReturnResults($parameterToCheck, $parameters = null)
+    {
 
-        //     function ($k) use ($parameterToCheck)
-        //     {
+        if(!$parameters)
+        {
 
-        //         if(
+            $parameters = static::getCurlParameters();
 
-        //             strpos($parameterToCheck, $k) !== false ||
+        }
 
-        //             strpos($k, $parameterToCheck) !== false
-
-        //         ){
-
-        //             return true;
-
-        //         }
-
-        //         return false;
-
-        //     },
-
-        //     ARRAY_FILTER_USE_KEY
-
-        // );
+        return static::arrayFilterRecursive("searchParameters", $parameters, $parameterToCheck);
 
     }
 
@@ -884,9 +909,8 @@ trait APIParameters
     {
 
         $parentRequiredParameters = array_flip(static::getRequiredParameters(true));
-        // $parentRequiredParameters = static::getRequiredParameters(true);
 
-        $parameters = static::findRequiredParameters();
+        $requiredParameters = static::findRequiredParameters();
 
         foreach($parentRequiredParameters as $parameter => $value)
         {
@@ -895,7 +919,7 @@ trait APIParameters
 
         }
 
-        foreach ($parameters as $parameter => $value)
+        foreach ($requiredParameters as $parameter => $value)
         {
 
 
@@ -997,16 +1021,18 @@ trait APIParameters
 
     public static function verifyParameters()
     {
+        Ecommerce::dd(static::getCurlParameters());
+        Ecommerce::dd(static::getParameters());
 
-        // static::ensureRequiredParametersAreSet();
+        static::ensureRequiredParametersAreSet();
 
         static::ensureSetParametersAreAllowed();
 
-        // static::ensureParameterIsInFormat("AmazonOrderId", self::getOrderNumberFormat());
+        static::ensureParameterIsInFormat("AmazonOrderId", self::getOrderNumberFormat());
 
-        // static::testParametersWithIncompatibilities();
+        static::testParametersWithIncompatibilities();
 
-        // static::testParametersAreValid();
+        static::testParametersAreValid();
 
         // static::testParametersAreWithinGivenRange();
 

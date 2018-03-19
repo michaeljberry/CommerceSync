@@ -221,10 +221,17 @@ trait APIParameterValidation
     public static function ensureParameterValuesAreValid($parameterToCheck, $validParameterValues = null)
     {
 
-        $matchingParameters = static::searchCurlParameters($parameterToCheck);
+        // $matchingParameters = static::searchCurlParametersReturnResults($parameterToCheck);
+        // Ecommerce::dd("MatchingParameters");
+        Ecommerce::dd($parameterToCheck);
+        // Ecommerce::dd($matchingParameters);
+        Ecommerce::dd($validParameterValues);
 
-        if(!empty($matchingParameters))
-        {
+        $value = static::searchCurlParametersReturnResults($parameterToCheck);
+        Ecommerce::dd($value);
+
+        // if(!empty($matchingParameters))
+        // {
 
             $validParameterValue = [];
             $dependentParameters = [];
@@ -252,9 +259,11 @@ trait APIParameterValidation
 
             }
 
-            $allowedParameterValues = array_intersect($matchingParameters, $validParameterValue);
+            // $allowedParameterValues = array_intersect($matchingParameters, $validParameterValue);
 
-            if(empty($allowedParameterValues))
+            Ecommerce::dd($validParameterValue);
+
+            if(!in_array($parameterToCheck, $validParameterValue))
             {
 
                 $exception = "The value for $parameterToCheck must be one of the following: ";
@@ -274,7 +283,7 @@ trait APIParameterValidation
 
             }
 
-        }
+        // }
 
     }
 
@@ -287,18 +296,12 @@ trait APIParameterValidation
 
         }
 
-        Ecommerce::dd(static::getAllowedParameters());
-        Ecommerce::dd(static::getCurlParameters());
-
         foreach($parameters as $parameterToCheck => $value)
         {
 
-            $parameter = static::arrayFilterRecursive("searchParameters", static::getAllowedParameters()    , false, $parameterToCheck);
+            $inArray = static::searchCurlParameters($parameterToCheck, static::getAllowedParameters());
 
-            // $parameter = static::searchCurlParameters($parameterToCheck, static::getAllowedParameters());
-            Ecommerce::dd($parameter);
-
-            if(!in_array($parameterToCheck, $parameter))
+            if(!$inArray)
             {
 
                 throw new Exception("The $parameterToCheck parameter is not allowed. Please correct and try again.");
@@ -322,6 +325,7 @@ trait APIParameterValidation
         foreach ($requiredParameters as $key => $parameter)
         {
 
+
             if(is_array($parameter))
             {
 
@@ -336,7 +340,7 @@ trait APIParameterValidation
 
                 } else {
 
-                    static::requireParameterToBeSet($parameter);
+                    static::requireParameterToBeSet($key);
 
                 }
             }

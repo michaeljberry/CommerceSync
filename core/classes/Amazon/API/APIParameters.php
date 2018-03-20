@@ -12,6 +12,26 @@ use ReflectionClass;
 trait APIParameters
 {
 
+    // dependentOn
+    // divisorOf
+    // earlierThan -- Timestamp default interval is "PT2M"
+    // format
+    // incompatibleWith
+    // laterThan -- Timestamp default interval is "PT2M"
+    // lengthBetween
+    // maximumLength
+    // maximumCount
+    // multipleValuesAllowed
+    // notFartherApartThan
+    // onlyIfOperationIs
+    // rangeWithin
+    // required
+    // requiredIf
+    // requiredIfNotSet
+    // validIn
+    // validWith
+    // parent - Key => value || value
+
     private static $curlParameters = [];
 
     private static $requiredParameters = [
@@ -52,13 +72,6 @@ trait APIParameters
 
     }
 
-    public static function unsetClassParameterByKey($key)
-    {
-
-        unset(static::$parameters[$key]);
-
-    }
-
     protected static function getIncrementors()
     {
 
@@ -77,13 +90,6 @@ trait APIParameters
     {
 
         return self::$curlParameters[$key] ?? null;
-
-    }
-
-    protected static function resetCurlParameters()
-    {
-
-        self::$curlParameters = [];
 
     }
 
@@ -108,17 +114,31 @@ trait APIParameters
 
     }
 
+    public static function unsetClassParameterByKey($key)
+    {
+
+        unset(static::$parameters[$key]);
+
+    }
+
+    protected static function resetCurlParameters()
+    {
+
+        self::$curlParameters = [];
+
+    }
+
     public static function setSignatureMethodParameter()
     {
 
-        self::setParameterByKey('SignatureMethod', self::getSignatureMethod());
+        self::setParameterByKey("SignatureMethod", self::getSignatureMethod());
 
     }
 
     public static function setSignatureVersionParameter()
     {
 
-        self::setParameterByKey('SignatureVersion', self::getSignatureVersion());
+        self::setParameterByKey("SignatureVersion", self::getSignatureVersion());
 
     }
 
@@ -127,21 +147,21 @@ trait APIParameters
 
         $date = new DateTime(date("Y-m-d H:i:s"));
 
-        self::setParameterByKey('Timestamp', $date->format("Y-m-d\TH:i:s\Z"));
+        self::setParameterByKey("Timestamp", $date->format("Y-m-d\TH:i:s\Z"));
 
     }
 
     protected static function setAwsAccessKeyParameter()
     {
 
-        self::setParameterByKey('AWSAccessKeyId', AmazonClient::getAwsAccessKey());
+        self::setParameterByKey("AWSAccessKeyId", AmazonClient::getAwsAccessKey());
 
     }
 
     protected static function setActionParameter()
     {
 
-        self::setParameterByKey('Action', static::getAction());
+        self::setParameterByKey("Action", static::getAction());
 
     }
 
@@ -155,7 +175,7 @@ trait APIParameters
     protected static function setPurgeAndReplaceParameter()
     {
 
-        self::setParameterByKey('PurgeAndReplace', 'false');
+        self::setParameterByKey("PurgeAndReplace", "false");
 
     }
 
@@ -178,7 +198,7 @@ trait APIParameters
     protected static function setVersionDateParameter()
     {
 
-        self::setParameterByKey('Version', static::getVersionDate());
+        self::setParameterByKey("Version", static::getVersionDate());
 
     }
 
@@ -194,13 +214,30 @@ trait APIParameters
     protected static function getRequiredParameters($parent = null)
     {
 
-        if (!$parent) {
+        if (!$parent)
+        {
 
             return static::$requiredParameters;
 
         }
 
         return self::$requiredParameters;
+
+    }
+
+    protected static function setRequiredParameter($parameter, $value = null, $isArray = false)
+    {
+
+        if (!$isArray)
+        {
+
+            static::$requiredParameters[$parameter] = $value;
+
+        } else {
+
+            static::$requiredParameters[$parameter] = $value;
+
+        }
 
     }
 
@@ -276,22 +313,6 @@ trait APIParameters
         }
 
         return false;
-
-    }
-
-    protected static function setRequiredParameter($parameter, $value = null, $isArray = false)
-    {
-
-        if(!$isArray)
-        {
-
-            static::$requiredParameters[$parameter] = $value;
-
-        } else {
-
-            static::$requiredParameters[$parameter] = $value;
-
-        }
 
     }
 
@@ -648,7 +669,7 @@ trait APIParameters
         if (is_array($v) && array_key_exists("validWith", $v))
         {
 
-            static::ensureParameterValuesAreValid($k, $v['validWith']);
+            static::ensureParameterValuesAreValid($k, $v["validWith"]);
 
             return true;
 
@@ -827,7 +848,8 @@ trait APIParameters
 
                             $v["earlierThan"],
 
-                            function ($vv, $kk) use ($k) {
+                            function ($vv, $kk) use ($k)
+                            {
 
                                 static::ensureIntervalBetweenDates($k, $vv);
 
@@ -865,7 +887,7 @@ trait APIParameters
                 if (is_array($v) && array_key_exists("rangeWithin", $v))
                 {
 
-                    static::ensureParameterIsInRange($k, $v['rangeWithin']['min'], $v['rangeWithin']['max']);
+                    static::ensureParameterIsInRange($k, $v["rangeWithin"]["min"], $v["rangeWithin"]["max"]);
 
                 }
 
@@ -890,7 +912,7 @@ trait APIParameters
                 if (is_array($v) && array_key_exists("requiredIfNotSet", $v))
                 {
 
-                    static::ensureOneOrTheOtherIsSet($k, $v['requiredIfNotSet']);
+                    static::ensureOneOrTheOtherIsSet($k, $v["requiredIfNotSet"]);
 
                 }
 
@@ -915,7 +937,7 @@ trait APIParameters
                 if (is_array($v) && array_key_exists("incompatibleWith", $v))
                 {
 
-                    static::ensureIncompatibleParametersNotSet($k, $v['incompatibleWith']);
+                    static::ensureIncompatibleParametersNotSet($k, $v["incompatibleWith"]);
 
                 }
 
@@ -944,35 +966,35 @@ trait APIParameters
 
         static::setActionParameter();
 
-        if (array_key_exists('Merchant', static::getRequiredParameters()))
+        if (array_key_exists("Merchant", static::getRequiredParameters()))
         {
 
-            static::setMerchantIdParameter('Merchant');
+            static::setMerchantIdParameter("Merchant");
 
         }
 
-        if (array_key_exists('SellerId', static::getRequiredParameters()))
+        if (array_key_exists("SellerId", static::getRequiredParameters()))
         {
 
-            static::setMerchantIdParameter('SellerId');
+            static::setMerchantIdParameter("SellerId");
 
         }
 
-        if (array_key_exists('MarketplaceId.Id.1', static::getRequiredParameters()))
+        if (array_key_exists("MarketplaceId.Id.1", static::getRequiredParameters()))
         {
 
-            static::setMarketplaceIdParameter('MarketplaceId.Id.1');
+            static::setMarketplaceIdParameter("MarketplaceId.Id.1");
 
         }
 
-        if (array_key_exists('MarketplaceId', static::getRequiredParameters()))
+        if (array_key_exists("MarketplaceId", static::getRequiredParameters()))
         {
 
-            static::setMarketplaceIdParameter('MarketplaceId.Id.1');
+            static::setMarketplaceIdParameter("MarketplaceId.Id.1");
 
         }
 
-        if (array_key_exists('PurgeAndReplace', static::getRequiredParameters()))
+        if (array_key_exists("PurgeAndReplace", static::getRequiredParameters()))
         {
 
             static::setPurgeAndReplaceParameter();
@@ -1026,6 +1048,8 @@ trait APIParameters
         // static::testDatesNotOutsideInterval();
 
         // static::testOneOrTheOtherIsSet();
+
+        // static::testGreaterThan();
 
         if(method_exists(get_called_class(), "requestRules"))
         {

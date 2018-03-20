@@ -20,20 +20,6 @@ class ListOrders extends Orders
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrders.html";
     protected static $requiredParameters = [];
     protected static $allowedParameters = [];
-    //dependentOn
-    //earlierThan -- Timestamp default interval is "PT2M"
-    //format
-    //incompatibleWith
-    //laterThan -- Timestamp default interval is "PT2M"
-    //maximumLength
-    //maximumCount
-    //multipleValuesAllowed
-    //notFartherApartThan
-    //rangeWithin
-    //required
-    //requiredIfNotSet
-    //validWith - key => value
-    //parent - Key => value || value
     protected static $parameters = [
         "BuyerEmail" => [
             "incompatibleWith" => [

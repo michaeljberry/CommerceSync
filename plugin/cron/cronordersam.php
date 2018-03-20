@@ -14,38 +14,59 @@ require WEBPLUGIN . 'am/amvar.php';
 $start = startClock();
 
 // AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
-// Ecommerce::ddXml(AmazonOrder::getUnshippedOrders());
+Ecommerce::ddXml(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
-$array = [
-    "InboundShipmentPlanRequestItems" => [
-        [
-            "SellerSKU" => "SKU1",
-            "Quantity" => 1
-        ],
-        [
-            "SellerSKU" => "SKU2",
-            "Quantity" => 1,
-            "PrepDetailsList" => [
-                "PrepInstruction" => "Taping",
-                "PrepOwner" => "AMAZON"
-            ]
-        ]
-    ],
-    "ShipFromAddress" => [
-        "Name" => "Ben Parker",
-        "AddressLine1" => "123 Main St.",
-        "City" => "New York",
-        "CountryCode" => "IN"
-    ],
-    "LabelPrepPreference" => "SELLER_LABEL",
-    "ShipToCountryCode" => "US",
-    // "ShipToCountrySubdivisionCode" => "IN"
-    // "RandomParameter" => "Blah"
-];
-Ecommerce::dd(
-    // AmazonClient::amazonCurl(
-        new \Amazon\API\FulfillmentInboundShipment\CreateInboundShipmentPlan($array)
-    // )
-);
+// $array = [
+//     "InboundShipmentPlanRequestItems" => [
+//         [
+//             "SellerSKU" => "SKU1",
+//             "Quantity" => 1
+//         ],
+//         [
+//             "SellerSKU" => "SKU2",
+//             "Quantity" => 1,
+//             "PrepDetailsList" => [
+//                 "PrepInstruction" => "Taping",
+//                 "PrepOwner" => "AMAZON"
+//             ]
+//         ],
+//         [
+//             "SellerSKU" => "SKU3",
+//             "Quantity" => 1
+//         ],
+//         [
+//             "SellerSKU" => "SKU4",
+//             "Quantity" => 1
+//         ],
+//         [
+//             "SellerSKU" => "SKU5",
+//             "Quantity" => 1
+//         ],
+//         [
+//             "SellerSKU" => "SKU6",
+//             "Quantity" => 1
+//         ],
+//         [
+//             "SellerSKU" => "SKU7",
+//             "Quantity" => 1
+//         ],
+//         "Condition" => "NewItem",
+//     ],
+//     "ShipFromAddress" => [
+//         "Name" => "Ben Parker",
+//         "AddressLine1" => "123 Main St.",
+//         "City" => "New York",
+//         "CountryCode" => "IN"
+//     ],
+//     "LabelPrepPreference" => "SELLER_LABEL",
+//     "ShipToCountryCode" => "US",
+//     // "ShipToCountrySubdivisionCode" => "IN"
+//     // "RandomParameter" => "Blah"
+// ];
+// Ecommerce::dd(
+//     // AmazonClient::amazonCurl(
+//         new \Amazon\API\FulfillmentInboundShipment\CreateInboundShipmentPlan($array)
+//     // )
+// );
 
 endClock($start);

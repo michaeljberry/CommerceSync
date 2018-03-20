@@ -221,9 +221,9 @@ trait APIParameterValidation
     public static function ensureParameterValuesAreValid($parameterToCheck, $validParameterValues = null)
     {
 
-        $matchingParameters = static::searchCurlParametersReturnResults($parameterToCheck);
+        $matchingParameter = static::searchCurlParametersReturnResults($parameterToCheck);
 
-        if(!empty($matchingParameters))
+        if(!empty($matchingParameter))
         {
 
             $validParameterValue = [];
@@ -252,7 +252,7 @@ trait APIParameterValidation
 
             }
 
-            $parameterValue = end($matchingParameters);
+            $parameterValue = end($matchingParameter);
 
             if(!in_array($parameterValue, $validParameterValue))
             {
@@ -362,11 +362,12 @@ trait APIParameterValidation
     public static function ensureParameterIsNoLongerThanMaximum($parameterToCheck, $max)
     {
 
+        $matchingParameters = static::searchCurlParametersReturnResults($parameterToCheck);
 
-        if(null !== static::searchCurlParameters($parameterToCheck))
+        if(!empty($matchingParameters))
         {
 
-            if(strlen(static::getParameterByKey($parameterToCheck)) > $max)
+            if(strlen(end($matchingParameters)) > $max)
             {
 
                 throw new Exception("$parameterToCheck must be shorter than $max characters. Please correct and try again.");
@@ -380,10 +381,12 @@ trait APIParameterValidation
     public static function ensureParameterCountIsLessThanMaximum($parameterToCheck, $maxCount)
     {
 
-        if(null !== static::searchCurlParameters($parameterToCheck))
+        $matchingParameters = static::searchCurlParametersReturnResults($parameterToCheck);
+
+        if(!empty($matchingParameters))
         {
 
-            if(count(static::searchCurlParameters($parameterToCheck)) > 50)
+            if(count($matchingParameters) > $maxCount)
             {
 
                 throw new Exception("$parameterToCheck must have less than $maxCount values. Please correct and try again.");

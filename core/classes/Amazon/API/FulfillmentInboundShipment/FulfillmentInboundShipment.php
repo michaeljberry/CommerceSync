@@ -49,6 +49,106 @@ class FulfillmentInboundShipment
                 "maximumLength" => 30
             ]
         ],
+        "AmazonPrepFeesDetails" => [
+            "PrepInstruction" => [
+                "format" => "PrepInstruction",
+                "required"
+            ],
+            "FeePerUnit" => [
+                "format" => "Amount",
+                "required"
+            ]
+        ],
+        "Amount" => [
+            "CurrencyCode" => [
+                "validWith" => [
+                    "GBP",
+                    "USD"
+                ],
+                "required"
+            ],
+            "Value" => [
+                "required"
+            ]
+        ],
+        "ASINInboundGuidance" => [
+            "ASIN" => [
+                "required"
+            ],
+            "InboundGuidance" => [
+                "format" => "InboundGuidance",
+                "required"
+            ],
+            "GuidanceReasonList" => [
+                "format" => "GuidanceReason"
+            ]
+        ],
+        "ASINPrepInstructions" => [
+            "ASIN",
+            "BarcodeInstruction" => [
+                "validWith" => [
+                    "RequiresFNSKULabel",
+                    "MustProvideSellerSKU"
+                ]
+            ],
+            "PrepGuidance" => [
+                "validWith" => [
+                    "ConsultHelpDocuments",
+                    "NoAdditionalPrepRequired",
+                    "SeePrepInstructionsList"
+                ]
+            ],
+            "PrepInstructionList" => [
+                "format" => "PrepInstruction"
+            ]
+        ],
+        "BoxContentsFeeDetails" => [
+            "TotalUnits",
+            "FeePerUnit" => [
+                "format" => "Amount"
+            ],
+            "TotalFee" => [
+                "format" => "Amount"
+            ]
+        ],
+        "BoxContentsSource" => [
+            "validWith" => [
+                "NONE",
+                "FEED",
+                "2D_BARCODE",
+                "INTERACTIVE"
+            ]
+        ],
+        "Contact" => [
+            "Name" => [
+                "maximumLength" => 50,
+                "required"
+            ],
+            "Phone" => [
+                "maximumLength" => 20,
+                "required"
+            ],
+            "Email" => [
+                "maximumLength" => 50,
+                "required"
+            ],
+            "Fax" => [
+                "maximumLength" => 20,
+                "required"
+            ]
+        ],
+        "Dimensions" => [
+            "Unit" => [
+                "validWith" => [
+                    "centimeters",
+                    "inches"
+                ],
+                "required"
+            ],
+            "Length" => [
+                "required"
+            ]
+        ],
         "InboundShipmentPlanRequestItem" => [
             "ASIN",
             "Condition" => [

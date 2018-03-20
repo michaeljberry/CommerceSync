@@ -221,17 +221,10 @@ trait APIParameterValidation
     public static function ensureParameterValuesAreValid($parameterToCheck, $validParameterValues = null)
     {
 
-        // $matchingParameters = static::searchCurlParametersReturnResults($parameterToCheck);
-        // Ecommerce::dd("MatchingParameters");
-        Ecommerce::dd($parameterToCheck);
-        // Ecommerce::dd($matchingParameters);
-        Ecommerce::dd($validParameterValues);
+        $matchingParameters = static::searchCurlParametersReturnResults($parameterToCheck);
 
-        $value = static::searchCurlParametersReturnResults($parameterToCheck);
-        Ecommerce::dd($value);
-
-        // if(!empty($matchingParameters))
-        // {
+        if(!empty($matchingParameters))
+        {
 
             $validParameterValue = [];
             $dependentParameters = [];
@@ -259,11 +252,9 @@ trait APIParameterValidation
 
             }
 
-            // $allowedParameterValues = array_intersect($matchingParameters, $validParameterValue);
+            $parameterValue = end($matchingParameters);
 
-            Ecommerce::dd($validParameterValue);
-
-            if(!in_array($parameterToCheck, $validParameterValue))
+            if(!in_array($parameterValue, $validParameterValue))
             {
 
                 $exception = "The value for $parameterToCheck must be one of the following: ";
@@ -283,7 +274,7 @@ trait APIParameterValidation
 
             }
 
-        // }
+        }
 
     }
 

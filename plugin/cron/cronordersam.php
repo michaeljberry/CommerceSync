@@ -38,7 +38,7 @@ $array = [
         "CountryCode" => "IN"
     ],
     "LabelPrepPreference" => "SELLER_LABEL",
-    "ShipToCountryCode" => "IN",
+    "ShipToCountryCode" => "US",
     // "ShipToCountrySubdivisionCode" => "IN"
     // "RandomParameter" => "Blah"
 ];

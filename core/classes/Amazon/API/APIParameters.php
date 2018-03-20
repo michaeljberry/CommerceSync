@@ -64,8 +64,8 @@ trait APIParameters
 
                 }
 
-            } elseif (!call_user_func_array([$class, $method], [$value, $key, $arg]))
-            {
+            } elseif (!call_user_func_array([$class, $method], [$value, $key, $arg])) {
+
 
                 unset($array[$key]);
 
@@ -79,7 +79,6 @@ trait APIParameters
 
         unset($value);
         return $array;
-
 
     }
 
@@ -370,8 +369,8 @@ trait APIParameters
         if (is_array($v) && array_key_exists("validWith", $v))
         {
 
-            Ecommerce::dd($k);
-            Ecommerce::dd($v["validWith"]);
+            // Ecommerce::dd($k);
+            // Ecommerce::dd($v["validWith"]);
 
             static::ensureParameterValuesAreValid($k, $v['validWith']);
 
@@ -813,7 +812,9 @@ trait APIParameters
 
         }
 
-        return static::arrayFilterRecursive("searchParameters", $parameters, $parameterToCheck);
+        // Ecommerce::dd($parameters);
+
+        return static::arrayFilterRecursive("searchParameters", $parameters, true, $parameterToCheck);
 
     }
 

@@ -13,15 +13,11 @@ require WEBPLUGIN . 'am/amvar.php';
 
 $start = startClock();
 
-AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
-// Ecommerce::ddXml(AmazonOrder::getUnshippedOrders());
+// AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
+Ecommerce::dd(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
 // $array = [
 //     "InboundShipmentPlanRequestItems" => [
-//         [
-//             "SellerSKU" => "SKU1",
-//             "Quantity" => 1
-//         ],
 //         [
 //             "SellerSKU" => "SKU2",
 //             "Quantity" => 1,
@@ -29,28 +25,7 @@ AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
 //                 "PrepInstruction" => "Taping",
 //                 "PrepOwner" => "AMAZON"
 //             ]
-//         ],
-//         [
-//             "SellerSKU" => "SKU3",
-//             "Quantity" => 1
-//         ],
-//         [
-//             "SellerSKU" => "SKU4",
-//             "Quantity" => 1
-//         ],
-//         [
-//             "SellerSKU" => "SKU5",
-//             "Quantity" => 1
-//         ],
-//         [
-//             "SellerSKU" => "SKU6",
-//             "Quantity" => 1
-//         ],
-//         [
-//             "SellerSKU" => "SKU7",
-//             "Quantity" => 1
-//         ],
-//         "Condition" => "NewItem",
+//         ]
 //     ],
 //     "ShipFromAddress" => [
 //         "Name" => "Ben Parker",

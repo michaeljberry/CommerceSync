@@ -72,7 +72,8 @@ class AmazonOrder extends AmazonClient
             "CreatedAfter" => $from
         ];
 
-        return AmazonClient::amazonCurl(new ListOrders($orderStatus));
+        // return AmazonClient::amazonCurl(new ListOrders($orderStatus));
+        return new ListOrders($orderStatus);
 
     }
 

@@ -521,8 +521,18 @@ trait APIParameters
                 } else {
 
                     $x++;
+                    Ecommerce::dd($key);
 
-                    static::setParameterByKey("$parameterKey", $val);
+                    if(is_numeric($key))
+                    {
+
+                        static::setParameterByKey("$parameterKey", $val);
+
+                    } else {
+
+                        static::setParameterByKey("$parameterKey.$key", $val);
+
+                    }
 
                 }
 
@@ -1022,8 +1032,8 @@ trait APIParameters
 
     public static function verifyParameters()
     {
-        // Ecommerce::dd(static::getCurlParameters());
-        // Ecommerce::dd(static::getParameters());
+        Ecommerce::dd(static::getCurlParameters());
+        Ecommerce::dd(static::getParameters());
 
         static::ensureRequiredParametersAreSet();
 

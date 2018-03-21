@@ -520,7 +520,9 @@ trait APIParameters
 
                 } else {
 
-                    static::setParameterByKey("$parameterKey.$key", $val);
+                    $x++;
+
+                    static::setParameterByKey("$parameterKey", $val);
 
                 }
 
@@ -1020,8 +1022,8 @@ trait APIParameters
 
     public static function verifyParameters()
     {
-        Ecommerce::dd(static::getCurlParameters());
-        Ecommerce::dd(static::getParameters());
+        // Ecommerce::dd(static::getCurlParameters());
+        // Ecommerce::dd(static::getParameters());
 
         static::ensureRequiredParametersAreSet();
 

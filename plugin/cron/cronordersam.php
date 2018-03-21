@@ -13,8 +13,8 @@ require WEBPLUGIN . 'am/amvar.php';
 
 $start = startClock();
 
-// AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
-Ecommerce::ddXml(AmazonOrder::getUnshippedOrders());
+AmazonOrder::parseOrders(AmazonOrder::getUnshippedOrders());
+// Ecommerce::ddXml(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
 // $array = [
 //     "InboundShipmentPlanRequestItems" => [

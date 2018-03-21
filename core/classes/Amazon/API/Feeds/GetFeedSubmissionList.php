@@ -18,13 +18,13 @@ class GetFeedSubmissionList extends Feeds
     protected static $allowedParameters = [];
     protected static $parameters = [
         "FeedProcessingStatusList" => [
-            "parent"
+            "format" => "FeedProcessingStatus"
         ],
         "FeedSubmissionIdList" => [
             "maximumCount" => 100
         ],
         "FeedTypeList" => [
-            "parent" => "FeedType"
+            "format" => "FeedType"
         ],
         "MaxCount" => [
             "maximumCount" => 100
@@ -40,14 +40,5 @@ class GetFeedSubmissionList extends Feeds
         ]
 
     ];
-
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
 
 }

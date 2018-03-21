@@ -19,7 +19,7 @@ class CancelFeedSubmissions extends Feeds
     protected static $parameters = [
         "FeedSubmissionIdList",
         "FeedTypeList" => [
-            "parent" => "FeedType"
+            "format" => "FeedType"
         ],
         "SellerId" => [
             "required"
@@ -31,14 +31,5 @@ class CancelFeedSubmissions extends Feeds
             "format" => "date"
         ]
     ];
-
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
 
 }

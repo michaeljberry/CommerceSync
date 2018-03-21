@@ -18,10 +18,10 @@ class GetFeedSubmissionCount extends Feeds
     protected static $allowedParameters = [];
     protected static $parameters = [
         "FeedProcessingStatusList" => [
-            "parent"
+            "format" => "FeedProcessingStatus"
         ],
         "FeedTypeList" => [
-            "parent" => "FeedType"
+            "format" => "FeedType"
         ],
         "SellerId" => [
             "required"
@@ -33,14 +33,5 @@ class GetFeedSubmissionCount extends Feeds
             "format" => "date"
         ]
     ];
-
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
 
 }

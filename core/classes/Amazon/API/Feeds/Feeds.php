@@ -18,8 +18,26 @@ class Feeds
     protected static $versionDate = "2009-01-01";
     private static $overviewUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_Overview.html";
     private static $libraryUpdateUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_ClientLibraries.html";
-    protected static $parentParameters = [
-        "FeedProcessingStatusList" => [
+    protected static $dataTypes = [
+        "FeedSubmissionInfo" => [
+            "FeedSubmissionId",
+            "FeedType" => [
+                "format" => "FeedType"
+            ],
+            "SubmittedDate" => [
+                "format" => "date"
+            ],
+            "FeedProcessingStatus" => [
+                "format" => "FeedProcessingStatus"
+            ],
+            "StartedProcessingDate" => [
+                "format" => "date"
+            ],
+            "CompletedProcessingDate" => [
+                "format" => "date"
+            ]
+        ],
+        "FeedProcessingStatus" => [
             "validWith" => [
                 "_AWAITING_ASYNCHRONOUS_REPLY_",
                 "_CANCELLED_",
@@ -66,4 +84,13 @@ class Feeds
             ]
         ]
     ];
+
+    public function __construct($parametersToSet = null)
+    {
+
+        static::setParameters($parametersToSet);
+
+        static::verifyParameters();
+
+    }
 }

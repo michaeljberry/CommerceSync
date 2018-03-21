@@ -79,13 +79,6 @@ trait APIParameters
 
     }
 
-    protected static function getParentClassParameters($parameterToCheck = "parameters")
-    {
-
-        return static::${"parent" . ucfirst($parameterToCheck)} ?? null;
-
-    }
-
     public static function getParameterByKey($key)
     {
 
@@ -316,55 +309,6 @@ trait APIParameters
 
     }
 
-    protected static function findParentParameters()
-    {
-
-        return array_filter(
-
-            static::getParameters(),
-
-            function($v, $k)
-            {
-
-                return is_array($v) && (array_key_exists("parent", $v) || in_array("parent", $v));
-
-            },
-
-            ARRAY_FILTER_USE_BOTH
-
-        );
-
-    }
-
-    protected static function combineParentParametersWithChild()
-    {
-
-        $allParentParameters = static::getParentClassParameters();
-
-        $parametersWithParents = static::findParentParameters();
-
-        foreach ($parametersWithParents as $k => $v)
-        {
-
-            if(array_key_exists("parent", $v))
-            {
-
-                $parent = $v["parent"];
-
-            } else {
-
-                $parent = $k;
-
-            }
-
-            $parentParameters = $allParentParameters[$parent];
-
-            static::$parameters[$k] = static::$parameters[$k] + $parentParameters;
-
-        }
-
-    }
-
     public static function getDateParameters()
     {
 
@@ -521,7 +465,6 @@ trait APIParameters
                 } else {
 
                     $x++;
-                    Ecommerce::dd($key);
 
                     if(is_numeric($key))
                     {
@@ -966,7 +909,7 @@ trait APIParameters
 
         static::resetCurlParameters();
 
-        static::combineParentParametersWithChild();
+        // static::combineParentParametersWithChild();
 
         static::$parameters = static::combineFormatWithParameters(static::$parameters);
 

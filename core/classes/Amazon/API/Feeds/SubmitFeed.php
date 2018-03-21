@@ -25,7 +25,7 @@ class SubmitFeed extends Feeds
         ],
         "FeedType" => [
             "required",
-            "parent"
+            "format" => "FeedType"
         ],
         "MarketplaceIdList",
         "PurgeAndReplace",
@@ -33,14 +33,5 @@ class SubmitFeed extends Feeds
             "required"
         ]
     ];
-
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
 
 }

@@ -18,6 +18,7 @@ trait APIParameters
     // format
     // incompatibleWith
     // laterThan -- Timestamp default interval is "PT2M"
+    // length
     // lengthBetween
     // maximumLength
     // maximumCount

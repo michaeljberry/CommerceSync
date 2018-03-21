@@ -584,7 +584,6 @@ class FulfillmentInboundShipment
             ],
             "FreightReadyDate" => [
                 "format" => "YYYY-MM-DD",
-                "laterThan" => "PT2D",
                 "required"
             ],
             "PalletList" => [

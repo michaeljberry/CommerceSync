@@ -22,7 +22,8 @@ class ListFinancialEvents extends Finances
                 "FinancialEventGroupId",
                 "PostedAfter",
                 "PostedBefore"
-            ]
+            ],
+            "notIncremented"
         ],
         "FinancialEventGroupId" => [
             "incompatibleWith" => [
@@ -65,66 +66,5 @@ class ListFinancialEvents extends Finances
             "required"
         ]
     ];
-
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
-
-    protected static function requestRules()
-    {
-
-        static::exclusiveAmazonOrderId();
-
-        static::exclusiveFinancialEventGroupId();
-
-        static::exclusivePostedAfter();
-
-        static::ensureParameterIsInRange("MaxResultsPerPage", 1, 100);
-
-    }
-
-    protected static function exclusiveAmazonOrderId()
-    {
-
-        $restrictedParameters = [
-            "FinancialEventGroupId",
-            "PostedAfter",
-            "PostedBefore"
-        ];
-
-        static::ensureMutuallyExclusiveParametersNotSet("AmazonOrderId", $restrictedParameters);
-
-    }
-
-    protected static function exclusiveFinancialEventGroupId()
-    {
-
-        $restrictedParameters = [
-            "AmazonOrderId",
-            "PostedAfter",
-            "PostedBefore"
-        ];
-
-        static::ensureMutuallyExclusiveParametersNotSet("FinancialEventGroupId", $restrictedParameters);
-
-    }
-
-    protected static function exclusivePostedAfter()
-    {
-
-        $restrictedParameters = [
-            "AmazonOrderId",
-            "FinancialEventGroupId",
-            "PostedBefore"
-        ];
-
-        static::ensureMutuallyExclusiveParametersNotSet("PostedAfter", $restrictedParameters);
-
-    }
 
 }

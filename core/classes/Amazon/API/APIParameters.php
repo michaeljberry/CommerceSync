@@ -23,6 +23,7 @@ trait APIParameters
     // maximumLength
     // maximumCount
     // multipleValuesAllowed
+    // notIncremented
     // notFartherApartThan
     // onlyIfOperationIs
     // rangeWithin
@@ -416,13 +417,37 @@ trait APIParameters
 
     }
 
+    protected static function notIncremented($v, $k)
+    {
+
+
+        if(is_array($v) && in_array("notIncremented", $v))
+        {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
     public static function incrementParameter($parameter, $value, $parentParameterKey = null, $x = 1)
     {
 
+        $parameters = static::getParameters();
+
+        $notIncremented = static::recursiveArrayFilterReturnBoolean("notIncremented", $parameters, $parameter);
+
         $incrementor = static::getIncrementorByKey($parameter);
 
-        if (is_array($value))
-        {
+        if($notIncremented){
+
+            $parameterKey = "$parameter";
+
+            static::setParameterByKey($parameterKey, $value);
+
+        } elseif (is_array($value)) {
 
             foreach($value as $key => $val)
             {

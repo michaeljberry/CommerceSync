@@ -17,21 +17,21 @@ $start = startClock();
 // Ecommerce::dd(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
 // $array = [
-    //     "InboundShipmentPlanRequestItems" => [
-        //         [
-            //             "SellerSKU" => "SKU2",
-            //             "Quantity" => 1,
+//         "InboundShipmentPlanRequestItems" => [
+//                 [
+//                         "SellerSKU" => "SKU2",
+//                         "Quantity" => 1,
 //             "PrepDetailsList" => [
-    //                 "PrepInstruction" => "Taping",
-    //                 "PrepOwner" => "AMAZON"
-    //             ]
-    //         ]
-    //     ],
+//                     "PrepInstruction" => "Taping",
+//                     "PrepOwner" => "AMAZON"
+//                 ]
+//             ]
+//         ],
 //     "ShipFromAddress" => [
-    //         "Name" => "Ben Parker",
-    //         "AddressLine1" => "123 Main St.",
-    //         "City" => "New York",
-    //         "CountryCode" => "IN"
+//             "Name" => "Ben Parker",
+//             "AddressLine1" => "123 Main St.",
+//             "City" => "New York",
+//             "CountryCode" => "IN"
 //     ],
 //     "LabelPrepPreference" => "SELLER_LABEL",
 //     "ShipToCountryCode" => "US",
@@ -39,14 +39,16 @@ $start = startClock();
 //     // "RandomParameter" => "Blah"
 // ];
 // Ecommerce::dd(
-    //     // AmazonClient::amazonCurl(
-        //         new \Amazon\API\FulfillmentInboundShipment\CreateInboundShipmentPlan($array)
-        //     // )
-        // );
-Ecommerce::ddXml(
-    AmazonClient::amazonCurl(
-        new \Amazon\API\Feeds\CancelFeedSubmissions()
-    )
+//         // AmazonClient::amazonCurl(
+//                 new \Amazon\API\FulfillmentInboundShipment\CreateInboundShipmentPlan($array)
+//             // )
+//         );
+Ecommerce::dd(
+    // AmazonClient::amazonCurl(
+        new \Amazon\API\Finances\ListFinancialEvents([
+            "AmazonOrderId" => "114-9028009-5506609"
+        ])
+    // )
 );
 
 endClock($start);

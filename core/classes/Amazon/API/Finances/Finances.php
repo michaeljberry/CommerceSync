@@ -18,7 +18,7 @@ class Finances
     protected static $versionDate = "2015-05-01";
     private static $overviewUrl = "http://docs.developer.amazonservices.com/en_US/fba_inventory/MWS_GetServiceStatus.html";
     private static $libraryUpdateUrl = "http://docs.developer.amazonservices.com/en_US/finances/Finances_ClientLibraries.html";
-    protected static $dataType = [
+    protected static $dataTypes = [
         "AdjustmentEvent" => [
             "AdjustmentType" => [
                 "validWith" => [
@@ -554,8 +554,63 @@ class Finances
             ],
             "ItemFeeList" => [
                 "format" => "FeeComponent"
+            ],
+            "ItemFeeAdjustmentList" => [
+                "format" => "FeeComponent"
+            ],
+            "PromotionList" => [
+                "format" => "Promotion"
+            ],
+            "PromotionAdjustmentList" => [
+                "format" => "Promotion"
+            ],
+            "CostOfPointsGranted" => [
+                "format" => "CurrencyAmount"
+            ],
+            "CostOfPointsReturned" => [
+                "format" => "CurrencyAmount"
+            ]
+        ],
+        "SolutionProviderCreditEvent" => [
+            "ProviderTransactionType" => [
+                "validWith" => [
+                    "ProviderCredit",
+                    "ProviderCreditReversal"
+                ]
+            ],
+            "SellerOrderId",
+            "MarketplaceId",
+            "MarketplaceCountryCode",
+            "SellerId",
+            "SellerStoreName",
+            "ProviderId",
+            "ProviderStoreName"
+        ],
+        "TaxWithheldComponent" => [
+            "TaxCollectionModel" => [
+                "validWith" => [
+                    "MarketplaceFacilitator"
+                ]
+            ],
+            "TaxesWithheld" => [
+                "format" => "ChargeComponent",
+                "validWith" => [
+                    "MarketplaceFacilitatorTax-Principal",
+                    "MarketplaceFacilitatorTax-Shipping",
+                    "MarketplaceFacilitatorTax-GiftWrap",
+                    "MarketplaceFacilitatorTax-Other"
+                ]
             ]
         ]
     ];
+
+    public function __construct($parametersToSet = null)
+    {
+
+        static::setParameters($parametersToSet);
+
+        static::verifyParameters();
+
+    }
 
 }

@@ -47,26 +47,4 @@ class ListFinancialEventGroups extends Finances
         ]
     ];
 
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
-
-    protected static function requestRules()
-    {
-
-        static::ensureParameterIsInRange("MaxResultsPerPage", 1, 100);
-
-        static::ensureIntervalBetweenDates("FinancialEventGroupStartedAfter");
-
-        static::ensureDatesAreChronological("FinancialEventGroupStartedBefore", "FinancialEventGroupStartedAfter");
-
-        static::ensureDatesNotOutsideInterval("FinancialEventGroupStartedBefore", "FinancialEventGroupStartedAfter", 180);
-
-    }
-
 }

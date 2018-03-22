@@ -16,6 +16,32 @@ class CreateInboundShipmentPlan extends FulfillmentInboundShipment
     protected static $requiredParameters = [];
     protected static $allowedParameters = [];
     protected static $parameters = [
+        "ShipFromAddress" => [
+            "format" => "Address",
+            "required"
+        ],
+        "ShipToCountryCode" => [
+            "incompatibleWith" => "ShipToCountrySubdivisionCode",
+            "maximumLength" => 2,
+            "validIn" => [
+                "North America" => [
+                    "CA",
+                    "MX",
+                    "US"
+                ],
+                "Europe" => [
+                    "DE",
+                    "ES",
+                    "FR",
+                    "GB",
+                    "IT"
+                ]
+            ]
+        ],
+        "ShipToCountrySubdivisionCode" => [
+            "incompatibleWith" => "ShipToCountryCode",
+            "maximumLength" => 2
+        ],
         "LabelPrepPreference" => [
             "validWith" => [
                 "AMAZON_LABEL_ONLY",
@@ -29,60 +55,7 @@ class CreateInboundShipmentPlan extends FulfillmentInboundShipment
         ],
         "SellerId" => [
             "required"
-        ],
-        "ShipFromAddress" => [
-            "format" => "Address",
-            "required"
-        ],
-        "ShipToCountryCode" => [
-            "incompatibleWith" => "ShipToCountrySubdivisionCode",
-            "maximumLength" => 2,
-            "validWith" => [
-                "CA",
-                "DE",
-                "ES",
-                "FR",
-                "GB",
-                "IT",
-                "MX",
-                "US"
-            ]
-        ],
-        "ShipToCountrySubdivisionCode" => [
-            "incompatibleWith" => "ShipToCountryCode",
-            "maximumLength" => 2
         ]
     ];
-
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
-
-    protected static function requestRules()
-    {
-
-        static::ensureOneOrTheOtherIsSet("ShipToCountryCode", "ShipToCountrySubdivisionCode");
-
-        static::validLabelPrepPreference();
-
-    }
-
-    protected static function validLabelPrepPreference()
-    {
-
-        $validLabelPrepPreferences = [
-            "SELLER_LABEL",
-            "AMAZON_LABEL_ONLY",
-            "AMAZON_LABEL_PREFERED"
-        ];
-
-        static::ensureParameterValuesAreValid("LabelPrepPreference", $validLabelPrepPreferences);
-
-    }
 
 }

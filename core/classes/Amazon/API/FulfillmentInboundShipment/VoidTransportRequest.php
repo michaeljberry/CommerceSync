@@ -2,25 +2,21 @@
 
 namespace Amazon\API\FulfillmentInboundShipment;
 
-class GetInboundGuidanceForASIN extends FulfillmentInboundShipment
+class VoidTransportRequest extends FulfillmentInboundShipment
 {
 
-    protected static $requestQuota = 200;
-    protected static $restoreRate = 200;
+    protected static $requestQuota = 30;
+    protected static $restoreRate = 2;
     protected static $restoreRateTime = 1;
     protected static $restoreRateTimePeriod = "second";
-    protected static $action = "GetInboundGuidanceForASIN";
+    protected static $action = "VoidTransportRequest";
     protected static $method = "POST";
     private static $curlParameters = [];
-    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inbound/FBAInbound_GetInboundGuidanceForASIN.html";
+    private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inbound/FBAInbound_ConfirmTransportRequest.html";
     protected static $requiredParameters = [];
     protected static $allowedParameters = [];
     protected static $parameters = [
-        "ASINList" => [
-            "maximumCount" => 50,
-            "required"
-        ],
-        "MarketplaceId" => [
+        "ShipmentId" => [
             "required"
         ],
         "SellerId" => [

@@ -13,18 +13,12 @@ class GetServiceStatus extends FulfillmentInventory
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inventory/MWS_GetServiceStatus.html";
-    protected static $requiredParameters = [
-        "SellerId"
-    ];
+    protected static $requiredParameters = [];
     protected static $allowedParameters = [];
-
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
+    protected static $parameters = [
+        "SellerId" => [
+            "required"
+        ]
+    ];
 
 }

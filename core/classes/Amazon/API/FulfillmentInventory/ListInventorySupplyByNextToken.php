@@ -13,19 +13,15 @@ class ListInventorySupplyByNextToken extends FulfillmentInventory
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inventory/FBAInventory_ListInventorySupplyByNextToken.html";
-    protected static $requiredParameters = [
-        "SellerId",
-        "NextToken"
-    ];
+    protected static $requiredParameters = [];
     protected static $allowedParameters = [];
-
-    public function __construct($parametersToSet = null)
-    {
-
-        static::setParameters($parametersToSet);
-
-        static::verifyParameters();
-
-    }
+    protected static $parameters = [
+        "NextToken" => [
+            "required"
+        ],
+        "SellerId" => [
+            "required"
+        ]
+    ];
 
 }

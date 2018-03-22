@@ -45,8 +45,8 @@ $start = startClock();
 //         );
 Ecommerce::dd(
     // AmazonClient::amazonCurl(
-        new \Amazon\API\Finances\ListFinancialEvents([
-            "AmazonOrderId" => "114-9028009-5506609"
+        new \Amazon\API\FulfillmentInventory\ListInventorySupply([
+            "SellerSkus" => "Z095-0801-121"
         ])
     // )
 );

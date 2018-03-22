@@ -29,8 +29,8 @@ trait APIParameters
     // rangeWithin
     // required
     // requiredIf
-    // requiredIfSet
     // requiredIfNotSet
+    // requiredIfSet
     // validIn
     // validWith
     // parent - Key => value || value

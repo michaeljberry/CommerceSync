@@ -9,7 +9,6 @@ class CreateInboundShipmentPlan extends FulfillmentInboundShipment
     protected static $restoreRate = 2;
     protected static $restoreRateTime = 1;
     protected static $restoreRateTimePeriod = "second";
-    protected static $action = "CreateInboundShipmentPlan";
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/fba_inbound/FBAInbound_CreateInboundShipmentPlan.html";

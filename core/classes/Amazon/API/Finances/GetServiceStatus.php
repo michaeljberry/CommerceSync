@@ -9,7 +9,6 @@ class GetServiceStatus extends Finances
     protected static $restoreRate = 1;
     protected static $restoreRateTime = 5;
     protected static $restoreRateTimePeriod = "minute";
-    protected static $action = "GetServiceStatus";
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "";

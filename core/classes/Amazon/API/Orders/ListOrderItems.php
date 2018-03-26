@@ -9,7 +9,6 @@ class ListOrderItems extends Orders
     protected static $restoreRate = 1;
     protected static $restoreRateTime = 2;
     protected static $restoreRateTimePeriod = "second";
-    protected static $action = "ListOrderItems";
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/orders-2013-09-01/Orders_ListOrderItems.html";

@@ -10,7 +10,6 @@ class CancelFeedSubmissions extends Feeds
     protected static $restoreRateTime = 45;
     protected static $restoreRateTimePeriod = "second";
     protected static $hourlyRequestQuota = 80;
-    protected static $action = "CancelFeedSubmissions";
     protected static $method = "POST";
     private static $curlParameters = [];
     private static $apiUrl = "http://docs.developer.amazonservices.com/en_US/feeds/Feeds_CancelFeedSubmissions.html";

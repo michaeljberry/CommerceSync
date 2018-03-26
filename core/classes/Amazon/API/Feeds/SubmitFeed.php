@@ -10,7 +10,6 @@ class SubmitFeed extends Feeds
     protected static $restoreRateTime = 2;
     protected static $restoreRateTimePeriod = "minute";
     protected static $hourlyRequestQuota = 30;
-    protected static $action = "SubmitFeed";
     protected static $method = "POST";
     protected static $feedType;
     protected static $feedContent;

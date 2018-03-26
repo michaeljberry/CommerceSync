@@ -16,12 +16,14 @@ trait APIParameters
     // divisorOf
     // earlierThan -- Timestamp default interval is "PT2M"
     // format
+    // greaterThan
     // incompatibleWith
     // laterThan -- Timestamp default interval is "PT2M"
     // length
     // lengthBetween
     // maximumLength
     // maximumCount
+    // minimumLength
     // multipleValuesAllowed
     // notIncremented
     // notFartherApartThan
@@ -30,7 +32,6 @@ trait APIParameters
     // required
     // requiredIf
     // requiredIfNotSet
-    // requiredIfSet
     // validIn
     // validWith
     // parent - Key => value || value
@@ -157,7 +158,10 @@ trait APIParameters
     protected static function setActionParameter()
     {
 
-        self::setParameterByKey("Action", static::getAction());
+        $fullClassName = explode("\\", get_called_class());
+        $className = end($fullClassName);
+
+        self::setParameterByKey("Action", $className);
 
     }
 

@@ -321,6 +321,78 @@ class MerchantFulfillment
             "LabelCustomization" => [
                 "format" => "LabelCustomization"
             ]
+        ],
+        "ShippingServiceName" => [
+            "required"
+        ],
+        "CarrierName" => [
+            "required"
+        ],
+        "ShippingServiceId" => [
+            "required"
+        ],
+        "ShippingServiceOfferId" => [
+            "required"
+        ],
+        "ShipDate" => [
+            "required"
+        ],
+        "EarliestEstimatedDeliveryDate",
+        "LatestEstimatedDelieveryDate",
+        "Rate" => [
+            "format" => "CurrencyAmount",
+            "required"
+        ],
+        "ShippingServiceOptions" => [
+            "format" => "ShippingServiceOptions",
+            "required"
+        ],
+        "AvailableLabelFormats" => [
+            "validWith" => [
+                "PNG",
+                "PDF",
+                "ZPL203"
+            ]
+        ],
+        "ShippingServiceOptions" => [
+            "DeliveryExperience" => [
+                "required",
+                "validWith" => [
+                    "DeliveryConfirmationWithAdultSignature",
+                    "DeliveryConfirmationWithSignature",
+                    "DeliveryConfirmationWithoutSignature",
+                    "NoTracking"
+                ]
+            ],
+            "DeclaredValue" => [
+                "format" => "CurrencyAmount"
+            ],
+            "CarrierWillPickUp" => [
+                "required"
+            ],
+            "LabelFormat"
+        ],
+        "TemporarilyUnavailableCarrier" => [
+            "CarrierName" => [
+                "required"
+            ]
+        ],
+        "TermsAndConditionsNotAcceptedCarrier" => [
+            "CarrierName" => [
+                "required"
+            ]
+        ],
+        "Weight" => [
+            "Value" => [
+                "required"
+            ],
+            "Unit" => [
+                "required",
+                "validWith" => [
+                    "oz",
+                    "g"
+                ]
+            ]
         ]
     ];
 

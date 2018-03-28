@@ -6,6 +6,8 @@ use controllers\channels\order\ChannelTracking;
 use controllers\channels\XMLController;
 use Ecommerce\Ecommerce;
 
+use AmazonMWSAPI\AmazonClient;
+
 class AmazonTracking extends ChannelTracking
 {
 

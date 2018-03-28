@@ -5,8 +5,10 @@ namespace Amazon;
 use Ecommerce\Ecommerce;
 use models\channels\Channel;
 use models\channels\order\{Order, OrderItem};
-use controllers\channels\{FTPController, BuyerController, XMLController};
-use Amazon\API\Orders\{ListOrders, ListOrderItems, ListOrdersByNextToken, GetOrder};
+use controllers\channels\{FTPController, BuyerController};
+// use Amazon\API\Orders\{ListOrders, ListOrderItems, ListOrdersByNextToken, GetOrder};
+use AmazonMWSAPI\AmazonClient;
+use AmazonMWSAPI\Orders\{ListOrders, ListOrderItems, ListOrderItemsByNextToken, GetOrder};
 
 class AmazonOrder extends AmazonClient
 {
@@ -199,13 +201,13 @@ class AmazonOrder extends AmazonClient
         $buyer = Order::buyer($firstName, $lastName, $streetAddress, $streetAddress2, $city, $state, $zipCode,
             $country, $phone);
 
-        $Order = new Order(1, $channelName, AmazonClient::getStoreId(), $buyer, $orderNumber, $purchaseDate,
+        $Order = new Order(1, $channelName, Amazon::getStoreId(), $buyer, $orderNumber, $purchaseDate,
             $shippingCode, $shippingPrice, $tax);
 
         if (!LOCAL)
         {
 
-            $Order->save(AmazonClient::getStoreId());
+            $Order->save(Amazon::getStoreId());
 
         }
 

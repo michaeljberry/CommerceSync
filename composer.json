@@ -10,9 +10,19 @@
 		"fillup/walmart-partner-api-sdk-php": "^1.0.9",
 		"illuminate/events": "^5.4"
 	},
+	"require-dev": {
+		"michaeljberry/amazon-mws-api": "@dev"
+	},
+	"minimum-stability": "dev",
 	"autoload": {
 		"psr-4": {
 			"": "core/classes/"
 		}
-	}
+	},
+	"repositories": [
+		{
+			"type": "path",
+			"url": "../AmazonMWSAPI"
+		}
+	]
 }

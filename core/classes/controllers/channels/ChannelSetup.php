@@ -2,6 +2,9 @@
 
 namespace controllers\channels;
 
+use models\channels\Channel;
+use Ecommerce\Ecommerce;
+
 trait ChannelSetup
 {
 
@@ -9,6 +12,7 @@ trait ChannelSetup
     {
 
         static::setUserId($userID);
+        static::setInfo();
 
     }
 
@@ -16,6 +20,20 @@ trait ChannelSetup
     {
 
         static::$userID = $userID;
+
+    }
+
+    private static function setInfo()
+    {
+
+        static::$channelInfo = Channel::getAppInfo(static::getUserId(), static::getApiTable(), static::getChannelName(), static::getApiColumns());
+        static::setStoreId();
+    }
+
+    private static function setStoreId()
+    {
+
+        static::$storeID = static::$channelInfo['store_id'];
 
     }
 
@@ -44,6 +62,13 @@ trait ChannelSetup
     {
 
         return static::$channel;
+
+    }
+
+    public static function getStoreId()
+    {
+
+        return static::$storeID;
 
     }
 

@@ -63,3 +63,7 @@ define('SELLER_ZIPCODE', $iniArray['SELLER_ZIPCODE']);
 define('FTP_FOLDER', $iniArray['FTP_FOLDER']);
 define('APP_URL', $iniArray['APP_URL']);
 define('APP_NAME', $iniArray['APP_NAME']);
+define('AMAZON_MERCHANTID', $iniArray['AMAZON_MERCHANTID']);
+define('AMAZON_MARKETPLACEID', $iniArray['AMAZON_MARKETPLACEID']);
+define('AMAZON_AWSACCESSKEY', $iniArray['AMAZON_AWSACCESSKEY']);
+define('AMAZON_SECRETKEY', $iniArray['AMAZON_SECRETKEY']);

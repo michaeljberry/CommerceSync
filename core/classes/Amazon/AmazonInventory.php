@@ -3,10 +3,9 @@
 namespace Amazon;
 
 use Ecommerce\Ecommerce;
-use controllers\channels\XMLController;
-use Amazon\API\AmazonAPI;
-use Amazon\API\FulfillmentInventory\ListInventorySupply;
-use Amazon\API\Feeds\SubmitFeed;
+use AmazonMWSAPI\FulfillmentInventory\ListInventorySupply;
+use AmazonMWSAPI\Feeds\SubmitFeed;
+use AmazonMWSAPI\AmazonClient;
 
 class AmazonInventory extends AmazonClient
 {

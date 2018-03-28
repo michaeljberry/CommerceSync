@@ -1,7 +1,7 @@
 <?php
 
 use Amazon\Amazon;
-use Amazon\AmazonClient;
+use AmazonMWSAPI\AmazonClient;
 
 $amazon = new Amazon($userID);
 AmazonClient::instance();

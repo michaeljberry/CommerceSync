@@ -8,6 +8,8 @@ use models\channels\ChannelAPI;
 use Ecommerce\ChannelInterface;
 use controllers\channels\ChannelSetup;
 
+use AmazonMWSAPI\AmazonClient;
+
 class Amazon implements ChannelInterface
 {
 
@@ -15,6 +17,8 @@ class Amazon implements ChannelInterface
 
     protected static $userID;
     protected static $channel = 'Amazon';
+    protected static $storeID;
+    protected static $channelInfo;
     protected static $apiTable = 'api_amazon';
     protected static $apiColumns = [
         'store_id',
@@ -91,7 +95,7 @@ class Amazon implements ChannelInterface
 
         $sql = "SELECT api_from, api_to FROM api_amazon WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => AmazonClient::getStoreId()
+            ':store_id' => Amazon::getStoreId()
         ];
         return MDB::query($sql, $query_params, 'fetch');
 
@@ -102,7 +106,7 @@ class Amazon implements ChannelInterface
 
         $sql = "UPDATE api_amazon SET api_from = :api_from, api_to = :api_to WHERE store_id = :store_id";
         $query_params = [
-            ':store_id' => AmazonClient::getStoreId(),
+            ':store_id' => Amazon::getStoreId(),
             ':api_from' => $from,
             ':api_to' => $to
         ];

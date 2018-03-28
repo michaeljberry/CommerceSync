@@ -3,7 +3,8 @@
 use Amazon\AmazonOrder;
 use Ecommerce\Ecommerce;
 
-use Amazon\AmazonClient;
+use AmazonMWSAPI\AmazonClient;
+use AmazonMWSAPI\FulfillmentInventory;
 
 error_reporting(-1);
 
@@ -43,12 +44,12 @@ $start = startClock();
 //                 new \Amazon\API\FulfillmentInboundShipment\CreateInboundShipmentPlan($array)
 //             // )
 //         );
-Ecommerce::dd(
-    // AmazonClient::amazonCurl(
-        new \Amazon\API\FulfillmentInventory\ListInventorySupply([
+Ecommerce::ddXml(
+    AmazonClient::amazonCurl(
+        new \AmazonMWSAPI\FulfillmentInventory\ListInventorySupply([
             "SellerSkus" => "Z095-0801-121"
         ])
-    // )
+    )
 );
 
 endClock($start);

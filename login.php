@@ -31,7 +31,7 @@ if (isset($_GET['success']) && empty($_GET['success'])) {
 <html lang='en'>
 <head>
     <meta charset="UTF-8">
-    <title><?= APP_NAME ?> - Login</title>
+    <title><?= getenv("APP_NAME") ?> - Login</title>
     <!-- <link rel='stylesheet' href='includes/css/style.css'/> -->
     <!-- <link rel='stylesheet' href='includes/css/jquery-ui.css'/>  -->
     <!--    <link rel='stylesheet' href='includes/css/colorbox.css'/>-->

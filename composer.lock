@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a22d12bec24f3864cb50384e04f24b9c",
+    "content-hash": "b513dccf2cbe70d499c0f1561c377d06",
     "packages": [
         {
             "name": "automattic/woocommerce",
@@ -1757,54 +1757,6 @@
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
             "time": "2018-02-22T11:40:25+00:00"
-        }
-    ],
-    "packages-dev": [
-        {
-            "name": "michaeljberry/amazon-mws-api",
-            "version": "dev-master",
-            "dist": {
-                "type": "path",
-                "url": "../AmazonMWSAPI",
-                "reference": "f4d8cf8b62df6bc0f195e154cebb0bc3f325f222",
-                "shasum": null
-            },
-            "require": {
-                "php": "^7.0",
-                "vlucas/phpdotenv": "^2.5@dev"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^7.1@dev"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "AmazonMWSAPI\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Michael Berry",
-                    "email": "michael@michaeljberry.com",
-                    "homepage": "https://michaeljberry.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A PHP library to connect with, update to and pull data from Amazon MWS.",
-            "homepage": "https://github.com/michaeljberry/AmazonMWSAPI",
-            "keywords": [
-                "Amazon API",
-                "Amazon MWS",
-                "MWS"
-            ]
         },
         {
             "name": "vlucas/phpdotenv",
@@ -1857,10 +1809,59 @@
             "time": "2018-03-19T21:27:48+00:00"
         }
     ],
+    "packages-dev": [
+        {
+            "name": "michaeljberry/amazon-mws-api",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "../AmazonMWSAPI",
+                "reference": "362fcd6374ca5f5529cf3682c113484f487e79d1",
+                "shasum": null
+            },
+            "require": {
+                "php": "^7.0",
+                "vlucas/phpdotenv": "^2.5@dev"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.1@dev"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AmazonMWSAPI\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Berry",
+                    "email": "michael@michaeljberry.com",
+                    "homepage": "https://michaeljberry.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A PHP library to connect with, update to and pull data from Amazon MWS.",
+            "homepage": "https://github.com/michaeljberry/AmazonMWSAPI",
+            "keywords": [
+                "Amazon API",
+                "Amazon MWS",
+                "MWS"
+            ]
+        }
+    ],
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
         "owasp/phprbac": 20,
+        "vlucas/phpdotenv": 20,
         "michaeljberry/amazon-mws-api": 20
     },
     "prefer-stable": false,

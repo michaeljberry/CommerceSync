@@ -11,12 +11,7 @@ class Crypt
     {
         if (self::$initialized)
             return;
-        if (file_exists(ROOT . '.env')) {
-            $iniArray = parse_ini_file(WEBROOT . '.env');
-        } else {
-            $iniArray = parse_ini_file(WEBROOT . '.env');
-        }
-        self::$cryptKey = $iniArray['CRYPT_KEY'];
+        self::$cryptKey = getenv("CRYPT_KEY");
         self::setKey(self::$cryptKey);
         self::$initialized = true;
     }

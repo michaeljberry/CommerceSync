@@ -44,14 +44,14 @@ class WooCommerceInventory extends WooCommerce
 
     public function getListing($product_id)
     {
-        $url = WOO_STORE . '/wp-json/wc/v1/products/' . $product_id;
+        $url = getenv("WOO_STORE") . '/wp-json/wc/v1/products/' . $product_id;
         $response = WooCommerceClientCurl::woocommerceCurl($url, 'GET');
         return ($response);
     }
 
     public function getListings($page = 1)
     {
-        $url = WOO_STORE . '/wp-json/wc/v1/products/?page=' . $page . '&per_page=25';
+        $url = getenv("WOO_STORE") . '/wp-json/wc/v1/products/?page=' . $page . '&per_page=25';
         $response = WooCommerceClientCurl::woocommerceCurl($url, 'GET');
         return ($response);
     }
@@ -162,7 +162,7 @@ class WooCommerceInventory extends WooCommerce
     public function post_inventory_update($store_listing_id, $filter)
     {
         $post_string = json_encode($filter);
-        $url = WOO_STORE . '/wp-json/wc/v1/products/' . $store_listing_id;
+        $url = getenv("WOO_STORE") . '/wp-json/wc/v1/products/' . $store_listing_id;
 
         $response = WooCommerceClientCurl::woocommerceCurl($url, 'PUT', $post_string);
 
@@ -177,7 +177,7 @@ class WooCommerceInventory extends WooCommerce
             'regular_price' => '2.99'
         ];
         $post_string = json_encode($filter);
-        $url = WOO_STORE . '/wp-json/wc/v1/products/';
+        $url = getenv("WOO_STORE") . '/wp-json/wc/v1/products/';
 
         $response = WooCommerceClientCurl::woocommerceCurl($url, 'POST', $post_string);
 

@@ -5,7 +5,7 @@ global $template;
 <!DOCTYPE html>
 <html lang='en' xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title><?= APP_NAME ?></title>
+    <title><?= getenv("APP_NAME") ?></title>
     <meta charset="UTF-8">
     <meta content="text/html;charset=utf-8">
     <meta content="utf-8" http-equiv="encoding">

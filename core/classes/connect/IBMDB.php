@@ -12,7 +12,7 @@ class IBMDB
     {
         if (self::$instance === null) {
             if (file_exists(ROOT . '.local')) {
-                self::$instance = new PDO('odbc:DRIVER={iSeries Access ODBC Driver};SYSTEM=' . IBM_HOST . ';DATABASE=' . IBM_NAME . ';UID=' . IBM_USER . ';PWD=' . IBM_PASS . ';NAMING=1');
+                self::$instance = new PDO('odbc:DRIVER={iSeries Access ODBC Driver};SYSTEM=' . getenv("IBM_HOST") . ';DATABASE=' . getenv("IBM_NAME") . ';UID=' . getenv("IBM_USER") . ';PWD=' . getenv("IBM_PASS") . ';NAMING=1');
             } else {
                 self::$instance = new PDO('odbc:DEV');
             }
@@ -33,4 +33,3 @@ class IBMDB
         return $stmt;
     }
 }
-

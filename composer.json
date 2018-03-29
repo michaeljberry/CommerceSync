@@ -8,7 +8,8 @@
 		"rackspace/php-opencloud": "^1.15",
 		"automattic/woocommerce": "^1.0",
 		"fillup/walmart-partner-api-sdk-php": "^1.0.9",
-		"illuminate/events": "^5.4"
+		"illuminate/events": "^5.4",
+		"vlucas/phpdotenv": "^2.5@dev"
 	},
 	"require-dev": {
 		"michaeljberry/amazon-mws-api": "@dev"

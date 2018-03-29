@@ -1,8 +1,11 @@
 <?php
+
+use Dotenv\Dotenv;
 // phpinfo();
 session_start();
 ini_set('display_errors', '1');
 $userID = 838;
+
 require 'config.php';
 require WEBVENDOR . 'autoload.php';
 
@@ -12,6 +15,9 @@ spl_autoload_register(function ($class) {
         require $file;
     }
 });
+
+$env = new Dotenv(dirname(__DIR__));
+$env->load();
 
 //EcomDash Classes
 include_once 'classes/ecd/ecdclass.php';

@@ -103,7 +103,7 @@ class User
         $admin_message .= "Please setup permissions.";
 //        mail(, '', $admin_message);
         $mail->ClearAllRecipients();
-        $mail->addAddress(getenv("EMAIL_USER");
+        $mail->addAddress(getenv("EMAIL_USER"));
         $mail->From = getenv("EMAIL_USER");
         $mail->FromName = getenv("EMAIL_USERNAME");
         $subject = 'Please setup permissions';

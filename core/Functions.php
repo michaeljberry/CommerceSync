@@ -1,26 +1,51 @@
 <?php
 
-function startClock()
+function startClock($print = true)
 {
+
     $startTime = microtime(true);
-    echo "Start Time: " . date("Y/m/d H:i:s") . "<br>";
+
+    if($print)
+    {
+
+        echo "Start Time: " . date("Y/m/d H:i:s") . "<br>";
+
+    }
+
     return $startTime;
+
 }
 
-function endClock($startTime)
+function endClock($startTime, $print = true)
 {
+
     $endTime = microtime(true);
+
     $executionTime = ($endTime - $startTime) / 60;
-    echo "Execution time: $executionTime mins";
-    echo "End Time: " . date('Y-m-d H:i:s') . "<br>";
+
+    if($print)
+    {
+
+        echo "Execution time: $executionTime mins";
+
+        echo "End Time: " . date('Y-m-d H:i:s') . "<br>";
+
+    }
+
+    return $executionTime;
+
 }
 
 function decrypt($infoToDecrypt)
 {
+
     return Crypt::decrypt($infoToDecrypt);
+
 }
 
 function standardCase($string)
 {
+
     return ucwords(strtolower($string));
+
 }

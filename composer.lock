@@ -849,12 +849,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
-                "reference": "74deba02fe037274682b10b4a4511e1f95c35e3a"
+                "reference": "873d73f62aedc1395e88b38a480b02e01b853db7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/contracts/zipball/74deba02fe037274682b10b4a4511e1f95c35e3a",
-                "reference": "74deba02fe037274682b10b4a4511e1f95c35e3a",
+                "url": "https://api.github.com/repos/illuminate/contracts/zipball/873d73f62aedc1395e88b38a480b02e01b853db7",
+                "reference": "873d73f62aedc1395e88b38a480b02e01b853db7",
                 "shasum": ""
             },
             "require": {
@@ -885,7 +885,7 @@
             ],
             "description": "The Illuminate Contracts package.",
             "homepage": "https://laravel.com",
-            "time": "2018-03-25T12:55:09+00:00"
+            "time": "2018-03-30T13:18:48+00:00"
         },
         {
             "name": "illuminate/events",
@@ -938,12 +938,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "3d6186cfbe7f17220b3725a58b54c5a113c7d88c"
+                "reference": "7d44cb5c5ce93354bf47893380c7310003ce907d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/3d6186cfbe7f17220b3725a58b54c5a113c7d88c",
-                "reference": "3d6186cfbe7f17220b3725a58b54c5a113c7d88c",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/7d44cb5c5ce93354bf47893380c7310003ce907d",
+                "reference": "7d44cb5c5ce93354bf47893380c7310003ce907d",
                 "shasum": ""
             },
             "require": {
@@ -987,7 +987,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2018-03-27T13:11:05+00:00"
+            "time": "2018-04-02T13:00:15+00:00"
         },
         {
             "name": "mikemccabe/json-patch-php",
@@ -1696,12 +1696,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "6664b21dc874109ab6c6d30af4116360d84d573f"
+                "reference": "94207c33086228aca80e998fcee807587f989687"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/6664b21dc874109ab6c6d30af4116360d84d573f",
-                "reference": "6664b21dc874109ab6c6d30af4116360d84d573f",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/94207c33086228aca80e998fcee807587f989687",
+                "reference": "94207c33086228aca80e998fcee807587f989687",
                 "shasum": ""
             },
             "require": {
@@ -1716,6 +1716,7 @@
             "require-dev": {
                 "psr/log": "~1.0",
                 "symfony/config": "~3.4|~4.0",
+                "symfony/console": "~3.4|~4.0",
                 "symfony/dependency-injection": "~3.4|~4.0",
                 "symfony/finder": "~2.8|~3.0|~4.0",
                 "symfony/intl": "~3.4|~4.0",
@@ -1756,7 +1757,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2018-02-22T11:40:25+00:00"
+            "time": "2018-03-30T08:43:09+00:00"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -1816,7 +1817,7 @@
             "dist": {
                 "type": "path",
                 "url": "../AmazonMWSAPI",
-                "reference": "362fcd6374ca5f5529cf3682c113484f487e79d1",
+                "reference": "a003375de0cbbabfa23faaf2fe10d933b567832b",
                 "shasum": null
             },
             "require": {

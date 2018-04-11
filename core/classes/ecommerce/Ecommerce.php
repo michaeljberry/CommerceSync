@@ -64,6 +64,40 @@ class Ecommerce
 
     }
 
+    public static function getDirContents($dir, &$results = array())
+    {
+
+        $files = scandir($dir);
+
+        foreach ($files as $key => $value) {
+
+            $path = realpath($dir . DIRECTORY_SEPARATOR . $value);
+
+            if (!is_dir($path) && strpos(".", $path) === false) {
+                $parseFolder = explode(DIRECTORY_SEPARATOR, dirname($path));
+                $folder = end($parseFolder);
+
+                if ($folder !== "src"){
+
+                    $file = basename($path);
+                    static::dd("$folder -> $file");
+                    $results[] = $path;
+                }
+
+            } else if ($value != "." && $value != "..") {
+
+                static::getDirContents($path, $results);
+
+                // $results[] = $path;
+
+            }
+
+        }
+
+        return $results;
+
+    }
+
     protected static function cellOpeningTag($value, $cellType)
     {
         $openTag = '';

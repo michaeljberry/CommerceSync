@@ -22,6 +22,8 @@ class Ebay implements ChannelInterface
         'certid',
         'token'
     ];
+    protected static $channelInfo;
+    protected static $storeID;
 
     public static function sanitizeColumnName($col)
     {

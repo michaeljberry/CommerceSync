@@ -12,7 +12,7 @@ class OrderController
         return [
             'Item' => [
                 'ItemId' => $itemID,
-                'ItemDesc' => $itemDesc,
+                'ItemDesc' => html_entity_decode($itemDesc),
                 'POLineNumber' => $poNumber,
                 'UOM' => 'EACH',
                 'Qty' => $qty,

@@ -5,6 +5,8 @@ namespace Walmart;
 use Ecommerce\EcommerceInterface;
 use models\channels\Channel;
 
+use Ecommerce\Ecommerce;
+
 class WalmartClient extends Walmart implements EcommerceInterface
 {
 

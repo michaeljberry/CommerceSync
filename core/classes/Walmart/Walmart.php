@@ -20,6 +20,8 @@ class Walmart implements ChannelInterface
         'secret_key',
         'api_header'
     ];
+    protected static $channelInfo;
+    protected static $storeID;
 
     public function get_wm_app_info($user_id)
     {

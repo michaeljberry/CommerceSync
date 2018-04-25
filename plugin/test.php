@@ -14,7 +14,7 @@ require __DIR__ . '/../core/init.php';
 require WEBCORE . 'ibminit.php';
 require WEBPLUGIN . 'am/amvar.php';
 
-$start = startClock();
+$start = Helpers::startClock();
 
 // Ecommerce::dd(AmazonOrder::getUnshippedOrders());
 // Ecommerce::ddXml(AmazonOrder::getOrderById("112-4364971-2410668"));
@@ -25,65 +25,35 @@ $iterations = 1;
 
 $testPerformance = false;
 
+$print = true;
+
 $amazonCurlTest = false;
 
-$objectToNewUp = "\AmazonMWSAPI\FulfillmentInboundShipment\CreateInboundShipment";
+$api = "AmazonMWSAPI";
 
-$objectParameters = [
-    "ShipmentId" => "1234567890",
-    "InboundShipmentHeader" => [
-        "ShipmentName" => "Blah",
-        "ShipFromAddress" => [
-            "Name" => "Ben Parker",
-            "AddressLine1" => "1234 Main St.",
-            "City" => "New York",
-            "CountryCode" => "US"
-        ],
-        "DestinationFulfillmentCenterId" => "987654321",
-        "LabelPrepPreference" => "SELLER_LABEL",
-        "AreCasesRequired" => "false",
-        "ShipmentStatus" => "WORKING",
-    ],
-    "InboundShipmentItems" => [
-        [
-            "SellerSKU" => "M150",
-            "QuantityShipped" => 10,
-            "QuantityInCase" => 5,
-            "ReleaseDate" => "2018-01-05",
-            "PrepDetailsList" => [
-                [
-                    "PrepInstruction" => "Labeling",
-                    "PrepOwner" => "SELLER"
-                ]
-            ]
-        ],
-        [
-            "SellerSKU" => "M180",
-            "QuantityShipped" => 4,
-            "QuantityInCase" => 2,
-            "ReleaseDate" => "2018-01-05",
-            "PrepDetailsList" => [
-                [
-                    "PrepInstruction" => "Labeling",
-                    "PrepOwner" => "SELLER"
-                ],
-                [
-                    "PrepInstruction" => "Polybagging",
-                    "PrepOwner" => "SELLER"
-                ]
-            ]
-        ]
-    ]
-];
+$apiToTest = "FulfillmentInboundShipment";
+
+$classToTest = "CreateInboundShipmentPlan";
+
+$property = "exampleCreateInboundShipmentPlanFailing";
+
+$objectToNewUp = "\\";
+$objectToNewUp .= $api;
+$objectToNewUp .= "\\";
+$objectToNewUp .= "$apiToTest";
+$objectToNewUp .= "\\";
+$objectToNewUp .= "$classToTest";
+
+$objectParameters = Helpers::getAPIProperty("$api\\$apiToTest\\$classToTest", $property);
 
 if ($amazonCurlTest) {
 
-    Helpers::testAPI($objectToNewUp, $objectParameters, $testPerformance, $iterations);
+    Helpers::testAPI($objectToNewUp, $objectParameters, $print, $testPerformance, $iterations);
 
 } else {
 
-    Helpers::test($objectToNewUp, $objectParameters, $testPerformance, $iterations);
+    Helpers::test($objectToNewUp, $objectParameters, $print, $testPerformance, $iterations);
 
 }
 
-endClock($start);
+Helpers::endClock($start);

@@ -26,7 +26,12 @@ class FTPController
     {
         file_put_contents(FTP_FOLDER . '/' . $filename, $orderXML);
         chmod(FTP_FOLDER . '/' . $filename, 0777);
-        file_put_contents(FTP_FOLDER . '/' . 'backup/' . $filename, $orderXML);
-        chmod(FTP_FOLDER . '/' . 'backup/' . $filename, 0777);
+        if(file_exists(FTP_FOLDER . '/' . $filename))
+        {
+            file_put_contents(FTP_FOLDER . '/' . 'backup/' . $filename, $orderXML);
+            chmod(FTP_FOLDER . '/' . 'backup/' . $filename, 0777);
+        } else {
+            FTPController::saveToDisk($filename, $orderXML);
+        }
     }
 }

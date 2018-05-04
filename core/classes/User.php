@@ -38,12 +38,12 @@ class User
         MDB::query($sql, $query_params);
 
         $message = "Hello $username, you have been registered with us. Please visit the link below so we can activate your account: ";
-        $message .= APP_URL;
+        $message .= getenv("APP_URL");
         $message .= "/activate.php?email=$user_email";
 //        mail($user_email, 'Please activate your account', $message);
         $mail->addAddress($user_email);
-        $mail->From = EMAIL_USER;
-        $mail->FromName = EMAIL_USERNAME;
+        $mail->From = getenv("EMAIL_USER");
+        $mail->FromName = getenv("EMAIL_USERNAME");
         $subject = 'Please activate your account';
         $mail->Subject = $subject;
         $mail->Body = $message;
@@ -83,12 +83,12 @@ class User
         MDB::query($sql, $query_params);
 
         $message = "Hello $username, thank you for registering with us. Please visit the link below so we can activate your account: ";
-        $message .= APP_URL;
+        $message .= getenv("APP_URL");
         $message .= "/activate.php?email=$email&email_code=$email_code";
 //        mail($email, 'Please activate your account', $message);
         $mail->addAddress($email);
-        $mail->From = EMAIL_USER;
-        $mail->FromName = EMAIL_USERNAME;
+        $mail->From = getenv("EMAIL_USER");
+        $mail->FromName = getenv("EMAIL_USERNAME");
         $subject = 'Please activate your account';
         $mail->Subject = $subject;
         $mail->Body = $message;
@@ -99,13 +99,13 @@ class User
             echo 'Your activation email was sent.';
         }
         $admin_message = "Hello $username has registered for access to ";
-        $admin_message .= APP_NAME;
+        $admin_message .= getenv("APP_NAME");
         $admin_message .= "Please setup permissions.";
 //        mail(, '', $admin_message);
         $mail->ClearAllRecipients();
-        $mail->addAddress(EMAIL_USER);
-        $mail->From = EMAIL_USER;
-        $mail->FromName = EMAIL_USERNAME;
+        $mail->addAddress(getenv("EMAIL_USER"));
+        $mail->From = getenv("EMAIL_USER");
+        $mail->FromName = getenv("EMAIL_USERNAME");
         $subject = 'Please setup permissions';
         $mail->Subject = $subject;
         $mail->Body = $admin_message;

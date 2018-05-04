@@ -1,4 +1,6 @@
 <?php
+use Dotenv\Dotenv;
+
 session_start();
 error_reporting(-1);
 $userID = 838;
@@ -11,6 +13,9 @@ spl_autoload_register(function ($class) {
         require $file;
     }
 });
+
+$env = new Dotenv(dirname(__DIR__));
+$env->load();
 
 //EcomDash Classes
 include_once 'classes/ecd/ecdclass.php';

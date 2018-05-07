@@ -137,16 +137,7 @@ class EbayOrder extends EbayClient
 
             $shippingAddress = (object)$order->ShippingAddress;
             $streetAddress = (string)$shippingAddress->Street1;
-
-            if (is_object($shippingAddress->Street2)) {
-
-                $streetAddress2 = '';
-
-            } else {
-
-                $streetAddress2 = (string)$shippingAddress->Street2;
-
-            }
+            $streetAddress2 = (string)$shippingAddress->Street2;
 
         }
 

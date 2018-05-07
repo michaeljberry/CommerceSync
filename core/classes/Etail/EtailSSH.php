@@ -81,15 +81,15 @@ class EtailSSH
         print_r($this);
 
         $this->connection = ssh2_connect($this->server);
-	if(!$this->connection) die("Couldn't connect to {$this->server}");
+        if(!$this->connection) die("Couldn't connect to {$this->server}");
 
-	print_r($this->connection);
+        print_r($this->connection);
     }
 
     protected function authenticateInFTPServer()
     {
 
-        $this->login = ftp_login($this->getConnection(), $this->getUsername(), $this->getPassword());
+        $this->login = ssh2_auth_password($this->getConnection(), $this->getUsername(), $this->getPassword());
 
     }
 

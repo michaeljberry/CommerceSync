@@ -25,6 +25,8 @@ class EtailSSH
 
         $this->connectToFTPServer();
 
+	$this->authenticateInFTPServer();
+
     }
 
     protected function setConnectionParameters()
@@ -78,8 +80,10 @@ class EtailSSH
 
         print_r($this);
 
-        $this->connection = ssh2_connect($this->server) ? ssh2_connect($this->server) : die("Couldn't connect to {$this->server}");
+        $this->connection = ssh2_connect($this->server);
+	if(!$this->connection) die("Couldn't connect to {$this->server}");
 
+	print_r($this->connection);
     }
 
     protected function authenticateInFTPServer()

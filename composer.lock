@@ -171,7 +171,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2018-04-11T05:54:08+00:00"
+            "time": "2018-04-11 05:54:08"
         },
         {
             "name": "dompdf/dompdf",
@@ -385,7 +385,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Walmart\\Auth\\": "src/"
+                    "WalmartAPI\\Auth\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -434,7 +434,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Walmart\\": "src/"
+                    "WalmartAPI\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -544,7 +544,7 @@
                 "web service"
             ],
             "abandoned": "guzzlehttp/guzzle",
-            "time": "2016-10-26T18:22:07+00:00"
+            "time": "2016-10-26 18:22:07"
         },
         {
             "name": "guzzlehttp/command",
@@ -643,7 +643,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2018-01-15T07:18:01+00:00"
+            "time": "2018-01-15 07:18:01"
         },
         {
             "name": "guzzlehttp/retry-subscriber",
@@ -747,7 +747,7 @@
                 }
             ],
             "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
-            "time": "2017-01-13T20:44:38+00:00"
+            "time": "2017-01-13 20:44:38"
         },
         {
             "name": "guzzlehttp/streams",
@@ -797,7 +797,7 @@
                 "Guzzle",
                 "stream"
             ],
-            "time": "2016-04-13T16:32:01+00:00"
+            "time": "2016-04-13 16:32:01"
         },
         {
             "name": "illuminate/container",
@@ -841,7 +841,7 @@
             ],
             "description": "The Illuminate Container package.",
             "homepage": "https://laravel.com",
-            "time": "2018-03-10T15:46:11+00:00"
+            "time": "2018-03-10 15:46:11"
         },
         {
             "name": "illuminate/contracts",
@@ -885,7 +885,7 @@
             ],
             "description": "The Illuminate Contracts package.",
             "homepage": "https://laravel.com",
-            "time": "2018-04-25T14:53:39+00:00"
+            "time": "2018-04-25 14:53:39"
         },
         {
             "name": "illuminate/events",
@@ -930,7 +930,7 @@
             ],
             "description": "The Illuminate Events package.",
             "homepage": "https://laravel.com",
-            "time": "2018-02-28T14:51:37+00:00"
+            "time": "2018-02-28 14:51:37"
         },
         {
             "name": "illuminate/support",
@@ -938,12 +938,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "e07bab4adb91f86695c9994668fe30e6a22eafa4"
+                "reference": "3df81823b3532ed2194ba22c94573736433ffad3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/e07bab4adb91f86695c9994668fe30e6a22eafa4",
-                "reference": "e07bab4adb91f86695c9994668fe30e6a22eafa4",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/3df81823b3532ed2194ba22c94573736433ffad3",
+                "reference": "3df81823b3532ed2194ba22c94573736433ffad3",
                 "shasum": ""
             },
             "require": {
@@ -987,7 +987,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2018-05-02T14:56:53+00:00"
+            "time": "2018-05-04 18:22:07"
         },
         {
             "name": "mikemccabe/json-patch-php",
@@ -1109,7 +1109,7 @@
                 "rbac",
                 "security"
             ],
-            "time": "2014-03-14T13:16:56+00:00"
+            "time": "2014-03-14 13:16:56"
         },
         {
             "name": "phenx/php-font-lib",
@@ -1312,7 +1312,7 @@
                 "x.509",
                 "x509"
             ],
-            "time": "2018-04-25T20:18:51+00:00"
+            "time": "2018-04-25 20:18:51"
         },
         {
             "name": "psr/container",
@@ -1361,7 +1361,7 @@
                 "container-interop",
                 "psr"
             ],
-            "time": "2017-06-28T15:35:32+00:00"
+            "time": "2017-06-28 15:35:32"
         },
         {
             "name": "psr/log",
@@ -1408,7 +1408,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2018-04-03T15:59:15+00:00"
+            "time": "2018-04-03 15:59:15"
         },
         {
             "name": "psr/simple-cache",
@@ -1456,7 +1456,7 @@
                 "psr-16",
                 "simple-cache"
             ],
-            "time": "2017-10-23T01:57:42+00:00"
+            "time": "2017-10-23 01:57:42"
         },
         {
             "name": "rackspace/php-opencloud",
@@ -1518,7 +1518,7 @@
                 "rackspace",
                 "swift"
             ],
-            "time": "2017-07-18T18:38:58+00:00"
+            "time": "2017-07-18 18:38:58"
         },
         {
             "name": "react/promise",
@@ -1526,12 +1526,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "da1605010d71dd775858954481ecfafd25ab3f98"
+                "reference": "24cd9e84035e63b6ebeb4a922b0dcaf2fe1ad811"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/da1605010d71dd775858954481ecfafd25ab3f98",
-                "reference": "da1605010d71dd775858954481ecfafd25ab3f98",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/24cd9e84035e63b6ebeb4a922b0dcaf2fe1ad811",
+                "reference": "24cd9e84035e63b6ebeb4a922b0dcaf2fe1ad811",
                 "shasum": ""
             },
             "require": {
@@ -1564,7 +1564,7 @@
                 "promise",
                 "promises"
             ],
-            "time": "2018-04-26T10:53:12+00:00"
+            "time": "2018-05-03 18:02:02"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -1624,7 +1624,7 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
-            "time": "2018-04-06T07:35:03+00:00"
+            "time": "2018-04-06 07:35:03"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -1683,7 +1683,7 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-04-26T10:06:28+00:00"
+            "time": "2018-04-26 10:06:28"
         },
         {
             "name": "symfony/translation",
@@ -1752,7 +1752,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2018-04-30T01:24:02+00:00"
+            "time": "2018-04-30 01:24:02"
         },
         {
             "name": "vlucas/phpdotenv",
@@ -1802,7 +1802,7 @@
                 "env",
                 "environment"
             ],
-            "time": "2018-03-19T21:27:48+00:00"
+            "time": "2018-03-19 21:27:48"
         }
     ],
     "packages-dev": [],

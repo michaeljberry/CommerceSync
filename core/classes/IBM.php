@@ -239,4 +239,23 @@ class IBM
         $sql = "SELECT IFITEM FROM R37MODSDTA/VINITMB JOIN R37MODSDTA/VIOSELLCRA ON IFITEM = ITITEM WHERE ((IFDEL = 'I' AND IFQOH < 3) OR (IFDEL = 'N') OR (IFQOH < 2 AND IFLOD < '20141231')) AND (IFCOMP != '5' OR IFCOMP != '2') AND (IFLOC = '1' OR IFLOC = '4' OR IFLOC = '8') GROUP BY IFITEM ORDER BY IFITEM";
         return MIBMDB::query($sql, [], 'fetchAll', PDO::FETCH_ASSOC);
     }
+
+    public static function getEtailCatalog()
+    {
+
+        $sql = "SELECT * FROM R37MODSDTA/VIOETAIL";
+
+        return MIBMDB::query($sql, [], 'fetchAll', PDO::FETCH_ASSOC);
+
+    }
+
+    public static function getEtailInventory()
+    {
+
+        $sql = "SELECT * FROM R37MODSDTA/VIOETAILIN";
+
+        return MIBMDB::query($sql, [], 'fetchAll', PDO::FETCH_ASSOC);
+
+    }
+
 }

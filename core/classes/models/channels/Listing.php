@@ -175,8 +175,8 @@ class Listing
                 VALUES(:sku, :qty)
                 ON DUPLICATE KEY UPDATE inventory_level = :qty2";
         $queryParams = [
-            ":qty" => $qty,
             ":sku" => $sku,
+            ":qty" => $qty,
             ":qty2" => $qty
         ];
         return MDB::query($sql, $queryParams, 'boolean');

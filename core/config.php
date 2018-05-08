@@ -7,7 +7,7 @@ if (file_exists(ROOT . '.local')) {
     define('ROOTFOLDER', $localArray['ROOT_FOLDER']);
 } else {
     define('LOCAL', false);
-    define('ROOTFOLDER', '/var/www/portal/');
+    define('ROOTFOLDER', ROOT);
 }
 
 define('PORTALFOLDER', ROOTFOLDER);

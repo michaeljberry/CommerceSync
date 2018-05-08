@@ -48,7 +48,7 @@ class EtailSSHUpload extends EtailSSH
     protected function setStream()
     {
 
-        $this->stream = fopen("ssh2.sftp://" . $this->getSFTP() . $this->getFileDestinationPath(), 'w');
+        $this->stream = fopen("ssh2.sftp://" . $this->getSFTP() . $this->getFileDestinationPath(), 'x');
 
         if (!$this->stream)
 

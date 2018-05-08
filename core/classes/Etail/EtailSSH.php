@@ -98,14 +98,14 @@ class EtailSSH
 
     }
 
-    protected function getUsername()
+    public function getUsername()
     {
 
         return $this->username;
 
     }
 
-    protected function getPassword()
+    public function getPassword()
     {
 
         return $this->password;

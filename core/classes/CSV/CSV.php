@@ -43,7 +43,7 @@ class CSV
     protected function setFilePath()
     {
 
-        $this->filePath = $this->getDirectory() . DIRECTORY_SEPARATOR . $this->getFileName();
+        $this->filePath = $this->getDirectory() . "DIRECTORY_SEPARATOR" . $this->getFileName();
 
     }
 

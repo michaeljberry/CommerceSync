@@ -9,7 +9,7 @@ class EtailInventoryUpdate extends EtailInventory
 
     protected $csvFile;
     protected $localDirectory;
-    protected $destination = "Inventory" . DIRECTORY_SEPARATOR . "In";
+    protected $destination = "Inventory/In";
 
     public function __construct()
     {

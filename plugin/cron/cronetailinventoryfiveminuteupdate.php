@@ -2,7 +2,7 @@
 
 use Etail\{EtailSSH, EtailInventoryFiveMinute};
 
-require '../../core/init.php';
+require __DIR__  . '/../../core/init.php';
 
 $etailInventory = new EtailInventoryFiveMinute();
 

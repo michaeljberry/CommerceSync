@@ -11,21 +11,21 @@ class EtailSSH
     protected $password;
     protected $login;
     protected $parentFolder = "ChesbroMusic";
-    protected $folder;
-    protected $action;
+    protected $currentFileLocation;
+    protected $fileDestination;
+    protected $fileDestinationPath;
+    protected $sftp;
 
-    public function __construct($action, $folder)
+    public function __construct($currentFileLocation, $fileDestination)
     {
-
-        $this->setAction($action);
-
-        $this->setFolder($folder);
 
         $this->setConnectionParameters();
 
         $this->connectToFTPServer();
 
-	$this->authenticateInFTPServer();
+        $this->authenticateInFTPServer();
+
+        $this->setSFTP();
 
     }
 
@@ -37,20 +37,6 @@ class EtailSSH
         $this->setUsername();
 
         $this->setPassword();
-
-    }
-
-    protected function setAction($action)
-    {
-
-        $this->action = $action;
-
-    }
-
-    protected function setFolder($folder)
-    {
-
-        $this->folder = $folder;
 
     }
 
@@ -91,13 +77,10 @@ class EtailSSH
 
     }
 
-    public function uploadDocument()
+    protected function setSFTP()
     {
 
-    }
-
-    public function downloadDocument()
-    {
+        $this->sftp = ssh2_sftp($this->getConnection());
 
     }
 
@@ -105,20 +88,6 @@ class EtailSSH
     {
 
         return $this->connection;
-
-    }
-
-    protected function getAction()
-    {
-
-        return $this->action;
-
-    }
-
-    protected function getFolder()
-    {
-
-        return $this->folder;
 
     }
 
@@ -140,6 +109,13 @@ class EtailSSH
     {
 
         return $this->password;
+
+    }
+
+    public function getSFTP()
+    {
+
+        return $this->sftp;
 
     }
 

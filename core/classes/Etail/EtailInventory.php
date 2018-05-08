@@ -54,13 +54,10 @@ class EtailInventory
 
     }
 
-    protected function formatUpdatedInventoryForUpload()
+    protected function uploadInventoryToSSH($currentFileLocation, $fileDestination)
     {
 
-    }
-
-    protected function uploadInventoryToSSH()
-    {
+        new EtailSSHUpload($currentFileLocation, $fileDestination);
 
     }
 

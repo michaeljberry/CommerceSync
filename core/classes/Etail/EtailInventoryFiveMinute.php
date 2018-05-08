@@ -9,7 +9,8 @@ class EtailInventoryFiveMinute extends EtailInventory
 
     protected $interval = 15;
     protected $csvFile;
-    protected $directory;
+    protected $localDirectory;
+    protected $destination = "Inventory" . DIRECTORY_SEPARATOR . "In";
 
     public function __construct()
     {
@@ -20,12 +21,14 @@ class EtailInventoryFiveMinute extends EtailInventory
 
         $this->createCSVWithUpdatedInventory();
 
+        $this->uploadCSV();
+
     }
 
     protected function setDirectory()
     {
 
-        $this->directory = getenv('ETAIL_FTP_DIRECTORY');
+        $this->localDirectory = getenv('ETAIL_FTP_DIRECTORY');
 
     }
 
@@ -36,10 +39,24 @@ class EtailInventoryFiveMinute extends EtailInventory
 
     }
 
+    protected function uploadCSV()
+    {
+
+        $this->uploadInventoryToSSH($this->csvFile->getFilePath(), $this->getDestination() . "/" . $this->csvFile->getFileName());
+
+    }
+
+    public function getDestination()
+    {
+
+        return $this->destination;
+
+    }
+
     public function getDirectory()
     {
 
-        return $this->directory;
+        return $this->localDirectory;
 
     }
 

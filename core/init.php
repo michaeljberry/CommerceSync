@@ -1,10 +1,6 @@
 <?php
 use Dotenv\Dotenv;
 
-<<<<<<< HEAD
-// phpinfo();
-=======
->>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
 session_start();
 ini_set('display_errors', '1');
 $userID = 838;

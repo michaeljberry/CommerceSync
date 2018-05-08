@@ -5,8 +5,8 @@ namespace CSV;
 class CSV
 {
 
-    protected $fileName = "php://output";
-    protected $directory = "";
+    protected $fileName;
+    protected $directory;
     protected $filePath;
     protected $csvArray;
     protected $filePointer;

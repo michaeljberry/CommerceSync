@@ -7,7 +7,7 @@ use CSV\CSV;
 class EtailInventoryFiveMinute extends EtailInventory
 {
 
-    protected $interval = 15;
+    protected $interval = null;
     protected $csvFile;
     protected $localDirectory;
     protected $destination = "Inventory" . DIRECTORY_SEPARATOR . "In";

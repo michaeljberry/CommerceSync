@@ -77,7 +77,7 @@ class CSV
 
         foreach ($this->getCSVArray() as $fields) {
 
-            fputcsv($this->getFilePointer(), $fields);
+            $this->fputcsv_eol($fields);
 
         }
 
@@ -87,6 +87,19 @@ class CSV
     {
 
         fclose($this->getFilePointer());
+
+    }
+
+    protected function fputcsv_eol($array, $eol = "\r\n")
+    {
+
+        fputcsv($this->getFilePointer(), $array);
+
+        if ("\n" != $eol && 0 === fseek($this->getFilePointer(), -1, SEEK_CUR)) {
+
+            fwrite($this->getFilePointer(), $eol);
+
+        }
 
     }
 

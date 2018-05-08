@@ -5,10 +5,14 @@
         "This file is @generated automatically"
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "86a2dd68acff53c8dfc9feb7de8d53d2",
 =======
     "content-hash": "b513dccf2cbe70d499c0f1561c377d06",
 >>>>>>> ebayStreetAddress2
+=======
+    "content-hash": "86a2dd68acff53c8dfc9feb7de8d53d2",
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
     "packages": [
         {
             "name": "automattic/woocommerce",
@@ -116,12 +120,16 @@
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "reference": "89aedcb9b2a568efdd2ab376e0f60f428c977858"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/doctrine/inflector/zipball/89aedcb9b2a568efdd2ab376e0f60f428c977858",
                 "reference": "89aedcb9b2a568efdd2ab376e0f60f428c977858",
+<<<<<<< HEAD
 =======
                 "reference": "dfe20066f5636a55f5143671949812a12881e11e"
             },
@@ -130,6 +138,8 @@
                 "url": "https://api.github.com/repos/doctrine/inflector/zipball/dfe20066f5636a55f5143671949812a12881e11e",
                 "reference": "dfe20066f5636a55f5143671949812a12881e11e",
 >>>>>>> ebayStreetAddress2
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -185,10 +195,14 @@
                 "string"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-04-11 05:54:08"
 =======
             "time": "2018-03-28T04:40:29+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-04-11 05:54:08"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "dompdf/dompdf",
@@ -562,10 +576,14 @@
             ],
             "abandoned": "guzzlehttp/guzzle",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2016-10-26 18:22:07"
 =======
             "time": "2016-10-26T18:22:07+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2016-10-26 18:22:07"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "guzzlehttp/command",
@@ -665,10 +683,14 @@
                 "web service"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-01-15 07:18:01"
 =======
             "time": "2018-01-15T07:18:01+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-01-15 07:18:01"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "guzzlehttp/retry-subscriber",
@@ -773,10 +795,14 @@
             ],
             "description": "Provides a simple API and specification that abstracts away the details of HTTP into a single PHP function.",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2017-01-13 20:44:38"
 =======
             "time": "2017-01-13T20:44:38+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2017-01-13 20:44:38"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "guzzlehttp/streams",
@@ -827,10 +853,14 @@
                 "stream"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2016-04-13 16:32:01"
 =======
             "time": "2016-04-13T16:32:01+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2016-04-13 16:32:01"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "illuminate/container",
@@ -875,10 +905,14 @@
             "description": "The Illuminate Container package.",
             "homepage": "https://laravel.com",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-03-10 15:46:11"
 =======
             "time": "2018-03-10T15:46:11+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-03-10 15:46:11"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "illuminate/contracts",
@@ -887,12 +921,16 @@
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "reference": "e886f1b7b0ac71b5f559afe385d86cfa61137033"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/illuminate/contracts/zipball/e886f1b7b0ac71b5f559afe385d86cfa61137033",
                 "reference": "e886f1b7b0ac71b5f559afe385d86cfa61137033",
+<<<<<<< HEAD
 =======
                 "reference": "873d73f62aedc1395e88b38a480b02e01b853db7"
             },
@@ -901,6 +939,8 @@
                 "url": "https://api.github.com/repos/illuminate/contracts/zipball/873d73f62aedc1395e88b38a480b02e01b853db7",
                 "reference": "873d73f62aedc1395e88b38a480b02e01b853db7",
 >>>>>>> ebayStreetAddress2
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -932,10 +972,14 @@
             "description": "The Illuminate Contracts package.",
             "homepage": "https://laravel.com",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-04-25 14:53:39"
 =======
             "time": "2018-03-30T13:18:48+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-04-25 14:53:39"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "illuminate/events",
@@ -981,10 +1025,14 @@
             "description": "The Illuminate Events package.",
             "homepage": "https://laravel.com",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-02-28 14:51:37"
 =======
             "time": "2018-02-28T14:51:37+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-02-28 14:51:37"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "illuminate/support",
@@ -992,6 +1040,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
+<<<<<<< HEAD
 <<<<<<< HEAD
                 "reference": "3df81823b3532ed2194ba22c94573736433ffad3"
             },
@@ -1007,6 +1056,14 @@
                 "url": "https://api.github.com/repos/illuminate/support/zipball/7d44cb5c5ce93354bf47893380c7310003ce907d",
                 "reference": "7d44cb5c5ce93354bf47893380c7310003ce907d",
 >>>>>>> ebayStreetAddress2
+=======
+                "reference": "3df81823b3532ed2194ba22c94573736433ffad3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/3df81823b3532ed2194ba22c94573736433ffad3",
+                "reference": "3df81823b3532ed2194ba22c94573736433ffad3",
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -1051,10 +1108,14 @@
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-05-04 18:22:07"
 =======
             "time": "2018-04-02T13:00:15+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-05-04 18:22:07"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "mikemccabe/json-patch-php",
@@ -1086,6 +1147,7 @@
         {
             "name": "nesbot/carbon",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "version": "1.27.0",
             "source": {
                 "type": "git",
@@ -1108,6 +1170,18 @@
                 "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/cbcf13da0b531767e39eb86e9687f5deba9857b4",
                 "reference": "cbcf13da0b531767e39eb86e9687f5deba9857b4",
 >>>>>>> ebayStreetAddress2
+=======
+            "version": "1.27.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/briannesbitt/Carbon.git",
+                "reference": "ef81c39b67200dcd7401c24363dcac05ac3a4fe9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/ef81c39b67200dcd7401c24363dcac05ac3a4fe9",
+                "reference": "ef81c39b67200dcd7401c24363dcac05ac3a4fe9",
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -1143,10 +1217,14 @@
                 "time"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-04-23T09:02:57+00:00"
 =======
             "time": "2018-03-19T15:50:49+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-04-23T09:02:57+00:00"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "owasp/phprbac",
@@ -1194,10 +1272,14 @@
                 "security"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2014-03-14 13:16:56"
 =======
             "time": "2014-03-14T13:16:56+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2014-03-14 13:16:56"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "phenx/php-font-lib",
@@ -1317,6 +1399,7 @@
                 "type": "git",
                 "url": "https://github.com/phpseclib/phpseclib.git",
 <<<<<<< HEAD
+<<<<<<< HEAD
                 "reference": "8c299f865f02fb1355002d32d925a343c55a840c"
             },
             "dist": {
@@ -1331,6 +1414,14 @@
                 "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/3dae376e9c8f58de477b9770f6536b6dd30a2899",
                 "reference": "3dae376e9c8f58de477b9770f6536b6dd30a2899",
 >>>>>>> ebayStreetAddress2
+=======
+                "reference": "8c299f865f02fb1355002d32d925a343c55a840c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/8c299f865f02fb1355002d32d925a343c55a840c",
+                "reference": "8c299f865f02fb1355002d32d925a343c55a840c",
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -1410,10 +1501,14 @@
                 "x509"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-04-25 20:18:51"
 =======
             "time": "2018-03-27T16:06:11+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-04-25 20:18:51"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "psr/container",
@@ -1463,10 +1558,14 @@
                 "psr"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2017-06-28 15:35:32"
 =======
             "time": "2017-06-28T15:35:32+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2017-06-28 15:35:32"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "psr/log",
@@ -1562,6 +1661,7 @@
                 "simple-cache"
             ],
             "time": "2017-10-23 01:57:42"
+<<<<<<< HEAD
         },
         {
             "name": "psr/simple-cache",
@@ -1610,6 +1710,8 @@
                 "simple-cache"
             ],
             "time": "2017-10-23T01:57:42+00:00"
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "rackspace/php-opencloud",
@@ -1672,10 +1774,14 @@
                 "swift"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2017-07-18 18:38:58"
 =======
             "time": "2017-07-18T18:38:58+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2017-07-18 18:38:58"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "react/promise",
@@ -1684,12 +1790,16 @@
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "reference": "24cd9e84035e63b6ebeb4a922b0dcaf2fe1ad811"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/reactphp/promise/zipball/24cd9e84035e63b6ebeb4a922b0dcaf2fe1ad811",
                 "reference": "24cd9e84035e63b6ebeb4a922b0dcaf2fe1ad811",
+<<<<<<< HEAD
 =======
                 "reference": "179520ec0b25cf4c742d9653be9f4964d64d4a6e"
             },
@@ -1698,6 +1808,8 @@
                 "url": "https://api.github.com/repos/reactphp/promise/zipball/179520ec0b25cf4c742d9653be9f4964d64d4a6e",
                 "reference": "179520ec0b25cf4c742d9653be9f4964d64d4a6e",
 >>>>>>> ebayStreetAddress2
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -1731,10 +1843,14 @@
                 "promises"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-05-03 18:02:02"
 =======
             "time": "2017-09-19T13:02:44+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-05-03 18:02:02"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "symfony/event-dispatcher",
@@ -1743,12 +1859,16 @@
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "reference": "9b69aad7d4c086dc94ebade2d5eb9145da5dac8c"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/9b69aad7d4c086dc94ebade2d5eb9145da5dac8c",
                 "reference": "9b69aad7d4c086dc94ebade2d5eb9145da5dac8c",
+<<<<<<< HEAD
 =======
                 "reference": "f5d2d7dcc33b89e20c2696ea9afcbddf6540081c"
             },
@@ -1757,6 +1877,8 @@
                 "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/f5d2d7dcc33b89e20c2696ea9afcbddf6540081c",
                 "reference": "f5d2d7dcc33b89e20c2696ea9afcbddf6540081c",
 >>>>>>> ebayStreetAddress2
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -1804,10 +1926,14 @@
             "description": "Symfony EventDispatcher Component",
             "homepage": "https://symfony.com",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-04-06 07:35:03"
 =======
             "time": "2018-02-11T16:53:59+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-04-06 07:35:03"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -1816,12 +1942,16 @@
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "reference": "3296adf6a6454a050679cde90f95350ad604b171"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/3296adf6a6454a050679cde90f95350ad604b171",
                 "reference": "3296adf6a6454a050679cde90f95350ad604b171",
+<<<<<<< HEAD
 =======
                 "reference": "78be803ce01e55d3491c1397cf1c64beb9c1b63b"
             },
@@ -1830,6 +1960,8 @@
                 "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/78be803ce01e55d3491c1397cf1c64beb9c1b63b",
                 "reference": "78be803ce01e55d3491c1397cf1c64beb9c1b63b",
 >>>>>>> ebayStreetAddress2
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -1842,10 +1974,14 @@
             "extra": {
                 "branch-alias": {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     "dev-master": "1.8-dev"
 =======
                     "dev-master": "1.7-dev"
 >>>>>>> ebayStreetAddress2
+=======
+                    "dev-master": "1.8-dev"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 }
             },
             "autoload": {
@@ -1880,10 +2016,14 @@
                 "shim"
             ],
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-04-26 10:06:28"
 =======
             "time": "2018-01-30T19:27:44+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-04-26 10:06:28"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "symfony/translation",
@@ -1892,12 +2032,16 @@
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "reference": "3bae100c1de6f86f67d4c516854d605d64aa80c9"
             },
             "dist": {
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/translation/zipball/3bae100c1de6f86f67d4c516854d605d64aa80c9",
                 "reference": "3bae100c1de6f86f67d4c516854d605d64aa80c9",
+<<<<<<< HEAD
 =======
                 "reference": "94207c33086228aca80e998fcee807587f989687"
             },
@@ -1906,6 +2050,8 @@
                 "url": "https://api.github.com/repos/symfony/translation/zipball/94207c33086228aca80e998fcee807587f989687",
                 "reference": "94207c33086228aca80e998fcee807587f989687",
 >>>>>>> ebayStreetAddress2
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
                 "shasum": ""
             },
             "require": {
@@ -1962,10 +2108,14 @@
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
 <<<<<<< HEAD
+<<<<<<< HEAD
             "time": "2018-04-30 01:24:02"
 =======
             "time": "2018-03-30T08:43:09+00:00"
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-04-30 01:24:02"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         },
         {
             "name": "vlucas/phpdotenv",
@@ -2015,6 +2165,7 @@
                 "env",
                 "environment"
             ],
+<<<<<<< HEAD
 <<<<<<< HEAD
             "time": "2018-03-19 21:27:48"
 =======
@@ -2068,6 +2219,9 @@
                 "MWS"
             ]
 >>>>>>> ebayStreetAddress2
+=======
+            "time": "2018-03-19 21:27:48"
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
         }
     ],
     "aliases": [],
@@ -2075,11 +2229,15 @@
     "stability-flags": {
         "owasp/phprbac": 20,
 <<<<<<< HEAD
+<<<<<<< HEAD
         "vlucas/phpdotenv": 20
 =======
         "vlucas/phpdotenv": 20,
         "michaeljberry/amazon-mws-api": 20
 >>>>>>> ebayStreetAddress2
+=======
+        "vlucas/phpdotenv": 20
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
     },
     "prefer-stable": false,
     "prefer-lowest": false,

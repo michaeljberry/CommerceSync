@@ -1,5 +1,8 @@
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
   "require": {
     "phpmailer/phpmailer": "~5.2",
     "owasp/phprbac": "2.0.*@dev",
@@ -18,6 +21,7 @@
       "": "core/classes/"
     }
   }
+<<<<<<< HEAD
 =======
 	"require": {
 		"phpmailer/phpmailer": "~5.2",
@@ -47,4 +51,6 @@
 		}
 	]
 >>>>>>> ebayStreetAddress2
+=======
+>>>>>>> 7bdafca1277f31c5e0f31f8209ec60e80446f973
 }

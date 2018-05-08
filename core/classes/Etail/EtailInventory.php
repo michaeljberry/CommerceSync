@@ -57,7 +57,7 @@ class EtailInventory
     protected function uploadInventoryToSSH($currentFileLocation, $fileDestination)
     {
 
-        new EtailSSHUpload($currentFileLocation, $fileDestination);
+        return new EtailSSHUpload($currentFileLocation, $fileDestination);
 
     }
 

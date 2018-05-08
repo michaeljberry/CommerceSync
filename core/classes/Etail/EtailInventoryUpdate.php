@@ -41,7 +41,7 @@ class EtailInventoryUpdate extends EtailInventory
     protected function uploadCSV()
     {
 
-        $this->uploadInventoryToSSH($this->csvFile->getFilePath(), $this->getDestination() . "/" . $this->csvFile->getFileName());
+        return $this->uploadInventoryToSSH($this->csvFile->getFilePath(), $this->getDestination() . "/" . $this->csvFile->getFileName());
 
     }
 

@@ -79,6 +79,7 @@ class EtailSSH
     {
 
         $this->connection = ssh2_connect($this->server);
+
         if(!$this->connection) die("Couldn't connect to {$this->server}");
 
     }

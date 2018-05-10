@@ -8,16 +8,17 @@ class EtailInventoryUpdate extends EtailInventory
 {
 
     protected $csvFile;
-    protected $csvHeader = ["LOC", "SKU", "QTY"];
-    protected $localDirectory;
-    protected $destination = "Inventory/In";
+    protected $csvHeader = [
+        "LOC",
+        "SKU",
+        "QTY"
+    ];
+    protected $destinationFolder = "Inventory/In";
 
     public function __construct()
     {
 
         parent::__construct($this->interval);
-
-        $this->setDirectory();
 
         $this->createCSVWithUpdatedInventory();
 
@@ -25,38 +26,24 @@ class EtailInventoryUpdate extends EtailInventory
 
     }
 
-    protected function setDirectory()
-    {
-
-        $this->localDirectory = getenv('ETAIL_FTP_DIRECTORY');
-
-    }
-
     protected function createCSVWithUpdatedInventory()
     {
 
-        $this->csvFile = new CSV($this->getDatedFileName(), $this->getDirectory(), $this->getUpdatedInventory(), $this->getCSVHeader());
+        $this->csvFile = new CSV($this->getDatedFileName(), $this->getLocalDirectory(), $this->getUpdatedInventory(), $this->getCSVHeader());
 
     }
 
     protected function uploadCSV()
     {
 
-        return $this->uploadInventoryToSSH($this->csvFile->getFilePath(), $this->getDestination() . "/" . $this->csvFile->getFileName());
+        return $this->uploadInventoryToSSH($this->csvFile->getFilePath(), $this->getDestinationFolder() . "/" . $this->csvFile->getFileName());
 
     }
 
-    public function getDestination()
+    public function getDestinationFolder()
     {
 
-        return $this->destination;
-
-    }
-
-    public function getDirectory()
-    {
-
-        return $this->localDirectory;
+        return $this->destinationFolder;
 
     }
 

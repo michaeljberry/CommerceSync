@@ -6,6 +6,7 @@ use Exception;
 
 class EtailSSHUpload extends EtailSSH
 {
+
     protected $stream;
     protected $csvFileContents;
 
@@ -83,17 +84,6 @@ class EtailSSHUpload extends EtailSSH
 
     }
 
-    protected function uploadCSV()
-    {
-
-        // ssh2_scp_send($this->getConnection(), $this->getCurrentFileLocation(), "ssh2.sftp://" . $this->getSFTP() . $this->getFileDestinationPath(), 0777);
-        file_put_contents(
-            "ssh2.sftp://" . $this->getUsername() . ":" . $this->getPassword() . "@" . $this->getServer() . ":22" . $this->getFileDestinationPath(),
-            file_get_contents($this->getCurrentFileLocation())
-        );
-
-    }
-
     protected function uploadFile()
     {
 
@@ -104,8 +94,6 @@ class EtailSSHUpload extends EtailSSH
         $this->writeContentsToServer();
 
         $this->closeStream();
-
-        // $this->uploadCSV();
 
     }
 

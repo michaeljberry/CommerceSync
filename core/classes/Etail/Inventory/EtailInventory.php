@@ -3,27 +3,27 @@
 namespace Etail\Inventory;
 
 use IBM;
+use Etail;
 use Etail\SSH\EtailSSHUpload;
 use models\channels\DBInventory;
 
-class EtailInventory
+class EtailInventory extends Etail
 {
 
     protected $vaiInventory;
     protected $dbInventory;
     protected $updatedInventory;
-    protected $datedFilename;
 
     public function __construct($interval = null)
     {
+
+        parent::__construct();
 
         $this->getInventoryFromVAI();
 
         $this->updateInventoryInDB();
 
         $this->getUpdatedInventoryFromDB($interval);
-
-        $this->setDatedFilename();
 
     }
 
@@ -45,13 +45,6 @@ class EtailInventory
     {
 
         $this->updatedInventory = DBInventory::getUpdatedInventory($interval);
-
-    }
-
-    protected function setDatedFilename()
-    {
-
-        $this->datedFilename = date('Y-m-d-H-i');
 
     }
 
@@ -80,13 +73,6 @@ class EtailInventory
     {
 
         return $this->updatedInventory;
-
-    }
-
-    public function getDatedFileName()
-    {
-
-        return $this->datedFilename;
 
     }
 

@@ -2,8 +2,6 @@
 
 use Etail\{EtailSSH, EtailInventoryDaily};
 
-require '../../core/init.php';
+require __DIR__ . '/../../core/init.php';
 
 $etailInventory = new EtailInventoryDaily();
-
-print_r($etailInventory);

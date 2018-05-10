@@ -1,5 +1,5 @@
 <?php
-define("ROOT", $_SERVER['DOCUMENT_ROOT'] . '/');
+define("ROOT", __DIR__ . "/../");
 
 if (file_exists(ROOT . '.local')) {
     $localArray = parse_ini_file(ROOT . '.local');
@@ -16,7 +16,7 @@ setLocale(LC_MONETARY, 'en_US.UTF-8');
 
 if (file_exists(ROOT . '.env')) {
     //Browser-based definitions
-    define("WEBROOT", $_SERVER['DOCUMENT_ROOT'] . '/');
+    define("WEBROOT", ROOT);
     define('WEBINCLUDES', '/includes/');
 } else {
     //Console-based definitions

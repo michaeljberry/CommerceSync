@@ -21,7 +21,7 @@ class EtailInventoryUpdate extends EtailInventory
 
         $this->createCSVWithUpdatedInventory();
 
-        // $this->uploadCSV();
+        $this->uploadCSV();
 
     }
 
@@ -36,10 +36,6 @@ class EtailInventoryUpdate extends EtailInventory
     {
 
         $this->csvFile = new CSV($this->getDatedFileName(), $this->getDirectory(), $this->getUpdatedInventory(), $this->getCSVHeader());
-
-        $this->csvFile->prependToCSVArray($this->getCSVHeader());
-
-        print_r($this->csvFile->getCSVArray());
 
     }
 

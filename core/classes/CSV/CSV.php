@@ -50,6 +50,8 @@ class CSV
     protected function setCSVArray($csvArray)
     {
 
+        array_unshift($csvArray, ["LOC", "SKU", "QTY"]);
+
         $this->csvArray = $csvArray;
 
     }

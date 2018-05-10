@@ -20,7 +20,7 @@ class EtailSSHUpload extends EtailSSH
 
         $this->setFileDestinationPath();
 
-        $this->uploadFile();
+        // $this->uploadFile();
 
     }
 

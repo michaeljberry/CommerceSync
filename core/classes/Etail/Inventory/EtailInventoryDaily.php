@@ -1,13 +1,13 @@
 <?php
 
-namespace Etail;
+namespace Etail\Inventory;
 
 use CSV\CSV;
 
-class EtailInventoryFiveMinute extends EtailInventoryUpdate
+class EtailInventoryDaily extends EtailInventoryUpdate
 {
 
-    protected $interval = 15;
+    protected $interval = null;
 
     public function __construct()
     {

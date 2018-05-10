@@ -1,8 +1,9 @@
 <?php
 
-namespace Etail;
+namespace Etail\Inventory;
 
 use IBM;
+use Etail\EtailSSHUpload;
 use models\channels\DBInventory;
 
 class EtailInventory

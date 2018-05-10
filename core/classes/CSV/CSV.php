@@ -11,7 +11,7 @@ class CSV
     protected $csvArray;
     protected $filePointer;
 
-    public function __construct($fileName, $directory, $csvArray)
+    public function __construct($fileName, $directory, $csvArray, $csvHeader = null)
     {
 
         $this->setFileName($fileName);
@@ -21,6 +21,8 @@ class CSV
         $this->setFilePath();
 
         $this->setCSVArray($csvArray);
+
+        $this->setCSVHeader($csvHeader);
 
         $this->createCSVFromArray();
 
@@ -50,9 +52,16 @@ class CSV
     protected function setCSVArray($csvArray)
     {
 
-        array_unshift($csvArray, ["LOC", "SKU", "QTY"]);
-
         $this->csvArray = $csvArray;
+
+    }
+
+    protected function setCSVHeader($csvHeader)
+    {
+
+        if($csvHeader)
+
+            $this->prependToCSVArray($csvHeader);
 
     }
 
@@ -137,6 +146,13 @@ class CSV
     {
 
         return $this->filePointer;
+
+    }
+
+    public function prependToCSVArray($array)
+    {
+
+        array_unshift($this->csvArray, $array);
 
     }
 

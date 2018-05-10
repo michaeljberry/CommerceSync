@@ -1,6 +1,7 @@
 <?php
 
-use Etail\{EtailSSH, EtailInventoryFiveMinute};
+use Etail\EtailSSH;
+use Etail\Inventory\EtailInventoryFiveMinute;
 
 require __DIR__  . '/../../core/init.php';
 

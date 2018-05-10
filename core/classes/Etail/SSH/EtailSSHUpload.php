@@ -1,6 +1,6 @@
 <?php
 
-namespace Etail;
+namespace Etail\SSH;
 
 use Exception;
 

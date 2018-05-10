@@ -3,7 +3,7 @@
 namespace Etail\Inventory;
 
 use IBM;
-use Etail\EtailSSHUpload;
+use Etail\SSH\EtailSSHUpload;
 use models\channels\DBInventory;
 
 class EtailInventory

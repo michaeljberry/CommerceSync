@@ -2,9 +2,13 @@
 
 namespace Etail;
 
+use CSV\CSV;
+use Etail\SSH\EtailSSHUpload;
+
 class Etail
 {
 
+    protected $csvFile;
     protected $datedFileName;
     protected $localDirectory;
 
@@ -31,6 +35,13 @@ class Etail
 
     }
 
+    protected function uploadInventoryToSSH($currentFileLocation, $fileDestination)
+    {
+
+        return new EtailSSHUpload($currentFileLocation, $fileDestination);
+
+    }
+
     public function getDatedFileName()
     {
 
@@ -42,6 +53,34 @@ class Etail
     {
 
         return $this->localDirectory;
+
+    }
+
+    protected function uploadCSV()
+    {
+
+        return $this->uploadInventoryToSSH($this->csvFile->getFilePath(), $this->getDestinationFolder() . "/" . $this->csvFile->getFileName());
+
+    }
+
+    public function getDestinationFolder()
+    {
+
+        return $this->destinationFolder;
+
+    }
+
+    protected function createCSV($csvArray)
+    {
+
+        $this->csvFile = new CSV($this->getDatedFileName(), $this->getLocalDirectory(), $csvArray, $this->getCSVHeader());
+
+    }
+
+    public function getCSVHeader()
+    {
+
+        return $this->csvHeader;
 
     }
 

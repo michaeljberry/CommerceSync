@@ -2,16 +2,13 @@
 
 namespace Etail\Catalog;
 
-use CSV\CSV;
-
 class EtailCatalogUpdate extends EtailCatalog
 {
 
-    protected $csvFile;
+    protected $destinationFolder = "Catalog/In";
     protected $csvHeader = [];
-    protected $destinationFolder = "Category/In";
 
-    public function __construc()
+    public function __construct()
     {
 
         parent::__construct();
@@ -25,14 +22,7 @@ class EtailCatalogUpdate extends EtailCatalog
     protected function createCSVWithCatalog()
     {
 
-        $this->csvFile = new CSV($this->getDatedFileName(), $this->getLocalDirectory(), $this->getVAICatalog(), $this->getCSVHeader());
-
-    }
-
-    protected function uploadCSV()
-    {
-
-
+        $this->createCSV($this->getVAICatalog());
 
     }
 

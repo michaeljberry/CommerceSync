@@ -2,18 +2,15 @@
 
 namespace Etail\Inventory;
 
-use CSV\CSV;
-
 class EtailInventoryUpdate extends EtailInventory
 {
 
-    protected $csvFile;
+    protected $destinationFolder = "Inventory/In";
     protected $csvHeader = [
         "LOC",
         "SKU",
         "QTY"
     ];
-    protected $destinationFolder = "Inventory/In";
 
     public function __construct()
     {
@@ -29,28 +26,7 @@ class EtailInventoryUpdate extends EtailInventory
     protected function createCSVWithUpdatedInventory()
     {
 
-        $this->csvFile = new CSV($this->getDatedFileName(), $this->getLocalDirectory(), $this->getUpdatedInventory(), $this->getCSVHeader());
-
-    }
-
-    protected function uploadCSV()
-    {
-
-        return $this->uploadInventoryToSSH($this->csvFile->getFilePath(), $this->getDestinationFolder() . "/" . $this->csvFile->getFileName());
-
-    }
-
-    public function getDestinationFolder()
-    {
-
-        return $this->destinationFolder;
-
-    }
-
-    public function getCSVHeader()
-    {
-
-        return $this->csvHeader;
+        $this->createCSV($this->getUpdatedInventory());
 
     }
 

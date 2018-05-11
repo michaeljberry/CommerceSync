@@ -3,8 +3,7 @@
 namespace Etail\Inventory;
 
 use IBM;
-use Etail;
-use Etail\SSH\EtailSSHUpload;
+use Etail\Etail;
 use models\channels\DBInventory;
 
 class EtailInventory extends Etail
@@ -45,13 +44,6 @@ class EtailInventory extends Etail
     {
 
         $this->updatedInventory = DBInventory::getUpdatedInventory($interval);
-
-    }
-
-    protected function uploadInventoryToSSH($currentFileLocation, $fileDestination)
-    {
-
-        return new EtailSSHUpload($currentFileLocation, $fileDestination);
 
     }
 

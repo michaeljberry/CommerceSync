@@ -1,6 +1,6 @@
 <?php
 
-use Etail\Catalog\EtailCatalog;
+use Etail\Catalog\EtailCatalogUpdate;
 
 require __DIR__ . '/../../core/init.php';
 

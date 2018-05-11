@@ -21,9 +21,9 @@ class EtailSSH
 
         $this->setConnectionParameters();
 
-        $this->connectToFTPServer();
+        $this->setConnection();
 
-        $this->authenticateInFTPServer();
+        $this->authenticateConnection();
 
         $this->setSFTP();
 
@@ -61,7 +61,7 @@ class EtailSSH
 
     }
 
-    protected function connectToFTPServer()
+    protected function setConnection()
     {
 
         $this->connection = ssh2_connect($this->server);
@@ -70,7 +70,7 @@ class EtailSSH
 
     }
 
-    protected function authenticateInFTPServer()
+    protected function authenticateConnection()
     {
 
         $this->login = ssh2_auth_password($this->getConnection(), $this->getUsername(), $this->getPassword());

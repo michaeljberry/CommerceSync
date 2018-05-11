@@ -3,19 +3,12 @@
 namespace Etail\Catalog;
 
 use IBM;
-use Etail;
-use CSV\CSV;
+use Etail\Etail;
 
 class EtailCatalog extends Etail
 {
 
-    protected $csvFile;
     protected $vaiCatalog;
-    protected $csvHeader = [
-        "LOC",
-        "SKU",
-        "QTY"
-    ];
 
     public function __construct()
     {
@@ -23,8 +16,6 @@ class EtailCatalog extends Etail
         parent::__construct();
 
         $this->getCatalogFromVAI();
-
-        $this->createCSVWithCatalog();
 
     }
 
@@ -41,12 +32,5 @@ class EtailCatalog extends Etail
         return $this->vaiCatalog;
 
     }
-
-    public function getCSVHeader()
-    {
-
-        return $this->csvHeader;
-
-
 
 }

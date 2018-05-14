@@ -28,16 +28,9 @@ class EtailCatalogUpdate extends EtailCatalog
 
         parent::__construct();
 
-        $this->createCSVWithCatalog();
+        $this->createCSV($this->getFromVAI());
 
         $this->uploadCSV();
-
-    }
-
-    protected function createCSVWithCatalog()
-    {
-
-        $this->createCSV($this->getVAICatalog());
 
     }
 

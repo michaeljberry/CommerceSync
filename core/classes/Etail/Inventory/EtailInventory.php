@@ -4,9 +4,10 @@ namespace Etail\Inventory;
 
 use IBM;
 use Etail\Etail;
+use Etail\EtailVAIConnection;
 use models\channels\DBInventory;
 
-class EtailInventory extends Etail
+class EtailInventory extends Etail implements EtailVAIConnection
 {
 
     protected $vaiInventory;
@@ -61,7 +62,7 @@ class EtailInventory extends Etail
 
     }
 
-    public function getUpdatedInventory()
+    public function getFromVAI()
     {
 
         return $this->updatedInventory;

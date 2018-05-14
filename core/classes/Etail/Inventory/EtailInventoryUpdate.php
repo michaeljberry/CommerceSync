@@ -15,18 +15,11 @@ class EtailInventoryUpdate extends EtailInventory
     public function __construct()
     {
 
-        parent::__construct($this->interval);
+        parent::__construct();
 
-        $this->createCSVWithUpdatedInventory();
+        $this->createCSV($this->getFromVAI());
 
         $this->uploadCSV();
-
-    }
-
-    protected function createCSVWithUpdatedInventory()
-    {
-
-        $this->createCSV($this->getUpdatedInventory());
 
     }
 

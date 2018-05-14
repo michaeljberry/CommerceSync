@@ -7,7 +7,7 @@ use CSV\CSV;
 class EtailInventoryFiveMinute extends EtailInventoryUpdate
 {
 
-    protected $interval = 15;
+    protected $interval = 5;
 
     public function __construct()
     {

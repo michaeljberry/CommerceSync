@@ -73,7 +73,7 @@ class Etail
     protected function createCSV($csvArray)
     {
 
-        $this->csvFile = new CSV($this->getDatedFileName(), $this->getLocalDirectory(), $csvArray, $this->getCSVHeader());
+        $this->csvFile = new CSV($this->getDatedFileName(), $this->getLocalDirectory(), $this->getFromVAI(), $this->getCSVHeader());
 
     }
 

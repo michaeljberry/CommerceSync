@@ -5,7 +5,7 @@ namespace Etail\Catalog;
 use IBM;
 use Etail\Etail;
 
-class EtailCatalog extends Etail
+class EtailCatalog extends Etail implements EtailVAIConnection
 {
 
     protected $vaiCatalog;
@@ -26,7 +26,7 @@ class EtailCatalog extends Etail
 
     }
 
-    public function getVAICatalog()
+    public function getFromVAI()
     {
 
         return $this->vaiCatalog;

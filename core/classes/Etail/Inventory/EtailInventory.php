@@ -14,7 +14,7 @@ class EtailInventory extends Etail implements EtailVAIConnection
     protected $dbInventory;
     protected $updatedInventory;
 
-    public function __construct($interval = null)
+    public function __construct()
     {
 
         parent::__construct();
@@ -23,7 +23,7 @@ class EtailInventory extends Etail implements EtailVAIConnection
 
         $this->updateInventoryInDB();
 
-        $this->getUpdatedInventoryFromDB($interval);
+        $this->getUpdatedInventoryFromDB();
 
     }
 
@@ -41,10 +41,10 @@ class EtailInventory extends Etail implements EtailVAIConnection
 
     }
 
-    public function getUpdatedInventoryFromDB($interval)
+    public function getUpdatedInventoryFromDB()
     {
 
-        $this->updatedInventory = DBInventory::getUpdatedInventory($interval);
+        $this->updatedInventory = DBInventory::getUpdatedInventory($this->getInterval());
 
     }
 

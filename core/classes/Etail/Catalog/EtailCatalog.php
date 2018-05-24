@@ -5,7 +5,7 @@ namespace Etail\Catalog;
 use IBM;
 use Etail\Etail;
 
-class EtailCatalog extends Etail implements EtailVAIConnection
+class EtailCatalog extends Etail
 {
 
     protected $vaiCatalog;

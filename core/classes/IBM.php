@@ -263,7 +263,7 @@ class IBM
         $sql = "SELECT CHORD as order_num, CHCOM1 as tracking_num, CARRIER as carrier, MAILCLASS as mail_class, DATE as date_shipped, BILLWEIGHT as billed_weight, ACTWEIGHT as actual_weight, POSTAGEAMT as postage_cost WHERE date_shipped = CURDATE()";
         return MIBMDB::query(
             "SELECT
-                CHORD as order_num,
+                PONO as order_num,
                 CHCOM1 as tracking_num,
                 CARRIER as carrier,
                 MAILCLASS as mail_class,

@@ -72,7 +72,7 @@ class DBTracking
             order_number, tracking_number, carrier, mail_class, date_shipped, billed_weight, actual_weight, postage_cost
             FROM etail_tracking tb";
 
-        $sql .= $interval ? " WHERE tb.date_shipped >= DATE_SUB(NOW(), INTERVAL $interval MINUTE)" : "";
+        $sql .= $interval ? " WHERE tb.time_added >= DATE_SUB(NOW(), INTERVAL $interval MINUTE)" : "";
 
         return MDB::query($sql, [], 'fetchAll', PDO::FETCH_ASSOC);
 

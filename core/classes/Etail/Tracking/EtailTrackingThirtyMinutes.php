@@ -2,10 +2,10 @@
 
 namespace Etail\Tracking;
 
-class EtailTrackingSixtyMinutes extends EtailTrackingUpdate
+class EtailTrackingThirtyMinutes extends EtailTrackingUpdate
 {
 
-    protected $interval = 60;
+    protected $interval = 30;
 
     public function getInterval()
     {

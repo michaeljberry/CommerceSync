@@ -2,7 +2,6 @@
 
 namespace models\channels;
 
-
 use PDO;
 use models\ModelDB as MDB;
 use controllers\channels\ChannelHelperController as CHC;

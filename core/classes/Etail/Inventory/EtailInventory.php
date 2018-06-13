@@ -34,7 +34,7 @@ class EtailInventory extends Etail implements EtailVAIConnection
 
     }
 
-    public function updateInventoryInDB()
+    protected function updateInventoryInDB()
     {
 
         DBInventory::updateEtailInventory($this->getVAIInventory());

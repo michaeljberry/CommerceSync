@@ -84,16 +84,12 @@ class DBInventory
 
     }
 
-    public function getUpdatedInventory($interval)
+    public function getUpdatedInventory($interval = null)
     {
 
         $sql = "SELECT loc, sku, qty FROM etail_inventory tb";
 
-        if ($interval) {
-
-            $sql .= " WHERE tb.last_updated >= DATE_SUB(NOW(), INTERVAL $interval MINUTE)";
-
-        }
+        $sql .= $interval ? " WHERE tb.last_updated >= DATE_SUB(NOW(), INTERVAL $interval MINUTE)" : "";
 
         return MDB::query($sql, [], 'fetchAll', PDO::FETCH_ASSOC);
 

@@ -35,7 +35,7 @@ class Etail
 
     }
 
-    protected function uploadInventoryToSSH($currentFileLocation, $fileDestination)
+    protected function uploadToSSH($currentFileLocation, $fileDestination)
     {
 
         return new EtailSSHUpload($currentFileLocation, $fileDestination);
@@ -59,7 +59,7 @@ class Etail
     protected function uploadCSV()
     {
 
-        return $this->uploadInventoryToSSH($this->csvFile->getFilePath(), $this->getDestinationFolder() . "/" . $this->csvFile->getFileName());
+        return $this->uploadToSSH($this->csvFile->getFilePath(), $this->getDestinationFolder() . "/" . $this->csvFile->getFileName());
 
     }
 

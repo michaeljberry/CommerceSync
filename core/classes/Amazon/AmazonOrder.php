@@ -285,11 +285,12 @@ class AmazonOrder extends AmazonClient
     protected static function parseItem(Order $Order, $item)
     {
 
+        $quantity = (int)$item->QuantityOrdered;
+        if(!$quantity) return;
         $sku = (string)$item->SellerSKU;
         $Order->setChannelAccount(Channel::getAccountNumbersBySku($Order->getChannelName(), $sku));
 
         $title = (string)$item->Title;
-        $quantity = (int)$item->QuantityOrdered;
         $upc = '';
 
         $itemPrice = (float)$item->ItemPrice->Amount;

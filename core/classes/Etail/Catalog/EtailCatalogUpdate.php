@@ -20,7 +20,9 @@ class EtailCatalogUpdate extends EtailCatalog
         "MSRP",
         "MAP",
         "UOM_DESC",
-        "UOM"
+        "UOM",
+        "UOM_DESC_S",
+        "UOM_SELL"
     ];
 
     public function __construct()

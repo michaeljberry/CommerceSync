@@ -55,19 +55,26 @@ class FTPController
 
     protected static function saveFile($fileName, $fileContents, $backup = false)
     {
-        if ($backup) {
-            return file_put_contents("{$this->getFtpFolder()}/backup/{$fileName}", $fileContents);
-        }
+        $fileLocation = FTPController::getFileLocation($fileName, $backup);
 
-        file_put_contents("{$this->getFtpFolder()}/{$fileName}", $fileContents);
+        file_put_contents($fileLocation, $fileContents);
     }
 
     protected static function updateFilePermissions($fileName, $backup = false, $permissions = 0777)
     {
-        if ($backup) {
-            return chmod("{$this->getFtpFolder()}/backup/{$fileName}", $permissions);
-        }
+        $fileLocation = FTPController::getFileLocation($fileName, $backup);
 
-        chmod("{$this->getFtpFolder()}/{$fileName}",$permissions);
+        chmod($fileLocation, $permissions);
+    }
+
+    protected static function getFileLocation($fileName, $backup)
+    {
+        $fileLocation = $this->getFtpFolder() . DIRECTORY_SEPARATOR;
+
+        if ($backup) $fileLocation .= "backup" . DIRECTORY_SEPARATOR;
+
+        $fileLocation .= $fileName;
+
+        return $fileLocation;
     }
 }

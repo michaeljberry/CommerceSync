@@ -3,85 +3,42 @@
 namespace Etail;
 
 use CSV\CSV;
-use Etail\SSH\EtailSSHUpload;
+use Etail\SSH\{EtailSSHUpload, EtailSSHDownload};
 
 class Etail
 {
-
+    protected $parentFolder = "ChesbroMusic";
     protected $csvFile;
     protected $datedFileName;
-    protected $localDirectory;
+    protected $fileFolder;
 
     public function __construct()
     {
-
-        $this->setDatedFileName();
-
-        $this->setLocalDirectory();
-
+        $this->setFileFolder();
     }
 
-    protected function setDatedFileName()
+    protected function setFileFolder()
     {
-
-        $this->datedFileName = date('Y-m-d-H-i');
-
-    }
-
-    protected function setLocalDirectory()
-    {
-
-        $this->localDirectory = getenv('ETAIL_FTP_DIRECTORY');
-
+        $this->fileFolder = getenv('ETAIL_FTP_DIRECTORY');
     }
 
     protected function uploadToSSH($currentFileLocation, $fileDestination)
     {
-
         return new EtailSSHUpload($currentFileLocation, $fileDestination);
-
     }
 
-    public function getDatedFileName()
+    protected function downloadFromSSH($currentFileLocation, $fileDestination)
     {
-
-        return $this->datedFileName;
-
+        return new EtailSSHDownload($currentFileLocation, $fileDestination);
     }
 
-    public function getLocalDirectory()
+    public function getFileFolder()
     {
-
-        return $this->localDirectory;
-
+        return $this->fileFolder;
     }
 
-    protected function uploadCSV()
+    public function getEtailRootFolder()
     {
-
-        return $this->uploadToSSH($this->csvFile->getFilePath(), $this->getDestinationFolder() . "/" . $this->csvFile->getFileName());
-
+        return $this->parentFolder;
     }
-
-    public function getDestinationFolder()
-    {
-
-        return $this->destinationFolder;
-
-    }
-
-    protected function createCSV($csvArray)
-    {
-
-        $this->csvFile = new CSV($this->getDatedFileName(), $this->getLocalDirectory(), $this->getFromVAI(), $this->getCSVHeader());
-
-    }
-
-    public function getCSVHeader()
-    {
-
-        return $this->csvHeader;
-
-    }
-
 }

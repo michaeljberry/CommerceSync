@@ -4,7 +4,6 @@ namespace Etail\Inventory;
 
 class EtailInventoryUpdate extends EtailInventory
 {
-
     protected $destinationFolder = "Inventory/In";
     protected $csvHeader = [
         "LOC",
@@ -14,13 +13,10 @@ class EtailInventoryUpdate extends EtailInventory
 
     public function __construct()
     {
-
         parent::__construct();
 
         $this->createCSV($this->getFromVAI());
 
         $this->uploadCSV();
-
     }
-
 }

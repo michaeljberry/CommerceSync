@@ -38,9 +38,9 @@ $ecd = new \ecd\ecdclass();
 $ecdord = new \ecdord\ecdordclass();
 $ecdinv = new \ecdinv\ecdinvclass();
 
-use PhpRbac\Rbac;
+// use PhpRbac\Rbac;
 
-$rbac = new Rbac();
+// $rbac = new Rbac();
 if ($general->logged_in() === true) {
     $userID = $_SESSION['id'];
     $user = $users->userdata($userID);

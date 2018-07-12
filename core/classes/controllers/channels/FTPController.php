@@ -12,7 +12,7 @@ class FTPController
 
     public function __construct()
     {
-        $this->ftpFolder = getenv('ETAIL_FTP_DIRECTORY');
+        $this->ftpFolder = getenv('FTP_FOLDER');
     }
 
     public static function saveXml(Order $order)

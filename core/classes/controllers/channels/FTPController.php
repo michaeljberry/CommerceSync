@@ -12,7 +12,7 @@ class FTPController
 
     public function __construct()
     {
-        $this->ftpFolder = getenv('FTP_FOLDER');
+        $this->ftpFolder = getenv('ETAIL_FTP_DIRECTORY');
     }
 
     public static function saveXml(Order $order)
@@ -29,45 +29,45 @@ class FTPController
         }
     }
 
-    public static function saveToDisk($filename, $orderXML)
+    public function saveToDisk($filename, $fileContents)
     {
-        FTPController::saveFile($filename, $orderXML);
-        FTPController::updateFilePermissions($filename);
+        $this->saveFile($filename, $fileContents);
+        $this->updateFilePermissions($filename);
 
-        if(FTPController::fileExists($filename)) {
+        if($this->fileExists($filename)) {
             $backup = true;
-            FTPController::saveFile($filename, $orderXML, $backup);
-            FTPController::updateFilePermissions($filename, $backup);
+            $this->saveFile($filename, $fileContents, $backup);
+            $this->updateFilePermissions($filename, $backup);
             return true;
         }
 
-        FTPController::saveToDisk($filename, $orderXML);
+        $this->saveToDisk($filename, $fileContents);
     }
     public function getFtpFolder()
     {
         return $this->ftpFolder;
     }
 
-    public static function fileExists($fileName)
+    public function fileExists($fileName)
     {
         return file_exists("{$this->getFtpFolder()}/{$fileName}");
     }
 
-    protected static function saveFile($fileName, $fileContents, $backup = false)
+    protected function saveFile($fileName, $fileContents, $backup = false)
     {
-        $fileLocation = FTPController::getFileLocation($fileName, $backup);
+        $fileLocation = $this->getFileLocation($fileName, $backup);
 
         file_put_contents($fileLocation, $fileContents);
     }
 
-    protected static function updateFilePermissions($fileName, $backup = false, $permissions = 0777)
+    protected function updateFilePermissions($fileName, $backup = false, $permissions = 0777)
     {
-        $fileLocation = FTPController::getFileLocation($fileName, $backup);
+        $fileLocation = $this->getFileLocation($fileName, $backup);
 
         chmod($fileLocation, $permissions);
     }
 
-    protected static function getFileLocation($fileName, $backup)
+    protected function getFileLocation($fileName, $backup)
     {
         $fileLocation = $this->getFtpFolder() . DIRECTORY_SEPARATOR;
 

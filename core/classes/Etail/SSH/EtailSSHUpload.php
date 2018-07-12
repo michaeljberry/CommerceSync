@@ -4,139 +4,64 @@ namespace Etail\SSH;
 
 use Exception;
 
-class EtailSSHUpload extends EtailSSH
+use Etail\Etail;
+
+class EtailSSHUpload extends Etail
 {
+    protected $fileContents;
+    protected $fileStream;
+    protected $filePath;
 
-    protected $stream;
-    protected $csvFileContents;
-
-    public function __construct($currentFileLocation, $fileDestination)
+    public function __construct()
     {
-
-        parent::__construct($currentFileLocation, $fileDestination);
-
-        $this->setCurrentFileLocation($currentFileLocation);
-
-        $this->setFileDestination($fileDestination);
-
-        $this->setFileDestinationPath();
-
-        $this->uploadFile();
-
+        parent::__construct();
     }
 
-    protected function setCurrentFileLocation($currentFileLocation)
+    public function upload($filePath, $destinationFilePath)
     {
+        $this->filePath = $filePath;
+        $this->fileStream = new EtailSSHStream($destinationFilePath);
 
-        $this->currentFileLocation = $currentFileLocation;
-
+        $this->uploadFile($this->fileStream);
     }
 
-    protected function setFileDestination($fileDestination)
+    protected function extractFileContents()
     {
+        $this->fileContents = file_get_contents($this->filePath);
 
-        $this->fileDestination = $fileDestination;
+        if ($this->fileContents === false)
 
+            throw new Exception("Could not open local file: " . $this->filePath);
     }
 
-    protected function setFileDestinationPath()
+    protected function writeFileContentsToEtailServer($stream)
     {
+        if (fwrite($stream->getStream(), $this->getFileContents()) === false)
 
-        $this->fileDestinationPath = "/" . $this->getDestinationParentFolder() . "/" . $this->getFileDestination();
-
+            throw new Exception("Could not send data from file: " . $this->filePath);
     }
 
-    protected function setStream()
+    protected function uploadFile(EtailSSHStream $stream)
     {
+        $this->extractFileContents();
 
-        $this->stream = fopen("ssh2.sftp://" . $this->getSFTP() . $this->getFileDestinationPath(), 'x');
+        $this->writeFileContentsToEtailServer($stream);
 
-        if (!$this->stream)
-
-            throw new Exception("Could not open file: " . $this->getFileDestinationPath());
-
+        $stream->close();
     }
 
-    protected function setCSVFileContents()
+    public function getFileContents()
     {
-
-        $this->csvFileContents = file_get_contents($this->getCurrentFileLocation());
-
-        if ($this->csvFileContents === false)
-
-            throw new Exception("Could not open local file: " . $this->getCurrentFileLocation());
-
+        return $this->fileContents;
     }
 
-    protected function writeContentsToServer()
+    public function getDestinationFolder()
     {
-
-        if (fwrite($this->getStream(), $this->getCSVFileContents()) === false)
-
-            throw new Exception("Could not send data from file: " . $this->getCurrentFileLocation());
-
+        return $this->destinationFolder;
     }
 
-    protected function closeStream()
-    {
-
-        fclose($this->stream);
-
-    }
-
-    protected function uploadFile()
-    {
-
-        $this->setStream();
-
-        $this->setCSVFileContents();
-
-        $this->writeContentsToServer();
-
-        $this->closeStream();
-
-    }
-
-    public function getCurrentFileLocation()
-    {
-
-        return $this->currentFileLocation;
-
-    }
-
-    public function getDestinationParentFolder()
-    {
-
-        return $this->parentFolder;
-
-    }
-
-    public function getFileDestination()
-    {
-
-        return $this->fileDestination;
-
-    }
-
-    public function getFileDestinationPath()
-    {
-
-        return $this->fileDestinationPath;
-
-    }
-
-    public function getStream()
-    {
-
-        return $this->stream;
-
-    }
-
-    public function getCSVFileContents()
-    {
-
-        return $this->csvFileContents;
-
-    }
-
+    // public function getStream()
+    // {
+    //     return $this->fileStream;
+    // }
 }

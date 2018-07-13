@@ -58,7 +58,7 @@ class EtailSSHDownload extends Etail
 
     protected function writeFilesToLocalDrive($fileName, $fileContents)
     {
-        $this->ftp->saveToDisk($fileName, $fileContents);
+        return $this->ftp->saveToDisk($fileName, $fileContents);
     }
 
     protected function downloadFiles(EtailSSHStream $stream)

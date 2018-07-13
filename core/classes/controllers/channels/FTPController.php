@@ -43,6 +43,7 @@ class FTPController
 
         $this->saveToDisk($filename, $fileContents);
     }
+
     public function getFtpFolder()
     {
         return $this->ftpFolder;

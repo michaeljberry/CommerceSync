@@ -47,8 +47,10 @@ class EtailSSHDownload extends Etail
                 $currentFileLocation
             );
 
-            if ($this->writeFilesToLocalDrive($fileName, $fileContents) && $moveFile) {
+            if ($this->writeFilesToLocalDrive($fileName, $fileContents) && $moveFile === true) {
+                echo "$currentFileLocation<br>";
                 ssh2_sftp_rename($stream->getSFTP(), $currentFileLocation, $currentFileFolder . $moveFileTo . "/" . $fileName);
+                echo "New Location: $currentFileFolder . $moveFileTo . " / " . $fileName";
             }
         }
 

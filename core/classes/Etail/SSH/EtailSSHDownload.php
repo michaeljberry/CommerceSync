@@ -30,34 +30,38 @@ class EtailSSHDownload extends Etail
         $this->downloadFiles($this->fileStream);
     }
 
-    protected function getAllOrders($stream)
+    protected function getAllFiles($stream, $moveFile = false, $moveFileTo = null)
     {
         while ($this->fileStream && ($fileName = readdir($stream->getStream())) !== false) {
             if (in_array($fileName, $this->getFoldersToIgnore())) {
                 continue;
             }
 
+            $currentFileFolder = "/" . $this->filePath . "/";
+
+            $currentFileLocation =  $currentFileFolder . $fileName;
+
             $fileContents = file_get_contents(
                 "ssh2.sftp://" .
                 intval($stream->getSFTP()) .
-                "/" .
-                $this->filePath .
-                "/" .
-                $fileName
+                $currentFileLocation
             );
-            $this->writeOrdersForVAI($fileName, $fileContents);
+
+            if ($this->writeFilesToLocalDrive($fileName, $fileContents) && $moveFile) {
+                ssh2_sftp_rename($stream->getSFTP(), $currentFileLocation, $currentFileFolder . $moveFileTo . "/" . $fileName);
+            }
         }
 
     }
 
-    protected function writeOrdersForVAI($fileName, $fileContents)
+    protected function writeFilesToLocalDrive($fileName, $fileContents)
     {
         $this->ftp->saveToDisk($fileName, $fileContents);
     }
 
     protected function downloadFiles(EtailSSHStream $stream)
     {
-        $this->getAllOrders($stream);
+        $this->getAllFiles($stream, $moveFile = true, $moveFileTo = "complete");
         $stream->close($directory = true);
     }
 
